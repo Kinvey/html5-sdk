@@ -81079,6 +81079,10 @@ Kinvey.init = function (options) {
   return client;
 };
 
+Kinvey.initialize = function (options) {
+  return Kinvey.init(options);
+};
+
 module.exports = Kinvey;
 
 },{"./core/acl":410,"./core/aggregation":411,"./core/cache":413,"./core/client":414,"./core/command":415,"./core/defer":416,"./core/enums":418,"./core/errors":419,"./core/kmd":420,"./core/log":421,"./core/models/file":422,"./core/models/model":423,"./core/models/user":424,"./core/query":429,"./core/stores/localStore":433,"./core/stores/networkStore":434,"./core/stores/store":435,"./core/stores/syncStore":436,"./core/sync":437,"./rack/cache":444,"./rack/http":445,"./rack/middleware":446,"./rack/parse":447,"./rack/rack":448,"./rack/serialize":449}],443:[function(require,module,exports){
