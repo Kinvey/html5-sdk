@@ -5,6 +5,7 @@
   "homepage": "https://www.kinvey.com",
   "license": "Apache-2.0",
   "authors": [ "Kinvey, Inc." ],
+  "main": "kinvey.min.js",
   "keywords": [
     "Kinvey",
     "JavaScript",
