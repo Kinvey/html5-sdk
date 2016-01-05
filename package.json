@@ -1,0 +1,28 @@
+{
+  "name": "kinvey-html5-lib",
+  "version": "1.6.4",
+  "description": "Kinvey JavaScript Library for HTML5.",
+  "homepage": "http://www.kinvey.com",
+  "bugs": { "url": "http://support.kinvey.com" },
+  "licenses": [{
+    "type": "Apache-2.0",
+    "url": "https://raw.github.com/Kinvey/kinvey-html5-lib/master/LICENSE.txt"
+  }],
+  "author": "Kinvey, Inc.",
+  "contributors": [
+    "Thomas Conner <thomas@kinvey.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Kinvey/kinvey-html5-lib"
+  },
+  "scripts": { },
+  "dependencies": { },
+  "devDependencies": { },
+  "engines": { "node": ">=4.0" },
+  "keywords" : [
+    "Kinvey",
+    "JavaScript",
+    "HTML5"
+  ]
+}
