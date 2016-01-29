@@ -1,13 +1,13 @@
 {
-  "name": "kinvey-html5-lib",
-  "version": "0.0.0",
+  "name": "kinvey-html5",
+  "version": "1.6.6",
   "description": "Kinvey JavaScript Library for HTML5.",
   "homepage": "https://www.kinvey.com",
   "license": "Apache-2.0",
   "authors": [
     "Kinvey, Inc."
   ],
-  "main": "kinvey.min.js",
+  "main": "./kinvey.min.js",
   "keywords": [
     "Kinvey",
     "JavaScript",
