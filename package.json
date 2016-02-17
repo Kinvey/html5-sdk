@@ -17,13 +17,23 @@
   "contributors": [
     "Thomas Conner <thomas@kinvey.com>"
   ],
-  "main": "./kinvey.min.js",
+  "main": "./src/kinvey.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:Kinvey/kinvey-html5-lib"
   },
   "scripts": {},
-  "dependencies": {},
+  "dependencies": {
+    "fast-memory-cache": "^2.0.4",
+    "hellojs": "^1.10.1",
+    "indexeddbshim": "^2.2.1",
+    "lodash": "^4.3.0",
+    "loglevel": "^1.3.1",
+    "qs": "^6.0.1",
+    "request": "^2.67.0",
+    "sift": "^3.0.0",
+    "url-pattern": "^1.0.0"
+  },
   "devDependencies": {},
   "engines": {
     "node": ">=4.0"
