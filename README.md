@@ -1,7 +1,7 @@
 # Kinvey
 [Kinvey](http://www.kinvey.com) (pronounced Kin-vey, like convey) makes it ridiculously easy for developers to setup, use and operate a cloud backend for their mobile apps. They don't have to worry about connecting to various cloud services, setting up servers for their backend, or maintaining and scaling them.
 
-This node module makes it very easy to connect your PhoneGap/Cordova app with Kinvey.
+This node and bower module makes it very easy to connect your HTML5 app with Kinvey.
 
 ## How to use
 
@@ -15,16 +15,36 @@ You can install the module using npm:
 npm install kinvey-html5 --save
 ```
 
+or
+
+```bash
+bower install kinvey-html5 --save
+```
+
 ### 3. Configure the library
-Now, the library is available for use in your project. Import the library in your code using `require`. Next, use `Kinvey.init` to configure your app:
+Now, the library is available for use in your project.
+
+If you installed the library with npm, import the library in your code using `require`.
 
 ```javascript
 var Kinvey = require('kinvey-html5');
+```
+
+If you installed the library with bower, add a script tag to your main html file.
+
+```html
+<script src="bower_components/kinvey-html5/dist/kinvey.min.js"></script>
+```
+
+Next, use `Kinvey.init` to configure your app:
+
+```javascript
 Kinvey.init({
     appKey: '<appKey>',
     appSecret: '<appSecret>'
 });
 ```
+
 
 ### 4. Verify Set Up
 You can use the following snippet to verify the app credentials were entered correctly. This function will contact the backend and verify that the library can communicate with your app.
@@ -38,7 +58,7 @@ Kinvey.ping().then(function(response) {
 ```
 
 ## What’s next?
-You are now ready to start building your awesome apps! Next we recommend diving into the [User guide](http://devcenter.kinvey.com/phonegap/guides/users) or [Data store guide](http://devcenter.kinvey.com/phonegap/guides/datastore) to learn more about our service, or explore the [sample apps](http://devcenter.kinvey.com/phonegap/samples) to go straight to working projects.
+You are now ready to start building your awesome apps! Next we recommend diving into the [User guide](http://devcenter.kinvey.com/html5-v3.0/guides/users) or [Data store guide](http://devcenter.kinvey.com/html5-v3.0/guides/datastore) to learn more about our service, or explore the [sample apps](http://devcenter.kinvey.com/html5-v3.0/samples) to go straight to working projects.
 
 ## License
 
