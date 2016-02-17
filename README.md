@@ -12,13 +12,13 @@ To use the library, sign up for Kinvey if you have not already done so. Go to th
 You can install the module using npm:
 
 ```bash
-npm install kinvey-html5 --save
+npm install kinvey-html5@beta --save
 ```
 
 or
 
 ```bash
-bower install kinvey-html5 --save
+bower install kinvey-html5#3.0.0-beta.5 --save
 ```
 
 ### 3. Configure the library
