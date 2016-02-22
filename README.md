@@ -18,7 +18,7 @@ npm install kinvey-html5@beta --save
 or
 
 ```bash
-bower install kinvey-html5#3.0.0-beta.6 --save
+bower install kinvey-html5#3.0.0-beta.7 --save
 ```
 
 ### 3. Configure the library
