@@ -1,10410 +1,4 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Kinvey = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-module.exports={
-  "name": "kinvey-html5",
-  "version": "3.0.0-beta.8",
-  "description": "Kinvey JavaScript Library for HTML5.",
-  "homepage": "http://www.kinvey.com",
-  "bugs": {
-    "url": "http://support.kinvey.com",
-    "email": "support@kinvey.com"
-  },
-  "licenses": [
-    {
-      "type": "Apache-2.0",
-      "url": "https://raw.github.com/Kinvey/kinvey-html5-lib/master/LICENSE.txt"
-    }
-  ],
-  "author": "Kinvey, Inc.",
-  "contributors": [
-    "Thomas Conner <thomas@kinvey.com>"
-  ],
-  "main": "./src/index.js",
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:Kinvey/kinvey-html5-lib"
-  },
-  "scripts": {},
-  "dependencies": {
-    "fast-memory-cache": "^2.0.4",
-    "hellojs": "^1.10.1",
-    "indexeddbshim": "^2.2.1",
-    "lodash": "^4.3.0",
-    "loglevel": "^1.3.1",
-    "qs": "^6.0.1",
-    "request": "^2.67.0",
-    "sift": "^3.0.0",
-    "url-pattern": "^1.0.0"
-  },
-  "devDependencies": {},
-  "engines": {
-    "node": ">=4.0"
-  },
-  "keywords": [
-    "Kinvey",
-    "JavaScript",
-    "HTML5"
-  ]
-}
-
-},{}],2:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _errors = require('./errors');
-
-var _isPlainObject = require('lodash/isPlainObject');
-
-var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
-
-var _clone = require('lodash/clone');
-
-var _clone2 = _interopRequireDefault(_clone);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var aclAttribute = "_acl" || '_acl';
-var privateAclSymbol = Symbol();
-
-/**
- * @private
- */
-
-var PrivateAcl = function () {
-  function PrivateAcl() {
-    var entity = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-    _classCallCheck(this, PrivateAcl);
-
-    if (!(0, _isPlainObject2.default)(entity)) {
-      throw new _errors.KinveyError('entity argument must be an object');
-    }
-
-    /**
-     * The kmd properties.
-     *
-     * @private
-     * @type {Object}
-     */
-    this.acl = entity[aclAttribute];
-  }
-
-  _createClass(PrivateAcl, [{
-    key: 'addReader',
-    value: function addReader(user) {
-      var r = this.acl.r || [];
-
-      if (r.indexOf(user) === -1) {
-        r.push(user);
-      }
-
-      this.acl.r = r;
-      return this;
-    }
-  }, {
-    key: 'addReaderGroup',
-    value: function addReaderGroup(group) {
-      var groups = this.acl.groups || {};
-      var r = groups.r || [];
-
-      if (r.indexOf(group) === -1) {
-        r.push(group);
-      }
-
-      groups.r = r;
-      this.acl.groups = groups;
-      return this;
-    }
-  }, {
-    key: 'addWriter',
-    value: function addWriter(user) {
-      var w = this.acl.w || [];
-
-      if (w.indexOf(user) === -1) {
-        w.push(user);
-      }
-
-      this.acl.w = w;
-      return this;
-    }
-  }, {
-    key: 'addWriterGroup',
-    value: function addWriterGroup(group) {
-      var groups = this.acl.groups || {};
-      var w = groups.w || [];
-
-      if (w.indexOf(group) === -1) {
-        w.push(group);
-      }
-
-      groups.w = w;
-      this.acl.groups = groups;
-      return this;
-    }
-  }, {
-    key: 'isGloballyReadable',
-    value: function isGloballyReadable() {
-      return this.acl.gr || false;
-    }
-  }, {
-    key: 'isGloballyWritable',
-    value: function isGloballyWritable() {
-      return this.acl.gw || false;
-    }
-  }, {
-    key: 'removeReader',
-    value: function removeReader(user) {
-      var r = this.acl.r || [];
-      var pos = r.indexOf(user);
-
-      if (pos !== -1) {
-        r.splice(pos, 1);
-      }
-
-      this.acl.r = r;
-      return this;
-    }
-  }, {
-    key: 'removeReaderGroup',
-    value: function removeReaderGroup(group) {
-      var groups = this.acl.groups || {};
-      var r = groups.r || [];
-      var pos = r.indexOf(group);
-
-      if (pos !== -1) {
-        r.splice(pos, 1);
-      }
-
-      groups.r = r;
-      this.acl.groups = groups;
-      return this;
-    }
-  }, {
-    key: 'removeWriter',
-    value: function removeWriter(user) {
-      var w = this.acl.w || [];
-      var pos = w.indexOf(user);
-
-      if (pos !== -1) {
-        w.splice(pos, 1);
-      }
-
-      this.acl.w = w;
-      return this;
-    }
-  }, {
-    key: 'removeWriterGroup',
-    value: function removeWriterGroup(group) {
-      var groups = this.acl.groups || {};
-      var w = groups.w || [];
-      var pos = w.indexOf(group);
-
-      if (pos !== -1) {
-        w.splice(pos, 1);
-      }
-
-      groups.w = w;
-      this.acl.groups = groups;
-      return this;
-    }
-  }, {
-    key: 'toJSON',
-    value: function toJSON() {
-      return (0, _clone2.default)(this.acl, true);
-    }
-  }, {
-    key: 'creator',
-    get: function get() {
-      return this.acl.creator;
-    }
-  }, {
-    key: 'readers',
-    get: function get() {
-      return this.acl.r || [];
-    }
-  }, {
-    key: 'writers',
-    get: function get() {
-      return this.acl.w || [];
-    }
-  }, {
-    key: 'readerGroups',
-    get: function get() {
-      return this.acl.groups ? this.acl.groups.r : [];
-    }
-  }, {
-    key: 'writerGroups',
-    get: function get() {
-      return this.acl.groups ? this.acl.groups.w : [];
-    }
-  }, {
-    key: 'globallyReadable',
-    set: function set(gr) {
-      this.acl.gr = gr || false;
-    }
-  }, {
-    key: 'globallyWritable',
-    set: function set(gw) {
-      this.acl.gw = gw || false;
-    }
-  }]);
-
-  return PrivateAcl;
-}();
-
-/**
- * Wrapper for reading and setting permissions on an entity level.
- *
- * @example
- * var entity = { _acl: {} };
- * var acl = new Kinvey.Acl(entity);
- */
-
-
-var Acl = function () {
-  function Acl(acl) {
-    _classCallCheck(this, Acl);
-
-    this[privateAclSymbol] = new PrivateAcl(acl);
-  }
-
-  /**
-   * Returns the user id of the user that originally created the entity.
-   *
-   * @returns {?string} The user id, or `null` if not set.
-   */
-
-
-  _createClass(Acl, [{
-    key: 'addReader',
-
-
-    /**
-     * Adds a user to the list of users that are explicitly allowed to read the
-     * entity.
-     *
-     * @param   {string}  user  The user id.
-     * @returns {Acl}           The ACL.
-     */
-    value: function addReader(user) {
-      this[privateAclSymbol].addReader(user);
-      return this;
-    }
-
-    /**
-     * Adds a user group to the list of user groups that are explicitly allowed
-     * to read the entity.
-     *
-     * @param   {string}  group   The group id.
-     * @returns {Acl}             The ACL.
-     */
-
-  }, {
-    key: 'addReaderGroup',
-    value: function addReaderGroup(group) {
-      this[privateAclSymbol].addReaderGroup(group);
-      return this;
-    }
-
-    /**
-     * Adds a user to the list of users that are explicitly allowed to modify the
-     * entity.
-     *
-     * @param   {string}  user    The user id.
-     * @returns {Acl}             The ACL.
-     */
-
-  }, {
-    key: 'addWriter',
-    value: function addWriter(user) {
-      this[privateAclSymbol].addWriter(user);
-      return this;
-    }
-
-    /**
-     * Adds a user group to the list of user groups that are explicitly allowed
-     * to modify the entity.
-     *
-     * @param   {string}  group   The group id.
-     * @returns {Acl}             The ACL.
-     */
-
-  }, {
-    key: 'addWriterGroup',
-    value: function addWriterGroup(group) {
-      this[privateAclSymbol].addWriterGroup(group);
-      return this;
-    }
-
-    /**
-     * Returns whether the entity is globally readable.
-     *
-     * @returns {boolean}
-     */
-
-  }, {
-    key: 'isGloballyReadable',
-    value: function isGloballyReadable() {
-      return this[privateAclSymbol].isGloballyReadable();
-    }
-
-    /**
-     * Returns whether the entity is globally writable.
-     *
-     * @returns {boolean}
-     */
-
-  }, {
-    key: 'isGloballyWritable',
-    value: function isGloballyWritable() {
-      return this[privateAclSymbol].isGloballyWritable();
-    }
-
-    /**
-     * Removes a user from the list of users that are explicitly allowed to read
-     * the entity.
-     *
-     * @param   {string}  user    The user id.
-     * @returns {Acl}             The ACL.
-     */
-
-  }, {
-    key: 'removeReader',
-    value: function removeReader(user) {
-      this[privateAclSymbol].removeReader(user);
-      return this;
-    }
-
-    /**
-     * Removes a user group from the list of user groups that are explicitly
-     * allowed to read the entity.
-     *
-     * @param   {string}  group   The group id.
-     * @returns {Acl}             The ACL.
-     */
-
-  }, {
-    key: 'removeReaderGroup',
-    value: function removeReaderGroup(group) {
-      this[privateAclSymbol].removeReaderGroup(group);
-      return this;
-    }
-
-    /**
-     * Removes a user from the list of users that are explicitly allowed to
-     * modify the entity.
-     *
-     * @param   {string}  user    The user id.
-     * @returns {Acl}             The ACL.
-     */
-
-  }, {
-    key: 'removeWriter',
-    value: function removeWriter(user) {
-      this[privateAclSymbol].removeWriter(user);
-      return this;
-    }
-
-    /**
-     * Removes a user group from the list of user groups that are explicitly
-     * allowed to modify the entity.
-     *
-     * @param   {string}  group   The group id.
-     * @returns {Acl}             The ACL.
-     */
-
-  }, {
-    key: 'removeWriterGroup',
-    value: function removeWriterGroup(group) {
-      this[privateAclSymbol].removeWriterGroup(group);
-      return this;
-    }
-
-    /**
-     * Returns JSON representation of the entity ACL.
-     *
-     * @returns {Object} The entity ACL.
-     */
-
-  }, {
-    key: 'toJSON',
-    value: function toJSON() {
-      return this[privateAclSymbol].toJSON();
-    }
-  }, {
-    key: 'creator',
-    get: function get() {
-      return this[privateAclSymbol].creator;
-    }
-
-    /**
-     * Returns the list of users that are explicitly allowed to read the entity.
-     *
-     * @returns {Array} The list of users.
-     */
-
-  }, {
-    key: 'readers',
-    get: function get() {
-      return this[privateAclSymbol].readers;
-    }
-
-    /**
-     * Returns the list of user groups that are explicitly allowed to read the
-     * entity.
-     *
-     * @returns {Array} The list of user groups.
-     */
-
-  }, {
-    key: 'readerGroups',
-    get: function get() {
-      return this[privateAclSymbol].readerGroups;
-    }
-
-    /**
-     * Returns the list of user groups that are explicitly allowed to read the
-     * entity.
-     *
-     * @returns {Array} The list of user groups.
-     */
-
-  }, {
-    key: 'writerGroups',
-    get: function get() {
-      return this[privateAclSymbol].writerGroups;
-    }
-
-    /**
-     * Returns the list of users that are explicitly allowed to modify the
-     * entity.
-     *
-     * @returns {Array} The list of users.
-     */
-
-  }, {
-    key: 'writers',
-    get: function get() {
-      return this[privateAclSymbol].writers;
-    }
-
-    /**
-     * Specifies whether the entity is globally readable.
-     *
-     * @param {boolean} [gr=true] Make the entity globally readable.
-     */
-
-  }, {
-    key: 'globallyReadable',
-    set: function set(gr) {
-      this[privateAclSymbol].globallyReadable = gr;
-    }
-
-    /**
-     * Specifies whether the entity is globally writable.
-     *
-     * @param {boolean} [gw=true] Make the entity globally writable.
-     */
-
-  }, {
-    key: 'globallyWritable',
-    set: function set(gw) {
-      this[privateAclSymbol].globallyWritable = gw;
-    }
-  }]);
-
-  return Acl;
-}();
-
-exports.default = Acl;
-},{"./errors":8,"lodash/clone":346,"lodash/isPlainObject":365}],3:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _errors = require('./errors');
-
-var _query3 = require('./query');
-
-var _query4 = _interopRequireDefault(_query3);
-
-var _clone = require('lodash/clone');
-
-var _clone2 = _interopRequireDefault(_clone);
-
-var _result = require('lodash/result');
-
-var _result2 = _interopRequireDefault(_result);
-
-var _assign = require('lodash/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
-var _forEach = require('lodash/forEach');
-
-var _forEach2 = _interopRequireDefault(_forEach);
-
-var _isObject = require('lodash/isObject');
-
-var _isObject2 = _interopRequireDefault(_isObject);
-
-var _isString = require('lodash/isString');
-
-var _isString2 = _interopRequireDefault(_isString);
-
-var _isFunction = require('lodash/isFunction');
-
-var _isFunction2 = _interopRequireDefault(_isFunction);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var privateAggregationSymbol = Symbol();
-
-var PrivateAggregation = function () {
-  function PrivateAggregation(options) {
-    _classCallCheck(this, PrivateAggregation);
-
-    options = (0, _assign2.default)({
-      query: null,
-      initial: {},
-      key: {},
-      reduce: function () {}.toString()
-    }, options);
-
-    this.query(options.query);
-    this._initial = options.initial;
-    this._key = options.key;
-    this._reduce = options.reduce;
-  }
-
-  _createClass(PrivateAggregation, [{
-    key: 'by',
-    value: function by(field) {
-      this._key[field] = true;
-      return this;
-    }
-  }, {
-    key: 'initial',
-    value: function initial(objectOrKey, value) {
-      if (typeof value === 'undefined' && !(0, _isObject2.default)(objectOrKey)) {
-        throw new _errors.KinveyError('objectOrKey argument must be an Object.');
-      }
-
-      if ((0, _isObject2.default)(objectOrKey)) {
-        this._initial = objectOrKey;
-      } else {
-        this._initial[objectOrKey] = value;
-      }
-
-      return this;
-    }
-  }, {
-    key: 'query',
-    value: function query(_query) {
-      if (_query && !(_query instanceof _query4.default)) {
-        _query = new _query4.default((0, _result2.default)(_query, 'toJSON', _query));
-      }
-
-      this._query = _query;
-      return this;
-    }
-  }, {
-    key: 'process',
-    value: function process() {
-      var documents = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
-
-      var groups = {};
-      var response = [];
-      var aggregation = this.toJSON();
-      var reduce = aggregation.reduce.replace(/function[\s\S]*?\([\s\S]*?\)/, '');
-      aggregation.reduce = new Function(['doc', 'out'], reduce); // eslint-disable-line no-new-func
-
-      if (this._query) {
-        documents = this._query.process(documents);
-      }
-
-      (0, _forEach2.default)(documents, function (document) {
-        var group = {};
-
-        for (var name in document) {
-          if (document.hasOwnProperty(name)) {
-            group[name] = document[name];
-          }
-        }
-
-        var key = JSON.stringify(group);
-        if (!groups[key]) {
-          groups[key] = group;
-
-          for (var attr in aggregation.initial) {
-            if (aggregation.initial.hasOwnProperty(attr)) {
-              groups[key][attr] = aggregation.initial[attr];
-            }
-          }
-        }
-
-        aggregation.reduce(document, groups[key]);
-      });
-
-      for (var segment in groups) {
-        if (groups.hasOwnProperty(segment)) {
-          response.push(groups[segment]);
-        }
-      }
-
-      return response;
-    }
-  }, {
-    key: 'reduce',
-    value: function reduce(fn) {
-      if ((0, _isFunction2.default)(fn)) {
-        fn = fn.toString();
-      }
-
-      if (!(0, _isString2.default)(fn)) {
-        throw new _errors.KinveyError('fn argument must be of type function or string.');
-      }
-
-      this._reduce = fn;
-      return this;
-    }
-  }, {
-    key: 'toJSON',
-    value: function toJSON() {
-      var json = {
-        key: this._key,
-        initial: this._initial,
-        reduce: this._reduce,
-        condition: this._query ? this._query.toJSON().filter : {},
-        query: this._query ? this._query.toJSON() : null
-      };
-
-      return (0, _clone2.default)(json, true);
-    }
-  }]);
-
-  return PrivateAggregation;
-}();
-
-var Aggregation = function () {
-  function Aggregation(options) {
-    _classCallCheck(this, Aggregation);
-
-    this[privateAggregationSymbol] = new PrivateAggregation(options);
-  }
-
-  _createClass(Aggregation, [{
-    key: 'by',
-    value: function by(field) {
-      this[privateAggregationSymbol].by(field);
-      return this;
-    }
-  }, {
-    key: 'initial',
-    value: function initial(objectOrKey, value) {
-      this[privateAggregationSymbol].initial(objectOrKey, value);
-      return this;
-    }
-  }, {
-    key: 'process',
-    value: function process(response) {
-      return this[privateAggregationSymbol].process(response);
-    }
-  }, {
-    key: 'query',
-    value: function query(_query2) {
-      this[privateAggregationSymbol].query(_query2);
-      return this;
-    }
-  }, {
-    key: 'reduce',
-    value: function reduce(fn) {
-      this[privateAggregationSymbol].reduce(fn);
-      return this;
-    }
-  }, {
-    key: 'toJSON',
-    value: function toJSON() {
-      return this[privateAggregationSymbol].toJSON();
-    }
-  }], [{
-    key: 'count',
-    value: function count() {
-      var field = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-
-      var aggregation = new Aggregation();
-
-      if (field) {
-        aggregation.by(field);
-      }
-
-      aggregation.initial({ result: 0 });
-      aggregation.reduce(function (doc, out) {
-        out.result += 1;
-      });
-      return aggregation;
-    }
-  }, {
-    key: 'sum',
-    value: function sum() {
-      var field = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-
-      field = field.replace('\'', '\\\'');
-
-      var aggregation = new Aggregation();
-      aggregation.initial({ result: 0 });
-      aggregation.reduce('function(doc, out) { ' + (' out.result += doc["' + field + '"]; ') + '}');
-      return aggregation;
-    }
-  }, {
-    key: 'min',
-    value: function min() {
-      var field = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-
-      field = field.replace('\'', '\\\'');
-
-      var aggregation = new Aggregation();
-      aggregation.initial({ result: Infinity });
-      aggregation.reduce('function(doc, out) { ' + (' out.result = Math.min(out.result, doc["' + field + '"]); ') + '}');
-      return aggregation;
-    }
-  }, {
-    key: 'max',
-    value: function max() {
-      var field = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-
-      field = field.replace('\'', '\\\'');
-
-      var aggregation = new Aggregation();
-      aggregation.initial({ result: -Infinity });
-      aggregation.reduce('function(doc, out) { ' + (' out.result = Math.max(out.result, doc["' + field + '"]); ') + '}');
-      return aggregation;
-    }
-  }, {
-    key: 'average',
-    value: function average() {
-      var field = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-
-      field = field.replace('\'', '\\\'');
-
-      var aggregation = new Aggregation();
-      aggregation.initial({ count: 0, result: 0 });
-      aggregation.reduce('function(doc, out) { ' + (' out.result = (out.result * out.count + doc["' + field + '"]) / (out.count + 1);') + ' out.count += 1;' + '}');
-      return aggregation;
-    }
-  }]);
-
-  return Aggregation;
-}();
-
-exports.default = Aggregation;
-},{"./errors":8,"./query":12,"lodash/assign":344,"lodash/clone":346,"lodash/forEach":349,"lodash/isFunction":359,"lodash/isObject":363,"lodash/isString":367,"lodash/result":381}],4:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _errors = require('./errors');
-
-var _enums = require('./enums');
-
-var _localRequest = require('./requests/localRequest');
-
-var _localRequest2 = _interopRequireDefault(_localRequest);
-
-var _networkRequest = require('./requests/networkRequest');
-
-var _networkRequest2 = _interopRequireDefault(_networkRequest);
-
-var _deltaFetchRequest = require('./requests/deltaFetchRequest');
-
-var _deltaFetchRequest2 = _interopRequireDefault(_deltaFetchRequest);
-
-var _url = require('url');
-
-var _url2 = _interopRequireDefault(_url);
-
-var _qs = require('qs');
-
-var _qs2 = _interopRequireDefault(_qs);
-
-var _clone = require('lodash/clone');
-
-var _clone2 = _interopRequireDefault(_clone);
-
-var _assign = require('lodash/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var localNamespace = "local" || 'local';
-var activeUserCollectionName = "kinvey_activeUser" || 'activeUser';
-var idAttribute = "_id" || '_id';
-var kmdAttribute = "_kmd" || '_kmd';
-var sharedInstanceSymbol = Symbol();
-
-/**
- * The Client class stores information regarding your application. You can create mutiple clients
- * to send requests to different environments on the Kinvey platform.
- *
- * @example
- * var client = new Kinvey.Client({
- *   appKey: '<appKey>',
- *   appSecret: '<appSecret>'
- * });
- */
-
-var Client = function () {
-  /**
-   * Creates a new instance of the Client class. An `options.appKey` must be provided along with
-   * either and `options.appSecret` or `options.masterSecret`.
-   *
-   * @param {Object}    options                             Options
-   * @param {string}    [options.protocol='https']          Protocl used for requests
-   * @param {string}    [options.host='baas.kinvey.com']    Host used for requests
-   * @param {string}    options.appKey                      App Key
-   * @param {string}    [options.appSecret]                 App Secret
-   * @param {string}    [options.masterSecret]              App Master Secret
-   * @param {string}    [options.encryptionKey]             App Encryption Key
-   *
-   * @throws {KinveyError}  If an `options.appKey` is not provided.
-   * @throws {KinveyError}  If neither an `options.appSecret` or `options.masterSecret` is provided.
-   */
-
-  function Client() {
-    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-    _classCallCheck(this, Client);
-
-    options = (0, _assign2.default)({
-      protocol: "https" || 'https',
-      host: "baas.kinvey.com" || 'baas.kinvey.com'
-    }, options);
-
-    if (!options.appKey && !options.appId) {
-      throw new _errors.KinveyError('No App Key was provided. ' + 'Unable to create a new Client without an App Key.');
-    }
-
-    if (!options.appSecret && !options.masterSecret) {
-      throw new _errors.KinveyError('No App Secret or Master Secret was provided. ' + 'Unable to create a new Client without an App Key.');
-    }
-
-    /**
-     * @type {string}
-     */
-    this.protocol = options.protocol;
-
-    /**
-     * @type {string}
-     */
-    this.host = options.host;
-
-    /**
-     * @type {string}
-     */
-    this.appKey = options.appKey || options.appId;
-
-    /**
-     * @type {string|undefined}
-     */
-    this.appSecret = options.appSecret;
-
-    /**
-     * @type {string|undefined}
-     */
-    this.masterSecret = options.masterSecret;
-
-    /**
-     * @type {string|undefined}
-     */
-    this.encryptionKey = options.encryptionKey;
-  }
-
-  /**
-   * Authenticate through (1) user credentials, (2) Master Secret, or (3) App
-   * Secret.
-   *
-   * @returns {Promise}
-   */
-
-
-  _createClass(Client, [{
-    key: 'allAuth',
-    value: function allAuth() {
-      var _this = this;
-
-      return this.sessionAuth().catch(function () {
-        return _this.basicAuth();
-      });
-    }
-
-    /**
-     * Authenticate through App Secret.
-     *
-     * @returns {Promise}
-     */
-
-  }, {
-    key: 'appAuth',
-    value: function appAuth() {
-      return Promise.resolve({
-        scheme: 'Basic',
-        username: this.appKey,
-        password: this.appSecret
-      });
-    }
-
-    /**
-     * Authenticate through (1) Master Secret, or (2) App Secret.
-     *
-     * @returns {Promise}
-     */
-
-  }, {
-    key: 'basicAuth',
-    value: function basicAuth() {
-      var _this2 = this;
-
-      return this.masterAuth().catch(function () {
-        return _this2.appAuth();
-      });
-    }
-
-    /**
-     * Authenticate through (1) user credentials, or (2) Master Secret.
-     *
-     * @returns {Promise}
-     */
-
-  }, {
-    key: 'defaultAuth',
-    value: function defaultAuth() {
-      var _this3 = this;
-
-      return this.sessionAuth().catch(function (err) {
-        return _this3.masterAuth().catch(function () {
-          return Promise.reject(err);
-        });
-      });
-    }
-
-    /**
-     * Authenticate through Master Secret.
-     *
-     * @returns {Promise}
-     */
-
-  }, {
-    key: 'masterAuth',
-    value: function masterAuth() {
-      if (!this.appKey || !this.masterSecret) {
-        var error = new Error('Missing client credentials');
-        return Promise.reject(error);
-      }
-
-      var promise = Promise.resolve({
-        scheme: 'Basic',
-        username: this.appKey,
-        password: this.masterSecret
-      });
-
-      return promise;
-    }
-
-    /**
-     * Do not authenticate.
-     *
-     * @returns {Promise}
-     */
-
-  }, {
-    key: 'noAuth',
-    value: function noAuth() {
-      return Promise.resolve(null);
-    }
-
-    /**
-     * Authenticate through user credentials.
-     *
-     * @returns {Promise}
-     */
-
-  }, {
-    key: 'sessionAuth',
-    value: function sessionAuth() {
-      return this.getActiveUser().then(function (activeUser) {
-        if (!activeUser) {
-          throw new Error('There is not an active user.');
-        }
-
-        return {
-          scheme: 'Kinvey',
-          credentials: activeUser[kmdAttribute].authtoken
-        };
-      });
-    }
-  }, {
-    key: 'getActiveUser',
-    value: function getActiveUser() {
-      var _this4 = this;
-
-      var promise = Promise.resolve().then(function () {
-        return _this4.executeLocalRequest({
-          method: _enums.HttpMethod.GET,
-          pathname: '/' + localNamespace + '/' + _this4.appKey + '/' + activeUserCollectionName
-        });
-      }).then(function (response) {
-        var data = response.data;
-
-        if (data.length === 0) {
-          return null;
-        }
-
-        return data[0];
-      }).catch(function (err) {
-        if (err instanceof _errors.NotFoundError) {
-          return null;
-        }
-
-        throw err;
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'setActiveUser',
-    value: function setActiveUser(user) {
-      var _this5 = this;
-
-      var promise = this.getActiveUser().then(function (activeUser) {
-        if (activeUser) {
-          return _this5.executeLocalRequest({
-            method: _enums.HttpMethod.DELETE,
-            pathname: '/' + localNamespace + '/' + _this5.appKey + '/' + activeUserCollectionName + '/' + activeUser[idAttribute]
-          }).then(function () {
-            _this5.session = null;
-          });
-        }
-      }).then(function () {
-        if (user) {
-          return _this5.executeLocalRequest({
-            method: _enums.HttpMethod.POST,
-            pathname: '/' + localNamespace + '/' + _this5.appKey + '/' + activeUserCollectionName,
-            data: user
-          });
-        }
-      }).then(function (response) {
-        return response ? response.data : null;
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'executeLocalRequest',
-    value: function executeLocalRequest() {
-      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      options = (0, _assign2.default)({
-        method: _enums.HttpMethod.GET,
-        pathname: '/',
-        flags: {
-          _: Math.random().toString(36).substr(2)
-        }
-      }, options);
-      options.flags = _qs2.default.parse(options.flags);
-
-      var request = new _localRequest2.default({
-        method: options.method,
-        headers: options.headers,
-        url: _url2.default.format({
-          protocol: this.protocol,
-          host: this.host,
-          pathname: options.pathname,
-          query: options.flags
-        }),
-        properties: options.properties,
-        query: options.query,
-        data: options.data,
-        timeout: options.timeout
-      });
-      return request.execute();
-    }
-  }, {
-    key: 'executeNetworkRequest',
-    value: function executeNetworkRequest() {
-      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      options = (0, _assign2.default)({
-        method: _enums.HttpMethod.GET,
-        pathname: '/',
-        flags: {
-          _: Math.random().toString(36).substr(2)
-        }
-      }, options);
-      options.flags = _qs2.default.parse(options.flags);
-
-      var request = new _networkRequest2.default({
-        method: options.method,
-        headers: options.headers,
-        auth: options.auth,
-        url: _url2.default.format({
-          protocol: this.protocol,
-          host: this.host,
-          pathname: options.pathname,
-          query: options.flags
-        }),
-        properties: options.properties,
-        query: options.query,
-        data: options.data,
-        timeout: options.timeout
-      });
-      return request.execute();
-    }
-  }, {
-    key: 'executeDeltaFetchRequest',
-    value: function executeDeltaFetchRequest() {
-      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      options = (0, _assign2.default)({
-        method: _enums.HttpMethod.GET,
-        pathname: '/',
-        flags: {
-          _: Math.random().toString(36).substr(2)
-        }
-      }, options);
-      options.flags = _qs2.default.parse(options.flags);
-
-      var request = new _deltaFetchRequest2.default({
-        method: options.method,
-        headers: options.headers,
-        auth: options.auth,
-        url: _url2.default.format({
-          protocol: this.protocol,
-          host: this.host,
-          pathname: options.pathname,
-          query: options.flags
-        }),
-        properties: options.properties,
-        query: options.query,
-        data: options.data,
-        timeout: options.timeout
-      });
-      return request.execute();
-    }
-
-    /**
-     * Returns an object containing all the information for this Client.
-     *
-     * @return {Object} JSON
-     */
-
-  }, {
-    key: 'toJSON',
-    value: function toJSON() {
-      var json = {
-        protocol: this.protocol,
-        host: this.host,
-        appKey: this.appKey,
-        appSecret: this.appSecret,
-        masterSecret: this.masterSecret,
-        encryptionKey: this.encryptionKey
-      };
-
-      return (0, _clone2.default)(json, true);
-    }
-
-    /**
-     * Initializes the library by creating a new instance of the
-     * Client class and storing it as a shared instance.
-     *
-     * @param {Object}    options                             Options
-     * @param {string}    [options.protocol='https']          Protocl used for requests
-     * @param {string}    [options.host='baas.kinvey.com']    Host used for requests
-     * @param {string}    options.appKey                      App Key
-     * @param {string}    [options.appSecret]                 App Secret
-     * @param {string}    [options.masterSecret]              App Master Secret
-     * @param {string}    [options.encryptionKey]             App Encryption Key
-     *
-     * @throws {KinveyError}  If an `options.appKey` is not provided.
-     * @throws {KinveyError}  If neither an `options.appSecret` or `options.masterSecret` is provided.
-     *
-     * @return {Client}  An instance of Client.
-     *
-     * @example
-     * var client = Kinvey.Client.init({
-     *   appKey: '<appKey>',
-     *   appSecret: '<appSecret>'
-     * });
-     */
-
-  }], [{
-    key: 'init',
-    value: function init(options) {
-      var client = new Client(options);
-      Client[sharedInstanceSymbol] = client;
-      return client;
-    }
-
-    /**
-     * Returns the shared client instance used by the library.
-     *
-     * @throws {KinveyError} If `Kinvey.init()` has not been called.
-     *
-     * @return {Client} The shared instance.
-     */
-
-  }, {
-    key: 'sharedInstance',
-    value: function sharedInstance() {
-      var client = Client[sharedInstanceSymbol];
-
-      if (!client) {
-        throw new _errors.KinveyError('You have not initialized the library. ' + 'Please call Kinvey.init() to initialize the library.');
-      }
-
-      return client;
-    }
-  }]);
-
-  return Client;
-}();
-
-exports.default = Client;
-},{"./enums":7,"./errors":8,"./requests/deltaFetchRequest":27,"./requests/localRequest":28,"./requests/networkRequest":29,"lodash/assign":344,"lodash/clone":346,"qs":426,"url":506}],5:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _client = require('./client');
-
-var _client2 = _interopRequireDefault(_client);
-
-var _enums = require('./enums');
-
-var _errors = require('./errors');
-
-var _isString = require('lodash/isString');
-
-var _isString2 = _interopRequireDefault(_isString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var rpcNamespace = "rpc" || 'rpc';
-
-/**
- * Executes a custom command.
- */
-
-var Command = function () {
-  function Command() {
-    _classCallCheck(this, Command);
-  }
-
-  _createClass(Command, null, [{
-    key: 'execute',
-
-    /**
-     * Execute a custom command. A promise will be returned that will be resolved
-     * with the result of the command or rejected with an error.
-     *
-     * @param   {String}          command                           Command to execute.
-     * @param   {Object}          [args]                            Command arguments
-     * @param   {Object}          [options]                         Options
-     * @param   {Properties}      [options.properties]              Custom properties to send with
-     *                                                              the request.
-     * @param   {Number}          [options.timeout]                 Timeout for the request.
-     * @return  {Promise}                                           Promise
-     *
-     * @example
-     * var promise = Kinvey.Command.execute('myCustomCommand').then(function(data) {
-     *   ...
-     * }).catch(function(error) {
-     *   ...
-     * });
-     */
-    value: function execute(command, args) {
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-      var client = _client2.default.sharedInstance();
-
-      if (!command) {
-        throw new _errors.KinveyError('A command is required.');
-      }
-
-      if (!(0, _isString2.default)(command)) {
-        throw new _errors.KinveyError('Command must be a string.');
-      }
-
-      return client.executeNetworkRequest({
-        method: _enums.HttpMethod.POST,
-        pathname: '/' + rpcNamespace + '/' + options.client.appKey + '/custom/' + command,
-        properties: options.properties,
-        auth: client.defaultAuth(),
-        data: args,
-        timeout: options.timeout
-      }).then(function (response) {
-        return response.data;
-      });
-    }
-  }]);
-
-  return Command;
-}();
-
-exports.default = Command;
-},{"./client":4,"./enums":7,"./errors":8,"lodash/isString":367}],6:[function(require,module,exports){
-(function (global){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _package = require('../../package.json');
-
-var _package2 = _interopRequireDefault(_package);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * @private
- */
-
-var Device = function () {
-  function Device() {
-    _classCallCheck(this, Device);
-  }
-
-  _createClass(Device, [{
-    key: 'isCordova',
-    value: function isCordova() {
-      try {
-        return typeof global.cordova !== 'undefined' && typeof global.device !== 'undefined';
-      } catch (err) {
-        // Catch any errors
-      }
-
-      return false;
-    }
-  }, {
-    key: 'isHTML',
-    value: function isHTML() {
-      try {
-        return typeof window !== 'undefined';
-      } catch (err) {
-        // Catch any errors
-      }
-
-      return false;
-    }
-  }, {
-    key: 'isNode',
-    value: function isNode() {
-      try {
-        return Object.prototype.toString.call(global.process) === '[object process]';
-      } catch (err) {
-        // Catch any errors
-      }
-
-      return false;
-    }
-  }, {
-    key: 'isPhoneGap',
-    value: function isPhoneGap() {
-      return this.isCordova();
-    }
-  }, {
-    key: 'isTitanium',
-    value: function isTitanium() {
-      return typeof global.Titanium !== 'undefined';
-    }
-  }, {
-    key: 'toJSON',
-    value: function toJSON() {
-      return {
-        os: this.os,
-        platform: this.platform,
-        library: this.library
-      };
-    }
-  }, {
-    key: 'os',
-    get: function get() {
-      var name = 'mobileweb';
-      var version = undefined;
-
-      if (this.isCordova()) {
-        name = global.device.platform;
-        version = global.device.version;
-      } else if (this.isTitanium()) {
-        var platform = global.Titanium.Platform;
-        name = platform.getName() === 'iPhone OS' ? 'ios' : platform.getName();
-        version = platform.getVersion();
-      }
-
-      return {
-        name: name.toLowerCase(),
-        version: version
-      };
-    }
-  }, {
-    key: 'platform',
-    get: function get() {
-      var name = undefined;
-      var version = undefined;
-
-      if (this.isCordova()) {
-        name = 'cordova';
-        version = global.device.cordova;
-      } else if (this.isHTML()) {
-        var userAgent = global.navigator.userAgent.toLowerCase();
-        var rChrome = /(chrome)\/([\w]+)/;
-        var rFirefox = /(firefox)\/([\w.]+)/;
-        var rIE = /(msie) ([\w.]+)/i;
-        var rOpera = /(opera)(?:.*version)?[ \/]([\w.]+)/;
-        var rSafari = /(safari)\/([\w.]+)/;
-        var browser = rChrome.exec(userAgent) || rFirefox.exec(userAgent) || rIE.exec(userAgent) || rOpera.exec(userAgent) || rSafari.exec(userAgent) || [];
-        name = browser[1];
-        version = browser[2];
-      } else if (this.isNode()) {
-        name = global.process.title;
-        version = global.process.version;
-      } else if (this.isTitanium()) {
-        name = 'titanium';
-        version = global.Titanium.getVersion();
-      }
-
-      return {
-        name: name.toLowerCase(),
-        version: version
-      };
-    }
-  }, {
-    key: 'library',
-    get: function get() {
-      return {
-        build: "html5" || 'html5',
-        version: _package2.default.version
-      };
-    }
-  }]);
-
-  return Device;
-}();
-
-exports.default = Device;
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{"../../package.json":1}],7:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Enum for Mobile Identity Connect authorization grants.
- */
-var AuthorizationGrant = {
-  AuthorizationCodeLoginPage: 'AuthorizationCodeLoginPage',
-  AuthorizationCodeAPI: 'AuthorizationCodeAPI'
-};
-Object.freeze(AuthorizationGrant);
-exports.AuthorizationGrant = AuthorizationGrant;
-
-/**
- * Enum for DataStore types.
- */
-
-var DataStoreType = {
-  Sync: 'Sync',
-  Cache: 'Cache',
-  Network: 'Network'
-};
-Object.freeze(DataStoreType);
-exports.DataStoreType = DataStoreType;
-
-/**
- * @private
- * Enum for Http Methods.
- */
-
-var HttpMethod = {
-  GET: 'GET',
-  POST: 'POST',
-  PATCH: 'PATCH',
-  PUT: 'PUT',
-  DELETE: 'DELETE'
-};
-Object.freeze(HttpMethod);
-exports.HttpMethod = HttpMethod;
-
-/**
- * Enum for Social Identities.
- */
-
-var SocialIdentity = {
-  Facebook: 'facebook',
-  Google: 'google',
-  LinkedIn: 'linkedin'
-};
-Object.freeze(SocialIdentity);
-exports.SocialIdentity = SocialIdentity;
-
-/**
- * @provate
- * Enum for Status Codes.
- */
-
-var StatusCode = {
-  Ok: 200,
-  Created: 201,
-  RedirectTemporarily: 301,
-  RedirectPermanetly: 302,
-  NotFound: 404,
-  ServerError: 500
-};
-Object.freeze(StatusCode);
-exports.StatusCode = StatusCode;
-},{}],8:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.NoResponseError = exports.NotFoundError = exports.NetworkConnectionError = exports.KinveyError = exports.InvalidCredentialsError = exports.InsufficientCredentialsError = exports.ActiveUserError = undefined;
-
-var _util = require('util');
-
-var _util2 = _interopRequireDefault(_util);
-
-var _isFunction = require('lodash/isFunction');
-
-var _isFunction2 = _interopRequireDefault(_isFunction);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * @private
- */
-Error.extend = function extend(name) {
-  var SubType = function SubType(message, debug) {
-    if (!(this instanceof SubType)) {
-      return new SubType(message, debug);
-    }
-
-    this.name = name;
-    this.message = message;
-    this.description = message;
-    this.debug = debug;
-
-    if ((0, _isFunction2.default)(Error.captureStackTrace)) {
-      Error.captureStackTrace(this, this.constructor);
-    }
-  };
-
-  _util2.default.inherits(SubType, this);
-
-  SubType.prototype.toString = function toString() {
-    return this.name + ': ' + _util2.default.inspect(this.message);
-  };
-
-  SubType.extend = this.extend;
-  return SubType;
-};
-
-var ActiveUserError = exports.ActiveUserError = Error.extend('ActiveUserError');
-var InsufficientCredentialsError = exports.InsufficientCredentialsError = Error.extend('InsufficientCredentialsError');
-var InvalidCredentialsError = exports.InvalidCredentialsError = Error.extend('InvalidCredentialsError');
-var KinveyError = exports.KinveyError = Error.extend('KinveyError');
-var NetworkConnectionError = exports.NetworkConnectionError = Error.extend('NetworkConnectionError');
-var NotFoundError = exports.NotFoundError = Error.extend('NotFoundError');
-var NoResponseError = exports.NoResponseError = Error.extend('NoResponseError');
-},{"lodash/isFunction":359,"util":510}],9:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _loglevel = require('loglevel');
-
-var _loglevel2 = _interopRequireDefault(_loglevel);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var originalFactory = _loglevel2.default.methodFactory;
-
-_loglevel2.default.methodFactory = function methodFactory(methodName, logLevel, loggerName) {
-  var rawMethod = originalFactory(methodName, logLevel, loggerName);
-
-  return function log(message) {
-    rawMethod('Kinvey: ' + message);
-  };
-};
-
-_loglevel2.default.setLevel(_loglevel2.default.levels.ERROR);
-exports.default = _loglevel2.default;
-},{"loglevel":389}],10:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _errors = require('./errors');
-
-var _clone = require('lodash/clone');
-
-var _clone2 = _interopRequireDefault(_clone);
-
-var _isPlainObject = require('lodash/isPlainObject');
-
-var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var kmdAttribute = "_kmd" || '_kmd';
-var privateMetadataSymbol = Symbol();
-
-/**
- * @private
- */
-
-var PrivateMetadata = function () {
-  function PrivateMetadata() {
-    var entity = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-    _classCallCheck(this, PrivateMetadata);
-
-    if (!(0, _isPlainObject2.default)(entity)) {
-      throw new _errors.KinveyError('entity argument must be an object');
-    }
-
-    /**
-     * The kmd properties.
-     *
-     * @private
-     * @type {Object}
-     */
-    this.kmd = entity[kmdAttribute];
-
-    /**
-     * The entity.
-     *
-     * @private
-     * @type {Object}
-     */
-    this.entity = entity;
-  }
-
-  _createClass(PrivateMetadata, [{
-    key: 'toJSON',
-    value: function toJSON() {
-      return (0, _clone2.default)(this.kmd, true);
-    }
-  }, {
-    key: 'createdAt',
-    get: function get() {
-      if (this.kmd.ect) {
-        return Date.parse(this.kmd.ect);
-      }
-
-      return undefined;
-    }
-  }, {
-    key: 'emailVerification',
-    get: function get() {
-      return this.kmd.emailVerification.status;
-    }
-  }, {
-    key: 'lastModified',
-    get: function get() {
-      if (this.kmd.lmt) {
-        return Date.parse(this.kmd.lmt);
-      }
-
-      return undefined;
-    }
-  }, {
-    key: 'authtoken',
-    get: function get() {
-      return this.kmd.authtoken;
-    },
-    set: function set(authtoken) {
-      this.kmd.authtoken = authtoken;
-    }
-  }]);
-
-  return PrivateMetadata;
-}();
-
-/**
- * Wrapper for accessing the `_kmd` properties of an entity.
- */
-
-
-var Metadata = function () {
-  function Metadata(entity) {
-    _classCallCheck(this, Metadata);
-
-    this[privateMetadataSymbol] = new PrivateMetadata(entity);
-  }
-
-  /**
-   * Returns the date when the entity was created.
-   *
-   * @returns {?Date} Created at date, or `null` if not set.
-   */
-
-
-  _createClass(Metadata, [{
-    key: 'toJSON',
-
-
-    /**
-     * Returns JSON representation of the entity.
-     *
-     * @returns {Object} The metadata.
-     */
-    value: function toJSON() {
-      return this[privateMetadataSymbol].toJSON();
-    }
-  }, {
-    key: 'createdAt',
-    get: function get() {
-      return this[privateMetadataSymbol].createdAt;
-    }
-
-    /**
-    * Returns the email verification status.
-    *
-    * @returns {?Object} The email verification status, or `null` if not set.
-    */
-
-  }, {
-    key: 'emailVerification',
-    get: function get() {
-      return this[privateMetadataSymbol].emailVerification;
-    }
-
-    /**
-     * Returns the date when the entity was last modified.
-     *
-     * @returns {?Date} Last modified date, or `null` if not set.
-     */
-
-  }, {
-    key: 'lastModified',
-    get: function get() {
-      return this[privateMetadataSymbol].lastModified;
-    }
-  }, {
-    key: 'lmt',
-    get: function get() {
-      return this.lastModified;
-    }
-  }, {
-    key: 'authtoken',
-    get: function get() {
-      return this[privateMetadataSymbol].authtoken;
-    },
-    set: function set(authtoken) {
-      this[privateMetadataSymbol].authtoken = authtoken;
-    }
-  }]);
-
-  return Metadata;
-}();
-
-exports.default = Metadata;
-},{"./errors":8,"lodash/clone":346,"lodash/isPlainObject":365}],11:[function(require,module,exports){
-(function (process){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _enums = require('./enums');
-
-var _errors = require('./errors');
-
-var _networkRequest = require('./requests/networkRequest');
-
-var _networkRequest2 = _interopRequireDefault(_networkRequest);
-
-var _device = require('./device');
-
-var _device2 = _interopRequireDefault(_device);
-
-var _client = require('./client');
-
-var _client2 = _interopRequireDefault(_client);
-
-var _popup = require('./utils/popup');
-
-var _popup2 = _interopRequireDefault(_popup);
-
-var _path = require('path');
-
-var _path2 = _interopRequireDefault(_path);
-
-var _url = require('url');
-
-var _url2 = _interopRequireDefault(_url);
-
-var _isString = require('lodash/isString');
-
-var _isString2 = _interopRequireDefault(_isString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var authPathname = process.env.KINVEY_MIC_AUTH_PATHNAME || '/oauth/auth';
-var tokenPathname = process.env.KINVEY_MIC_TOKEN_PATHNAME || '/oauth/token';
-
-/**
- * @private
- */
-
-var MobileIdentityConnect = function () {
-  function MobileIdentityConnect() {
-    _classCallCheck(this, MobileIdentityConnect);
-
-    var sharedClient = _client2.default.sharedInstance();
-    this.client = new _client2.default({
-      protocol: 'https:',
-      host: 'auth.kinvey.com',
-      appKey: sharedClient.appKey,
-      appSecret: sharedClient.appSecret,
-      masterSecret: sharedClient.masterSecret,
-      encryptionKey: sharedClient.encryptionKey
-    });
-  }
-
-  _createClass(MobileIdentityConnect, [{
-    key: 'login',
-    value: function login(redirectUri) {
-      var _this = this;
-
-      var authorizationGrant = arguments.length <= 1 || arguments[1] === undefined ? _enums.AuthorizationGrant.AuthorizationCodeLoginPage : arguments[1];
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-      var clientId = this.client.appKey;
-      var device = new _device2.default();
-
-      var promise = Promise.resolve().then(function () {
-        if (authorizationGrant === _enums.AuthorizationGrant.AuthorizationCodeLoginPage && !device.isNode()) {
-          // Step 1: Request a code
-          return _this.requestCodeWithPopup(clientId, redirectUri, options);
-        } else if (authorizationGrant === _enums.AuthorizationGrant.AuthorizationCodeAPI && device.isNode()) {
-          // Step 1a: Request a temp login url
-          return _this.requestTempLoginUrl(clientId, redirectUri, options).then(function (url) {
-            // Step 1b: Request a code
-            return _this.requestCodeWithUrl(url, clientId, redirectUri, options);
-          });
-        }
-
-        throw new _errors.KinveyError('The authorization grant ' + authorizationGrant + ' is unsupported. ' + 'Please use a supported authorization grant.');
-      }).then(function (code) {
-        // Step 3: Request a token
-        return _this.requestToken(code, clientId, redirectUri, options);
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'requestTempLoginUrl',
-    value: function requestTempLoginUrl(clientId, redirectUri) {
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-      var pathname = '/';
-
-      if (options.version) {
-        var version = options.version;
-
-        if (!(0, _isString2.default)(version)) {
-          version = String(version);
-        }
-
-        pathname = _path2.default.join(pathname, version.indexOf('v') === 0 ? version : 'v' + version);
-      }
-
-      return this.client.executeNetworkRequest({
-        method: _enums.HttpMethod.POST,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        pathname: _path2.default.join(pathname, authPathname),
-        properties: options.properties,
-        data: {
-          client_id: clientId,
-          redirect_uri: redirectUri,
-          response_type: 'code'
-        }
-      }).then(function (response) {
-        return response.data.temp_login_uri;
-      });
-    }
-  }, {
-    key: 'requestCodeWithPopup',
-    value: function requestCodeWithPopup(clientId, redirectUri) {
-      var _this2 = this;
-
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-      var promise = Promise.resolve().then(function () {
-        var pathname = '/';
-
-        if (options.version) {
-          var version = options.version;
-
-          if (!(0, _isString2.default)(version)) {
-            version = String(version);
-          }
-
-          pathname = _path2.default.join(pathname, version.indexOf('v') === 0 ? version : 'v' + version);
-        }
-
-        var popup = new _popup2.default(_url2.default.format({
-          protocol: _this2.client.protocl,
-          host: _this2.client.host,
-          pathname: _path2.default.join(pathname, authPathname),
-          query: {
-            client_id: clientId,
-            redirect_uri: redirectUri,
-            response_type: 'code'
-          }
-        }));
-        return popup.open();
-      }).then(function (popup) {
-        return new Promise(function (resolve, reject) {
-          function loadHandler(loadedUrl) {
-            if (loadedUrl.indexOf(redirectUri) === 0) {
-              popup.removeAllListeners();
-              popup.close();
-              resolve(_url2.default.parse(loadedUrl, true).query.code);
-            }
-          }
-
-          function closeHandler() {
-            popup.removeAllListeners();
-            reject(new Error('Login has been cancelled.'));
-          }
-
-          popup.on('load', loadHandler);
-          popup.on('close', closeHandler);
-        });
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'requestCodeWithUrl',
-    value: function requestCodeWithUrl(loginUrl, clientId, redirectUri) {
-      var options = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
-
-      var promise = Promise.resolve().then(function () {
-        var request = new _networkRequest2.default({
-          method: _enums.HttpMethod.POST,
-          url: loginUrl,
-          properties: options.properties,
-          data: {
-            client_id: clientId,
-            redirect_uri: redirectUri,
-            response_type: 'code',
-            username: options.username,
-            password: options.password
-          },
-          followRedirect: false
-        });
-        request.setHeader('Content-Type', 'application/x-www-form-urlencoded');
-        return request.execute();
-      }).then(function (response) {
-        var location = response.getHeader('location');
-
-        if (location) {
-          return _url2.default.parse(location, true).query.code;
-        }
-
-        throw new _errors.KinveyError('Unable to authorize user with username ' + options.username + '.');
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'requestToken',
-    value: function requestToken(code, clientId, redirectUri) {
-      var options = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
-
-      return this.client.executeNetworkRequest({
-        method: _enums.HttpMethod.POST,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        pathname: tokenPathname,
-        properties: options.properties,
-        auth: this.client.appAuth(),
-        data: {
-          grant_type: 'authorization_code',
-          client_id: clientId,
-          redirect_uri: redirectUri,
-          code: code
-        }
-      }).then(function (response) {
-        return response.data;
-      });
-    }
-  }], [{
-    key: 'login',
-    value: function login(redirectUri, authorizationGrant, options) {
-      var mic = new MobileIdentityConnect();
-      return mic.login(redirectUri, authorizationGrant, options);
-    }
-  }, {
-    key: 'identity',
-    get: function get() {
-      return process.env.KINVEY_MIC_IDENTITY || 'kinveyAuth';
-    }
-  }]);
-
-  return MobileIdentityConnect;
-}();
-
-exports.default = MobileIdentityConnect;
-}).call(this,require('_process'))
-
-},{"./client":4,"./device":6,"./enums":7,"./errors":8,"./requests/networkRequest":29,"./utils/popup":41,"_process":418,"lodash/isString":367,"path":413,"url":506}],12:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _object = require('./utils/object');
-
-var _sift = require('sift');
-
-var _sift2 = _interopRequireDefault(_sift);
-
-var _clone = require('lodash/clone');
-
-var _clone2 = _interopRequireDefault(_clone);
-
-var _assign = require('lodash/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
-var _isArray = require('lodash/isArray');
-
-var _isArray2 = _interopRequireDefault(_isArray);
-
-var _isNumber = require('lodash/isNumber');
-
-var _isNumber2 = _interopRequireDefault(_isNumber);
-
-var _isString = require('lodash/isString');
-
-var _isString2 = _interopRequireDefault(_isString);
-
-var _isObject = require('lodash/isObject');
-
-var _isObject2 = _interopRequireDefault(_isObject);
-
-var _isRegExp = require('lodash/isRegExp');
-
-var _isRegExp2 = _interopRequireDefault(_isRegExp);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var privateQuerySymbol = Symbol();
-
-var PrivateQuery = function () {
-  function PrivateQuery(options) {
-    _classCallCheck(this, PrivateQuery);
-
-    options = (0, _assign2.default)({
-      fields: [],
-      filter: {},
-      sort: {},
-      limit: null,
-      skip: 0
-    }, options);
-
-    /**
-     * Fields to select.
-     *
-     * @type {Array}
-     */
-    this._fields = options.fields;
-
-    /**
-     * The MongoDB query.
-     *
-     * @type {Object}
-     */
-    this._filter = options.filter;
-
-    /**
-     * The sorting order.
-     *
-     * @type {Object}
-     */
-    this._sort = options.sort;
-
-    /**
-     * Number of documents to select.
-     *
-     * @type {?Number}
-     */
-    this._limit = options.limit;
-
-    /**
-     * Number of documents to skip from the start.
-     *
-     * @type {Number}
-     */
-    this._skip = options.skip;
-
-    /**
-     * Maintain reference to the parent query in case the query is part of a
-     * join.
-     *
-     * @type {?PrivateQuery}
-     */
-    this.parent = null;
-  }
-
-  /**
-   * Adds an equal to filter to the query. Requires `field` to equal `value`.
-   * Any existing filters on `field` will be discarded.
-   * http://docs.mongodb.org/manual/reference/operators/#comparison
-   *
-   * @param   {String}        field     Field.
-   * @param   {*}             value     Value.
-   * @returns {Query}                   The query.
-   */
-
-
-  _createClass(PrivateQuery, [{
-    key: 'equalTo',
-    value: function equalTo(field, value) {
-      this._filter[field] = value;
-      return this;
-    }
-
-    /**
-     * Adds a contains filter to the query. Requires `field` to contain at least
-     * one of the members of `list`.
-     * http://docs.mongodb.org/manual/reference/operator/in/
-     *
-     * @param   {String}        field     Field.
-     * @param   {Array}         values    List of values.
-     * @throws  {Error}                   `values` must be of type: `Array`.
-     * @returns {Query}                   The query.
-     */
-
-  }, {
-    key: 'contains',
-    value: function contains(field, values) {
-      if (!(0, _isArray2.default)(values)) {
-        values = [values];
-      }
-
-      return this.addFilter(field, '$in', values);
-    }
-
-    /**
-     * Adds a contains all filter to the query. Requires `field` to contain all
-     * members of `list`.
-     * http://docs.mongodb.org/manual/reference/operator/all/
-     *
-     * @param   {String}  field     Field.
-     * @param   {Array}   values    List of values.
-     * @throws  {Error}             `values` must be of type: `Array`.
-     * @returns {Query}             The query.
-     */
-
-  }, {
-    key: 'containsAll',
-    value: function containsAll(field, values) {
-      if (!(0, _isArray2.default)(values)) {
-        values = [values];
-      }
-
-      return this.addFilter(field, '$all', values);
-    }
-
-    /**
-     * Adds a greater than filter to the query. Requires `field` to be greater
-     * than `value`.
-     * http://docs.mongodb.org/manual/reference/operator/gt/
-     *
-     * @param   {String}          field     Field.
-     * @param   {Number|String}   value     Value.
-     * @throws  {Error}                     `value` must be of type: `number` or `string`.
-     * @returns {Query}                     The query.
-     */
-
-  }, {
-    key: 'greaterThan',
-    value: function greaterThan(field, value) {
-      if (!(0, _isNumber2.default)(value) && !(0, _isString2.default)(value)) {
-        throw new Error('You must supply a number or string.');
-      }
-
-      return this.addFilter(field, '$gt', value);
-    }
-  }, {
-    key: 'greaterThanOrEqualTo',
-    value: function greaterThanOrEqualTo(field, value) {
-      if (!(0, _isNumber2.default)(value) && !(0, _isString2.default)(value)) {
-        throw new Error('You must supply a number or string.');
-      }
-
-      return this.addFilter(field, '$gte', value);
-    }
-  }, {
-    key: 'lessThan',
-    value: function lessThan(field, value) {
-      if (!(0, _isNumber2.default)(value) && !(0, _isString2.default)(value)) {
-        throw new Error('You must supply a number or string.');
-      }
-
-      return this.addFilter(field, '$lt', value);
-    }
-  }, {
-    key: 'lessThanOrEqualTo',
-    value: function lessThanOrEqualTo(field, value) {
-      if (!(0, _isNumber2.default)(value) && !(0, _isString2.default)(value)) {
-        throw new Error('You must supply a number or string.');
-      }
-
-      return this.addFilter(field, '$lte', value);
-    }
-  }, {
-    key: 'notEqualTo',
-    value: function notEqualTo(field, value) {
-      return this.addFilter(field, '$ne', value);
-    }
-  }, {
-    key: 'notContainedIn',
-    value: function notContainedIn(field, values) {
-      if (!(0, _isArray2.default)(values)) {
-        values = [values];
-      }
-
-      return this.addFilter(field, '$nin', values);
-    }
-  }, {
-    key: 'and',
-    value: function and() {
-      return this.join('$and', Array.prototype.slice.call(arguments));
-    }
-  }, {
-    key: 'nor',
-    value: function nor() {
-      if (this.parent && this.parent.filter.$and) {
-        return this.parent.nor.apply(this.parent, arguments);
-      }
-
-      return this.join('$nor', Array.prototype.slice.call(arguments));
-    }
-  }, {
-    key: 'or',
-    value: function or() {
-      if (this.parent) {
-        return this.parent.or.apply(this.parent, arguments);
-      }
-
-      return this.join('$or', Array.prototype.slice.call(arguments));
-    }
-  }, {
-    key: 'exists',
-    value: function exists(field, flag) {
-      flag = typeof flag === 'undefined' ? true : flag || false;
-      return this.addFilter(field, '$exists', flag);
-    }
-  }, {
-    key: 'mod',
-    value: function mod(field, divisor, remainder) {
-      remainder = remainder || 0;
-
-      if ((0, _isString2.default)(divisor)) {
-        divisor = parseFloat(divisor);
-      }
-
-      if ((0, _isString2.default)(remainder)) {
-        remainder = parseFloat(remainder);
-      }
-
-      if (!(0, _isNumber2.default)(divisor)) {
-        throw new Error('Divisor must be a number.');
-      }
-
-      if (!(0, _isNumber2.default)(remainder)) {
-        throw new Error('Remainder must be a number.');
-      }
-
-      return this.addFilter(field, '$mod', [divisor, remainder]);
-    }
-  }, {
-    key: 'matches',
-    value: function matches(field, regExp, options) {
-      options = options || {};
-
-      if (!(0, _isRegExp2.default)(regExp)) {
-        regExp = new RegExp(regExp);
-      }
-
-      if ((regExp.ignoreCase || options.ignoreCase) && options.ignoreCase !== false) {
-        throw new Error('ignoreCase glag is not supported.');
-      }
-
-      if (regExp.source.indexOf('^') !== 0) {
-        throw new Error('regExp must have `^` at the beginning of the expression ' + 'to make it an anchored expression.');
-      }
-
-      var flags = [];
-
-      if ((regExp.multiline || options.multiline) && options.multiline !== false) {
-        flags.push('m');
-      }
-
-      if (options.extended) {
-        flags.push('x');
-      }
-
-      if (options.dotMatchesAll) {
-        flags.push('s');
-      }
-
-      var result = this.addFilter(field, '$regex', regExp.source);
-
-      if (flags.length) {
-        this.addFilter(field, '$options', flags.join(''));
-      }
-
-      return result;
-    }
-  }, {
-    key: 'near',
-    value: function near(field, coord, maxDistance) {
-      if (!(0, _isArray2.default)(coord) || !coord[0] || !coord[1]) {
-        throw new Error('coord argument must be of type: [number, number]');
-      }
-
-      coord[0] = parseFloat(coord[0]);
-      coord[1] = parseFloat(coord[1]);
-
-      var result = this.addFilter(field, '$nearSphere', [coord[0], coord[1]]);
-
-      if (maxDistance) {
-        this.addFilter(field, '$maxDistance', maxDistance);
-      }
-
-      return result;
-    }
-  }, {
-    key: 'withinBox',
-    value: function withinBox(field, bottomLeftCoord, upperRightCoord) {
-      if (!(0, _isArray2.default)(bottomLeftCoord) || !bottomLeftCoord[0] || !bottomLeftCoord[1]) {
-        throw new Error('bottomLeftCoord argument must be of type: [number, number]');
-      }
-
-      if (!(0, _isArray2.default)(upperRightCoord) || !upperRightCoord[0] || !upperRightCoord[1]) {
-        throw new Error('upperRightCoord argument must be of type: [number, number]');
-      }
-
-      bottomLeftCoord[0] = parseFloat(bottomLeftCoord[0]);
-      bottomLeftCoord[1] = parseFloat(bottomLeftCoord[1]);
-      upperRightCoord[0] = parseFloat(upperRightCoord[0]);
-      upperRightCoord[1] = parseFloat(upperRightCoord[1]);
-
-      var coords = [[bottomLeftCoord[0], bottomLeftCoord[1]], [upperRightCoord[0], upperRightCoord[1]]];
-      return this.addFilter(field, '$within', { $box: coords });
-    }
-  }, {
-    key: 'withinPolygon',
-    value: function withinPolygon(field, coords) {
-      if (!(0, _isArray2.default)(coords) || coords.length > 3) {
-        throw new Error('coords argument must be of type: [[number, number]]');
-      }
-
-      coords = coords.map(function (coord) {
-        if (!coord[0] || !coord[1]) {
-          throw new Error('coords argument must be of type: [number, number]');
-        }
-
-        return [parseFloat(coord[0]), parseFloat(coord[1])];
-      });
-
-      return this.addFilter(field, '$within', { $polygon: coords });
-    }
-  }, {
-    key: 'size',
-    value: function size(field, _size) {
-      if ((0, _isString2.default)(_size)) {
-        _size = parseFloat(_size);
-      }
-
-      if (!(0, _isNumber2.default)(_size)) {
-        throw new Error('size argument must be a number');
-      }
-
-      return this.addFilter(field, '$size', _size);
-    }
-  }, {
-    key: 'fields',
-    value: function fields(_fields) {
-      _fields = _fields || [];
-
-      if (!(0, _isArray2.default)(_fields)) {
-        throw new Error('fields argument must an Array.');
-      }
-
-      if (this.parent) {
-        this.parent.fields(_fields);
-      } else {
-        this._fields = _fields;
-      }
-
-      return this;
-    }
-  }, {
-    key: 'limit',
-    value: function limit(_limit) {
-      if ((0, _isString2.default)(_limit)) {
-        _limit = parseFloat(_limit);
-      }
-
-      if (_limit && !(0, _isNumber2.default)(_limit)) {
-        throw new Error('limit argument must be of type: number.');
-      }
-
-      if (this._parent) {
-        this.parent.limit(_limit);
-      } else {
-        this._limit = _limit;
-      }
-
-      return this;
-    }
-  }, {
-    key: 'skip',
-    value: function skip(_skip) {
-      if ((0, _isString2.default)(_skip)) {
-        _skip = parseFloat(_skip);
-      }
-
-      if (!(0, _isNumber2.default)(_skip)) {
-        throw new Error('skip argument must be of type: number.');
-      }
-
-      if (this.parent) {
-        this.parent.skip(_skip);
-      } else {
-        this._skip = _skip;
-      }
-
-      return this;
-    }
-  }, {
-    key: 'ascending',
-    value: function ascending(field) {
-      if (this.parent) {
-        this.parent.ascending(field);
-      } else {
-        this._sort[field] = 1;
-      }
-
-      return this;
-    }
-  }, {
-    key: 'descending',
-    value: function descending(field) {
-      if (this.parent) {
-        this.parent.descending(field);
-      } else {
-        this._sort[field] = -1;
-      }
-
-      return this;
-    }
-  }, {
-    key: 'sort',
-    value: function sort(_sort) {
-      if (_sort && !(0, _isObject2.default)(_sort)) {
-        throw new Error('sort argument must be of type: Object.');
-      }
-
-      if (this.parent) {
-        this.parent.sort(_sort);
-      } else {
-        this._sort = _sort || {};
-      }
-
-      return this;
-    }
-
-    /**
-     * Adds a filter to the query.
-     *
-     * @param   {String}          field       Field.
-     * @param   {String}          condition   Condition.
-     * @param   {*}               value       Value.
-     * @returns {PrivateQuery}                The query.
-     */
-
-  }, {
-    key: 'addFilter',
-    value: function addFilter(field, condition, values) {
-      if (!(0, _isObject2.default)(this._filter[field])) {
-        this._filter[field] = {};
-      }
-
-      this._filter[field][condition] = values;
-      return this;
-    }
-
-    /**
-     * Joins the current query with another query using an operator.
-     *
-     * @param   {String}                    operator    Operator.
-     * @param   {PrivateQuery[]|Object[]}   queries     Queries.
-     * @throws  {Error}                                `query` must be of type: `Kinvey.Query[]` or `Object[]`.
-     * @returns {PrivateQuery}                          The query.
-     */
-
-  }, {
-    key: 'join',
-    value: function join(operator, queries) {
-      var _this = this;
-      var currentQuery = {};
-
-      // Cast, validate, and parse arguments. If `queries` are supplied, obtain
-      // the `filter` for joining. The eventual return function will be the
-      // current query.
-      queries = queries.map(function (query) {
-        if (!(query instanceof PrivateQuery)) {
-          if ((0, _isObject2.default)(query)) {
-            query = new PrivateQuery(query);
-          } else {
-            throw new Error('query argument must be of type: Kinvey.Query[] or Object[].');
-          }
-        }
-
-        return query.toJSON().filter;
-      });
-
-      // If there are no `queries` supplied, create a new (empty) `Query`.
-      // This query is the right-hand side of the join expression, and will be
-      // returned to allow for a fluent interface.
-      if (queries.length === 0) {
-        _this = new PrivateQuery();
-        queries = [_this.toJSON().filter];
-        _this.parent = this; // Required for operator precedence and `toJSON`.
-      }
-
-      // Join operators operate on the top-level of `filter`. Since the `toJSON`
-      // magic requires `filter` to be passed by reference, we cannot simply re-
-      // assign `filter`. Instead, empty it without losing the reference.
-      for (var member in this._filter) {
-        if (this._filter.hasOwnProperty(member)) {
-          currentQuery[member] = this._filter[member];
-          delete this._filter[member];
-        }
-      }
-
-      // `currentQuery` is the left-hand side query. Join with `queries`.
-      this._filter[operator] = [currentQuery].concat(queries);
-
-      // Return the current query if there are `queries`, and the new (empty)
-      // `PrivateQuery` otherwise.
-      return _this;
-    }
-
-    /**
-     * Processes the data by applying fields, sort, limit, and skip.
-     *
-     * @param   {Array}   data    The raw data.
-     * @throws  {Error}               `data` must be of type: `Array`.
-     * @returns {Array}               The processed data.
-     */
-
-  }, {
-    key: '_process',
-    value: function _process(data) {
-      var _this2 = this;
-
-      if (data) {
-        var _ret = function () {
-          // Validate arguments.
-          if (!(0, _isArray2.default)(data)) {
-            throw new Error('data argument must be of type: Array.');
-          }
-
-          // Apply the query
-          var json = _this2.toJSON();
-          data = (0, _sift2.default)(json.filter, data);
-
-          // Remove fields
-          if (json.fields && json.fields.length > 0) {
-            data = data.map(function (item) {
-              for (var key in item) {
-                if (item.hasOwnProperty(key) && json.fields.indexOf(key) === -1) {
-                  delete item[key];
-                }
-              }
-
-              return item;
-            });
-          }
-
-          // Sorting.
-          data = data.sort(function (a, b) {
-            for (var field in json.sort) {
-              if (json.sort.hasOwnProperty(field)) {
-                // Find field in objects.
-                var aField = (0, _object.nested)(a, field);
-                var bField = (0, _object.nested)(b, field);
-
-                // Elements which do not contain the field should always be sorted
-                // lower.
-                if (aField && !bField) {
-                  return -1;
-                }
-
-                if (bField && !aField) {
-                  return 1;
-                }
-
-                // Sort on the current field. The modifier adjusts the sorting order
-                // (ascending (-1), or descending(1)). If the fields are equal,
-                // continue sorting based on the next field (if any).
-                if (aField !== bField) {
-                  var modifier = json.sort[field]; // 1 or -1.
-                  return (aField < bField ? -1 : 1) * modifier;
-                }
-              }
-            }
-
-            return 0;
-          });
-
-          // Limit and skip.
-          if (json.limit) {
-            return {
-              v: data.slice(json.skip, json.skip + json.limit)
-            };
-          }
-
-          return {
-            v: data.slice(json.skip)
-          };
-        }();
-
-        if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-      }
-
-      return data;
-    }
-
-    /**
-     * Returns JSON representation of the query.
-     *
-     * @returns {Object} JSON object-literal.
-     */
-
-  }, {
-    key: 'toJSON',
-    value: function toJSON() {
-      if (this.parent) {
-        return this.parent.toJSON();
-      }
-
-      // Return set of parameters.
-      var json = {
-        fields: this._fields,
-        filter: this._filter,
-        sort: this._sort,
-        skip: this._skip,
-        limit: this._limit
-      };
-
-      return (0, _clone2.default)(json, true);
-    }
-  }]);
-
-  return PrivateQuery;
-}();
-
-var Query = function () {
-  function Query(options) {
-    _classCallCheck(this, Query);
-
-    this[privateQuerySymbol] = new PrivateQuery(options);
-  }
-
-  /**
-   * Adds an equal to filter to the query. Requires `field` to equal `value`.
-   * Any existing filters on `field` will be discarded.
-   * http://docs.mongodb.org/manual/reference/operators/#comparison
-   *
-   * @param   {String}        field     Field.
-   * @param   {*}             value     Value.
-   * @returns {Query}                   The query.
-   */
-
-
-  _createClass(Query, [{
-    key: 'equalTo',
-    value: function equalTo(field, value) {
-      this[privateQuerySymbol].equalTo(field, value);
-      return this;
-    }
-
-    /**
-     * Adds a contains filter to the query. Requires `field` to contain at least
-     * one of the members of `list`.
-     * http://docs.mongodb.org/manual/reference/operator/in/
-     *
-     * @param   {String}        field     Field.
-     * @param   {Array}         values    List of values.
-     * @throws  {Error}                   `values` must be of type: `Array`.
-     * @returns {Query}                   The query.
-     */
-
-  }, {
-    key: 'contains',
-    value: function contains(field, values) {
-      this[privateQuerySymbol].contains(field, values);
-      return this;
-    }
-
-    /**
-     * Adds a contains all filter to the query. Requires `field` to contain all
-     * members of `list`.
-     * http://docs.mongodb.org/manual/reference/operator/all/
-     *
-     * @param   {String}  field     Field.
-     * @param   {Array}   values    List of values.
-     * @throws  {Error}             `values` must be of type: `Array`.
-     * @returns {Query}             The query.
-     */
-
-  }, {
-    key: 'containsAll',
-    value: function containsAll(field, values) {
-      this[privateQuerySymbol].containsAll(field, values);
-      return this;
-    }
-
-    /**
-     * Adds a greater than filter to the query. Requires `field` to be greater
-     * than `value`.
-     * http://docs.mongodb.org/manual/reference/operator/gt/
-     *
-     * @param   {String}          field     Field.
-     * @param   {Number|String}   value     Value.
-     * @throws  {Error}                     `value` must be of type: `number` or `string`.
-     * @returns {Query}                     The query.
-     */
-
-  }, {
-    key: 'greaterThan',
-    value: function greaterThan(field, value) {
-      this[privateQuerySymbol].greaterThan(field, value);
-      return this;
-    }
-  }, {
-    key: 'greaterThanOrEqualTo',
-    value: function greaterThanOrEqualTo(field, value) {
-      this[privateQuerySymbol].greaterThanOrEqualToe(field, value);
-      return this;
-    }
-  }, {
-    key: 'lessThan',
-    value: function lessThan(field, value) {
-      this[privateQuerySymbol].lessThan(field, value);
-      return this;
-    }
-  }, {
-    key: 'lessThanOrEqualTo',
-    value: function lessThanOrEqualTo(field, value) {
-      this[privateQuerySymbol].lessThanOrEqualTo(field, value);
-      return this;
-    }
-  }, {
-    key: 'notEqualTo',
-    value: function notEqualTo(field, value) {
-      this[privateQuerySymbol].notEqualTo(field, value);
-      return this;
-    }
-  }, {
-    key: 'notContainedIn',
-    value: function notContainedIn(field, values) {
-      this[privateQuerySymbol].notContainedIn(field, values);
-      return this;
-    }
-  }, {
-    key: 'and',
-    value: function and() {
-      this[privateQuerySymbol].and.apply(this[privateQuerySymbol], arguments);
-      return this;
-    }
-  }, {
-    key: 'nor',
-    value: function nor() {
-      this[privateQuerySymbol].nor.apply(this[privateQuerySymbol], arguments);
-      return this;
-    }
-  }, {
-    key: 'or',
-    value: function or() {
-      this[privateQuerySymbol].or.apply(this[privateQuerySymbol], arguments);
-      return this;
-    }
-  }, {
-    key: 'exists',
-    value: function exists(field, flag) {
-      this[privateQuerySymbol].exists(field, flag);
-      return this;
-    }
-  }, {
-    key: 'mod',
-    value: function mod(field, divisor, remainder) {
-      this[privateQuerySymbol].mod(field, divisor, remainder);
-      return this;
-    }
-  }, {
-    key: 'matches',
-    value: function matches(field, regExp, options) {
-      this[privateQuerySymbol].matches(field, regExp, options);
-      return this;
-    }
-  }, {
-    key: 'near',
-    value: function near(field, coord, maxDistance) {
-      this[privateQuerySymbol].near(field, coord, maxDistance);
-      return this;
-    }
-  }, {
-    key: 'withinBox',
-    value: function withinBox(field, bottomLeftCoord, upperRightCoord) {
-      this[privateQuerySymbol].withinBox(field, bottomLeftCoord, upperRightCoord);
-      return this;
-    }
-  }, {
-    key: 'withinPolygon',
-    value: function withinPolygon(field, coords) {
-      this[privateQuerySymbol].withinPolygon(field, coords);
-      return this;
-    }
-  }, {
-    key: 'size',
-    value: function size(field, _size2) {
-      this[privateQuerySymbol].size(field, _size2);
-      return this;
-    }
-  }, {
-    key: 'fields',
-    value: function fields(_fields2) {
-      this[privateQuerySymbol].fields(_fields2);
-      return this;
-    }
-  }, {
-    key: 'limit',
-    value: function limit(_limit2) {
-      this[privateQuerySymbol].limit(_limit2);
-      return this;
-    }
-  }, {
-    key: 'skip',
-    value: function skip(_skip2) {
-      this[privateQuerySymbol].skip(_skip2);
-      return this;
-    }
-  }, {
-    key: 'ascending',
-    value: function ascending(field) {
-      this[privateQuerySymbol].ascending(field);
-      return this;
-    }
-  }, {
-    key: 'descending',
-    value: function descending(field) {
-      this[privateQuerySymbol].descending(field);
-      return this;
-    }
-  }, {
-    key: 'sort',
-    value: function sort(_sort2) {
-      this[privateQuerySymbol].sort(_sort2);
-      return this;
-    }
-  }, {
-    key: '_process',
-    value: function _process(data) {
-      return this[privateQuerySymbol]._process(data);
-    }
-
-    /**
-     * Returns JSON representation of the query.
-     *
-     * @returns {Object} JSON object-literal.
-     */
-
-  }, {
-    key: 'toJSON',
-    value: function toJSON() {
-      return this[privateQuerySymbol].toJSON();
-    }
-  }]);
-
-  return Query;
-}();
-
-exports.default = Query;
-},{"./utils/object":40,"lodash/assign":344,"lodash/clone":346,"lodash/isArray":354,"lodash/isNumber":362,"lodash/isObject":363,"lodash/isRegExp":366,"lodash/isString":367,"sift":469}],13:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var levels = [];
-var c0 = String.fromCharCode(9500);
-var c1 = String.fromCharCode(9472);
-var c2 = String.fromCharCode(9492);
-var c3 = String.fromCharCode(9474);
-
-function compose(node, end) {
-  if (node.level === 0) {
-    return node.value;
-  }
-
-  var ret = '\r\n';
-  var c = end ? c2 : c0;
-
-  for (var i = 1; i < node.level; i++) {
-    ret = '' + ret + (levels[i] ? ' ' : c3);
-    ret = ret + '  ';
-  }
-
-  return '' + ret + c + c1 + ' ' + node.value;
-}
-
-/**
- * @private
- */
-var AsciiTree = exports.AsciiTree = {
-  generate: function generate() {
-    var _this = this;
-
-    var tree = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-    var end = arguments[1];
-
-    var result = compose(tree, end);
-
-    if (tree.nodes.length > 0) {
-      (function () {
-        var last = tree.nodes.length - 1;
-        tree.nodes.forEach(function (subTree, index) {
-          levels[subTree.level] = index === last;
-          result = result + _this.generate(subTree, index === last);
-        });
-      })();
-    }
-
-    return result;
-  }
-};
-},{}],14:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.KinveyMiddleware = exports.Middleware = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _asciiTree = require('./asciiTree');
-
-var _urlPattern = require('url-pattern');
-
-var _urlPattern2 = _interopRequireDefault(_urlPattern);
-
-var _errors = require('../errors');
-
-var _url = require('url');
-
-var _url2 = _interopRequireDefault(_url);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * @private
- */
-
-var Middleware = exports.Middleware = function () {
-  function Middleware() {
-    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Middleware' : arguments[0];
-
-    _classCallCheck(this, Middleware);
-
-    this.name = name;
-  }
-
-  _createClass(Middleware, [{
-    key: 'handle',
-    value: function handle() {
-      var request = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      return Promise.resolve(request);
-    }
-  }, {
-    key: 'generateTree',
-    value: function generateTree() {
-      var level = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
-
-      var root = {
-        value: this.name,
-        level: level,
-        nodes: []
-      };
-      return root;
-    }
-  }, {
-    key: 'toString',
-    value: function toString() {
-      var root = this.generateTree();
-      return _asciiTree.AsciiTree.generate(root);
-    }
-  }]);
-
-  return Middleware;
-}();
-
-/**
- * @private
- */
-
-
-var KinveyMiddleware = exports.KinveyMiddleware = function (_Middleware) {
-  _inherits(KinveyMiddleware, _Middleware);
-
-  function KinveyMiddleware() {
-    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey Middleware' : arguments[0];
-
-    _classCallCheck(this, KinveyMiddleware);
-
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(KinveyMiddleware).call(this, name));
-  }
-
-  _createClass(KinveyMiddleware, [{
-    key: 'handle',
-    value: function handle(request) {
-      return new Promise(function (resolve, reject) {
-        if (request) {
-          var pathname = _url2.default.parse(request.url).pathname;
-          var pattern = new _urlPattern2.default('(/:namespace)(/)(:appKey)(/)(:collection)(/)(:id)(/)');
-          var matches = pattern.match(pathname) || {};
-          return resolve({
-            namespace: matches.namespace,
-            appKey: matches.appKey,
-            collection: matches.collection,
-            id: matches.id
-          });
-        }
-
-        reject(new _errors.KinveyError('Request is null. Please provide a valid request.', request));
-      });
-    }
-  }]);
-
-  return KinveyMiddleware;
-}(Middleware);
-},{"../errors":8,"./asciiTree":13,"url":506,"url-pattern":505}],15:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.CacheMiddleware = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _middleware = require('../middleware');
-
-var _db = require('../persistence/db');
-
-var _enums = require('../../enums');
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * @private
- */
-
-var CacheMiddleware = exports.CacheMiddleware = function (_KinveyMiddleware) {
-  _inherits(CacheMiddleware, _KinveyMiddleware);
-
-  function CacheMiddleware() {
-    var adapters = arguments.length <= 0 || arguments[0] === undefined ? [_db.DBAdapter.IndexedDB, _db.DBAdapter.WebSQL, _db.DBAdapter.LocalStorage, _db.DBAdapter.Memory] : arguments[0];
-
-    _classCallCheck(this, CacheMiddleware);
-
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(CacheMiddleware).call(this, 'Kinvey Cache Middleware'));
-
-    _this.adapters = adapters;
-    return _this;
-  }
-
-  _createClass(CacheMiddleware, [{
-    key: 'handle',
-    value: function handle(request) {
-      var _this2 = this;
-
-      return _get(Object.getPrototypeOf(CacheMiddleware.prototype), 'handle', this).call(this, request).then(function (_ref) {
-        var appKey = _ref.appKey;
-        var collection = _ref.collection;
-        var id = _ref.id;
-
-        var method = request.method;
-        var query = request.query;
-        var data = request.data;
-        var db = new _db.DB(appKey, _this2.adapters);
-        var promise = undefined;
-
-        if (method === _enums.HttpMethod.GET) {
-          if (id) {
-            if (id === '_count') {
-              promise = db.count(collection, query);
-            } else if (id === '_group') {
-              promise = db.group(collection, data);
-            } else {
-              promise = db.findById(collection, id);
-            }
-          } else {
-            promise = db.find(collection, query);
-          }
-        } else if (method === _enums.HttpMethod.POST || method === _enums.HttpMethod.PUT) {
-          promise = db.save(collection, data);
-        } else if (method === _enums.HttpMethod.DELETE) {
-          if (id) {
-            promise = db.removeById(collection, id);
-          } else {
-            promise = db.remove(collection, query);
-          }
-        }
-
-        return promise.then(function (result) {
-          var statusCode = _enums.StatusCode.Ok;
-
-          if (method === _enums.HttpMethod.POST) {
-            statusCode = _enums.StatusCode.Created;
-          }
-
-          request.response = {
-            statusCode: statusCode,
-            headers: {},
-            data: result
-          };
-
-          return request;
-        });
-      });
-    }
-  }]);
-
-  return CacheMiddleware;
-}(_middleware.KinveyMiddleware);
-},{"../../enums":7,"../middleware":14,"../persistence/db":23}],16:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.HttpMiddleware = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _middleware = require('../middleware');
-
-var _enums = require('../../enums');
-
-var _errors = require('../../errors');
-
-var _request = require('request');
-
-var _request2 = _interopRequireDefault(_request);
-
-var _result = require('lodash/result');
-
-var _result2 = _interopRequireDefault(_result);
-
-var _isEmpty = require('lodash/isEmpty');
-
-var _isEmpty2 = _interopRequireDefault(_isEmpty);
-
-var _isString = require('lodash/isString');
-
-var _isString2 = _interopRequireDefault(_isString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * @private
- */
-
-var HttpMiddleware = exports.HttpMiddleware = function (_KinveyMiddleware) {
-  _inherits(HttpMiddleware, _KinveyMiddleware);
-
-  function HttpMiddleware() {
-    _classCallCheck(this, HttpMiddleware);
-
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(HttpMiddleware).call(this, 'Kinvey Http Middleware'));
-  }
-
-  _createClass(HttpMiddleware, [{
-    key: 'handle',
-    value: function handle(request) {
-      return _get(Object.getPrototypeOf(HttpMiddleware.prototype), 'handle', this).call(this, request).then(function () {
-        var options = {
-          url: request.url,
-          method: request.method,
-          headers: request.headers,
-          qs: {},
-          followRedirect: request.followRedirect
-        };
-
-        if (request.query) {
-          var query = (0, _result2.default)(request.query, 'toJSON', request.query);
-          options.qs.query = query.filter;
-
-          if (!(0, _isEmpty2.default)(query.fields)) {
-            options.qs.fields = query.fields.join(',');
-          }
-
-          if (query.limit) {
-            options.qs.limit = query.limit;
-          }
-
-          if (query.skip > 0) {
-            options.qs.skip = query.skip;
-          }
-
-          if (!(0, _isEmpty2.default)(query.sort)) {
-            options.qs.sort = query.sort;
-          }
-        }
-
-        for (var key in options.qs) {
-          if (options.qs.hasOwnProperty(key)) {
-            options.qs[key] = (0, _isString2.default)(options.qs[key]) ? options.qs[key] : JSON.stringify(options.qs[key]);
-          }
-        }
-
-        if (request.data && (request.method === _enums.HttpMethod.PATCH || request.method === _enums.HttpMethod.POST || request.method === _enums.HttpMethod.PUT)) {
-          options.body = request.data;
-        }
-
-        return new Promise(function (resolve, reject) {
-          (0, _request2.default)(options, function (err, response, body) {
-            if (err) {
-              if (err.code === 'ENOTFOUND') {
-                return reject(new _errors.NetworkConnectionError('It looks like you do not have a network connection. ' + 'Please check that you are connected to a network and try again.'));
-              }
-
-              return reject(err);
-            }
-
-            request.response = {
-              statusCode: response.statusCode,
-              headers: response.headers,
-              data: body
-            };
-
-            resolve(request);
-          });
-        });
-      });
-    }
-  }]);
-
-  return HttpMiddleware;
-}(_middleware.KinveyMiddleware);
-},{"../../enums":7,"../../errors":8,"../middleware":14,"lodash/isEmpty":358,"lodash/isString":367,"lodash/result":381,"request":444}],17:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.ParseMiddleware = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _middleware = require('../middleware');
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * @private
- */
-
-var ParseMiddleware = exports.ParseMiddleware = function (_KinveyMiddleware) {
-  _inherits(ParseMiddleware, _KinveyMiddleware);
-
-  function ParseMiddleware() {
-    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey Parse Middleware' : arguments[0];
-
-    _classCallCheck(this, ParseMiddleware);
-
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(ParseMiddleware).call(this, name));
-  }
-
-  _createClass(ParseMiddleware, [{
-    key: 'handle',
-    value: function handle(request) {
-      return _get(Object.getPrototypeOf(ParseMiddleware.prototype), 'handle', this).call(this, request).then(function () {
-        var response = request.response;
-
-        if (response && response.data) {
-          var contentType = response.headers['content-type'] || response.headers['Content-Type'];
-
-          if (contentType.indexOf('application/json') === 0) {
-            try {
-              response.data = JSON.parse(response.data);
-            } catch (err) {
-              response.data = response.data;
-            }
-
-            request.response = response;
-          }
-        }
-
-        return request;
-      });
-    }
-  }]);
-
-  return ParseMiddleware;
-}(_middleware.KinveyMiddleware);
-},{"../middleware":14}],18:[function(require,module,exports){
-(function (global){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.SerializeMiddleware = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _middleware = require('../middleware');
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * @private
- */
-
-var SerializeMiddleware = exports.SerializeMiddleware = function (_KinveyMiddleware) {
-  _inherits(SerializeMiddleware, _KinveyMiddleware);
-
-  function SerializeMiddleware() {
-    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey Serialize Middleware' : arguments[0];
-
-    _classCallCheck(this, SerializeMiddleware);
-
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(SerializeMiddleware).call(this, name));
-  }
-
-  _createClass(SerializeMiddleware, [{
-    key: 'handle',
-    value: function handle(request) {
-      return _get(Object.getPrototypeOf(SerializeMiddleware.prototype), 'handle', this).call(this, request).then(function () {
-        if (request && request.data) {
-          var contentType = request.headers['content-type'] || request.headers['Content-Type'];
-
-          if (contentType.indexOf('application/json') === 0) {
-            request.data = JSON.stringify(request.data);
-          } else if (contentType.indexOf('application/x-www-form-urlencoded') === 0) {
-            var data = request.data;
-            var str = [];
-
-            for (var p in data) {
-              if (data.hasOwnProperty(p)) {
-                str.push(global.encodeURIComponent(p) + '=' + global.encodeURIComponent(data[p]));
-              }
-            }
-
-            request.data = str.join('&');
-          }
-        }
-
-        return request;
-      });
-    }
-  }]);
-
-  return SerializeMiddleware;
-}(_middleware.KinveyMiddleware);
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{"../middleware":14}],19:[function(require,module,exports){
-(function (global){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.IndexedDB = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _errors = require('../../../errors');
-
-var _forEach = require('lodash/forEach');
-
-var _forEach2 = _interopRequireDefault(_forEach);
-
-var _isArray = require('lodash/isArray');
-
-var _isArray2 = _interopRequireDefault(_isArray);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var indexedDB = null;
-var dbCache = {};
-
-var TransactionMode = {
-  ReadWrite: 'readwrite',
-  ReadOnly: 'readonly'
-};
-Object.freeze(TransactionMode);
-
-if (typeof window !== 'undefined') {
-  require('indexeddbshim');
-  global.shimIndexedDB.__useShim();
-  indexedDB = global.indexedDB || global.mozIndexedDB || global.webkitIndexedDB || global.msIndexedDB || global.shimIndexedDB;
-}
-
-/**
- * @private
- */
-
-var IndexedDB = exports.IndexedDB = function () {
-  function IndexedDB() {
-    var name = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
-
-    _classCallCheck(this, IndexedDB);
-
-    this.name = name;
-    this.inTransaction = false;
-    this.queue = [];
-  }
-
-  _createClass(IndexedDB, [{
-    key: 'openTransaction',
-    value: function openTransaction(collection) {
-      var write = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-      var success = arguments[2];
-
-      var _this = this;
-
-      var error = arguments[3];
-      var force = arguments.length <= 4 || arguments[4] === undefined ? false : arguments[4];
-
-      var db = dbCache[this.name];
-
-      if (db) {
-        if (db.objectStoreNames.contains(collection)) {
-          try {
-            var mode = write ? TransactionMode.ReadWrite : TransactionMode.ReadOnly;
-            var txn = db.transaction([collection], mode);
-
-            if (txn) {
-              var store = txn.objectStore(collection);
-              return success(store);
-            }
-
-            throw new _errors.KinveyError('Unable to open a transaction for the ' + collection + ' ' + ('collection on the ' + this.name + ' indexedDB database.'));
-          } catch (err) {
-            return error(err);
-          }
-        } else if (!write) {
-          return error(new _errors.NotFoundError('The ' + collection + ' collection was not found on ' + ('the ' + this.name + ' indexedDB database.')));
-        }
-      }
-
-      if (!force && this.inTransaction) {
-        return this.queue.push(function () {
-          _this.openTransaction(collection, write, success, error);
-        });
-      }
-
-      // Switch flag
-      this.inTransaction = true;
-      var request = undefined;
-
-      if (db) {
-        var version = db.version + 1;
-        request = indexedDB.open(this.name, version);
-      } else {
-        request = indexedDB.open(this.name);
-      }
-
-      // If the database is opened with an higher version than its current, the
-      // `upgradeneeded` event is fired. Save the handle to the database, and
-      // create the collection.
-      request.onupgradeneeded = function (e) {
-        db = e.target.result;
-
-        if (write) {
-          db.createObjectStore(collection, { keyPath: '_id' });
-        }
-      };
-
-      // The `success` event is fired after `upgradeneeded` terminates.
-      // Save the handle to the database.
-      request.onsuccess = function (e) {
-        db = e.target.result;
-        dbCache[_this.name] = db;
-
-        // If a second instance of the same IndexedDB database performs an
-        // upgrade operation, the `versionchange` event is fired. Then, close the
-        // database to allow the external upgrade to proceed.
-        db.onversionchange = function () {
-          if (db) {
-            db.close();
-            db = null;
-            dbCache[_this.name] = null;
-          }
-        };
-
-        // Try to obtain the collection handle by recursing. Append the handlers
-        // to empty the queue upon success and failure. Set the `force` flag so
-        // all but the current transaction remain queued.
-        var wrap = function wrap(done) {
-          return function (arg) {
-            done(arg);
-
-            // Switch flag
-            _this.inTransaction = false;
-
-            // The database handle has been established, we can now safely empty
-            // the queue. The queue must be emptied before invoking the concurrent
-            // operations to avoid infinite recursion.
-            if (_this.queue.length > 0) {
-              var pending = _this.queue;
-              _this.queue = [];
-              (0, _forEach2.default)(pending, function (fn) {
-                fn.call(_this);
-              });
-            }
-          };
-        };
-
-        _this.openTransaction(collection, write, wrap(success), wrap(error), true);
-      };
-
-      request.onblocked = function () {
-        error(new _errors.KinveyError('The ' + _this.name + ' indexedDB database version can\'t be upgraded ' + 'because the database is already open.'));
-      };
-
-      request.onerror = function (e) {
-        error(new _errors.KinveyError('Unable to open the ' + _this.name + ' indexedDB database. ' + ('Received the error code ' + e.target.errorCode + '.')));
-      };
-    }
-  }, {
-    key: 'find',
-    value: function find(collection) {
-      var _this2 = this;
-
-      var promise = new Promise(function (resolve, reject) {
-        if (!collection) {
-          return reject(new _errors.KinveyError('A collection was not provided.'));
-        }
-
-        _this2.openTransaction(collection, false, function (store) {
-          var request = store.openCursor();
-          var response = [];
-
-          request.onsuccess = function onSuccess(e) {
-            var cursor = e.target.result;
-
-            if (cursor) {
-              response.push(cursor.value);
-              return cursor.continue();
-            }
-
-            resolve(response);
-          };
-
-          request.onerror = function (e) {
-            reject(new _errors.KinveyError('An error occurred while fetching data from the ' + collection + ' ' + ('collection on the ' + _this2.name + ' indexedDB database. Received the error code ' + e.target.errorCode + '.')));
-          };
-        }, function (error) {
-          if (error instanceof _errors.NotFoundError) {
-            return resolve([]);
-          }
-
-          reject(error);
-        });
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'findById',
-    value: function findById(collection, id) {
-      var _this3 = this;
-
-      var promise = new Promise(function (resolve, reject) {
-        _this3.openTransaction(collection, false, function (store) {
-          var request = store.get(id);
-
-          request.onsuccess = function (e) {
-            var entity = e.target.result;
-
-            if (entity) {
-              return resolve(entity);
-            }
-
-            reject(new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this3.name + ' indexedDB database.')));
-          };
-
-          request.onerror = function (e) {
-            reject(new _errors.KinveyError('An error occurred while retrieving an entity with _id = ' + id + ' ' + ('from the ' + collection + ' collection on the ' + _this3.name + ' indexedDB database. ') + ('Received the error code ' + e.target.errorCode + '.')));
-          };
-        }, function (error) {
-          if (error instanceof _errors.NotFoundError) {
-            return reject(new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this3.name + ' indexedDB database.')));
-          }
-
-          reject(error);
-        });
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'save',
-    value: function save(collection, entities) {
-      var _this4 = this;
-
-      if (!(0, _isArray2.default)(entities)) {
-        return this.save(collection, entities);
-      }
-
-      if (entities.length === 0) {
-        return Promise.resolve(entities);
-      }
-
-      var promise = new Promise(function (resolve, reject) {
-        _this4.openTransaction(collection, true, function (store) {
-          var request = store.transaction;
-
-          (0, _forEach2.default)(entities, function (entity) {
-            store.put(entity);
-          });
-
-          request.oncomplete = function onComplete() {
-            resolve(entities);
-          };
-
-          request.onerror = function (e) {
-            reject(new _errors.KinveyError('An error occurred while saving the entities to the ' + collection + ' ' + ('collection on the ' + _this4.name + ' indexedDB database. Received the error code ' + e.target.errorCode + '.')));
-          };
-        }, reject);
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'removeById',
-    value: function removeById(collection, id) {
-      var _this5 = this;
-
-      var promise = new Promise(function (resolve, reject) {
-        _this5.openTransaction(collection, true, function (store) {
-          var request = store.transaction;
-          var doc = store.get(id);
-          store.delete(id);
-
-          request.oncomplete = function () {
-            if (!doc.result) {
-              return reject(new _errors.NotFoundError('An entity with id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this5.name + ' indexedDB database.')));
-            }
-
-            resolve({
-              count: 1,
-              entities: [doc.result]
-            });
-          };
-
-          request.onerror = function (e) {
-            reject(new _errors.KinveyError('An error occurred while deleting an entity with id = ' + id + ' ' + ('in the ' + collection + ' collection on the ' + _this5.name + ' indexedDB database. ') + ('Received the error code ' + e.target.errorCode + '.')));
-          };
-        }, reject);
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'destroy',
-    value: function destroy() {
-      var _this6 = this;
-
-      var promise = new Promise(function (resolve, reject) {
-        if (_this6.db) {
-          _this6.db.close();
-          _this6.db = null;
-        }
-
-        var request = indexedDB.deleteDatabase(_this6.name);
-
-        request.onsuccess = function onSuccess() {
-          resolve(null);
-        };
-
-        request.onerror = function (e) {
-          reject(new _errors.KinveyError('An error occurred while destroying the ' + _this6.name + ' ' + ('indexedDB database. Received the error code ' + e.target.errorCode + '.')));
-        };
-      });
-
-      return promise;
-    }
-  }], [{
-    key: 'isSupported',
-    value: function isSupported() {
-      return indexedDB ? true : false;
-    }
-  }]);
-
-  return IndexedDB;
-}();
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{"../../../errors":8,"indexeddbshim":189,"lodash/forEach":349,"lodash/isArray":354}],20:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.LocalStorage = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _errors = require('../../../errors');
-
-var _keyBy = require('lodash/keyBy');
-
-var _keyBy2 = _interopRequireDefault(_keyBy);
-
-var _merge = require('lodash/merge');
-
-var _merge2 = _interopRequireDefault(_merge);
-
-var _values = require('lodash/values');
-
-var _values2 = _interopRequireDefault(_values);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var idAttribute = "_id" || '_id';
-var localStorage = undefined;
-
-if (typeof window !== 'undefined') {
-  localStorage = window.localStorage;
-}
-
-/**
- * @private
- */
-
-var LocalStorage = exports.LocalStorage = function () {
-  function LocalStorage() {
-    var name = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
-
-    _classCallCheck(this, LocalStorage);
-
-    this.name = name;
-  }
-
-  _createClass(LocalStorage, [{
-    key: 'find',
-    value: function find(collection) {
-      var _this = this;
-
-      return Promise.resolve().then(function () {
-        var data = localStorage.getItem('' + _this.name + collection);
-
-        try {
-          return JSON.parse(data);
-        } catch (err) {
-          return data;
-        }
-      }).then(function (entities) {
-        if (!entities) {
-          return [];
-        }
-
-        return entities;
-      });
-    }
-  }, {
-    key: 'findById',
-    value: function findById(collection, id) {
-      var _this2 = this;
-
-      return this.find(collection).then(function (entities) {
-        var entity = find(entities, function (entity) {
-          return entity[idAttribute] === id;
-        });
-
-        if (!entity) {
-          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this2.name + ' memory database.'));
-        }
-
-        return entity;
-      });
-    }
-  }, {
-    key: 'save',
-    value: function save(collection, entities) {
-      var _this3 = this;
-
-      return this.find(collection).then(function (existingEntities) {
-        var existingEntitiesById = (0, _keyBy2.default)(existingEntities, idAttribute);
-        var entitiesById = (0, _keyBy2.default)(entities, idAttribute);
-
-        for (var id in existingEntitiesById) {
-          if (existingEntitiesById.hasOwnProperty(id)) {
-            var existingEntity = existingEntitiesById[id];
-            var entity = entitiesById[id];
-
-            if (entity) {
-              entitiesById[id] = (0, _merge2.default)(existingEntity, entity);
-            }
-          }
-        }
-
-        localStorage.setItem('' + _this3.name + collection, JSON.stringify((0, _values2.default)(entitiesById)));
-        return entities;
-      });
-    }
-  }, {
-    key: 'removeById',
-    value: function removeById(collection, id) {
-      var _this4 = this;
-
-      return this.find(collection).then(function (entities) {
-        var entitiesById = (0, _keyBy2.default)(entities, idAttribute);
-        var entity = entitiesById[id];
-
-        if (!entity) {
-          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this4.name + ' memory database.'));
-        }
-
-        delete entitiesById[id];
-        localStorage.setItem('' + _this4.name + collection, JSON.stringify((0, _values2.default)(entitiesById)));
-
-        return {
-          count: 1,
-          entities: [entity]
-        };
-      });
-    }
-  }], [{
-    key: 'isSupported',
-    value: function isSupported() {
-      var item = 'testLocalStorageSupport';
-      try {
-        localStorage.setItem(item, item);
-        localStorage.removeItem(item);
-        return true;
-      } catch (e) {
-        return false;
-      }
-    }
-  }]);
-
-  return LocalStorage;
-}();
-},{"../../../errors":8,"lodash/keyBy":370,"lodash/merge":375,"lodash/values":387}],21:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Memory = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _errors = require('../../../errors');
-
-var _fastMemoryCache = require('fast-memory-cache');
-
-var _fastMemoryCache2 = _interopRequireDefault(_fastMemoryCache);
-
-var _keyBy = require('lodash/keyBy');
-
-var _keyBy2 = _interopRequireDefault(_keyBy);
-
-var _merge = require('lodash/merge');
-
-var _merge2 = _interopRequireDefault(_merge);
-
-var _values = require('lodash/values');
-
-var _values2 = _interopRequireDefault(_values);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var idAttribute = "_id" || '_id';
-
-/**
- * @private
- */
-
-var Memory = exports.Memory = function () {
-  function Memory() {
-    var name = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
-
-    _classCallCheck(this, Memory);
-
-    this.name = name;
-    this.cache = new _fastMemoryCache2.default();
-  }
-
-  _createClass(Memory, [{
-    key: 'find',
-    value: function find(collection) {
-      var _this = this;
-
-      return Promise.resolve().then(function () {
-        var data = _this.cache.get('' + _this.name + collection);
-
-        try {
-          return JSON.parse(data);
-        } catch (err) {
-          return data;
-        }
-      }).then(function (entities) {
-        if (!entities) {
-          return [];
-        }
-
-        return entities;
-      });
-    }
-  }, {
-    key: 'findById',
-    value: function findById(collection, id) {
-      var _this2 = this;
-
-      return this.find(collection).then(function (entities) {
-        var entity = find(entities, function (entity) {
-          return entity[idAttribute] === id;
-        });
-
-        if (!entity) {
-          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this2.name + ' memory database.'));
-        }
-
-        return entity;
-      });
-    }
-  }, {
-    key: 'save',
-    value: function save(collection, entities) {
-      var _this3 = this;
-
-      return this.find(collection).then(function (existingEntities) {
-        var existingEntitiesById = (0, _keyBy2.default)(existingEntities, idAttribute);
-        var entitiesById = (0, _keyBy2.default)(entities, idAttribute);
-
-        for (var id in existingEntitiesById) {
-          if (existingEntitiesById.hasOwnProperty(id)) {
-            var existingEntity = existingEntitiesById[id];
-            var entity = entitiesById[id];
-
-            if (entity) {
-              entitiesById[id] = (0, _merge2.default)(existingEntity, entity);
-            }
-          }
-        }
-
-        _this3.cache.set('' + _this3.name + collection, JSON.stringify((0, _values2.default)(entitiesById)));
-        return entities;
-      });
-    }
-  }, {
-    key: 'removeById',
-    value: function removeById(collection, id) {
-      var _this4 = this;
-
-      return this.find(collection).then(function (entities) {
-        var entitiesById = (0, _keyBy2.default)(entities, idAttribute);
-        var entity = entitiesById[id];
-
-        if (!entity) {
-          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this4.name + ' memory database.'));
-        }
-
-        delete entitiesById[id];
-        _this4.cache.set('' + _this4.name + collection, JSON.stringify((0, _values2.default)(entitiesById)));
-
-        return {
-          count: 1,
-          entities: [entity]
-        };
-      });
-    }
-  }], [{
-    key: 'isSupported',
-    value: function isSupported() {
-      return true;
-    }
-  }]);
-
-  return Memory;
-}();
-},{"../../../errors":8,"fast-memory-cache":150,"lodash/keyBy":370,"lodash/merge":375,"lodash/values":387}],22:[function(require,module,exports){
-(function (global){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.WebSQL = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _errors = require('../../../errors');
-
-var _map = require('lodash/map');
-
-var _map2 = _interopRequireDefault(_map);
-
-var _forEach = require('lodash/forEach');
-
-var _forEach2 = _interopRequireDefault(_forEach);
-
-var _isArray = require('lodash/isArray');
-
-var _isArray2 = _interopRequireDefault(_isArray);
-
-var _isFunction = require('lodash/isFunction');
-
-var _isFunction2 = _interopRequireDefault(_isFunction);
-
-var _isString = require('lodash/isString');
-
-var _isString2 = _interopRequireDefault(_isString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var idAttribute = "_id" || '_id';
-var masterCollectionName = 'sqlite_master';
-var size = 5 * 1000 * 1000; // Database size in bytes
-var webSQL = null;
-var dbCache = {};
-
-if (typeof window !== 'undefined') {
-  webSQL = {
-    openDatabase: typeof openDatabase !== 'undefined' ? openDatabase : global.openDatabase
-  };
-}
-
-/**
- * @private
- */
-
-var WebSQL = exports.WebSQL = function () {
-  function WebSQL() {
-    var name = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
-
-    _classCallCheck(this, WebSQL);
-
-    this.name = name;
-  }
-
-  _createClass(WebSQL, [{
-    key: 'openTransaction',
-    value: function openTransaction(collection, query, parameters) {
-      var _this = this;
-
-      var write = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
-
-      var db = dbCache[this.name];
-      var escapedCollection = '"' + collection + '"';
-      var isMaster = collection === masterCollectionName;
-      var isMulti = (0, _isArray2.default)(query);
-
-      query = isMulti ? query : [[query, parameters]];
-
-      if (!db) {
-        db = webSQL.openDatabase(this.name, 1, '', size);
-        dbCache[this.name] = db;
-      }
-
-      var promise = new Promise(function (resolve, reject) {
-        var writeTxn = write || !(0, _isFunction2.default)(db.readTransaction);
-        db[writeTxn ? 'transaction' : 'readTransaction'](function (tx) {
-          if (write && !isMaster) {
-            tx.executeSql('CREATE TABLE IF NOT EXISTS ' + escapedCollection + ' ' + '(key BLOB PRIMARY KEY NOT NULL, value BLOB NOT NULL)');
-          }
-
-          var pending = query.length;
-          var responses = [];
-
-          (0, _forEach2.default)(query, function (parts) {
-            var sql = parts[0].replace('#{collection}', escapedCollection);
-
-            tx.executeSql(sql, parts[1], function (_, resultSet) {
-              var response = {
-                rowCount: resultSet.rowsAffected,
-                result: []
-              };
-
-              if (resultSet.rows.length) {
-                for (var i = 0, len = resultSet.rows.length; i < len; i++) {
-                  try {
-                    var value = resultSet.rows.item(i).value;
-                    var entity = isMaster ? value : JSON.parse(value);
-                    response.result.push(entity);
-                  } catch (err) {
-                    // Catch the error
-                  }
-                }
-              }
-
-              responses.push(response);
-              pending = pending - 1;
-
-              if (pending === 0) {
-                resolve(isMulti ? responses : responses.shift());
-              }
-            });
-          });
-        }, function (err) {
-          err = (0, _isString2.default)(err) ? err : err.message;
-
-          if (err && err.indexOf('no such table') === -1) {
-            return reject(new _errors.NotFoundError('The ' + collection + ' collection was not found on ' + ('the ' + _this.name + ' webSQL database.')));
-          }
-
-          var query = 'SELECT name AS value from #{collection} WHERE type = ? AND name = ?';
-          var parameters = ['table', collection];
-
-          _this.openTransaction(masterCollectionName, query, parameters).then(function (response) {
-            if (response.result.length === 0) {
-              return reject(new _errors.NotFoundError('The ' + collection + ' collection was not found on ' + ('the ' + _this.name + ' webSQL database.')));
-            }
-
-            reject(new _errors.KinveyError('Unable to open a transaction for the ' + collection + ' ' + ('collection on the ' + _this.name + ' webSQL database.')));
-          }).catch(function (err) {
-            reject(new _errors.KinveyError('Unable to open a transaction for the ' + collection + ' ' + ('collection on the ' + _this.name + ' webSQL database.'), err));
-          });
-        });
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'find',
-    value: function find(collection) {
-      var sql = 'SELECT value FROM #{collection}';
-      var promise = this.openTransaction(collection, sql, []).then(function (response) {
-        return response.result;
-      }).catch(function (error) {
-        if (error instanceof _errors.NotFoundError) {
-          return [];
-        }
-
-        throw error;
-      });
-      return promise;
-    }
-  }, {
-    key: 'findById',
-    value: function findById(collection, id) {
-      var _this2 = this;
-
-      var sql = 'SELECT value FROM #{collection} WHERE key = ?';
-      var promise = this.openTransaction(collection, sql, [id]).then(function (response) {
-        var entities = response.result;
-
-        if (entities.length === 0) {
-          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this2.name + ' webSQL database.'));
-        }
-
-        return entities[0];
-      });
-      return promise;
-    }
-  }, {
-    key: 'save',
-    value: function save(collection, entities) {
-      var queries = [];
-      entities = (0, _map2.default)(entities, function (entity) {
-        queries.push(['REPLACE INTO #{collection} (key, value) VALUES (?, ?)', [entity[idAttribute], JSON.stringify(entity)]]);
-
-        return entity;
-      });
-
-      var promise = this.openTransaction(collection, queries, null, true).then(function () {
-        return entities;
-      });
-      return promise;
-    }
-  }, {
-    key: 'removeById',
-    value: function removeById(collection, id) {
-      var _this3 = this;
-
-      var promise = this.openTransaction(collection, [['SELECT value FROM #{collection} WHERE key = ?', [id]], ['DELETE FROM #{collection} WHERE key = ?', [id]]], null, true).then(function (response) {
-        var entities = response[0].result;
-        var count = response[1].rowCount;
-        count = count ? count : entities.length;
-
-        if (count === 0) {
-          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this3.name + ' webSQL database.'));
-        }
-
-        return {
-          count: 1,
-          entities: entities
-        };
-      });
-
-      return promise;
-    }
-  }], [{
-    key: 'isSupported',
-    value: function isSupported() {
-      return webSQL ? true : false;
-    }
-  }]);
-
-  return WebSQL;
-}();
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{"../../../errors":8,"lodash/forEach":349,"lodash/isArray":354,"lodash/isFunction":359,"lodash/isString":367,"lodash/map":374}],23:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.DB = exports.DBAdapter = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _query = require('../../query');
-
-var _query2 = _interopRequireDefault(_query);
-
-var _aggregation = require('../../aggregation');
-
-var _aggregation2 = _interopRequireDefault(_aggregation);
-
-var _indexeddb = require('./adapters/indexeddb');
-
-var _localstorage = require('./adapters/localstorage');
-
-var _memory = require('./adapters/memory');
-
-var _websql = require('./adapters/websql');
-
-var _log = require('../../log');
-
-var _log2 = _interopRequireDefault(_log);
-
-var _map = require('lodash/map');
-
-var _map2 = _interopRequireDefault(_map);
-
-var _result = require('lodash/result');
-
-var _result2 = _interopRequireDefault(_result);
-
-var _reduce = require('lodash/reduce');
-
-var _reduce2 = _interopRequireDefault(_reduce);
-
-var _forEach = require('lodash/forEach');
-
-var _forEach2 = _interopRequireDefault(_forEach);
-
-var _isString = require('lodash/isString');
-
-var _isString2 = _interopRequireDefault(_isString);
-
-var _isArray = require('lodash/isArray');
-
-var _isArray2 = _interopRequireDefault(_isArray);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var idAttribute = "_id" || '_id';
-var kmdAttribute = "_kmd" || '_kmd';
-
-/**
- * @private
- * Enum for DB Adapters.
- */
-var DBAdapter = {
-  IndexedDB: 'IndexedDB',
-  LocalStorage: 'LocalStorage',
-  Memory: 'Memory',
-  WebSQL: 'WebSQL'
-};
-Object.freeze(DBAdapter);
-exports.DBAdapter = DBAdapter;
-
-/**
- * @private
- */
-
-var DB = exports.DB = function () {
-  function DB() {
-    var _this = this;
-
-    var dbName = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
-    var adapters = arguments.length <= 1 || arguments[1] === undefined ? [DBAdapter.Memory] : arguments[1];
-
-    _classCallCheck(this, DB);
-
-    if (!(0, _isArray2.default)(adapters)) {
-      adapters = [adapters];
-    }
-
-    (0, _forEach2.default)(adapters, function (adapter) {
-      switch (adapter) {
-        case DBAdapter.IndexedDB:
-          if (_indexeddb.IndexedDB.isSupported()) {
-            _this.adapter = new _indexeddb.IndexedDB(dbName);
-            return false;
-          }
-
-          break;
-        case DBAdapter.LocalStorage:
-          if (_localstorage.LocalStorage.isSupported()) {
-            _this.adapter = new _localstorage.LocalStorage(dbName);
-            return false;
-          }
-
-          break;
-        case DBAdapter.Memory:
-          if (_memory.Memory.isSupported()) {
-            _this.adapter = new _memory.Memory(dbName);
-            return false;
-          }
-
-          break;
-        case DBAdapter.WebSQL:
-          if (_websql.WebSQL.isSupported()) {
-            _this.adapter = new _websql.WebSQL(dbName);
-            return false;
-          }
-
-          break;
-        default:
-          _log2.default.warn('The ' + adapter + ' adapter is is not recognized.');
-      }
-    });
-
-    if (!this.adapter) {
-      if (_memory.Memory.isSupported()) {
-        _log2.default.error('Provided adapters are unsupported on this platform. ' + 'Defaulting to StoreAdapter.Memory adapter.', adapters);
-        this.adapter = new _memory.Memory(dbName);
-      } else {
-        _log2.default.error('Provided adapters are unsupported on this platform.', adapters);
-      }
-    }
-  }
-
-  _createClass(DB, [{
-    key: 'isLocalObjectId',
-    value: function isLocalObjectId(id) {
-      return id.indexOf(this.objectIdPrefix) === 0 ? true : false;
-    }
-  }, {
-    key: 'generateObjectId',
-    value: function generateObjectId() {
-      var length = arguments.length <= 0 || arguments[0] === undefined ? 24 : arguments[0];
-
-      var chars = 'abcdef0123456789';
-      var objectId = '';
-
-      for (var i = 0, j = chars.length; i < length; i++) {
-        var pos = Math.floor(Math.random() * j);
-        objectId += chars.substring(pos, pos + 1);
-      }
-
-      objectId = '' + this.objectIdPrefix + objectId;
-      return objectId;
-    }
-  }, {
-    key: 'find',
-    value: function find(collection, query) {
-      var promise = this.adapter.find(collection).then(function (entities) {
-        if (query && !(query instanceof _query2.default)) {
-          query = new _query2.default((0, _result2.default)(query, 'toJSON', query));
-        }
-
-        if (entities.length > 0 && query) {
-          entities = query._process(entities);
-        }
-
-        return entities;
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'count',
-    value: function count(collection, query) {
-      var promise = this.find(collection, query).then(function (entities) {
-        return entities.length;
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'group',
-    value: function group(collection, aggregation) {
-      var promise = this.find(collection).then(function (entities) {
-        if (!(aggregation instanceof _aggregation2.default)) {
-          aggregation = new _aggregation2.default((0, _result2.default)(aggregation, 'toJSON', aggregation));
-        }
-
-        return aggregation.process(entities);
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'findById',
-    value: function findById(collection, id) {
-      if (!(0, _isString2.default)(id)) {
-        _log2.default.warn(id + ' is not a string. Casting to a string value.', id);
-        id = String(id);
-      }
-
-      var promise = this.adapter.findById(collection, id);
-      return promise;
-    }
-  }, {
-    key: 'save',
-    value: function save(collection) {
-      var _this2 = this;
-
-      var entities = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
-
-      var singular = false;
-
-      if (!entities) {
-        return Promise.resolve(null);
-      }
-
-      if (!(0, _isArray2.default)(entities)) {
-        singular = true;
-        entities = [entities];
-      }
-
-      entities = (0, _map2.default)(entities, function (entity) {
-        var _id = entity[idAttribute];
-        var kmd = entity[kmdAttribute] || {};
-
-        if (!_id) {
-          _id = _this2.generateObjectId();
-          kmd.local = true;
-        }
-
-        delete kmd.lmt;
-        entity[idAttribute] = _id;
-        entity[kmdAttribute] = kmd;
-        return entity;
-      });
-
-      return this.adapter.save(collection, entities).then(function (data) {
-        if (singular && data.length > 0) {
-          return data[0];
-        }
-
-        return data;
-      });
-    }
-  }, {
-    key: 'remove',
-    value: function remove(collection, query) {
-      var _this3 = this;
-
-      if (query && !(query instanceof _query2.default)) {
-        query = new _query2.default((0, _result2.default)(query, 'toJSON', query));
-      }
-
-      // Removing should not take the query sort, limit, and skip into account.
-      if (query) {
-        query.sort(null).limit(null).skip(0);
-      }
-
-      var promise = this.find(collection, query).then(function (entities) {
-        var promises = entities.map(function (entity) {
-          return _this3.removeById(collection, entity[idAttribute]);
-        });
-
-        return Promise.all(promises);
-      }).then(function (responses) {
-        return (0, _reduce2.default)(responses, function (result, response) {
-          result.count += response.count;
-          result.entities.concat(response.entities);
-          return result;
-        }, {
-          count: 0,
-          entities: []
-        });
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'removeById',
-    value: function removeById(collection, id) {
-      if (!id) {
-        return Promise.resolve({
-          count: 0,
-          entities: []
-        });
-      }
-
-      var promise = this.adapter.removeById(collection, id);
-      return promise;
-    }
-  }, {
-    key: 'objectIdPrefix',
-    get: function get() {
-      return '';
-    }
-  }]);
-
-  return DB;
-}();
-},{"../../aggregation":3,"../../log":9,"../../query":12,"./adapters/indexeddb":19,"./adapters/localstorage":20,"./adapters/memory":21,"./adapters/websql":22,"lodash/forEach":349,"lodash/isArray":354,"lodash/isString":367,"lodash/map":374,"lodash/reduce":379,"lodash/result":381}],24:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.KinveyRack = exports.Rack = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _middleware = require('./middleware');
-
-var _result = require('lodash/result');
-
-var _result2 = _interopRequireDefault(_result);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * @private
- */
-
-var Rack = exports.Rack = function (_Middleware) {
-  _inherits(Rack, _Middleware);
-
-  function Rack() {
-    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Rack' : arguments[0];
-
-    _classCallCheck(this, Rack);
-
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Rack).call(this, name));
-
-    _this._middlewares = [];
-    _this.canceled = false;
-    return _this;
-  }
-
-  _createClass(Rack, [{
-    key: 'getMiddleware',
-    value: function getMiddleware() {
-      var index = arguments.length <= 0 || arguments[0] === undefined ? -1 : arguments[0];
-
-      var middlewares = this.middlewares;
-
-      if (index < -1 || index >= middlewares.length) {
-        throw new Error('Index ' + index + ' is out of bounds.');
-      }
-
-      return middlewares[index];
-    }
-  }, {
-    key: 'use',
-    value: function use(middleware) {
-      if (middleware) {
-        if (middleware instanceof _middleware.Middleware) {
-          this._middlewares.push(middleware);
-          return;
-        }
-
-        throw new Error('Unable to use the middleware. It must be an instance of Middleware.');
-      }
-    }
-  }, {
-    key: 'useBefore',
-    value: function useBefore(middlewareClass, middleware) {
-      if (middleware) {
-        if (middleware instanceof _middleware.Middleware) {
-          var middlewares = this.middlewares;
-          var index = middlewares.findIndex(function (existingMiddleware) {
-            return existingMiddleware instanceof middlewareClass;
-          });
-
-          if (index > -1) {
-            middlewares.splice(index, 0, middleware);
-            this._middlewares = middlewares;
-          }
-
-          return;
-        }
-
-        throw new Error('Unable to use the middleware. It must be an instance of Middleware.');
-      }
-    }
-  }, {
-    key: 'useAfter',
-    value: function useAfter(middlewareClass, middleware) {
-      if (middleware) {
-        if (middleware instanceof _middleware.Middleware) {
-          var middlewares = this.middlewares;
-          var index = middlewares.findIndex(function (existingMiddleware) {
-            return existingMiddleware instanceof middlewareClass;
-          });
-
-          if (index > -1) {
-            middlewares.splice(index + 1, 0, middleware);
-            this._middlewares = middlewares;
-          }
-
-          return;
-        }
-
-        throw new Error('Unable to use the middleware. It must be an instance of Middleware.');
-      }
-    }
-  }, {
-    key: 'swap',
-    value: function swap(middlewareClass, middleware) {
-      if (middleware) {
-        if (middleware instanceof _middleware.Middleware) {
-          var middlewares = this.middlewares;
-          var index = middlewares.findIndex(function (existingMiddleware) {
-            return existingMiddleware instanceof middlewareClass;
-          });
-
-          if (index > -1) {
-            middlewares.splice(index, 1, middleware);
-            this._middlewares = middlewares;
-          }
-
-          return;
-        }
-
-        throw new Error('Unable to use the middleware. It must be an instance of Middleware.');
-      }
-    }
-  }, {
-    key: 'remove',
-    value: function remove(middlewareClass) {
-      var middlewares = this.middlewares;
-      var index = middlewares.findIndex(function (existingMiddleware) {
-        return existingMiddleware instanceof middlewareClass;
-      });
-
-      if (index > -1) {
-        middlewares.splice(index, 1);
-        this._middlewares = middlewares;
-        this.remove(middlewareClass);
-      }
-    }
-  }, {
-    key: 'reset',
-    value: function reset() {
-      this._middlewares = [];
-    }
-  }, {
-    key: 'execute',
-    value: function execute(request) {
-      if (!request) {
-        return Promise.reject(new Error('Request is null. Please provide a valid request.'));
-      }
-
-      return this._execute(0, this.middlewares, request);
-    }
-  }, {
-    key: '_execute',
-    value: function _execute(index, middlewares, request) {
-      var _this2 = this;
-
-      if (index < -1 || index >= middlewares.length) {
-        throw new Error('Index ' + index + ' is out of bounds.');
-      }
-
-      var middleware = middlewares[index];
-      return middleware.handle(request).then(function (response) {
-        index = index + 1;
-
-        if (index < middlewares.length) {
-          return _this2._execute(index, middlewares, response);
-        }
-
-        return response;
-      });
-    }
-  }, {
-    key: 'cancel',
-    value: function cancel() {
-      this.canceled = true;
-    }
-  }, {
-    key: 'handle',
-    value: function handle(request) {
-      return this.execute(request);
-    }
-  }, {
-    key: 'generateTree',
-    value: function generateTree() {
-      var level = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
-
-      var root = _get(Object.getPrototypeOf(Rack.prototype), 'generateTree', this).call(this, level);
-      var middlewares = this.middlewares;
-
-      middlewares.forEach(function (middleware) {
-        root.nodes.push(middleware.generateTree(level + 1));
-      });
-
-      return root;
-    }
-  }, {
-    key: 'middlewares',
-    get: function get() {
-      return this._middlewares.slice();
-    }
-  }]);
-
-  return Rack;
-}(_middleware.Middleware);
-
-/**
- * @private
- */
-
-
-var KinveyRack = exports.KinveyRack = function (_Rack) {
-  _inherits(KinveyRack, _Rack);
-
-  function KinveyRack() {
-    _classCallCheck(this, KinveyRack);
-
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(KinveyRack).apply(this, arguments));
-  }
-
-  _createClass(KinveyRack, [{
-    key: 'execute',
-    value: function execute(request) {
-      request = (0, _result2.default)(request, 'toJSON', request);
-      var promise = _get(Object.getPrototypeOf(KinveyRack.prototype), 'execute', this).call(this, request).then(function (request) {
-        return request.response;
-      });
-      return promise;
-    }
-  }]);
-
-  return KinveyRack;
-}(Rack);
-},{"./middleware":14,"lodash/result":381}],25:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.CacheRack = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _rack = require('../rack');
-
-var _cache = require('../middleware/cache');
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var sharedInstanceSymbol = Symbol();
-
-/**
- * @private
- */
-
-var CacheRack = exports.CacheRack = function (_KinveyRack) {
-  _inherits(CacheRack, _KinveyRack);
-
-  function CacheRack() {
-    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey Cache Rack' : arguments[0];
-
-    _classCallCheck(this, CacheRack);
-
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(CacheRack).call(this, name));
-
-    _this.use(new _cache.CacheMiddleware());
-    return _this;
-  }
-
-  _createClass(CacheRack, null, [{
-    key: 'sharedInstance',
-    value: function sharedInstance() {
-      var instance = CacheRack[sharedInstanceSymbol];
-
-      if (!instance) {
-        instance = new CacheRack();
-        CacheRack[sharedInstanceSymbol] = instance;
-      }
-
-      return instance;
-    }
-  }]);
-
-  return CacheRack;
-}(_rack.KinveyRack);
-},{"../middleware/cache":15,"../rack":24}],26:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.NetworkRack = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _rack = require('../rack');
-
-var _serialize = require('../middleware/serialize');
-
-var _http = require('../middleware/http');
-
-var _parse = require('../middleware/parse');
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var sharedInstanceSymbol = Symbol();
-
-/**
- * @private
- */
-
-var NetworkRack = exports.NetworkRack = function (_KinveyRack) {
-  _inherits(NetworkRack, _KinveyRack);
-
-  function NetworkRack() {
-    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey Network Rack' : arguments[0];
-
-    _classCallCheck(this, NetworkRack);
-
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(NetworkRack).call(this, name));
-
-    _this.use(new _serialize.SerializeMiddleware());
-    _this.use(new _http.HttpMiddleware());
-    _this.use(new _parse.ParseMiddleware());
-    return _this;
-  }
-
-  _createClass(NetworkRack, null, [{
-    key: 'sharedInstance',
-    value: function sharedInstance() {
-      var instance = NetworkRack[sharedInstanceSymbol];
-
-      if (!instance) {
-        instance = new NetworkRack();
-        NetworkRack[sharedInstanceSymbol] = instance;
-      }
-
-      return instance;
-    }
-  }]);
-
-  return NetworkRack;
-}(_rack.KinveyRack);
-},{"../middleware/http":16,"../middleware/parse":17,"../middleware/serialize":18,"../rack":24}],27:[function(require,module,exports){
-(function (process){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _request = require('./request');
-
-var _request2 = _interopRequireDefault(_request);
-
-var _response = require('./response');
-
-var _response2 = _interopRequireDefault(_response);
-
-var _enums = require('../enums');
-
-var _errors = require('../errors');
-
-var _query3 = require('../query');
-
-var _query4 = _interopRequireDefault(_query3);
-
-var _localRequest = require('./localRequest');
-
-var _localRequest2 = _interopRequireDefault(_localRequest);
-
-var _networkRequest2 = require('./networkRequest');
-
-var _networkRequest3 = _interopRequireDefault(_networkRequest2);
-
-var _keyBy = require('lodash/keyBy');
-
-var _keyBy2 = _interopRequireDefault(_keyBy);
-
-var _reduce = require('lodash/reduce');
-
-var _reduce2 = _interopRequireDefault(_reduce);
-
-var _result = require('lodash/result');
-
-var _result2 = _interopRequireDefault(_result);
-
-var _values = require('lodash/values');
-
-var _values2 = _interopRequireDefault(_values);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var idAttribute = "_id" || '_id';
-var kmdAttribute = "_kmd" || '_kmd';
-var lmtAttribute = process.env.KINVEY_LMT_ATTRIBUTE || 'lmt';
-var maxIdsPerRequest = 200 || 200;
-
-/**
- * @private
- */
-
-var DeltaFetchRequest = function (_Request) {
-  _inherits(DeltaFetchRequest, _Request);
-
-  function DeltaFetchRequest() {
-    _classCallCheck(this, DeltaFetchRequest);
-
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(DeltaFetchRequest).apply(this, arguments));
-  }
-
-  _createClass(DeltaFetchRequest, [{
-    key: 'execute',
-    value: function execute() {
-      var _this2 = this;
-
-      var promise = _get(Object.getPrototypeOf(DeltaFetchRequest.prototype), 'execute', this).call(this).then(function () {
-        if (_this2.method !== _enums.HttpMethod.GET) {
-          throw new Error('Invalid http method. Http GET requests are only supported by DeltaFetchRequests.');
-        }
-
-        var localRequest = new _localRequest2.default({
-          method: _enums.HttpMethod.GET,
-          url: _this2.url,
-          headers: _this2.headers,
-          auth: _this2.auth,
-          query: _this2.query,
-          timeout: _this2.timeout
-        });
-        return localRequest.execute();
-      }).catch(function (err) {
-        if (err instanceof _errors.NotFoundError) {
-          return new _response2.default({
-            statusCode: _enums.StatusCode.Ok,
-            data: []
-          });
-        }
-
-        throw err;
-      }).then(function (cacheResponse) {
-        var cacheDocuments = (0, _keyBy2.default)(cacheResponse.data, idAttribute);
-        var query = new _query4.default((0, _result2.default)(_this2.query, 'toJSON', _this2.query));
-        query.fields([idAttribute, kmdAttribute]);
-        var networkRequest = new _networkRequest3.default({
-          method: _enums.HttpMethod.GET,
-          url: _this2.url,
-          headers: _this2.headers,
-          auth: _this2.auth,
-          query: query,
-          timeout: _this2.timeout
-        });
-
-        return networkRequest.execute().then(function (networkResponse) {
-          var networkDocuments = (0, _keyBy2.default)(networkResponse.data, idAttribute);
-          var deltaSet = networkDocuments;
-
-          for (var id in cacheDocuments) {
-            if (cacheDocuments.hasOwnProperty(id)) {
-              var cacheDocument = cacheDocuments[id];
-              var networkDocument = networkDocuments[id];
-
-              if (networkDocument) {
-                if (networkDocument[kmdAttribute] && cacheDocument[kmdAttribute] && networkDocument[kmdAttribute][lmtAttribute] === cacheDocument[kmdAttribute][lmtAttribute]) {
-                  delete deltaSet[id];
-                } else {
-                  delete cacheDocuments[id];
-                }
-              } else {
-                delete cacheDocuments[id];
-              }
-            }
-          }
-
-          var deltaSetIds = Object.keys(deltaSet);
-          var promises = [];
-          var i = 0;
-
-          while (i < deltaSetIds.length) {
-            var _query = new _query4.default();
-            var ids = deltaSetIds.slice(i, deltaSetIds.length > maxIdsPerRequest + i ? maxIdsPerRequest : deltaSetIds.length);
-            _query.contains(idAttribute, ids);
-            var _networkRequest = new _networkRequest3.default({
-              method: _enums.HttpMethod.GET,
-              url: _this2.url,
-              headers: _this2.headers,
-              auth: _this2.auth,
-              query: _query,
-              timeout: _this2.timeout
-            });
-
-            var _promise = _networkRequest.execute().catch(function () {
-              return new _response2.default({
-                statusCode: _enums.StatusCode.ServerError
-              });
-            });
-            promises.push(_promise);
-
-            i += maxIdsPerRequest;
-          }
-
-          return Promise.all(promises).then(function (responses) {
-            var initialResponse = new _response2.default({
-              statusCode: _enums.StatusCode.Ok,
-              data: []
-            });
-            return (0, _reduce2.default)(responses, function (result, response) {
-              if (response.isSuccess()) {
-                result.addHeaders(response.headers);
-                result.data = result.data.concat(response.data);
-              }
-
-              return result;
-            }, initialResponse);
-          }).then(function (response) {
-            response.data = response.data.concat((0, _values2.default)(cacheDocuments));
-
-            if (_this2.query) {
-              var _query2 = new _query4.default((0, _result2.default)(_this2.query, 'toJSON', _this2.query));
-              _query2.skip(0).limit(0);
-              response.data = _query2._process(response.data);
-            }
-
-            return response;
-          });
-        });
-      });
-
-      return promise;
-    }
-  }]);
-
-  return DeltaFetchRequest;
-}(_request2.default);
-
-exports.default = DeltaFetchRequest;
-}).call(this,require('_process'))
-
-},{"../enums":7,"../errors":8,"../query":12,"./localRequest":28,"./networkRequest":29,"./request":31,"./response":32,"_process":418,"lodash/keyBy":370,"lodash/reduce":379,"lodash/result":381,"lodash/values":387}],28:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _request = require('./request');
-
-var _request2 = _interopRequireDefault(_request);
-
-var _response = require('./response');
-
-var _response2 = _interopRequireDefault(_response);
-
-var _cacheRack = require('../rack/racks/cacheRack');
-
-var _errors = require('../errors');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * @private
- */
-
-var LocalRequest = function (_Request) {
-  _inherits(LocalRequest, _Request);
-
-  function LocalRequest() {
-    _classCallCheck(this, LocalRequest);
-
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(LocalRequest).apply(this, arguments));
-  }
-
-  _createClass(LocalRequest, [{
-    key: 'execute',
-    value: function execute() {
-      var _this2 = this;
-
-      var promise = _get(Object.getPrototypeOf(LocalRequest.prototype), 'execute', this).call(this).then(function () {
-        var rack = _cacheRack.CacheRack.sharedInstance();
-        return rack.execute(_this2.toJSON());
-      }).then(function (response) {
-        if (!response) {
-          throw new _errors.NoResponseError();
-        }
-
-        return new _response2.default({
-          statusCode: response.statusCode,
-          headers: response.headers,
-          data: response.data
-        });
-      }).then(function (response) {
-        if (!response.isSuccess()) {
-          throw response.error;
-        }
-
-        return response;
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'cancel',
-    value: function cancel() {
-      var rack = _cacheRack.CacheRack.sharedInstance();
-      rack.cancel();
-    }
-  }]);
-
-  return LocalRequest;
-}(_request2.default);
-
-exports.default = LocalRequest;
-},{"../errors":8,"../rack/racks/cacheRack":25,"./request":31,"./response":32}],29:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _request = require('./request');
-
-var _request2 = _interopRequireDefault(_request);
-
-var _response = require('./response');
-
-var _response2 = _interopRequireDefault(_response);
-
-var _networkRack = require('../rack/racks/networkRack');
-
-var _errors = require('../errors');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * @private
- */
-
-var NetworkRequest = function (_Request) {
-  _inherits(NetworkRequest, _Request);
-
-  function NetworkRequest() {
-    _classCallCheck(this, NetworkRequest);
-
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(NetworkRequest).apply(this, arguments));
-  }
-
-  _createClass(NetworkRequest, [{
-    key: 'execute',
-    value: function execute() {
-      var _this2 = this;
-
-      var promise = _get(Object.getPrototypeOf(NetworkRequest.prototype), 'execute', this).call(this).then(function () {
-        var networkRack = _networkRack.NetworkRack.sharedInstance();
-        return networkRack.execute(_this2.toJSON());
-      }).then(function (response) {
-        if (!response) {
-          throw new _errors.NoResponseError();
-        }
-
-        return new _response2.default({
-          statusCode: response.statusCode,
-          headers: response.headers,
-          data: response.data
-        });
-      }).then(function (response) {
-        if (!response.isSuccess()) {
-          throw response.error;
-        }
-
-        return response;
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'cancel',
-    value: function cancel() {
-      var networkRack = _networkRack.NetworkRack.sharedInstance();
-      networkRack.cancel();
-    }
-  }]);
-
-  return NetworkRequest;
-}(_request2.default);
-
-exports.default = NetworkRequest;
-},{"../errors":8,"../rack/racks/networkRack":26,"./request":31,"./response":32}],30:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _clone = require('lodash/clone');
-
-var _clone2 = _interopRequireDefault(_clone);
-
-var _isPlainObject = require('lodash/isPlainObject');
-
-var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
-
-var _errors = require('../errors');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var privatePropertiesSymbol = Symbol();
-var appVersionKey = 'appVersion';
-
-var PrivateProperties = function () {
-  function PrivateProperties() {
-    var properties = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-    _classCallCheck(this, PrivateProperties);
-
-    this.properties = properties;
-  }
-
-  _createClass(PrivateProperties, [{
-    key: 'addProperties',
-    value: function addProperties(properties) {
-      var _this = this;
-
-      Object.keys(properties).forEach(function (key) {
-        var value = properties[key];
-
-        if (value) {
-          _this.properties[key] = value;
-        } else {
-          delete _this.properties[key];
-        }
-      });
-    }
-  }, {
-    key: 'clear',
-    value: function clear() {
-      this.properties = {};
-    }
-  }, {
-    key: 'clearProperty',
-    value: function clearProperty(key) {
-      var properties = this.properties;
-
-      if (key && properties.hasOwnProperty(key)) {
-        delete properties[key];
-      }
-    }
-  }, {
-    key: 'toJSON',
-    value: function toJSON() {
-      return (0, _clone2.default)(this.properties, true);
-    }
-  }, {
-    key: 'properties',
-    get: function get() {
-      return this._properties;
-    },
-    set: function set(properties) {
-      this._properties = (0, _clone2.default)(properties, true);
-    }
-  }]);
-
-  return PrivateProperties;
-}();
-
-/**
- * Properties class
- */
-
-
-var Properties = function () {
-  /**
-   * This is the constructor.
-   *
-   * @param  {Object} properties Request properties
-   */
-
-  function Properties(properties) {
-    _classCallCheck(this, Properties);
-
-    this[privatePropertiesSymbol] = new PrivateProperties(properties);
-  }
-
-  /**
-   * Set the request properties.
-   *
-   * @param {Object} properties Request properties
-   */
-
-
-  _createClass(Properties, [{
-    key: 'getProperty',
-
-
-    /**
-     * Returns the request property for the key or `undefined` if
-     * it has not been set.
-     *
-     * @param  {String} key Request property key
-     * @return {*} Request property value
-     */
-    value: function getProperty(key) {
-      var properties = this.toJSON();
-
-      if (key && properties.hasOwnProperty(key)) {
-        return properties[key];
-      }
-
-      return undefined;
-    }
-
-    /**
-     * Sets the request property key to the value.
-     *
-     * @param {String} key Request property key
-     * @param {*} value Request property value
-     * @return {RequestProperties} The request properties instance.
-     */
-
-  }, {
-    key: 'setProperty',
-    value: function setProperty(key, value) {
-      var properties = {};
-      properties[key] = value;
-      this.addProperties(properties);
-      return this;
-    }
-
-    /**
-     * Adds the properties to the exisiting request properties
-     * replacing any that already existed.
-     *
-     * @param {Object} properties Custom request properties
-     * @throws {KinveyError} If properties argument is not an object.
-     * @return {RequestProperties} The request properties instance.
-     */
-
-  }, {
-    key: 'addProperties',
-    value: function addProperties() {
-      var properties = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      if (!(0, _isPlainObject2.default)(properties)) {
-        throw new _errors.KinveyError('properties argument must be an object');
-      }
-
-      var privateProperties = this[privatePropertiesSymbol];
-      privateProperties.addProperties(properties);
-      return this;
-    }
-
-    /**
-     * Clears all the request properties.
-     *
-     * @return {RequestProperties} The request properties instance.
-     */
-
-  }, {
-    key: 'clear',
-    value: function clear() {
-      var privateProperties = this[privatePropertiesSymbol];
-      privateProperties.clear();
-      return this;
-    }
-
-    /**
-     * Clears the request property.
-     *
-     * @param  {String} key Request property key
-     * @return {RequestProperties} The request properties instance.
-     */
-
-  }, {
-    key: 'clearProperty',
-    value: function clearProperty(key) {
-      var privateProperties = this[privatePropertiesSymbol];
-      privateProperties.clearProperty(key);
-      return this;
-    }
-
-    /**
-     * Clears the app version property.
-     *
-     * @return {RequestProperties} The request properties instance.
-     */
-
-  }, {
-    key: 'clearAppVersion',
-    value: function clearAppVersion() {
-      return this.clearProperty(appVersionKey);
-    }
-
-    /**
-     * Returns a JSON representation of the request properties.
-     *
-     * @return {Object} Request properties JSON.
-     */
-
-  }, {
-    key: 'toJSON',
-    value: function toJSON() {
-      var privateProperties = this[privatePropertiesSymbol];
-      return privateProperties.toJSON();
-    }
-  }, {
-    key: 'properties',
-    set: function set(properties) {
-      this.clear().addProperties(properties);
-    }
-
-    /**
-     * Return the app version request property.
-     *
-     * @return {String} App version
-     */
-
-  }, {
-    key: 'appVersion',
-    get: function get() {
-      return this.getProperty(appVersionKey);
-    }
-
-    /**
-     * Set the app version request property. The app version can be provided
-     * in major.minor.patch format or something specific to your application.
-     *
-     * @param  {Any} version App version.
-     * @return {RequestProperties} The request properties instance.
-     */
-    ,
-    set: function set(version) {
-      version = Array.prototype.slice.call(arguments, 1);
-      var major = version[0];
-      var minor = version[1];
-      var patch = version[2];
-      var appVersion = '';
-
-      if (major) {
-        appVersion = (major + '').trim();
-      }
-
-      if (minor) {
-        appVersion = ('.' + minor).trim();
-      }
-
-      if (patch) {
-        appVersion = ('.' + patch).trim();
-      }
-
-      this.setProperty(appVersionKey, appVersion);
-      return this;
-    }
-  }]);
-
-  return Properties;
-}();
-
-exports.default = Properties;
-},{"../errors":8,"lodash/clone":346,"lodash/isPlainObject":365}],31:[function(require,module,exports){
-(function (Buffer){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _enums = require('../enums');
-
-var _device = require('../device');
-
-var _device2 = _interopRequireDefault(_device);
-
-var _properties = require('./properties');
-
-var _properties2 = _interopRequireDefault(_properties);
-
-var _string = require('../utils/string');
-
-var _assign = require('lodash/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
-var _result = require('lodash/result');
-
-var _result2 = _interopRequireDefault(_result);
-
-var _clone = require('lodash/clone');
-
-var _clone2 = _interopRequireDefault(_clone);
-
-var _forEach = require('lodash/forEach');
-
-var _forEach2 = _interopRequireDefault(_forEach);
-
-var _isString = require('lodash/isString');
-
-var _isString2 = _interopRequireDefault(_isString);
-
-var _isPlainObject = require('lodash/isPlainObject');
-
-var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * @private
- */
-
-var Request = function () {
-  function Request() {
-    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-    _classCallCheck(this, Request);
-
-    options = (0, _assign2.default)({
-      method: _enums.HttpMethod.GET,
-      headers: {},
-      url: null,
-      data: null,
-      timeout: 10000 || 10000,
-      followRedirect: true
-    }, options);
-
-    this.method = options.method;
-    this.url = options.url;
-    this.data = options.data || options.body;
-    this.timeout = options.timeout;
-    this.followRedirect = options.followRedirect;
-    this.executing = false;
-
-    var headers = options.headers && (0, _isPlainObject2.default)(options.headers) ? options.headers : {};
-
-    if (!headers.Accept || !headers.accept) {
-      headers.Accept = 'application/json; charset=utf-8';
-    }
-
-    this.addHeaders(headers);
-  }
-
-  _createClass(Request, [{
-    key: 'getHeader',
-    value: function getHeader(name) {
-      if (name) {
-        if (!(0, _isString2.default)(name)) {
-          name = String(name);
-        }
-
-        var headers = this.headers || {};
-        var keys = Object.keys(headers);
-
-        for (var i = 0, len = keys.length; i < len; i++) {
-          var key = keys[i];
-
-          if (key.toLowerCase() === name.toLowerCase()) {
-            return headers[key];
-          }
-        }
-      }
-
-      return undefined;
-    }
-  }, {
-    key: 'setHeader',
-    value: function setHeader(name, value) {
-      if (!name || !value) {
-        throw new Error('A name and value must be provided to set a header.');
-      }
-
-      if (!(0, _isString2.default)(name)) {
-        name = String(name);
-      }
-
-      var headers = this.headers || {};
-
-      if (!(0, _isString2.default)(value)) {
-        headers[name] = JSON.stringify(value);
-      } else {
-        headers[name] = value;
-      }
-
-      this.headers = headers;
-    }
-  }, {
-    key: 'addHeaders',
-    value: function addHeaders(headers) {
-      var _this = this;
-
-      if (!(0, _isPlainObject2.default)(headers)) {
-        throw new Error('Headers argument must be an object.');
-      }
-
-      var names = Object.keys(headers);
-
-      (0, _forEach2.default)(names, function (name) {
-        var value = headers[name];
-        _this.setHeader(name, value);
-      });
-    }
-  }, {
-    key: 'removeHeader',
-    value: function removeHeader(name) {
-      if (name) {
-        if (!(0, _isString2.default)(name)) {
-          name = String(name);
-        }
-
-        var headers = this.headers || {};
-        delete headers[name];
-        this.headers = headers;
-      }
-    }
-  }, {
-    key: 'clearHeaders',
-    value: function clearHeaders() {
-      this.headers = {};
-    }
-  }, {
-    key: 'isExecuting',
-    value: function isExecuting() {
-      return this.executing ? true : false;
-    }
-  }, {
-    key: 'execute',
-    value: function execute() {
-      var _this2 = this;
-
-      if (this.executing) {
-        return Promise.reject(new Error('Unable to execute the request. The request is already executing.'));
-      }
-
-      this.executing = Promise.resolve().then(function (response) {
-        _this2.executing = false;
-        return response;
-      }).catch(function (err) {
-        _this2.executing = false;
-        throw err;
-      });
-
-      return this.executing;
-    }
-  }, {
-    key: 'toJSON',
-    value: function toJSON() {
-      var json = {
-        method: this.method,
-        headers: this.headers,
-        url: this.url,
-        data: this.data,
-        followRedirect: this.followRedirect
-      };
-
-      return (0, _clone2.default)(json, true);
-    }
-  }, {
-    key: 'method',
-    get: function get() {
-      return this._method;
-    },
-    set: function set(method) {
-      if (!(0, _isString2.default)(method)) {
-        method = String(method);
-      }
-
-      method = method.toUpperCase();
-
-      switch (method) {
-        case _enums.HttpMethod.GET:
-        case _enums.HttpMethod.POST:
-        case _enums.HttpMethod.PATCH:
-        case _enums.HttpMethod.PUT:
-        case _enums.HttpMethod.DELETE:
-          this._method = method;
-          break;
-        default:
-          throw new Error('Invalid Http Method. Only GET, POST, PATCH, PUT, and DELETE are allowed.');
-      }
-    }
-  }, {
-    key: 'body',
-    get: function get() {
-      return this.data;
-    },
-    set: function set(body) {
-      this.data = body;
-    }
-  }, {
-    key: 'data',
-    get: function get() {
-      return this._data;
-    },
-    set: function set(data) {
-      if (data) {
-        var contentTypeHeader = this.getHeader('Content-Type');
-        if (!contentTypeHeader) {
-          this.setHeader('Content-Type', 'application/json; charset=utf-8');
-        }
-      } else {
-        this.removeHeader('Content-Type');
-      }
-
-      this._data = data;
-    }
-  }]);
-
-  return Request;
-}();
-
-/**
- * @private
- */
-
-
-var KinveyRequest = function (_Request) {
-  _inherits(KinveyRequest, _Request);
-
-  function KinveyRequest() {
-    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-    _classCallCheck(this, KinveyRequest);
-
-    var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(KinveyRequest).call(this, options));
-
-    options = (0, _assign2.default)({
-      properties: null,
-      auth: null,
-      query: null
-    }, options);
-
-    _this3.properties = options.properties;
-    _this3.auth = options.auth;
-    _this3.query = (0, _result2.default)(options.query, 'toJSON', options.query);
-
-    var headers = {};
-    headers['X-Kinvey-Api-Version'] = 3 || 3;
-
-    var device = new _device2.default();
-    headers['X-Kinvey-Device-Information'] = JSON.stringify(device.toJSON());
-
-    if (options.contentType) {
-      headers['X-Kinvey-Content-Type'] = options.contentType;
-    }
-
-    if (options.skipBL === true) {
-      headers['X-Kinvey-Skip-Business-Logic'] = true;
-    }
-
-    if (options.trace === true) {
-      headers['X-Kinvey-Include-Headers-In-Response'] = 'X-Kinvey-Request-Id';
-      headers['X-Kinvey-ResponseWrapper'] = true;
-    }
-
-    _this3.addHeaders(headers);
-    return _this3;
-  }
-
-  _createClass(KinveyRequest, [{
-    key: 'execute',
-    value: function execute() {
-      var _this4 = this;
-
-      var promise = _get(Object.getPrototypeOf(KinveyRequest.prototype), 'execute', this).call(this).then(function () {
-        return _this4.auth;
-      }).then(function (authInfo) {
-        if (authInfo) {
-          var credentials = authInfo.credentials;
-
-          if (authInfo.username) {
-            credentials = new Buffer(authInfo.username + ':' + authInfo.password).toString('base64');
-          }
-
-          _this4.setHeader('Authorization', authInfo.scheme + ' ' + credentials);
-        }
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'toJSON',
-    value: function toJSON() {
-      var json = _get(Object.getPrototypeOf(KinveyRequest.prototype), 'toJSON', this).call(this);
-      json.query = this.query;
-      return (0, _clone2.default)(json, true);
-    }
-  }, {
-    key: 'authHandler',
-    set: function set(authHandler) {
-      this.authHandler = authHandler;
-    }
-  }, {
-    key: 'properties',
-    set: function set(properties) {
-      if (properties) {
-        if (!(properties instanceof _properties2.default)) {
-          properties = new _properties2.default((0, _result2.default)(properties, 'toJSON', properties));
-        }
-
-        var appVersion = properties.appVersion;
-
-        if (appVersion) {
-          this.setHeader('X-Kinvey-Client-App-Version', appVersion);
-        } else {
-          this.removeHeader('X-Kinvey-Client-App-Version');
-        }
-
-        var customProperties = (0, _result2.default)(properties, 'toJSON', {});
-        delete customProperties.appVersion;
-        var customPropertiesHeader = JSON.stringify(customProperties);
-        var customPropertiesByteCount = (0, _string.byteCount)(customPropertiesHeader);
-        var customPropertiesMaxBytesAllowed = 2000 || 2000;
-
-        if (customPropertiesByteCount >= customPropertiesMaxBytesAllowed) {
-          throw new Error('The custom properties are ' + customPropertiesByteCount + ' bytes.' + ('It must be less then ' + customPropertiesMaxBytesAllowed + ' bytes.'), 'Please remove some custom properties.');
-        }
-
-        this.setHeader('X-Kinvey-Custom-Request-Properties', customPropertiesHeader);
-      }
-    }
-  }]);
-
-  return KinveyRequest;
-}(Request);
-
-exports.default = KinveyRequest;
-}).call(this,require("buffer").Buffer)
-
-},{"../device":6,"../enums":7,"../utils/string":42,"./properties":30,"buffer":102,"lodash/assign":344,"lodash/clone":346,"lodash/forEach":349,"lodash/isPlainObject":365,"lodash/isString":367,"lodash/result":381}],32:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _enums = require('../enums');
-
-var _errors = require('../errors');
-
-var _assign = require('lodash/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
-var _clone = require('lodash/clone');
-
-var _clone2 = _interopRequireDefault(_clone);
-
-var _forEach = require('lodash/forEach');
-
-var _forEach2 = _interopRequireDefault(_forEach);
-
-var _isString = require('lodash/isString');
-
-var _isString2 = _interopRequireDefault(_isString);
-
-var _isPlainObject = require('lodash/isPlainObject');
-
-var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * @private
- */
-
-var Response = function () {
-  function Response() {
-    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-    _classCallCheck(this, Response);
-
-    options = (0, _assign2.default)({
-      statusCode: _enums.StatusCode.Ok,
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-      },
-      data: null
-    }, options);
-
-    this.statusCode = options.statusCode;
-    this.addHeaders(options.headers);
-    this.data = options.data;
-  }
-
-  _createClass(Response, [{
-    key: 'getHeader',
-    value: function getHeader(name) {
-      if (name) {
-        if (!(0, _isString2.default)(name)) {
-          name = String(name);
-        }
-
-        var headers = this.headers || {};
-        var keys = Object.keys(headers);
-
-        for (var i = 0, len = keys.length; i < len; i++) {
-          var key = keys[i];
-
-          if (key.toLowerCase() === name.toLowerCase()) {
-            return headers[key];
-          }
-        }
-      }
-
-      return undefined;
-    }
-  }, {
-    key: 'setHeader',
-    value: function setHeader(name, value) {
-      if (!name || !value) {
-        throw new Error('A name and value must be provided to set a header.');
-      }
-
-      if (!(0, _isString2.default)(name)) {
-        name = String(name);
-      }
-
-      var headers = this.headers || {};
-
-      if (!(0, _isString2.default)(value)) {
-        headers[name] = JSON.stringify(value);
-      } else {
-        headers[name] = value;
-      }
-
-      this.headers = headers;
-    }
-  }, {
-    key: 'addHeaders',
-    value: function addHeaders(headers) {
-      var _this = this;
-
-      if (!(0, _isPlainObject2.default)(headers)) {
-        throw new Error('Headers argument must be an object.');
-      }
-
-      var names = Object.keys(headers);
-
-      (0, _forEach2.default)(names, function (name) {
-        var value = headers[name];
-        _this.setHeader(name, value);
-      });
-    }
-  }, {
-    key: 'removeHeader',
-    value: function removeHeader(name) {
-      if (name) {
-        if (!(0, _isString2.default)(name)) {
-          name = String(name);
-        }
-
-        var headers = this.headers || {};
-        delete headers[name];
-        this.headers = headers;
-      }
-    }
-  }, {
-    key: 'clearHeaders',
-    value: function clearHeaders() {
-      this.headers = {};
-    }
-  }, {
-    key: 'isSuccess',
-    value: function isSuccess() {
-      return this.statusCode >= 200 && this.statusCode < 300;
-    }
-  }, {
-    key: 'toJSON',
-    value: function toJSON() {
-      var json = {
-        statusCode: this.statusCode,
-        headers: this.headers,
-        data: this.data
-      };
-      return json;
-    }
-  }, {
-    key: 'error',
-    get: function get() {
-      if (this.isSuccess()) {
-        return null;
-      }
-
-      var data = (0, _clone2.default)(this.data, true) || {};
-      var name = data.name || data.error;
-      var message = data.message || data.description;
-      var debug = data.debug;
-
-      if (name === 'EntityNotFound' || name === 'CollectionNotFound' || name === 'AppNotFound' || name === 'UserNotFound' || name === 'BlobNotFound' || name === 'DocumentNotFound') {
-        return new _errors.NotFoundError(message, debug);
-      } else if (name === 'InsufficientCredentials') {
-        return new _errors.InsufficientCredentialsError(message, debug);
-      } else if (name === 'InvalidCredentials') {
-        return new _errors.InvalidCredentialsError(message, debug);
-      }
-
-      return new _errors.KinveyError(message, debug);
-    }
-  }]);
-
-  return Response;
-}();
-
-exports.default = Response;
-},{"../enums":7,"../errors":8,"lodash/assign":344,"lodash/clone":346,"lodash/forEach":349,"lodash/isPlainObject":365,"lodash/isString":367}],33:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _networkStore = require('./networkStore');
-
-var _networkStore2 = _interopRequireDefault(_networkStore);
-
-var _response = require('../requests/response');
-
-var _response2 = _interopRequireDefault(_response);
-
-var _enums = require('../enums');
-
-var _errors = require('../errors');
-
-var _query = require('../query');
-
-var _query2 = _interopRequireDefault(_query);
-
-var _aggregation = require('../aggregation');
-
-var _aggregation2 = _interopRequireDefault(_aggregation);
-
-var _assign = require('lodash/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
-var _forEach = require('lodash/forEach');
-
-var _forEach2 = _interopRequireDefault(_forEach);
-
-var _clone = require('lodash/clone');
-
-var _clone2 = _interopRequireDefault(_clone);
-
-var _map = require('lodash/map');
-
-var _map2 = _interopRequireDefault(_map);
-
-var _log = require('../log');
-
-var _log2 = _interopRequireDefault(_log);
-
-var _isArray = require('lodash/isArray');
-
-var _isArray2 = _interopRequireDefault(_isArray);
-
-var _keyBy = require('lodash/keyBy');
-
-var _keyBy2 = _interopRequireDefault(_keyBy);
-
-var _object = require('../utils/object');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var idAttribute = "_id" || '_id';
-var appdataNamespace = "appdata" || 'appdata';
-var syncCollectionName = "kinvey_sync" || 'sync';
-var kmdAttribute = "_kmd" || '_kmd';
-
-/**
- * The CacheStore class is used to find, save, update, remove, count and group enitities
- * in a collection on the network using a cache on the device.
- */
-
-var CacheStore = function (_NetworkStore) {
-  _inherits(CacheStore, _NetworkStore);
-
-  /**
-   * Creates a new instance of the CacheStore class.
-   *
-   * @param   {string}  name   Name of the collection
-   *
-   * @throws  {KinveyError}   If the name provided is not a string.
-   */
-
-  function CacheStore(name) {
-    _classCallCheck(this, CacheStore);
-
-    /**
-     * @type {Number}
-     */
-
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(CacheStore).call(this, name));
-
-    _this.ttl = undefined;
-    return _this;
-  }
-
-  /**
-   * The sync pathname for the store.
-   *
-   * @param   {Client}   [client]     Client
-   * @return  {string}                Sync pathname
-   */
-
-
-  _createClass(CacheStore, [{
-    key: 'find',
-
-
-    /**
-     * Finds all entities in a collection. A query can be optionally provided to return
-     * a subset of all entities in a collection or omitted to return all entities in
-     * a collection. The number of entities returned will adhere to the limits specified
-     * at http://devcenter.kinvey.com/rest/guides/datastore#queryrestrictions. A
-     * promise will be returned that will be resolved with the entities or rejected with
-     * an error.
-     *
-     * @param   {Query}                 [query]                                   Query used to filter result.
-     * @param   {Object}                [options]                                 Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @param   {Number}                [options.ttl]                             Time to live for data retrieved
-     *                                                                            from the cache.
-     * @return  {Promise}                                                         Promise
-     */
-    value: function find(query) {
-      var _this2 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      _log2.default.debug('Retrieving the entities in the ' + this.name + ' collection.', query);
-
-      options = (0, _assign2.default)({
-        useDeltaFetch: true
-      }, options);
-
-      if (query && !(query instanceof _query2.default)) {
-        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
-      }
-
-      var promise = Promise.resolve().then(function () {
-        return _this2.client.executeLocalRequest({
-          method: _enums.HttpMethod.GET,
-          pathname: _this2._pathname,
-          properties: options.properties,
-          auth: _this2.client.defaultAuth(),
-          query: query,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        var result = {
-          cache: response.data
-        };
-
-        result.networkPromise = _this2.syncCount().then(function (count) {
-          if (count > 0) {
-            return _this2.push().then(function () {
-              return _this2.syncCount();
-            });
-          }
-
-          return count;
-        }).then(function (count) {
-          if (count > 0) {
-            throw new _errors.KinveyError('Unable to load data from the network. There are ' + count + ' entities that need ' + 'to be synced before data is loaded from the network.');
-          }
-
-          if (options.useDeltaFetch) {
-            return _this2.client.executeDeltaFetchRequest({
-              method: _enums.HttpMethod.GET,
-              pathname: _this2._pathname,
-              properties: options.properties,
-              auth: _this2.client.defaultAuth(),
-              query: query,
-              timeout: options.timeout
-            }).then(function (response) {
-              return response.data;
-            });
-          }
-
-          return _get(Object.getPrototypeOf(CacheStore.prototype), 'find', _this2).call(_this2, query, options);
-        }).then(function (data) {
-          var removedEntityIds = Object.keys((0, _keyBy2.default)(data, idAttribute));
-          var removeQuery = new _query2.default();
-          removeQuery.contains(idAttribute, removedEntityIds);
-
-          return _this2.client.executeLocalRequest({
-            method: _enums.HttpMethod.DELETE,
-            pathname: _this2._pathname,
-            properties: options.properties,
-            auth: _this2.client.defaultAuth(),
-            query: removeQuery,
-            timeout: options.timeout
-          }).then(function () {
-            return _this2._updateCache(data);
-          });
-        });
-
-        return result;
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Retrieved the entities in the ' + _this2.name + ' collection.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to retrieve the entities in the ' + _this2.name + ' collection.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Groups entities in a collection. An aggregation can be optionally provided to group
-     * a subset of entities in a collection or omitted to group all the entities
-     * in a collection. A promise will be returned that will be resolved with the result
-     * or rejected with an error.
-     *
-     * @param   {Aggregation}           aggregation                               Aggregation used to group entities.
-     * @param   {Object}                [options]                                 Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @param   {Number}                [options.ttl]                             Time to live for data retrieved
-     *                                                                            from the cache.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'group',
-    value: function group(aggregation) {
-      var _this3 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      _log2.default.debug('Grouping the entities in the ' + this.name + ' collection.', aggregation, options);
-
-      options = (0, _assign2.default)({
-        force: false
-      }, options);
-
-      if (!(aggregation instanceof _aggregation2.default)) {
-        return Promise.reject(new _errors.KinveyError('Invalid aggregation. ' + 'It must be an instance of the Kinvey.Aggregation class.'));
-      }
-
-      var promise = Promise.resolve().then(function () {
-        return _this3.client.executeLocalRequest({
-          method: _enums.HttpMethod.GET,
-          pathname: _this3._pathname + '/_group',
-          properties: options.properties,
-          auth: _this3.client.defaultAuth(),
-          data: aggregation.toJSON(),
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        var result = {
-          cache: response.data
-        };
-
-        result.networkPromise = _this3.syncCount().then(function (count) {
-          if (count > 0) {
-            return _this3.push().then(function () {
-              return _this3.syncCount();
-            });
-          }
-
-          return count;
-        }).then(function (count) {
-          if (count > 0) {
-            throw new _errors.KinveyError('Unable to load data from the network. There are ' + count + ' entities that need ' + 'to be synced before data is loaded from the network.');
-          }
-
-          return _get(Object.getPrototypeOf(CacheStore.prototype), 'group', _this3).call(_this3, aggregation, options);
-        });
-
-        return result;
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Grouped the entities in the ' + _this3.name + ' collection.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to group the entities in the ' + _this3.name + ' collection.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Counts entities in a collection. A query can be optionally provided to count
-     * a subset of entities in a collection or omitted to count all the entities
-     * in a collection. A promise will be returned that will be resolved with the count
-     * or rejected with an error.
-     *
-     * @param   {Query}                 [query]                                   Query to count a subset of entities.
-     * @param   {Object}                [options]                                 Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @param   {Number}                [options.ttl]                             Time to live for data retrieved
-     *                                                                            from the cache.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'count',
-    value: function count(query) {
-      var _this4 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      _log2.default.debug('Counting the number of entities in the ' + this.name + ' collection.', query);
-
-      options = (0, _assign2.default)({
-        force: false
-      }, options);
-
-      if (query && !(query instanceof _query2.default)) {
-        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
-      }
-
-      var promise = Promise.resolve().then(function () {
-        return _this4.client.executeLocalRequest({
-          method: _enums.HttpMethod.GET,
-          pathname: _this4._pathname + '/_count',
-          properties: options.properties,
-          auth: _this4.client.defaultAuth(),
-          query: query,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        var result = {
-          cache: response.data
-        };
-
-        result.networkPromise = _this4.syncCount().then(function (count) {
-          if (count > 0) {
-            return _this4.push().then(function () {
-              return _this4.syncCount();
-            });
-          }
-
-          return count;
-        }).then(function (count) {
-          if (count > 0) {
-            throw new _errors.KinveyError('Unable to load data from the network. There are ' + count + ' entities that need ' + 'to be synced before data is loaded from the network.');
-          }
-
-          return _get(Object.getPrototypeOf(CacheStore.prototype), 'count', _this4).call(_this4, query, options);
-        });
-
-        return result;
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Counted the number of entities in the ' + _this4.name + ' collection.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to count the number of entities in the ' + _this4.name + ' collection.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Retrieves a single entity in a collection by id. A promise will be returned that will
-     * be resolved with the entity or rejected with an error.
-     *
-     * @param   {string}                id                                        Document Id
-     * @param   {Object}                [options]                                 Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @param   {Number}                [options.ttl]                             Time to live for data retrieved
-     *                                                                            from the cache.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'findById',
-    value: function findById(id) {
-      var _this5 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      if (!id) {
-        _log2.default.warn('No id was provided to retrieve an entity.', id);
-        return Promise.resolve(null);
-      }
-
-      _log2.default.debug('Retrieving the entity in the ' + this.name + ' collection with id = ' + id + '.');
-
-      options = (0, _assign2.default)({
-        force: false,
-        useDeltaFetch: true
-      }, options);
-
-      var promise = Promise.resolve().then(function () {
-        return _this5.client.executeLocalRequest({
-          method: _enums.HttpMethod.GET,
-          pathname: _this5._pathname + '/' + id,
-          properties: options.properties,
-          auth: _this5.client.defaultAuth(),
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        var result = {
-          cache: response.data
-        };
-
-        result.networkPromise = _this5.syncCount().then(function (count) {
-          if (count > 0) {
-            return _this5.push().then(function () {
-              return _this5.syncCount();
-            });
-          }
-
-          return count;
-        }).then(function (count) {
-          if (count > 0) {
-            throw new _errors.KinveyError('Unable to load data from the network. There are ' + count + ' entities that need ' + 'to be synced before data is loaded from the network.');
-          }
-
-          if (options.useDeltaFetch) {
-            return _this5.client.executeDeltaFetchRequest({
-              method: _enums.HttpMethod.GET,
-              pathname: _this5._pathname + '/' + id,
-              properties: options.properties,
-              auth: _this5.client.defaultAuth(),
-              timeout: options.timeout
-            }).then(function (response) {
-              return response.data;
-            });
-          }
-
-          return _get(Object.getPrototypeOf(CacheStore.prototype), 'findById', _this5).call(_this5, id, options);
-        }).then(function (data) {
-          return _this5._updateCache(data);
-        }).catch(function (err) {
-          if (err instanceof _errors.NotFoundError) {
-            return _this5.client.executeLocalRequest({
-              method: _enums.HttpMethod.DELETE,
-              pathname: _this5._pathname + '/' + id,
-              properties: options.properties,
-              auth: _this5.client.defaultAuth(),
-              timeout: options.timeout
-            }).then(function () {
-              throw err;
-            });
-          }
-
-          throw err;
-        });
-
-        return result;
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Retrieved the entity in the ' + _this5.name + ' collection with id = ' + id + '.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to retrieve the entity in the ' + _this5.name + ' collection with id = ' + id + '.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Save a entity or an array of entities to a collection. A promise will be returned that
-     * will be resolved with the saved entity/entities or rejected with an error.
-     *
-     * @param   {Object|Array}          entities                                  Entity or entities to save.
-     * @param   {Object}                [options]                                 Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @param   {Number}                [options.ttl]                             Time to live for data saved
-     *                                                                            in the cache.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'save',
-    value: function save(entity) {
-      var _this6 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      if (!entity) {
-        _log2.default.warn('No entity was provided to be saved.', entity);
-        return Promise.resolve(null);
-      }
-
-      if (entity[idAttribute]) {
-        _log2.default.warn('Entity argument contains an _id. Calling update instead.', entity);
-        return this.update(entity, options);
-      }
-
-      _log2.default.debug('Saving the entity(s) to the ' + this.name + ' collection.', entity);
-
-      var promise = Promise.resolve().then(function () {
-        return _this6.client.executeLocalRequest({
-          method: _enums.HttpMethod.POST,
-          pathname: _this6._pathname,
-          properties: options.properties,
-          auth: _this6.client.defaultAuth(),
-          data: entity,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return _this6._updateSync(response.data, options).then(function () {
-          var data = (0, _isArray2.default)(response.data) ? response.data : [response.data];
-          var ids = Object.keys((0, _keyBy2.default)(data, idAttribute));
-          var query = new _query2.default().contains(idAttribute, ids);
-          return _this6.push(query, options);
-        }).then(function () {
-          return response.data;
-        });
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Saved the entity(s) to the ' + _this6.name + ' collection.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to save the entity(s) to the ' + _this6.name + ' collection.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Updates a entity or an array of entities in a collection. A promise will be returned that
-     * will be resolved with the updated entity/entities or rejected with an error.
-     *
-     * @param   {Object|Array}          entities                                  Entity or entities to update.
-     * @param   {Object}                [options]                                 Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @param   {Number}                [options.ttl]                             Time to live for data updated
-     *                                                                            in the cache.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'update',
-    value: function update(entity) {
-      var _this7 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      if (!entity) {
-        _log2.default.warn('No entity was provided to be updated.', entity);
-        return Promise.resolve(null);
-      }
-
-      if (!entity[idAttribute]) {
-        _log2.default.warn('Entity argument does not contain an _id. Calling save instead.', entity);
-        return this.save(entity, options);
-      }
-
-      _log2.default.debug('Updating the entity(s) in the ' + this.name + ' collection.', entity);
-
-      var promise = Promise.resolve().then(function () {
-        return _this7.client.executeLocalRequest({
-          method: _enums.HttpMethod.PUT,
-          pathname: _this7._pathname + '/' + entity[idAttribute],
-          properties: options.properties,
-          auth: _this7.client.defaultAuth(),
-          data: entity,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return _this7._updateSync(response.data, options).then(function () {
-          var data = (0, _isArray2.default)(response.data) ? response.data : [response.data];
-          var ids = Object.keys((0, _keyBy2.default)(data, idAttribute));
-          var query = new _query2.default().contains(idAttribute, ids);
-          return _this7.push(query, options);
-        }).then(function () {
-          return response.data;
-        });
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Updated the entity(s) in the ' + _this7.name + ' collection.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to update the entity(s) in the ' + _this7.name + ' collection.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Remove entities in a collection. A query can be optionally provided to remove
-     * a subset of entities in a collection or omitted to remove all entities in a
-     * collection. A promise will be returned that will be resolved with a count of the
-     * number of entities removed or rejected with an error.
-     *
-     * @param   {Query}                 [query]                                   Query
-     * @param   {Object}                options                                   Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'remove',
-    value: function remove(query) {
-      var _this8 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      _log2.default.debug('Removing the entities in the ' + this.name + ' collection.', query);
-
-      if (query && !(query instanceof _query2.default)) {
-        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
-      }
-
-      var promise = Promise.resolve().then(function () {
-        return _this8.client.executeLocalRequest({
-          method: _enums.HttpMethod.DELETE,
-          pathname: _this8._pathname,
-          properties: options.properties,
-          auth: _this8.client.defaultAuth(),
-          query: query,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return _this8._updateSync(response.data.entities, options).then(function () {
-          var query = new _query2.default().contains(idAttribute, []);
-          return _this8.push(query, options);
-        }).then(function () {
-          return response.data;
-        });
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Removed the entities in the ' + _this8.name + ' collection.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to remove the entities in the ' + _this8.name + ' collection.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Remove an entity in a collection. A promise will be returned that will be
-     * resolved with a count of the number of entities removed or rejected with an error.
-     *
-     * @param   {string}                id                                        Document Id
-     * @param   {Object}                options                                   Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'removeById',
-    value: function removeById(id) {
-      var _this9 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      if (!id) {
-        _log2.default.warn('No id was provided to be removed.', id);
-        return Promise.resolve(null);
-      }
-
-      _log2.default.debug('Removing an entity in the ' + this.name + ' collection with id = ' + id + '.');
-
-      var promise = Promise.resolve().then(function () {
-        return _this9.client.executeLocalRequest({
-          method: _enums.HttpMethod.DELETE,
-          pathname: _this9._pathname + '/' + id,
-          properties: options.properties,
-          auth: _this9.client.defaultAuth(),
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return _this9._updateSync(response.data.entities, options).then(function () {
-          var query = new _query2.default().contains(idAttribute, [id]);
-          return _this9.push(query, options);
-        }).then(function () {
-          return response.data;
-        });
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Removed the entity in the ' + _this9.name + ' collection with id = ' + id + '.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to remove the entity in the ' + _this9.name + ' collection with id = ' + id + '.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Push sync items for a collection to the network. A promise will be returned that will be
-     * resolved with the result of the push or rejected with an error.
-     *
-     * @param   {Query}                 [query]                                   Query to push a subset of items.
-     * @param   {Object}                options                                   Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @return  {Promise}                                                         Promise
-     *
-     * @example
-     * var store = Kinvey.DataStore.getInstance('books');
-     * store.push().then(function(result) {
-     *   ...
-     * }).catch(function(err) {
-     *   ...
-     * });
-     */
-
-  }, {
-    key: 'push',
-    value: function push(query) {
-      var _this10 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      if (query && !(query instanceof _query2.default)) {
-        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
-      }
-
-      var promise = Promise.resolve().then(function () {
-        return _this10.client.executeLocalRequest({
-          method: _enums.HttpMethod.GET,
-          pathname: _this10._syncPathname,
-          properties: options.properties,
-          query: query,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        var save = [];
-        var remove = [];
-        var entities = response.data.entities;
-        var ids = Object.keys(entities);
-        var size = response.data.size;
-
-        var promises = (0, _map2.default)(ids, function (id) {
-          var metadata = (0, _clone2.default)(entities[id], true);
-          return _this10.client.executeLocalRequest({
-            method: _enums.HttpMethod.GET,
-            pathname: _this10._pathname + '/' + id,
-            properties: metadata.properties,
-            auth: _this10.client.defaultAuth(),
-            timeout: options.timeout
-          }).then(function (response) {
-            save.push(response.data);
-            return response.data;
-          }).catch(function (err) {
-            if (err instanceof _errors.NotFoundError) {
-              remove.push(id);
-              return null;
-            }
-
-            throw err;
-          });
-        });
-
-        return Promise.all(promises).then(function () {
-          var saved = (0, _map2.default)(save, function (entity) {
-            var metadata = (0, _clone2.default)(entities[entity[idAttribute]], true);
-            var isLocalEntity = (0, _object.nested)(entity, kmdAttribute + '.local');
-
-            if (isLocalEntity) {
-              var _ret = function () {
-                var originalId = entity[idAttribute];
-                delete entity[idAttribute];
-                delete entity[kmdAttribute];
-
-                return {
-                  v: _this10.client.executeNetworkRequest({
-                    method: _enums.HttpMethod.POST,
-                    pathname: _this10._pathname,
-                    properties: metadata.properties,
-                    auth: _this10.client.defaultAuth(),
-                    data: entity,
-                    timeout: options.timeout
-                  }).then(function (response) {
-                    return _this10.client.executeLocalRequest({
-                      method: _enums.HttpMethod.PUT,
-                      pathname: _this10._pathname,
-                      properties: metadata.properties,
-                      data: response.data,
-                      timeout: options.timeout
-                    });
-                  }).then(function () {
-                    return _this10.client.executeLocalRequest({
-                      method: _enums.HttpMethod.DELETE,
-                      pathname: _this10._pathname + '/' + originalId,
-                      properties: metadata.properties,
-                      auth: _this10.client.defaultAuth(),
-                      timeout: options.timeout
-                    }).then(function (response) {
-                      var result = response.data;
-                      if (result.count === 1) {
-                        size = size - 1;
-                        delete entities[originalId];
-                        return {
-                          _id: originalId,
-                          entity: entity
-                        };
-                      }
-
-                      return {
-                        _id: originalId,
-                        error: new _errors.KinveyError('Expected count to be 1 but instead it was ' + result.count + ' ' + ('when trying to remove entity with _id ' + originalId + '.'))
-                      };
-                    });
-                  }).catch(function (err) {
-                    return {
-                      _id: originalId,
-                      error: err
-                    };
-                  })
-                };
-              }();
-
-              if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-            }
-
-            return _this10.client.executeNetworkRequest({
-              method: _enums.HttpMethod.PUT,
-              pathname: _this10._pathname + '/' + entity[idAttribute],
-              properties: metadata.properties,
-              auth: _this10.client.defaultAuth(),
-              data: entity,
-              timeout: options.timeout
-            }).then(function (response) {
-              size = size - 1;
-              delete entities[response.data[idAttribute]];
-              return {
-                _id: response.data[idAttribute],
-                entity: response.data
-              };
-            }).catch(function (err) {
-              // If the credentials used to authenticate this request are
-              // not authorized to run the operation then just remove the entity
-              // from the sync table
-              if (err instanceof _errors.InsufficientCredentialsError) {
-                size = size - 1;
-                delete entities[entity[idAttribute]];
-                return {
-                  _id: entity[idAttribute],
-                  error: err
-                };
-              }
-
-              return {
-                _id: entity[idAttribute],
-                error: err
-              };
-            });
-          });
-
-          var removed = (0, _map2.default)(remove, function (id) {
-            var metadata = (0, _clone2.default)(entities[id], true);
-            return _this10.client.executeNetworkRequest({
-              method: _enums.HttpMethod.DELETE,
-              pathname: _this10._pathname + '/' + id,
-              properties: metadata.properties,
-              auth: _this10.client.defaultAuth(),
-              timeout: options.timeout
-            }).then(function (response) {
-              var result = response.data;
-
-              if (result.count === 1) {
-                size = size - 1;
-                delete entities[id];
-                return {
-                  _id: id
-                };
-              }
-
-              return {
-                _id: id,
-                error: new _errors.KinveyError('Expected count to be 1 but instead it was ' + result.count + ' ' + ('when trying to remove entity with _id ' + id + '.'))
-              };
-            }).catch(function (err) {
-              // If the credentials used to authenticate this request are
-              // not authorized to run the operation or the entity was
-              // not found then just remove the entity from the sync table
-              if (err instanceof _errors.NotFoundError || err instanceof _errors.InsufficientCredentialsError) {
-                size = size - 1;
-                delete entities[id];
-                return {
-                  _id: id,
-                  error: err
-                };
-              }
-
-              return {
-                _id: id,
-                error: err
-              };
-            });
-          });
-
-          return Promise.all([Promise.all(saved), Promise.all(removed)]);
-        }).then(function (results) {
-          var savedResults = results[0];
-          var removedResults = results[1];
-          var result = {
-            collection: _this10.name,
-            success: [],
-            error: []
-          };
-
-          (0, _forEach2.default)(savedResults, function (savedResult) {
-            if (savedResult.error) {
-              result.error.push(savedResult);
-            } else {
-              result.success.push(savedResult);
-            }
-          });
-
-          (0, _forEach2.default)(removedResults, function (removedResult) {
-            if (removedResult.error) {
-              result.error.push(removedResult);
-            } else {
-              result.success.push(removedResult);
-            }
-          });
-
-          return result;
-        }).then(function (result) {
-          response.data.size = size;
-          response.data.entities = entities;
-
-          return _this10.client.executeLocalRequest({
-            method: _enums.HttpMethod.PUT,
-            pathname: _this10._syncPathname,
-            properties: options.properties,
-            data: response.data,
-            timeout: options.timeout
-          }).then(function () {
-            return result;
-          });
-        });
-      }).catch(function (err) {
-        if (err instanceof _errors.NotFoundError) {
-          return {
-            collection: _this10.name,
-            success: [],
-            error: []
-          };
-        }
-
-        throw err;
-      });
-
-      return promise;
-    }
-
-    /**
-     * Pull items for a collection from the network to your local cache. A promise will be
-     * returned that will be resolved with the result of the pull or rejected with an error.
-     *
-     * @param   {Query}                 [query]                                   Query to pull a subset of items.
-     * @param   {Object}                options                                   Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @return  {Promise}                                                         Promise
-     *
-     * @example
-     * var store = Kinvey.Store.getInstance('books');
-     * store.pull().then(function(result) {
-     *   ...
-     * }).catch(function(err) {
-     *   ...
-     * });
-     */
-
-  }, {
-    key: 'pull',
-    value: function pull(query) {
-      var _this11 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      var promise = this.syncCount(null, options).then(function (count) {
-        if (count > 0) {
-          throw new _errors.KinveyError('Unable to pull data. You must push the pending sync items first.', 'Call store.push() to push the pending sync items before you pull new data.');
-        }
-
-        return _this11.find(query, options);
-      }).then(function (result) {
-        return result.network;
-      });
-
-      return promise;
-    }
-
-    /**
-     * Sync items for a collection. This will push pending sync items first and then
-     * pull items from the network into your local cache. A promise will be
-     * returned that will be resolved with the result of the pull or rejected with an error.
-     *
-     * @param   {Query}                 [query]                                   Query to pull a subset of items.
-     * @param   {Object}                options                                   Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @return  {Promise}                                                         Promise
-     *
-     * @example
-     * var store = Kinvey.Store.getInstance('books');
-     * store.sync().then(function(result) {
-     *   ...
-     * }).catch(function(err) {
-     *   ...
-     * });
-     */
-
-  }, {
-    key: 'sync',
-    value: function sync(query) {
-      var _this12 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      var promise = this.push(null, options).then(function (pushResponse) {
-        return _this12.pull(query, options).then(function (pullResponse) {
-          return {
-            push: pushResponse,
-            pull: pullResponse
-          };
-        });
-      });
-
-      return promise;
-    }
-
-    /**
-     * Count the number of entities waiting to be pushed to the network. A promise will be
-     * returned with the count of entities or rejected with an error.
-     *
-     * @param   {Query}                 [query]                                   Query to count a subset of entities.
-     * @param   {Object}                options                                   Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @param   {Number}                [options.ttl]                             Time to live for data retrieved
-     *                                                                            from the local cache.
-     * @return  {Promise}                                                         Promise
-     *
-     * @example
-     * var store = Kinvey.Store.getInstance('books');
-     * store.syncCount().then(function(count) {
-     *   ...
-     * }).catch(function(err) {
-     *   ...
-     * });
-     */
-
-  }, {
-    key: 'syncCount',
-    value: function syncCount(query) {
-      var _this13 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      if (query && !(query instanceof _query2.default)) {
-        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
-      }
-
-      var promise = Promise.resolve().then(function () {
-        return _this13.client.executeLocalRequest({
-          method: _enums.HttpMethod.GET,
-          pathname: _this13._syncPathname,
-          properties: options.properties,
-          query: query,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return response.data.size || 0;
-      }).catch(function (err) {
-        if (err instanceof _errors.NotFoundError) {
-          return 0;
-        }
-
-        throw err;
-      });
-
-      return promise;
-    }
-
-    /**
-     * Add or update entities stored in the cache. A promise will be returned with the entities
-     * or rejected with an error.
-     *
-     * @param   {Object|Array}          entities                                  Entity(s) to add or update in the cache.
-     * @param   {Object}                options                                   Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: '_updateCache',
-    value: function _updateCache(entities) {
-      var _this14 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      var promise = Promise.resolve().then(function () {
-        return _this14.client.executeLocalRequest({
-          method: _enums.HttpMethod.PUT,
-          pathname: _this14._pathname,
-          properties: options.properties,
-          data: entities,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return response.data;
-      });
-
-      return promise;
-    }
-
-    /**
-     * Add entities to be pushed. A promise will be returned with null or rejected with an error.
-     *
-     * @param   {Object|Array}          entities                                  Entity(s) to add to the sync table.
-     * @param   {Object}                options                                   Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: '_updateSync',
-    value: function _updateSync(entities) {
-      var _this15 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      if (!this.name) {
-        return Promise.reject(new _errors.KinveyError('Unable to add entities to the sync table for a store with no name.'));
-      }
-
-      if (!entities) {
-        return Promise.resolve(null);
-      }
-
-      var promise = Promise.resolve().then(function () {
-        return _this15.client.executeLocalRequest({
-          method: _enums.HttpMethod.GET,
-          pathname: _this15._syncPathname,
-          properties: options.properties,
-          timeout: options.timeout
-        });
-      }).catch(function (err) {
-        if (err instanceof _errors.NotFoundError) {
-          return new _response2.default({
-            statusCode: _enums.StatusCode.Ok,
-            data: {
-              _id: _this15.name,
-              entities: {},
-              size: 0
-            }
-          });
-        }
-
-        throw err;
-      }).then(function (response) {
-        var syncData = response.data || {
-          _id: _this15.name,
-          entities: {},
-          size: 0
-        };
-
-        if (!(0, _isArray2.default)(entities)) {
-          entities = [entities];
-        }
-
-        (0, _forEach2.default)(entities, function (entity) {
-          if (entity[idAttribute]) {
-            if (!syncData.entities.hasOwnProperty(entity[idAttribute])) {
-              syncData.size = syncData.size + 1;
-            }
-
-            syncData.entities[entity[idAttribute]] = {
-              lmt: entity[kmdAttribute] ? entity[kmdAttribute].lmt : null
-            };
-          }
-        });
-
-        return _this15.client.executeLocalRequest({
-          method: _enums.HttpMethod.PUT,
-          pathname: _this15._syncPathname,
-          properties: options.properties,
-          data: syncData,
-          timeout: options.timeout
-        });
-      }).then(function () {
-        return null;
-      });
-
-      return promise;
-    }
-  }, {
-    key: '_syncPathname',
-    get: function get() {
-      if (!this.name) {
-        throw new Error('Unable to get a sync pathname for a collection with no name.');
-      }
-
-      return '/' + appdataNamespace + '/' + this.client.appKey + '/' + syncCollectionName + '/' + this.name;
-    }
-  }]);
-
-  return CacheStore;
-}(_networkStore2.default);
-
-exports.default = CacheStore;
-},{"../aggregation":3,"../enums":7,"../errors":8,"../log":9,"../query":12,"../requests/response":32,"../utils/object":40,"./networkStore":36,"lodash/assign":344,"lodash/clone":346,"lodash/forEach":349,"lodash/isArray":354,"lodash/keyBy":370,"lodash/map":374}],34:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _networkStore = require('./networkStore');
-
-var _networkStore2 = _interopRequireDefault(_networkStore);
-
-var _cacheStore = require('./cacheStore');
-
-var _cacheStore2 = _interopRequireDefault(_cacheStore);
-
-var _syncStore = require('./syncStore');
-
-var _syncStore2 = _interopRequireDefault(_syncStore);
-
-var _enums = require('../enums');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var DataStore = function () {
-  function DataStore() {
-    _classCallCheck(this, DataStore);
-  }
-
-  _createClass(DataStore, null, [{
-    key: 'getInstance',
-
-    /**
-     * Returns an instance of the Store class based on the type provided.
-     *
-     * @param  {string}       name                        Name of the collection.
-     * @param  {StoreType}    [type=DataStoreType.Cache]  Type of store to return.
-     * @return {Object}                                   Store
-     */
-    value: function getInstance(name) {
-      var type = arguments.length <= 1 || arguments[1] === undefined ? _enums.DataStoreType.Cache : arguments[1];
-
-      var store = undefined;
-
-      switch (type) {
-        case _enums.DataStoreType.Sync:
-          store = new _syncStore2.default(name);
-          break;
-        case _enums.DataStoreType.Network:
-          store = new _networkStore2.default(name);
-          break;
-        case _enums.DataStoreType.Cache:
-        default:
-          store = new _cacheStore2.default(name);
-      }
-
-      return store;
-    }
-  }]);
-
-  return DataStore;
-}();
-
-exports.default = DataStore;
-},{"../enums":7,"./cacheStore":33,"./networkStore":36,"./syncStore":37}],35:[function(require,module,exports){
-(function (process){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _networkStore = require('./networkStore');
-
-var _networkStore2 = _interopRequireDefault(_networkStore);
-
-var _networkRequest = require('../requests/networkRequest');
-
-var _networkRequest2 = _interopRequireDefault(_networkRequest);
-
-var _enums = require('../enums');
-
-var _errors = require('../errors');
-
-var _assign = require('lodash/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
-var _map = require('lodash/map');
-
-var _map2 = _interopRequireDefault(_map);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var filesNamespace = process.env.KINVEY_FILES_NAMESPACE || 'blob';
-var idAttribute = "_id" || '_id';
-
-/**
- * The FilesStore class is used to find, save, update, remove, count and group files.
- */
-
-var FilesStore = function (_NetworkStore) {
-  _inherits(FilesStore, _NetworkStore);
-
-  function FilesStore() {
-    _classCallCheck(this, FilesStore);
-
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(FilesStore).apply(this, arguments));
-  }
-
-  _createClass(FilesStore, [{
-    key: 'find',
-
-
-    /**
-     * Finds all files. A query can be optionally provided to return
-     * a subset of all the files for your application or omitted to return all the files.
-     * The number of files returned will adhere to the limits specified
-     * at http://devcenter.kinvey.com/rest/guides/datastore#queryrestrictions. A
-     * promise will be returned that will be resolved with the files or rejected with
-     * an error.
-     *
-     * @param   {Query}                 [query]                                   Query used to filter result.
-     * @param   {Object}                [options]                                 Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @param   {Boolean}               [options.tls]                             Use Transport Layer Security
-     * @param   {Boolean}               [options.download]                        Download the files
-     * @return  {Promise}                                                         Promise
-     *
-     * @example
-     * var filesStore = new Kinvey.FilesStore();
-     * var query = new Kinvey.Query();
-     * query.equalTo('location', 'Boston');
-     * files.find(query, {
-     *   tls: true, // Use transport layer security
-     *   ttl: 60 * 60 * 24, // 1 day in seconds
-     *   download: true // download the files
-     * }).then(function(files) {
-     *   ...
-     * }).catch(function(err) {
-     *   ...
-     * });
-     */
-    value: function find(query) {
-      var _this2 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      options = (0, _assign2.default)({
-        download: false,
-        tls: false
-      }, options);
-
-      options.flags = {
-        tls: options.tls === true ? true : false,
-        ttl_in_seconds: options.ttl
-      };
-
-      var promise = _get(Object.getPrototypeOf(FilesStore.prototype), 'find', this).call(this, query, options).then(function (files) {
-        if (options.download === true) {
-          var promises = (0, _map2.default)(files, function (file) {
-            return _this2.downloadByUrl(file._downloadURL, options);
-          });
-          return Promise.all(promises);
-        }
-
-        return files;
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'findById',
-    value: function findById(id, options) {
-      return this.download(id, options);
-    }
-
-    /**
-     * Download a file. A promise will be returned that will be resolved with the file or rejected with
-     * an error.
-     *
-     * @param   {string}        name                                          Name
-     * @param   {Object}        [options]                                     Options
-     * @param   {Boolean}       [options.tls]                                 Use Transport Layer Security
-     * @param   {Number}        [options.ttl]                                 Time To Live (in seconds)
-     * @param   {Boolean}       [options.stream]                              Stream the file
-     * @param   {DataPolicy}    [options.dataPolicy=DataPolicy.NetworkFirst]    Data policy
-     * @param   {AuthType}      [options.authType=AuthType.Default]           Auth type
-     * @return  {Promise}                                                     Promise
-     *
-     * @example
-     * var files = new Kinvey.Files();
-     * files.download('BostonTeaParty.png', {
-     *   tls: true, // Use transport layer security
-     *   ttl: 60 * 60 * 24, // 1 day in seconds
-     *   stream: true // stream the file
-     * }).then(function(file) {
-     *   ...
-     * }).catch(function(err) {
-     *   ...
-     * });
-     */
-
-  }, {
-    key: 'download',
-    value: function download(name) {
-      var _this3 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      options = (0, _assign2.default)({
-        stream: false,
-        tls: false
-      }, options);
-
-      options.flags = {
-        tls: options.tls === true ? true : false,
-        ttl_in_seconds: options.ttl
-      };
-
-      var promise = _get(Object.getPrototypeOf(FilesStore.prototype), 'findById', this).call(this, name, options).then(function (file) {
-        if (options.stream === true) {
-          return file;
-        }
-
-        return _this3.downloadByUrl(file._downloadURL, options);
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'downloadByUrl',
-    value: function downloadByUrl(url) {
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      var promise = Promise.resolve().then(function () {
-        var request = new _networkRequest2.default({
-          method: _enums.HttpMethod.GET,
-          url: url,
-          timeout: options.timeout
-        });
-        request.setHeader('Accept', options.mimeType || 'application-octet-stream');
-        request.removeHeader('Content-Type');
-        request.removeHeader('X-Kinvey-Api-Version');
-        return request.execute();
-      }).then(function (response) {
-        return response.data;
-      });
-
-      return promise;
-    }
-
-    /**
-     * Stream a file. A promise will be returned that will be resolved with the file or rejected with
-     * an error.
-     *
-     * @param   {string}        name                                          File name
-     * @param   {Object}        [options]                                     Options
-     * @param   {Boolean}       [options.tls]                                 Use Transport Layer Security
-     * @param   {Number}        [options.ttl]                                 Time To Live (in seconds)
-     * @param   {DataPolicy}    [options.dataPolicy=DataPolicy.NetworkFirst]    Data policy
-     * @param   {AuthType}      [options.authType=AuthType.Default]           Auth type
-     * @return  {Promise}                                                     Promise
-     *
-     * @example
-     * var files = new Kinvey.Files();
-     * files.stream('BostonTeaParty.png', {
-     *   tls: true, // Use transport layer security
-     *   ttl: 60 * 60 * 24, // 1 day in seconds
-     * }).then(function(file) {
-     *   ...
-     * }).catch(function(err) {
-     *   ...
-     * });
-     */
-
-  }, {
-    key: 'stream',
-    value: function stream(name) {
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      options.stream = true;
-      return this.download(name, options);
-    }
-  }, {
-    key: 'upload',
-    value: function upload(file) {
-      var _this4 = this;
-
-      var metadata = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-      metadata._filename = metadata._filename || file._filename || file.name;
-      metadata.size = metadata.size || file.size || file.length;
-      metadata.mimeType = metadata.mimeType || file.mimeType || file.type || 'application/octet-stream';
-
-      options = (0, _assign2.default)({
-        properties: null,
-        timeout: undefined,
-        public: false,
-        handler: function handler() {}
-      }, options);
-
-      if (options.public) {
-        metadata._public = true;
-      }
-
-      var promise = Promise.resolve().then(function () {
-        var requestOptions = {
-          headers: {
-            'X-Kinvey-Content-Type': metadata.mimeType
-          },
-          properties: options.properties,
-          auth: _this4.client.defaultAuth(),
-          timeout: options.timeout,
-          data: metadata
-        };
-
-        if (metadata[idAttribute]) {
-          requestOptions.method = _enums.HttpMethod.PUT;
-          requestOptions.pathname = _this4._pathname + '/' + metadata._id;
-        } else {
-          requestOptions.method = _enums.HttpMethod.POST;
-          requestOptions.pathname = _this4._pathname;
-        }
-
-        return _this4.client.executeNetworkRequest(requestOptions);
-      }).then(function (response) {
-        var uploadUrl = response.data._uploadURL;
-        var headers = response.data._requiredHeaders || {};
-        headers['Content-Type'] = metadata.mimeType;
-        headers['Content-Length'] = metadata.size;
-
-        // Delete fields from the response
-        delete response.data._expiresAt;
-        delete response.data._requiredHeaders;
-        delete response.data._uploadURL;
-
-        // Upload the file
-        var request = new _networkRequest2.default({
-          method: _enums.HttpMethod.PUT,
-          url: uploadUrl,
-          data: file
-        });
-        request.clearHeaders();
-        request.addHeaders(headers);
-
-        return request.execute().then(function (uploadResponse) {
-          if (uploadResponse.isSuccess()) {
-            response.data._data = file;
-            return response.data;
-          }
-
-          throw uploadResponse.error;
-        });
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'save',
-    value: function save() {
-      return Promise.reject(new _errors.KinveyError('Please use `upload()` to save files.'));
-    }
-  }, {
-    key: 'update',
-    value: function update() {
-      return Promise.reject(new _errors.KinveyError('Please use `upload()` to update files.'));
-    }
-  }, {
-    key: '_pathname',
-
-    /**
-     * The pathname for the store.
-     *
-     * @return  {string}                Pathname
-     */
-    get: function get() {
-      return '/' + filesNamespace + '/' + this.client.appKey;
-    }
-  }]);
-
-  return FilesStore;
-}(_networkStore2.default);
-
-exports.default = FilesStore;
-}).call(this,require('_process'))
-
-},{"../enums":7,"../errors":8,"../requests/networkRequest":29,"./networkStore":36,"_process":418,"lodash/assign":344,"lodash/map":374}],36:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _aggregation = require('../aggregation');
-
-var _aggregation2 = _interopRequireDefault(_aggregation);
-
-var _enums = require('../enums');
-
-var _errors = require('../errors');
-
-var _client = require('../client');
-
-var _client2 = _interopRequireDefault(_client);
-
-var _query = require('../query');
-
-var _query2 = _interopRequireDefault(_query);
-
-var _assign = require('lodash/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
-var _log = require('../log');
-
-var _log2 = _interopRequireDefault(_log);
-
-var _isArray = require('lodash/isArray');
-
-var _isArray2 = _interopRequireDefault(_isArray);
-
-var _isString = require('lodash/isString');
-
-var _isString2 = _interopRequireDefault(_isString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var appdataNamespace = "appdata" || 'appdata';
-var idAttribute = "_id" || '_id';
-
-/**
- * The NetworkStore class is used to find, save, update, remove, count and group enitities
- * in a collection on the network.
- */
-
-var NetworkStore = function () {
-  /**
-   * Creates a new instance of the NetworkStore class.
-   *
-   * @param   {string}  name   Name of the collection
-   *
-   * @throws  {KinveyError}   If the name provided is not a string.
-   */
-
-  function NetworkStore(name) {
-    _classCallCheck(this, NetworkStore);
-
-    if (name && !(0, _isString2.default)(name)) {
-      throw new _errors.KinveyError('Name must be a string.');
-    }
-
-    /**
-     * @type {string}
-     */
-    this.name = name;
-
-    /**
-     * @private
-     * @type {Client}
-     */
-    this.client = _client2.default.sharedInstance();
-  }
-
-  /**
-   * The pathname for the store.
-   *
-   * @return  {string}                Pathname
-   */
-
-
-  _createClass(NetworkStore, [{
-    key: 'find',
-
-
-    /**
-     * Finds all entities in a collection. A query can be optionally provided to return
-     * a subset of all entities in a collection or omitted to return all entities in
-     * a collection. The number of entities returned will adhere to the limits specified
-     * at http://devcenter.kinvey.com/rest/guides/datastore#queryrestrictions. A
-     * promise will be returned that will be resolved with the entities or rejected with
-     * an error.
-     *
-     * @param   {Query}                 [query]                                   Query used to filter result.
-     * @param   {Object}                [options]                                 Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @return  {Promise}                                                         Promise
-     */
-    value: function find(query) {
-      var _this = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      _log2.default.debug('Retrieving the entities in the ' + this.name + ' collection.', query);
-
-      options = (0, _assign2.default)({
-        properties: null,
-        timeout: undefined,
-        flags: null,
-        handler: function handler() {}
-      }, options);
-
-      if (query && !(query instanceof _query2.default)) {
-        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
-      }
-
-      var promise = Promise.resolve().then(function () {
-        return _this.client.executeNetworkRequest({
-          method: _enums.HttpMethod.GET,
-          pathname: _this._pathname,
-          properties: options.properties,
-          auth: _this.client.defaultAuth(),
-          query: query,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return response.data;
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Retrieved the entities in the ' + _this.name + ' collection.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to retrieve the entities in the ' + _this.name + ' collection.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Groups entities in a collection. An aggregation can be optionally provided to group
-     * a subset of entities in a collection or omitted to group all the entities
-     * in a collection. A promise will be returned that will be resolved with the result
-     * or rejected with an error.
-     *
-     * @param   {Aggregation}           aggregation                               Aggregation used to group entities.
-     * @param   {Object}                [options]                                 Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'group',
-    value: function group(aggregation) {
-      var _this2 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      _log2.default.debug('Grouping the entities in the ' + this.name + ' collection.', aggregation, options);
-
-      options = (0, _assign2.default)({
-        properties: null,
-        timeout: undefined,
-        useDeltaFetch: true,
-        handler: function handler() {}
-      }, options);
-
-      if (!(aggregation instanceof _aggregation2.default)) {
-        return Promise.reject(new _errors.KinveyError('Invalid aggregation. ' + 'It must be an instance of the Kinvey.Aggregation class.'));
-      }
-
-      var promise = Promise.resolve().then(function () {
-        return _this2.client.executeNetworkRequest({
-          method: _enums.HttpMethod.GET,
-          pathname: _this2._pathname + '/_group',
-          properties: options.properties,
-          auth: _this2.client.defaultAuth(),
-          data: aggregation.toJSON(),
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return response.data;
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Grouped the entities in the ' + _this2.name + ' collection.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to group the entities in the ' + _this2.name + ' collection.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Counts entities in a collection. A query can be optionally provided to count
-     * a subset of entities in a collection or omitted to count all the entities
-     * in a collection. A promise will be returned that will be resolved with the count
-     * or rejected with an error.
-     *
-     * @param   {Query}                 [query]                                   Query to count a subset of entities.
-     * @param   {Object}                [options]                                 Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'count',
-    value: function count(query) {
-      var _this3 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      _log2.default.debug('Counting the number of entities in the ' + this.name + ' collection.', query);
-
-      options = (0, _assign2.default)({
-        properties: null,
-        timeout: undefined,
-        useDeltaFetch: true,
-        handler: function handler() {}
-      }, options);
-
-      if (query && !(query instanceof _query2.default)) {
-        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
-      }
-
-      var promise = Promise.resolve().then(function () {
-        return _this3.client.executeNetworkRequest({
-          method: _enums.HttpMethod.GET,
-          pathname: _this3._pathname + '/_count',
-          properties: options.properties,
-          auth: _this3.client.defaultAuth(),
-          query: query,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return response.data;
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Counted the number of entities in the ' + _this3.name + ' collection.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to count the number of entities in the ' + _this3.name + ' collection.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Retrieves a single entity in a collection by id. A promise will be returned that will
-     * be resolved with the entity or rejected with an error.
-     *
-     * @param   {string}                id                                        Document Id
-     * @param   {Object}                [options]                                 Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'findById',
-    value: function findById(id) {
-      var _this4 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      if (!id) {
-        _log2.default.warn('No id was provided to retrieve an entity.', id);
-        return Promise.resolve(null);
-      }
-
-      _log2.default.debug('Retrieving the entity in the ' + this.name + ' collection with id = ' + id + '.');
-
-      options = (0, _assign2.default)({
-        properties: null,
-        timeout: undefined,
-        handler: function handler() {}
-      }, options);
-
-      var promise = Promise.resolve().then(function () {
-        return _this4.client.executeNetworkRequest({
-          method: _enums.HttpMethod.GET,
-          pathname: _this4._pathname + '/' + id,
-          properties: options.properties,
-          auth: _this4.client.defaultAuth(),
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        if (response.isSuccess()) {
-          return (0, _isArray2.default)(response.data) && response.data.length === 1 ? response.data[0] : response.data;
-        }
-
-        throw response.error;
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Retrieved the entity in the ' + _this4.name + ' collection with id = ' + id + '.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to retrieve the entity in the ' + _this4.name + ' collection with id = ' + id + '.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Save a entity or an array of entities to a collection. A promise will be returned that
-     * will be resolved with the saved entity/entities or rejected with an error.
-     *
-     * @param   {Object|Array}          doc                                       Document or entities to save.
-     * @param   {Object}                options                                   Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'save',
-    value: function save(entity) {
-      var _this5 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      if (!entity) {
-        _log2.default.warn('No entity was provided to be saved.', entity);
-        return Promise.resolve(null);
-      }
-
-      if (entity._id) {
-        _log2.default.warn('Entity argument contains an _id. Calling update instead.', entity);
-        return this.update(entity, options);
-      }
-
-      _log2.default.debug('Saving the entity(s) to the ' + this.name + ' collection.', entity);
-
-      options = (0, _assign2.default)({
-        properties: null,
-        timeout: undefined,
-        handler: function handler() {}
-      }, options);
-
-      var promise = Promise.resolve().then(function () {
-        return _this5.client.executeNetworkRequest({
-          method: _enums.HttpMethod.POST,
-          pathname: _this5._pathname,
-          properties: options.properties,
-          auth: _this5.client.defaultAuth(),
-          data: entity,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return response.data;
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Saved the entity(s) to the ' + _this5.name + ' collection.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to save the entity(s) to the ' + _this5.name + ' collection.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Updates a entity or an array of entities in a collection. A promise will be returned that
-     * will be resolved with the updated entity/entities or rejected with an error.
-     *
-     * @param   {Model|Array}           entity                                    Entity or entities to update.
-     * @param   {Object}                options                                   Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'update',
-    value: function update(entity) {
-      var _this6 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      if (!entity) {
-        _log2.default.warn('No entity was provided to be updated.', entity);
-        return Promise.resolve(null);
-      }
-
-      if (!entity._id) {
-        _log2.default.warn('Entity argument does not contain an _id. Calling save instead.', entity);
-        return this.save(entity, options);
-      }
-
-      _log2.default.debug('Updating the entity(s) in the ' + this.name + ' collection.', entity);
-
-      options = (0, _assign2.default)({
-        properties: null,
-        timeout: undefined,
-        handler: function handler() {}
-      }, options);
-
-      var promise = Promise.resolve().then(function () {
-        return _this6.client.executeNetworkRequest({
-          method: _enums.HttpMethod.PUT,
-          pathname: _this6._pathname + '/' + entity[idAttribute],
-          properties: options.properties,
-          auth: _this6.client.defaultAuth(),
-          data: entity,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return response.data;
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Updated the entity(s) in the ' + _this6.name + ' collection.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to update the entity(s) in the ' + _this6.name + ' collection.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Remove entities in a collection. A query can be optionally provided to remove
-     * a subset of entities in a collection or omitted to remove all entities in a
-     * collection. A promise will be returned that will be resolved with a count of the
-     * number of entities removed or rejected with an error.
-     *
-     * @param   {Query}                 [query]                                   Query
-     * @param   {Object}                options                                   Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'remove',
-    value: function remove(query) {
-      var _this7 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      _log2.default.debug('Removing the entities in the ' + this.name + ' collection.', query);
-
-      options = (0, _assign2.default)({
-        properties: null,
-        timeout: undefined,
-        handler: function handler() {}
-      }, options);
-
-      if (query && !(query instanceof _query2.default)) {
-        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
-      }
-
-      var promise = Promise.resolve().then(function () {
-        return _this7.client.executeNetworkRequest({
-          method: _enums.HttpMethod.DELETE,
-          pathname: _this7._pathname,
-          properties: options.properties,
-          auth: _this7.client.defaultAuth(),
-          query: query,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return response.data;
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Removed the entities in the ' + _this7.name + ' collection.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to remove the entities in the ' + _this7.name + ' collection.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Remove an entity in a collection. A promise will be returned that will be
-     * resolved with a count of the number of entities removed or rejected with an error.
-     *
-     * @param   {string}                id                                        Document Id
-     * @param   {Object}                options                                   Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'removeById',
-    value: function removeById(id) {
-      var _this8 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      if (!id) {
-        _log2.default.warn('No id was provided to be removed.', id);
-        return Promise.resolve(null);
-      }
-
-      _log2.default.debug('Removing an entity in the ' + this.name + ' collection with id = ' + id + '.');
-
-      options = (0, _assign2.default)({
-        properties: null,
-        timeout: undefined,
-        handler: function handler() {}
-      }, options);
-
-      var promise = Promise.resolve().then(function () {
-        return _this8.client.executeNetworkRequest({
-          method: _enums.HttpMethod.DELETE,
-          pathname: _this8._pathname + '/' + id,
-          properties: options.properties,
-          auth: _this8.client.defaultAuth(),
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return response.data;
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Removed the entity in the ' + _this8.name + ' collection with id = ' + id + '.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to remove the entity in the ' + _this8.name + ' collection with id = ' + id + '.', err);
-      });
-
-      return promise;
-    }
-  }, {
-    key: '_pathname',
-    get: function get() {
-      var pathname = '/' + appdataNamespace + '/' + this.client.appKey;
-
-      if (this.name) {
-        pathname = pathname + '/' + this.name;
-      }
-
-      return pathname;
-    }
-  }]);
-
-  return NetworkStore;
-}();
-
-exports.default = NetworkStore;
-},{"../aggregation":3,"../client":4,"../enums":7,"../errors":8,"../log":9,"../query":12,"lodash/assign":344,"lodash/isArray":354,"lodash/isString":367}],37:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _cacheStore = require('./cacheStore');
-
-var _cacheStore2 = _interopRequireDefault(_cacheStore);
-
-var _aggregation = require('../aggregation');
-
-var _aggregation2 = _interopRequireDefault(_aggregation);
-
-var _enums = require('../enums');
-
-var _errors = require('../errors');
-
-var _query = require('../query');
-
-var _query2 = _interopRequireDefault(_query);
-
-var _log = require('../log');
-
-var _log2 = _interopRequireDefault(_log);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var SyncStore = function (_CacheStore) {
-  _inherits(SyncStore, _CacheStore);
-
-  function SyncStore() {
-    _classCallCheck(this, SyncStore);
-
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(SyncStore).apply(this, arguments));
-  }
-
-  _createClass(SyncStore, [{
-    key: 'find',
-
-
-    /**
-     * Finds all entities in a collection. A query can be optionally provided to return
-     * a subset of all entities in a collection or omitted to return all entities in
-     * a collection. The number of entities returned will adhere to the limits specified
-     * at http://devcenter.kinvey.com/rest/guides/datastore#queryrestrictions. A
-     * promise will be returned that will be resolved with the entities or rejected with
-     * an error.
-     *
-     * @param   {Query}                 [query]                                   Query used to filter result.
-     * @param   {Object}                [options]                                 Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @param   {Number}                [options.ttl]                             Time to live for data retrieved
-     *                                                                            from the cache.
-     * @return  {Promise}                                                         Promise
-     */
-    value: function find(query) {
-      var _this2 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      _log2.default.debug('Retrieving the entities in the ' + this.name + ' collection.', query);
-
-      if (query && !(query instanceof _query2.default)) {
-        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
-      }
-
-      var promise = Promise.resolve().then(function () {
-        return _this2.client.executeLocalRequest({
-          method: _enums.HttpMethod.GET,
-          pathname: _this2._pathname,
-          properties: options.properties,
-          query: query,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return response.data;
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Retrieved the entities in the ' + _this2.name + ' collection.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to retrieve the entities in the ' + _this2.name + ' collection.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Groups entities in a collection. An aggregation can be optionally provided to group
-     * a subset of entities in a collection or omitted to group all the entities
-     * in a collection. A promise will be returned that will be resolved with the result
-     * or rejected with an error.
-     *
-     * @param   {Aggregation}           aggregation                               Aggregation used to group entities.
-     * @param   {Object}                [options]                                 Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @param   {Number}                [options.ttl]                             Time to live for data retrieved
-     *                                                                            from the cache.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'group',
-    value: function group(aggregation) {
-      var _this3 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      _log2.default.debug('Grouping the entities in the ' + this.name + ' collection.', aggregation, options);
-
-      if (!(aggregation instanceof _aggregation2.default)) {
-        return Promise.reject(new _errors.KinveyError('Invalid aggregation. ' + 'It must be an instance of the Kinvey.Aggregation class.'));
-      }
-
-      var promise = Promise.resolve().then(function () {
-        return _this3.client.executeLocalRequest({
-          method: _enums.HttpMethod.GET,
-          pathname: _this3._pathname + '/_group',
-          properties: options.properties,
-          data: aggregation.toJSON(),
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return response.data;
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Grouped the entities in the ' + _this3.name + ' collection.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to group the entities in the ' + _this3.name + ' collection.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Counts entities in a collection. A query can be optionally provided to count
-     * a subset of entities in a collection or omitted to count all the entities
-     * in a collection. A promise will be returned that will be resolved with the count
-     * or rejected with an error.
-     *
-     * @param   {Query}                 [query]                                   Query to count a subset of entities.
-     * @param   {Object}                [options]                                 Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @param   {Number}                [options.ttl]                             Time to live for data retrieved
-     *                                                                            from the cache.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'count',
-    value: function count(query) {
-      var _this4 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      _log2.default.debug('Counting the number of entities in the ' + this.name + ' collection.', query);
-
-      if (query && !(query instanceof _query2.default)) {
-        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
-      }
-
-      var promise = Promise.resolve().then(function () {
-        return _this4.client.executeLocalRequest({
-          method: _enums.HttpMethod.GET,
-          pathname: _this4._pathname + '/_count',
-          properties: options.properties,
-          query: query,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return response.data;
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Counted the number of entities in the ' + _this4.name + ' collection.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to count the number of entities in the ' + _this4.name + ' collection.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Retrieves a single entity in a collection by id. A promise will be returned that will
-     * be resolved with the entity or rejected with an error.
-     *
-     * @param   {string}                id                                        Document Id
-     * @param   {Object}                [options]                                 Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @param   {Number}                [options.ttl]                             Time to live for data retrieved
-     *                                                                            from the cache.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'findById',
-    value: function findById(id) {
-      var _this5 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      if (!id) {
-        _log2.default.warn('No id was provided to retrieve an entity.', id);
-        return Promise.resolve(null);
-      }
-
-      _log2.default.debug('Retrieving the entity in the ' + this.name + ' collection with id = ' + id + '.');
-
-      var promise = Promise.resolve().then(function () {
-        return _this5.client.executeLocalRequest({
-          method: _enums.HttpMethod.GET,
-          pathname: _this5._pathname + '/' + id,
-          properties: options.properties,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return response.data;
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Retrieved the entity in the ' + _this5.name + ' collection with id = ' + id + '.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to retrieve the entity in the ' + _this5.name + ' collection with id = ' + id + '.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Save a entity or an array of entities to a collection. A promise will be returned that
-     * will be resolved with the saved entity/entities or rejected with an error.
-     *
-     * @param   {Object|Array}          entities                                  Entity or entities to save.
-     * @param   {Object}                [options]                                 Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @param   {Number}                [options.ttl]                             Time to live for data saved
-     *                                                                            in the cache.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'save',
-    value: function save(entity) {
-      var _this6 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      if (!entity) {
-        _log2.default.warn('No entity was provided to be saved.', entity);
-        return Promise.resolve(null);
-      }
-
-      if (entity._id) {
-        _log2.default.warn('Entity argument contains an _id. Calling update instead.', entity);
-        return this.update(entity, options);
-      }
-
-      _log2.default.debug('Saving the entity(s) to the ' + this.name + ' collection.', entity);
-
-      var promise = Promise.resolve().then(function () {
-        return _this6.client.executeLocalRequest({
-          method: _enums.HttpMethod.POST,
-          pathname: _this6._pathname,
-          properties: options.properties,
-          data: entity,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return _this6._updateSync(response.data, options).then(function () {
-          return response.data;
-        });
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Saved the entity(s) to the ' + _this6.name + ' collection.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to save the entity(s) to the ' + _this6.name + ' collection.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Updates a entity or an array of entities in a collection. A promise will be returned that
-     * will be resolved with the updated entity/entities or rejected with an error.
-     *
-     * @param   {Object|Array}          entities                                  Entity or entities to update.
-     * @param   {Object}                [options]                                 Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @param   {Number}                [options.ttl]                             Time to live for data updated
-     *                                                                            in the cache.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'update',
-    value: function update(entity) {
-      var _this7 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      if (!entity) {
-        _log2.default.warn('No entity was provided to be updated.', entity);
-        return Promise.resolve(null);
-      }
-
-      if (!entity._id) {
-        _log2.default.warn('Entity argument does not contain an _id. Calling save instead.', entity);
-        return this.save(entity, options);
-      }
-
-      _log2.default.debug('Updating the entity(s) in the ' + this.name + ' collection.', entity);
-
-      var promise = Promise.resolve().then(function () {
-        return _this7.client.executeLocalRequest({
-          method: _enums.HttpMethod.PUT,
-          pathname: _this7._pathname + '/' + entity._id,
-          properties: options.properties,
-          data: entity,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return _this7._updateSync(response.data, options).then(function () {
-          return response.data;
-        });
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Updated the entity(s) in the ' + _this7.name + ' collection.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to update the entity(s) in the ' + _this7.name + ' collection.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Remove entities in a collection. A query can be optionally provided to remove
-     * a subset of entities in a collection or omitted to remove all entities in a
-     * collection. A promise will be returned that will be resolved with a count of the
-     * number of entities removed or rejected with an error.
-     *
-     * @param   {Query}                 [query]                                   Query
-     * @param   {Object}                options                                   Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'remove',
-    value: function remove(query) {
-      var _this8 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      _log2.default.debug('Removing the entities in the ' + this.name + ' collection.', query);
-
-      if (query && !(query instanceof _query2.default)) {
-        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
-      }
-
-      var promise = Promise.resolve().then(function () {
-        return _this8.client.executeLocalRequest({
-          method: _enums.HttpMethod.DELETE,
-          pathname: _this8._pathname,
-          properties: options.properties,
-          query: query,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return _this8._updateSync(response.data.entities, options).then(function () {
-          return response.data;
-        });
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Removed the entities in the ' + _this8.name + ' collection.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to remove the entities in the ' + _this8.name + ' collection.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Remove an entity in a collection. A promise will be returned that will be
-     * resolved with a count of the number of entities removed or rejected with an error.
-     *
-     * @param   {string}                id                                        Document Id
-     * @param   {Object}                options                                   Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'removeById',
-    value: function removeById(id) {
-      var _this9 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      if (!id) {
-        _log2.default.warn('No id was provided to be removed.', id);
-        return Promise.resolve(null);
-      }
-
-      _log2.default.debug('Removing an entity in the ' + this.name + ' collection with id = ' + id + '.');
-
-      var promise = Promise.resolve().then(function () {
-        return _this9.client.executeLocalRequest({
-          method: _enums.HttpMethod.DELETE,
-          pathname: _this9._pathname + '/' + id,
-          properties: options.properties,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return _this9._updateSync(response.data.entities, options).then(function () {
-          return response.data;
-        });
-      });
-
-      promise.then(function (response) {
-        _log2.default.info('Removed the entity in the ' + _this9.name + ' collection with id = ' + id + '.', response);
-      }).catch(function (err) {
-        _log2.default.error('Failed to remove the entity in the ' + _this9.name + ' collection with id = ' + id + '.', err);
-      });
-
-      return promise;
-    }
-
-    /**
-     * Pull items for a collection from the network to your local cache. A promise will be
-     * returned that will be resolved with the result of the pull or rejected with an error.
-     *
-     * @param   {Query}                 [query]                                   Query to pull a subset of items.
-     * @param   {Object}                options                                   Options
-     * @param   {Properties}            [options.properties]                      Custom properties to send with
-     *                                                                            the request.
-     * @param   {Number}                [options.timeout]                         Timeout for the request.
-     * @return  {Promise}                                                         Promise
-     */
-
-  }, {
-    key: 'pull',
-    value: function pull(query) {
-      var _this10 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      var promise = this.syncCount(null, options).then(function (count) {
-        if (count > 0) {
-          throw new _errors.KinveyError('Unable to pull data. You must push the pending sync items first.', 'Call store.push() to push the pending sync items before you pull new data.');
-        }
-
-        return _get(Object.getPrototypeOf(SyncStore.prototype), 'find', _this10).call(_this10, query, options);
-      }).then(function (result) {
-        return result.network;
-      });
-
-      return promise;
-    }
-  }]);
-
-  return SyncStore;
-}(_cacheStore2.default);
-
-exports.default = SyncStore;
-},{"../aggregation":3,"../enums":7,"../errors":8,"../log":9,"../query":12,"./cacheStore":33}],38:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _dataStore = require('./stores/dataStore');
-
-var _dataStore2 = _interopRequireDefault(_dataStore);
-
-var _query = require('./query');
-
-var _query2 = _interopRequireDefault(_query);
-
-var _enums = require('./enums');
-
-var _reduce = require('lodash/reduce');
-
-var _reduce2 = _interopRequireDefault(_reduce);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var enabledSymbol = Symbol();
-var syncCollectionName = "kinvey_sync" || 'sync';
-
-var Sync = {
-  isEnabled: function isEnabled() {
-    return Sync[enabledSymbol];
-  },
-  enable: function enable() {
-    Sync[enabledSymbol] = true;
-  },
-  disable: function disable() {
-    Sync[enabledSymbol] = false;
-  },
-  count: function count(query, options) {
-    var syncStore = _dataStore2.default.getInstance(syncCollectionName, _enums.DataStoreType.Sync);
-    var promise = syncStore.find(query, options).then(function (syncData) {
-      return (0, _reduce2.default)(syncData, function (result, data) {
-        return result + data.size;
-      }, 0);
-    });
-    return promise;
-  },
-  push: function push(options) {
-    var syncStore = _dataStore2.default.getInstance(syncCollectionName, _enums.DataStoreType.Sync);
-    var query = new _query2.default();
-    query.greaterThan('size', 0);
-    var promise = syncStore.find(query, options).then(function (syncData) {
-      var promises = syncData.map(function (data) {
-        var store = _dataStore2.default.getInstance(data._id, _enums.DataStoreType.Sync);
-        return store.push();
-      });
-      return Promise.all(promises);
-    });
-    return promise;
-  },
-  sync: function sync() {
-    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-    var syncStore = _dataStore2.default.getInstance(syncCollectionName, _enums.DataStoreType.Sync);
-    var promise = syncStore.find(null, options).then(function (syncData) {
-      var promises = syncData.map(function (data) {
-        var store = _dataStore2.default.getInstance(data._id, _enums.DataStoreType.Sync);
-        return store.sync();
-      });
-      return Promise.all(promises);
-    });
-    return promise;
-  }
-};
-
-// Set sync default state
-Sync[enabledSymbol] = true || true;
-exports.default = Sync;
-},{"./enums":7,"./query":12,"./stores/dataStore":34,"lodash/reduce":379}],39:[function(require,module,exports){
-(function (process){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.User = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _client = require('./client');
-
-var _client2 = _interopRequireDefault(_client);
-
-var _query = require('./query');
-
-var _query2 = _interopRequireDefault(_query);
-
-var _acl = require('./acl');
-
-var _acl2 = _interopRequireDefault(_acl);
-
-var _metadata = require('./metadata');
-
-var _metadata2 = _interopRequireDefault(_metadata);
-
-var _errors = require('./errors');
-
-var _mic = require('./mic');
-
-var _mic2 = _interopRequireDefault(_mic);
-
-var _enums = require('./enums');
-
-var _assign = require('lodash/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
-var _result = require('lodash/result');
-
-var _result2 = _interopRequireDefault(_result);
-
-var _clone = require('lodash/clone');
-
-var _clone2 = _interopRequireDefault(_clone);
-
-var _forEach = require('lodash/forEach');
-
-var _forEach2 = _interopRequireDefault(_forEach);
-
-var _isObject = require('lodash/isObject');
-
-var _isObject2 = _interopRequireDefault(_isObject);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var appdataNamespace = "appdata" || 'appdata';
-var usersNamespace = "user" || 'user';
-var rpcNamespace = "rpc" || 'rpc';
-var idAttribute = "_id" || '_id';
-var kmdAttribute = "_kmd" || '_kmd';
-var socialIdentityAttribute = process.env.KINVEY_SOCIAL_IDENTITY_ATTRIBUTE || '_socialIdentity';
-var usernameAttribute = process.env.KINVEY_USERNAME_ATTRIBUTE || 'username';
-var emailAttribute = process.env.KINVEY_EMAIL_ATTRIBUTE || 'email';
-var hello = undefined;
-
-if (typeof window !== 'undefined') {
-  hello = require('hellojs');
-}
-
-/**
- * The User class is used to represent a single user on the Kinvey platform.
- * Use the user class to manage the active user lifecycle and perform user operations.
- */
-
-var User = exports.User = function () {
-  /**
-   * Create a new instance of a User.
-   *
-   * @param  {Object}   [data={}]    Data for the user.
-   * @return {User}                  User
-   *
-   * @example
-   * var user = new User();
-   */
-
-  function User() {
-    var data = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-    _classCallCheck(this, User);
-
-    /**
-     * The users data.
-     *
-     * @type {Object}
-     */
-    this.data = data;
-
-    /**
-     * @private
-     * The client used by this user.
-     *
-     * @type {Client}
-     */
-    this.client = _client2.default.sharedInstance();
-  }
-
-  /**
-   * The _id for the user.
-   *
-   * @return {?string} _id
-   *
-   * @example
-   * var _id = user._id;
-   */
-
-
-  _createClass(User, [{
-    key: 'setAsActiveUser',
-
-
-    /**
-     * Set this user as the active user.
-     *
-     * @return {Promise<User>}  The active user.
-     *
-     * @example
-     * var promise = user.setAsActiveUser();
-     * promise.then(function(activeUser) {
-     *   ...
-     * }).catch(function(error) {
-     *   ...
-     * });
-     */
-    value: function setAsActiveUser() {
-      return User.setActiveUser(this, this.client);
-    }
-
-    /**
-     * Checks if this user is the active user.
-     *
-     * @return {Promise<Boolean>} True or false if this user is the active user.
-     *
-     * @example
-     * var promise = user.isActiveUser();
-     * promise.then(function(isActiveUser) {
-     *   ...
-     * }).catch(function(error) {
-     *   ...
-     * });
-     */
-
-  }, {
-    key: 'isActiveUser',
-    value: function isActiveUser() {
-      var _this = this;
-
-      return this.client.getActiveUser().then(function (activeUser) {
-        if (activeUser && activeUser[idAttribute] === _this._id) {
-          return true;
-        }
-
-        return false;
-      });
-    }
-
-    /**
-     * Login using a username or password.
-     *
-     * @param  {string|Object}      usernameOrData    Username or an object with username
-     *                                                and password properties.
-     * @param  {string}             [password]        Users password.
-     * @param  {Object}             [options={}]      Options
-     * @return {Promise<User>}                        The logged in user.
-     *
-     * @example
-     * var promise = user.login('username', 'password');
-     * promise.then(function(user) {
-     *   ...
-     * }).catch(function(error) {
-     *   ...
-     * });
-     */
-
-  }, {
-    key: 'login',
-    value: function login(usernameOrData, password) {
-      var _this2 = this;
-
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-      if (!(0, _isObject2.default)(usernameOrData)) {
-        usernameOrData = {
-          username: usernameOrData,
-          password: password
-        };
-      }
-
-      if (!usernameOrData._socialIdentity) {
-        if (usernameOrData.username) {
-          usernameOrData.username = String(usernameOrData.username).trim();
-        }
-
-        if (usernameOrData.password) {
-          usernameOrData.password = String(usernameOrData.password).trim();
-        }
-      }
-
-      var promise = this.isActiveUser().then(function (isActiveUser) {
-        if (isActiveUser) {
-          throw new _errors.ActiveUserError('This user is already the active user.');
-        }
-
-        return _this2.client.getActiveUser();
-      }).then(function (activeUser) {
-        if (activeUser) {
-          throw new _errors.ActiveUserError('An active user already exists. ' + 'Please call logout the active user before you login.');
-        }
-
-        var _usernameOrData = usernameOrData;
-        var username = _usernameOrData.username;
-        var password = _usernameOrData.password;
-        var _socialIdentity = _usernameOrData._socialIdentity;
-
-
-        if ((!username || username === '' || !password || password === '') && !_socialIdentity) {
-          throw new _errors.KinveyError('Username and/or password missing. ' + 'Please provide both a username and password to login.');
-        }
-
-        return _this2.client.executeNetworkRequest({
-          method: _enums.HttpMethod.POST,
-          pathname: '/' + usersNamespace + '/' + _this2.client.appKey + '/login',
-          data: usernameOrData,
-          auth: _this2.client.appAuth(),
-          properties: options.properties,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        return _this2.client.setActiveUser(response.data).then(function () {
-          _this2.data = response.data;
-          return _this2;
-        });
-      });
-
-      return promise;
-    }
-
-    /**
-     * Login using Mobile Identity Connect.
-     *
-     * @param  {string}                 redirectUri                                                         The redirect uri used
-     *                                                                                                      for MIC logins.
-     * @param  {AuthorizationGrant}     [authorizationGrant=AuthoizationGrant.AuthorizationCodeLoginPage]   MIC authorization grant to use.
-     * @param  {Object}                 [options={}]                                                        Options
-     * @return {Promise<User>}                                                                              The logged in user.
-     *
-     * @example
-     * var promise = user.loginWithMIC('http://example.com');
-     * promise.then(function(user) {
-     *   ...
-     * }).catch(function(error) {
-     *   ...
-     * });
-     */
-
-  }, {
-    key: 'loginWithMIC',
-    value: function loginWithMIC(redirectUri, authorizationGrant) {
-      var _this3 = this;
-
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-      return _mic2.default.login(redirectUri, authorizationGrant, options).then(function (token) {
-        return _this3.connect(_mic2.default.identity, token.access_token, token.expires_in, options);
-      });
-    }
-
-    /**
-     * Logout the user. If the user was the active user then the active user will be set to null.
-     *
-     * @param  {Object}         [options={}]    Options
-     * @return {Promise<User>}                  The logged out user.
-     *
-     * @example
-     * var promise = user.logout();
-     * promise.then(function(user) {
-     *   ...
-     * }).catch(function(error) {
-     *   ...
-     * });
-     */
-
-  }, {
-    key: 'logout',
-    value: function logout() {
-      var _this4 = this;
-
-      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      return this.client.executeNetworkRequest({
-        method: _enums.HttpMethod.POST,
-        pathname: '/' + usersNamespace + '/' + this.client.appKey + '/_logout',
-        auth: this.client.sessionAuth(),
-        properties: options.properties,
-        timeout: options.timeout
-      }).then(function () {
-        return _this4.isActiveUser();
-      }).catch(function () {
-        return _this4.isActiveUser();
-      }).then(function (isActiveUser) {
-        if (isActiveUser) {
-          return _this4.client.setActiveUser(null);
-        }
-      }).then(function () {
-        return _this4;
-      });
-    }
-
-    /**
-     * @private
-     * Returns true or false if identity connect is supported.
-     *
-     * @return {Boolean}  True or false if identity connect is supported.
-     *
-     * @example
-     * var isIdentityConnectSupported = user.isIdentityConnectSupported();
-     */
-
-  }, {
-    key: 'isIdentityConnectSupported',
-    value: function isIdentityConnectSupported() {
-      return hello ? true : false;
-    }
-
-    /**
-     * Connect using Facebook.
-     *
-     * @param  {Object}         [options={}]  Options
-     * @return {Promise<User>}                The connected user.
-     *
-     * @example
-     * var promise = user.connectWithFacebook();
-     * promise.then(function(user) {
-     *   ...
-     * }).catch(function(error) {
-     *   ...
-     * });
-     */
-
-  }, {
-    key: 'connectWithFacebook',
-    value: function connectWithFacebook() {
-      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      return this.connectWithIdentity(_enums.SocialIdentity.Facebook, options);
-    }
-
-    /**
-     * Connect using Google.
-     *
-     * @param  {Object}         [options={}]  Options
-     * @return {Promise<User>}                The connected user.
-     *
-     * @example
-     * var promise = user.connectWithGoogle();
-     * promise.then(function(user) {
-     *   ...
-     * }).catch(function(error) {
-     *   ...
-     * });
-     */
-
-  }, {
-    key: 'connectWithGoogle',
-    value: function connectWithGoogle() {
-      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      return this.connectWithIdentity(_enums.SocialIdentity.Google, options);
-    }
-
-    /**
-     * Connect using LinkedIn.
-     *
-     * @param  {Object}         [options={}]  Options
-     * @return {Promise<User>}                The connected user.
-     *
-     * @example
-     * var promise = user.connectWithLinkedIn();
-     * promise.then(function(user) {
-     *   ...
-     * }).catch(function(error) {
-     *   ...
-     * });
-     */
-
-  }, {
-    key: 'connectWithLinkedIn',
-    value: function connectWithLinkedIn() {
-      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      return this.connectWithIdentity(_enums.SocialIdentity.LinkedIn, options);
-    }
-
-    /**
-     * Connect using an identity (Facebook, Google, LinkedIn etc.).
-     *
-     * @param  {SocialIdentity|string}         identity                                Identity used to connect the user.
-     * @param  {Object}                        [options={}]                            Options
-     * @param  {string}                        [options.collectionName='Identities']   Collection name to use to lookup credentials
-     *                                                                                 for the identity.
-     * @return {Promise<User>}                                                         The connected user.
-     *
-     * @example
-     * var promise = user.connectWithIdentity(SocialIdentity.Facebook);
-     * promise.then(function(user) {
-     *   ...
-     * }).catch(function(error) {
-     *   ...
-     * });
-     */
-
-  }, {
-    key: 'connectWithIdentity',
-    value: function connectWithIdentity(identity) {
-      var _this5 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      if (!identity) {
-        return Promise.reject(new _errors.KinveyError('An identity is required to connect the user.'));
-      }
-
-      if (this.isIdentityConnectSupported()) {
-        return Promise.reject(new _errors.KinveyError('Unable to connect to identity ' + identity + ' on this platform.'));
-      }
-
-      options = (0, _assign2.default)({
-        collectionName: 'Identities'
-      }, options);
-
-      var promise = Promise.resolve().then(function () {
-        var query = new _query2.default().equalTo('identity', identity);
-        return _this5.client.executeNetworkRequest({
-          method: _enums.HttpMethod.GET,
-          pathname: '/' + appdataNamespace + '/' + _this5.client.appKey + '/' + options.collectionName,
-          auth: _this5.client.defaultAuth(),
-          query: query,
-          properties: options.properties,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        if (response.data.length === 1) {
-          var helloSettings = {};
-          helloSettings[identity] = response.data[0].key || response.data[0].appId || response.data[0].clientId;
-          hello.init(helloSettings);
-          return hello(identity).login();
-        }
-
-        throw new _errors.KinveyError('Unsupported identity.');
-      }).then(function () {
-        var authResponse = hello(identity).getAuthResponse();
-        return _this5.connect(identity, authResponse.access_token, authResponse.expires_in, options);
-      });
-
-      return promise;
-    }
-
-    /**
-     * @private
-     *
-     * Connects with the provided accessToken and identity.
-     *
-     * @param  {SocialIdentity|string}         identity      Identity used to connect the user.
-     * @param  {string}                        accessToken   Access token for the identity.
-     * @param  {number}                        [expiresIn]   Time in seconds for how long the access token is valid.
-     * @param  {Object}                        [options={}]  Options
-     * @return {Promise<User>}                               The connected user.
-     *
-     * @example
-     * var promise = user.connect(SocialIdentity.Facebook, 'facebook-access-token');
-     * promise.then(function(user) {
-     *   ...
-     * }).catch(function(error) {
-     *   ...
-     * });
-     */
-
-  }, {
-    key: 'connect',
-    value: function connect(identity, accessToken, expiresIn) {
-      var _this6 = this;
-
-      var options = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
-
-      options = (0, _assign2.default)({
-        create: true
-      }, options);
-
-      var user = {};
-      user[socialIdentityAttribute] = {};
-      user[socialIdentityAttribute][identity] = {
-        access_token: accessToken,
-        expires_in: expiresIn
-      };
-
-      var promise = this.client.getActiveUser().then(function (activeUser) {
-        if (activeUser) {
-          activeUser[socialIdentityAttribute] = user[socialIdentityAttribute];
-          options._identity = identity;
-          return _this6.update(activeUser, options);
-        }
-
-        return _this6.login(user, null, options);
-      }).catch(function (err) {
-        if (options.create && err instanceof _errors.NotFoundError) {
-          return _this6.signup(user, options).then(function () {
-            return _this6.connect(identity, accessToken, expiresIn, options);
-          });
-        }
-      });
-
-      return promise;
-    }
-
-    /**
-     * Sign up. If options.state is set to true then the user
-     * will be set as the active user after succesfully signing up the
-     * user.
-     *
-     * @param  {User|Object}    data                    Users data.
-     * @param  {Object}         [options={}]            Options
-     * @param  {Boolean}        [options.state=true]    If set to true, the user will be
-     *                                                  set as the active user after successfully
-     *                                                  being signed up.
-     * @return {Promise<User>}                          The signed up user.
-     *
-     * @example
-     * var promise = user.signup({
-     *   username: 'admin',
-     *   password: 'admin'
-     * });
-     * promise.then(function(user) {
-     *   ...
-     * }).catch(function(error) {
-     *   ...
-     * });
-     */
-
-  }, {
-    key: 'signup',
-    value: function signup(data) {
-      var _this7 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      options = (0, _assign2.default)({
-        state: true
-      }, options);
-
-      var promise = Promise.resolve().then(function () {
-        if (options.state === true) {
-          return _this7.client.getActiveUser().then(function (activeUser) {
-            if (activeUser) {
-              throw new _errors.ActiveUserError('An active user already exists. ' + 'Please call logout the active user before you login.');
-            }
-          });
-        }
-      }).then(function () {
-        return _this7.client.executeNetworkRequest({
-          method: _enums.HttpMethod.POST,
-          pathname: '/' + usersNamespace + '/' + _this7.client.appKey,
-          auth: _this7.client.appAuth(),
-          data: (0, _result2.default)(data, 'toJSON', data),
-          properties: options.properties,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        _this7.data = response.data;
-
-        if (options.state === true) {
-          return _this7.client.setActiveUser(_this7.data).then(function () {
-            return _this7;
-          });
-        }
-
-        return _this7;
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'update',
-    value: function update(data) {
-      var _this8 = this;
-
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      var tokens = [];
-
-      var promise = Promise.resolve().then(function () {
-        if (!data[idAttribute]) {
-          throw new _errors.KinveyError('data argument must contain an _id');
-        }
-
-        if (data[socialIdentityAttribute]) {
-          for (var identity in data[socialIdentityAttribute]) {
-            if (data[socialIdentityAttribute].hasOwnProperty(identity)) {
-              if (data[socialIdentityAttribute][identity] && options._identity !== identity) {
-                tokens.push({
-                  identity: identity,
-                  access_token: data[socialIdentityAttribute][identity].access_token,
-                  access_token_secret: data[socialIdentityAttribute][identity].access_token_secret
-                });
-                delete data[socialIdentityAttribute][identity].access_token;
-                delete data[socialIdentityAttribute][identity].access_token_secret;
-              }
-            }
-          }
-        }
-
-        return _this8.client.executeNetworkRequest({
-          method: _enums.HttpMethod.PUT,
-          pathname: '/' + usersNamespace + '/' + _this8.client.appKey + '/' + data[idAttribute],
-          auth: _this8.client.sessionAuth(),
-          data: data,
-          properties: options.properties,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        var data = response.data;
-
-        (0, _forEach2.default)(tokens, function (token) {
-          var identity = token.identity;
-
-          if (data[socialIdentityAttribute] && data[socialIdentityAttribute][identity]) {
-            data[socialIdentityAttribute][identity].access_token = token.access_token;
-            data[socialIdentityAttribute][identity].access_token_secret = token.access_token_secret;
-          }
-        });
-
-        return _this8.client.getActiveUser().then(function (activeUser) {
-          _this8.data = data;
-
-          if (activeUser && data[idAttribute] === activeUser[idAttribute]) {
-            return _this8.client.setActiveUser(data).then(function () {
-              return _this8;
-            });
-          }
-
-          return _this8;
-        });
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'me',
-    value: function me(options) {
-      var _this9 = this;
-
-      var promise = Promise.resolve().then(function () {
-        return _this9.client.executeNetworkRequest({
-          method: _enums.HttpMethod.GET,
-          pathname: '/' + usersNamespace + '/' + _this9.client.appKey + '/_me',
-          auth: _this9.client.sessionAuth(),
-          properties: options.properties,
-          timeout: options.timeout
-        });
-      }).then(function (response) {
-        _this9.data = response.data;
-
-        if (!_this9.authtoken) {
-          return _this9.client.getActiveUser().then(function (activeUser) {
-            if (activeUser) {
-              _this9.authtoken = activeUser[kmdAttribute].authtoken;
-            }
-
-            return _this9;
-          });
-        }
-
-        return _this9;
-      }).then(function () {
-        return _this9.client.setActiveUser(_this9.data);
-      }).then(function () {
-        return _this9;
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'verifyEmail',
-    value: function verifyEmail(username, options) {
-      var promise = this.client.executeNetworkRequest({
-        method: _enums.HttpMethod.POST,
-        pathname: '/' + rpcNamespace + '/' + this.client.appKey + '/' + username + '/user-email-verification-initiate',
-        auth: this.client.appAuth(),
-        properties: options.properties,
-        timeout: options.timeout
-      });
-      return promise;
-    }
-  }, {
-    key: 'forgotUsername',
-    value: function forgotUsername(email, options) {
-      var promise = this.client.executeNetworkRequest({
-        method: _enums.HttpMethod.POST,
-        pathname: '/' + rpcNamespace + '/' + this.client.appKey + '/user-forgot-username',
-        auth: this.client.appAuth(),
-        data: { email: email },
-        properties: options.properties,
-        timeout: options.timeout
-      });
-      return promise;
-    }
-  }, {
-    key: 'resetPassword',
-    value: function resetPassword(username, options) {
-      var promise = this.client.executeNetworkRequest({
-        method: _enums.HttpMethod.POST,
-        pathname: '/' + rpcNamespace + '/' + this.client.appKey + '/' + username + '/user-password-reset-initiate',
-        auth: this.client.appAuth(),
-        properties: options.properties,
-        timeout: options.timeout
-      });
-      return promise;
-    }
-  }, {
-    key: 'toJSON',
-    value: function toJSON() {
-      return (0, _clone2.default)(this.data, true);
-    }
-  }, {
-    key: '_id',
-    get: function get() {
-      return this.data[idAttribute];
-    }
-
-    /**
-     * The _acl for the user.
-     *
-     * @return {Acl} _acl
-     *
-     * @example
-     * var _acl = user._acl;
-     */
-
-  }, {
-    key: '_acl',
-    get: function get() {
-      return new _acl2.default(this.data);
-    }
-
-    /**
-     * The metadata for the user.
-     *
-     * @return {Metadata} metadata
-     *
-     * @example
-     * var metadata = user.metadata;
-     */
-
-  }, {
-    key: 'metadata',
-    get: function get() {
-      return new _metadata2.default(this.data);
-    }
-
-    /**
-     * The _kmd for the user.
-     *
-     * @return {Metadata} _kmd
-     *
-     * @example
-     * var _kmd = user._kmd;
-     */
-
-  }, {
-    key: '_kmd',
-    get: function get() {
-      return this.metadata;
-    }
-
-    /**
-     * The auth token for the user.
-     *
-     * @return {?string} Auth token
-     *
-     * @example
-     * var authtoken = user.authtoken;
-     */
-
-  }, {
-    key: 'authtoken',
-    get: function get() {
-      return this.metadata.authtoken;
-    }
-
-    /**
-     * Set the auth token for the user.
-     *
-     * @param  {?string} authtoken Auth token
-     *
-     * @example
-     * user.authtoken = 'authtoken';
-     */
-    ,
-    set: function set(authtoken) {
-      var kmd = this._kmd;
-      kmd.authtoken = authtoken;
-      this.data[kmdAttribute] = kmd.toJSON();
-    }
-
-    /**
-     * The username for the user.
-     *
-     * @return {?string} Username
-     *
-     * @example
-     * var username = user.username;
-     */
-
-  }, {
-    key: 'username',
-    get: function get() {
-      return this.data[usernameAttribute];
-    }
-
-    /**
-     * The email for the user.
-     *
-     * @return {?string} Email
-     *
-     * @example
-     * var email = user.email;
-     */
-
-  }, {
-    key: 'email',
-    get: function get() {
-      return this.data[emailAttribute];
-    }
-
-    /**
-     * Gets the active user. You can optionally provide a client
-     * to use to lookup the active user.
-     *
-     * @param  {Client}           [client=Client.sharedInstance()]   Client to use to set the active user.
-     * @return {Promise<User>}                                       The active user on the client. The
-     *                                                               active user could be null if one does
-     *                                                               not exist.
-     *
-     * @example
-     * var _id = user._id;
-     */
-
-  }], [{
-    key: 'getActiveUser',
-    value: function getActiveUser() {
-      var client = arguments.length <= 0 || arguments[0] === undefined ? _client2.default.sharedInstance() : arguments[0];
-
-      return client.getActiveUser().then(function (data) {
-        var user = null;
-
-        if (data) {
-          user = new User(data);
-          user.client = client;
-        }
-
-        return user;
-      });
-    }
-
-    /**
-     * Sets the active user. You can optionally provide a client to
-     * set the active user on. Only one active user per client is
-     * allowed.
-     *
-     * @param  {?(User|Object)}      [user]                               User to set as the active user.
-     * @param  {Client}              [client=Client.sharedInstance()]     The client to use to set the active user on.
-     * @return {Promise<User>}                                            The active user on the client. The active user
-     *                                                                    could be null if one does not exist.
-     *
-     * @example
-     * var user = new User();
-     * var promise = User.setActiveUser(user);
-     * promise.then(function(activeUser) {
-     *   ...
-     * }).catch(function(error) {
-     *   ...
-     * });
-     */
-
-  }, {
-    key: 'setActiveUser',
-    value: function setActiveUser(user) {
-      var client = arguments.length <= 1 || arguments[1] === undefined ? _client2.default.sharedInstance() : arguments[1];
-
-      var data = (0, _result2.default)(user, 'toJSON', user);
-      return client.setActiveUser(data).then(function () {
-        return User.getActiveUser();
-      });
-    }
-  }]);
-
-  return User;
-}();
-}).call(this,require('_process'))
-
-},{"./acl":2,"./client":4,"./enums":7,"./errors":8,"./metadata":10,"./mic":11,"./query":12,"_process":418,"hellojs":181,"lodash/assign":344,"lodash/clone":346,"lodash/forEach":349,"lodash/isObject":363,"lodash/result":381}],40:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.nested = nested;
-exports.isDefined = isDefined;
-
-var _clone = require('lodash/clone');
-
-var _clone2 = _interopRequireDefault(_clone);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * @private
- */
-function nested(obj, dotProperty, value) {
-  obj = (0, _clone2.default)(obj, true);
-
-  if (!dotProperty) {
-    obj = value ? value : obj;
-    return obj;
-  }
-
-  var parts = dotProperty.split('.');
-  var current = parts.shift();
-  while (current && obj) {
-    obj = obj[current];
-    current = parts.shift();
-  }
-
-  return value ? value : obj;
-}
-
-/**
- * @private
- */
-function isDefined(obj) {
-  return obj !== undefined && obj !== null;
-}
-},{"lodash/clone":346}],41:[function(require,module,exports){
-(function (global){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _device = require('../device');
-
-var _device2 = _interopRequireDefault(_device);
-
-var _events = require('events');
-
-var _bind = require('lodash/bind');
-
-var _bind2 = _interopRequireDefault(_bind);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* global Titanium:false */
-
-
-var privatePopupSymbol = Symbol();
-
-/**
- * @private
- */
-
-var PrivatePopup = function (_EventEmitter) {
-  _inherits(PrivatePopup, _EventEmitter);
-
-  function PrivatePopup() {
-    var url = arguments.length <= 0 || arguments[0] === undefined ? '/' : arguments[0];
-
-    _classCallCheck(this, PrivatePopup);
-
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PrivatePopup).call(this));
-
-    _this.url = url;
-    _this.eventListeners = {
-      loadHandler: (0, _bind2.default)(_this.loadHandler, _this),
-      clickHandler: (0, _bind2.default)(_this.clickHandler, _this),
-      closeHandler: (0, _bind2.default)(_this.closeHandler, _this)
-    };
-    return _this;
-  }
-
-  _createClass(PrivatePopup, [{
-    key: 'open',
-    value: function open() {
-      var _this2 = this;
-
-      var device = new _device2.default();
-      var promise = new Promise(function (resolve, reject) {
-        if (device.isCordova()) {
-          _this2.popup = global.open(_this2.url, '_blank', 'location=yes');
-
-          if (_this2.popup) {
-            _this2.popup.addEventListener('loadstart', _this2.eventListeners.loadHandler);
-            _this2.popup.addEventListener('exit', _this2.eventListeners.closeHandler);
-          } else {
-            reject(new Error('The popup was blocked.'));
-          }
-        } else if (device.isTitanium()) {
-          _this2.tiWebView = Titanium.UI.createWebView({
-            width: '100%',
-            height: '100%',
-            url: _this2.url
-          });
-
-          _this2.popup = Titanium.UI.createWindow({
-            backgroundColor: 'white',
-            barColor: '#000',
-            title: 'Mobile Identity Connect',
-            modal: true
-          });
-          _this2.popup.add(_this2.tiWebView);
-
-          if (device.os.name === 'ios') {
-            _this2.tiWin = Titanium.UI.createWindow({
-              backgroundColor: 'white',
-              barColor: '#e3e3e3',
-              title: 'Mobile Identity Connect'
-            });
-            _this2.tiWin.add(_this2.tiWebView);
-
-            _this2.tiCloseButton = Titanium.UI.createButton({
-              title: 'Close',
-              style: Titanium.UI.iPhone.SystemButtonStyle.DONE
-            });
-            _this2.tiWin.setLeftNavButton(_this2.tiCloseButton);
-            _this2.tiCloseButton.addEventListener('click', _this2.eventListeners.clickHandler);
-
-            _this2.popup = Titanium.UI.iOS.createNavigationWindow({
-              backgroundColor: 'white',
-              window: _this2.tiWin,
-              modal: true
-            });
-          } else if (device.os.name === 'android') {
-            _this2.popup.addEventListener('androidback', _this2.eventListeners.closeHandler);
-          }
-
-          _this2.tiWebView.addEventListener('load', _this2.eventListeners.loadHandler);
-          _this2.tiWebView.addEventListener('error', _this2.eventListeners.loadHandler);
-          _this2.popup.addEventListener('close', _this2.eventListeners.closeHandler);
-
-          _this2.popup.open();
-        } else {
-          _this2.popup = global.open(_this2.url, '_blank', 'toolbar=no,location=no');
-
-          if (_this2.popup) {
-            _this2.interval = setInterval(function () {
-              if (_this2.popup.closed) {
-                _this2.closeHandler();
-              } else {
-                try {
-                  _this2.loadHandler({
-                    url: _this2.popup.location.href
-                  });
-                } catch (e) {
-                  // catch any errors due to cross domain issues
-                }
-              }
-            }, 100);
-          } else {
-            reject(new Error('The popup was blocked.'));
-          }
-        }
-
-        resolve();
-      });
-
-      return promise;
-    }
-  }, {
-    key: 'close',
-    value: function close() {
-      var _this3 = this;
-
-      var promise = new Promise(function (resolve) {
-        _this3.popup.close();
-        resolve();
-      });
-      return promise;
-    }
-  }, {
-    key: 'loadHandler',
-    value: function loadHandler(event) {
-      this.emit('load', event.url);
-    }
-  }, {
-    key: 'clickHandler',
-    value: function clickHandler() {
-      this.close();
-    }
-  }, {
-    key: 'closeHandler',
-    value: function closeHandler() {
-      var device = new _device2.default();
-      clearTimeout(this.interval);
-
-      if (device.isCordova()) {
-        this.popup.removeEventListener('loadstart', this.eventListeners.loadHandler);
-        this.popup.removeEventListener('exit', this.eventListeners.closeHander);
-      } else if (device.isTitanium()) {
-        this.tiWebView.removeEventListener('load', this.eventListeners.loadHandler);
-        this.tiWebView.removeEventListener('error', this.eventListeners.loadHandler);
-        this.popup.removeEventListener('close', this.eventListeners.closeHandler);
-
-        if (device.os.name === 'ios') {
-          this.tiCloseButton.removeEventListener('click', this.eventListeners.clickHandler);
-        } else if (device.os.name === 'android') {
-          this.popup.close();
-          this.popup.removeEventListener('androidback', this.eventListeners.closeHandler);
-        }
-      }
-
-      this.emit('close');
-    }
-  }]);
-
-  return PrivatePopup;
-}(_events.EventEmitter);
-
-/**
- * @private
- */
-
-
-var Popup = function () {
-  function Popup(url) {
-    _classCallCheck(this, Popup);
-
-    this[privatePopupSymbol] = new PrivatePopup(url);
-  }
-
-  _createClass(Popup, [{
-    key: 'listenerCount',
-    value: function listenerCount(type) {
-      return this[privatePopupSymbol].listenerCount(type);
-    }
-  }, {
-    key: 'listeners',
-    value: function listeners(event) {
-      return this[privatePopupSymbol].listeners(event);
-    }
-  }, {
-    key: 'getMaxListeners',
-    value: function getMaxListeners() {
-      return this[privatePopupSymbol].getMaxListeners();
-    }
-  }, {
-    key: 'setMaxListeners',
-    value: function setMaxListeners(n) {
-      return this[privatePopupSymbol].setMaxListeners(n);
-    }
-  }, {
-    key: 'addListener',
-    value: function addListener(event, listener) {
-      return this[privatePopupSymbol].addListener(event, listener);
-    }
-  }, {
-    key: 'on',
-    value: function on(event, listener) {
-      return this[privatePopupSymbol].on(event, listener);
-    }
-  }, {
-    key: 'once',
-    value: function once(event, listener) {
-      return this[privatePopupSymbol].once(event, listener);
-    }
-  }, {
-    key: 'emit',
-    value: function emit(event) {
-      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
-      }
-
-      return this[privatePopupSymbol].emit(event, args);
-    }
-  }, {
-    key: 'removeAllListeners',
-    value: function removeAllListeners(event) {
-      return this[privatePopupSymbol].removeAllListeners(event);
-    }
-  }, {
-    key: 'removeListener',
-    value: function removeListener(event, listener) {
-      return this[privatePopupSymbol].removeListener(event, listener);
-    }
-  }, {
-    key: 'open',
-    value: function open() {
-      var _this4 = this;
-
-      return this[privatePopupSymbol].open().then(function () {
-        return _this4;
-      });
-    }
-  }, {
-    key: 'close',
-    value: function close() {
-      var _this5 = this;
-
-      return this[privatePopupSymbol].close().then(function () {
-        return _this5;
-      });
-    }
-  }, {
-    key: 'url',
-    get: function get() {
-      return this[privatePopupSymbol].url;
-    },
-    set: function set(url) {
-      this[privatePopupSymbol].url = url;
-    }
-  }]);
-
-  return Popup;
-}();
-
-exports.default = Popup;
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{"../device":6,"events":146,"lodash/bind":345}],42:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.byteCount = byteCount;
-/**
- * @private
- */
-function byteCount(str) {
-  var count = 0;
-  var stringLength = str.length;
-  str = String(str || '');
-
-  for (var i = 0; i < stringLength; i++) {
-    var partCount = encodeURI(str[i]).split('%').length;
-    count += partCount === 1 ? 1 : partCount - 1;
-  }
-
-  return count;
-}
-},{}],43:[function(require,module,exports){
-'use strict';
-
-var _kinvey = require('./kinvey');
-
-module.exports = _kinvey.Kinvey;
-},{"./kinvey":44}],44:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Kinvey = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _aggregation = require('./core/aggregation');
-
-var _aggregation2 = _interopRequireDefault(_aggregation);
-
-var _client = require('./core/client');
-
-var _client2 = _interopRequireDefault(_client);
-
-var _command = require('./core/command');
-
-var _command2 = _interopRequireDefault(_command);
-
-var _filesStore = require('./core/stores/filesStore');
-
-var _filesStore2 = _interopRequireDefault(_filesStore);
-
-var _log = require('./core/log');
-
-var _log2 = _interopRequireDefault(_log);
-
-var _metadata = require('./core/metadata');
-
-var _metadata2 = _interopRequireDefault(_metadata);
-
-var _query = require('./core/query');
-
-var _query2 = _interopRequireDefault(_query);
-
-var _dataStore = require('./core/stores/dataStore');
-
-var _dataStore2 = _interopRequireDefault(_dataStore);
-
-var _sync = require('./core/sync');
-
-var _sync2 = _interopRequireDefault(_sync);
-
-var _user = require('./core/user');
-
-var _enums = require('./core/enums');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var appdataNamespace = "appdata" || 'appdata';
-
-var Kinvey = exports.Kinvey = function () {
-  function Kinvey() {
-    _classCallCheck(this, Kinvey);
-  }
-
-  _createClass(Kinvey, null, [{
-    key: 'init',
-
-    /**
-     * Initializes the library with your app's information.
-     *
-     * @param   {Object}        options                         Options
-     * @param   {string}        options.appKey                  My app key
-     * @param   {string}        [options.appSecret]             My app secret
-     * @param   {string}        [options.masterSecret]          My app's master secret
-     * @param   {string}        [options.encryptionKey]         My app's encryption key
-     * @param   {string}        [options.protocol]              The protocol of the client.
-     * @param   {string}        [options.host]                  The host of the client.
-     * @return  {Client}                                        An instance of Client.
-     *
-     * @throws  {KinveyError}  If an `options.appKey` is not provided.
-     * @throws  {KinveyError}  If neither an `options.appSecret` or `options.masterSecret` is provided.
-     *
-     * @example
-     * var client = Kinvey.init({
-     *   appKey: 'appKey',
-     *   appSecret: 'appSecret'
-     * });
-     */
-    value: function init(options) {
-      var client = _client2.default.init(options);
-      return client;
-    }
-
-    /**
-     * Pings the Kinvey service.
-     *
-     * @returns {Promise} The response.
-     */
-
-  }, {
-    key: 'ping',
-    value: function ping() {
-      var client = _client2.default.sharedInstance();
-
-      return client.executeNetworkRequest({
-        method: _enums.HttpMethod.GET,
-        auth: client.allAuth(),
-        pathname: appdataNamespace + '/' + client.appKey
-      }).then(function (response) {
-        return response.data;
-      });
-    }
-  }]);
-
-  return Kinvey;
-}();
-
-Kinvey.Aggregation = _aggregation2.default;
-Kinvey.AuthorizationGrant = _enums.AuthorizationGrant;
-Kinvey.Command = _command2.default;
-Kinvey.DataStore = _dataStore2.default;
-Kinvey.DataStoreType = _enums.DataStoreType;
-Kinvey.FileStore = _filesStore2.default;
-Kinvey.Log = _log2.default;
-Kinvey.Metadata = _metadata2.default;
-Kinvey.Promise = Promise;
-Kinvey.Query = _query2.default;
-Kinvey.SocialIdentity = _enums.SocialIdentity;
-Kinvey.Sync = _sync2.default;
-Kinvey.User = _user.User;
-},{"./core/aggregation":3,"./core/client":4,"./core/command":5,"./core/enums":7,"./core/log":9,"./core/metadata":10,"./core/query":12,"./core/stores/dataStore":34,"./core/stores/filesStore":35,"./core/sync":38,"./core/user":39}],45:[function(require,module,exports){
 var asn1 = exports;
 
 asn1.bignum = require('bn.js');
@@ -10415,7 +9,7 @@ asn1.constants = require('./asn1/constants');
 asn1.decoders = require('./asn1/decoders');
 asn1.encoders = require('./asn1/encoders');
 
-},{"./asn1/api":46,"./asn1/base":48,"./asn1/constants":52,"./asn1/decoders":54,"./asn1/encoders":57,"bn.js":71}],46:[function(require,module,exports){
+},{"./asn1/api":2,"./asn1/base":4,"./asn1/constants":8,"./asn1/decoders":10,"./asn1/encoders":13,"bn.js":27}],2:[function(require,module,exports){
 var asn1 = require('../asn1');
 var inherits = require('inherits');
 
@@ -10476,7 +70,7 @@ Entity.prototype.encode = function encode(data, enc, /* internal */ reporter) {
   return this._getEncoder(enc).encode(data, reporter);
 };
 
-},{"../asn1":45,"inherits":191,"vm":512}],47:[function(require,module,exports){
+},{"../asn1":1,"inherits":147,"vm":513}],3:[function(require,module,exports){
 var inherits = require('inherits');
 var Reporter = require('../base').Reporter;
 var Buffer = require('buffer').Buffer;
@@ -10594,7 +188,7 @@ EncoderBuffer.prototype.join = function join(out, offset) {
   return out;
 };
 
-},{"../base":48,"buffer":102,"inherits":191}],48:[function(require,module,exports){
+},{"../base":4,"buffer":58,"inherits":147}],4:[function(require,module,exports){
 var base = exports;
 
 base.Reporter = require('./reporter').Reporter;
@@ -10602,7 +196,7 @@ base.DecoderBuffer = require('./buffer').DecoderBuffer;
 base.EncoderBuffer = require('./buffer').EncoderBuffer;
 base.Node = require('./node');
 
-},{"./buffer":47,"./node":49,"./reporter":50}],49:[function(require,module,exports){
+},{"./buffer":3,"./node":5,"./reporter":6}],5:[function(require,module,exports){
 var Reporter = require('../base').Reporter;
 var EncoderBuffer = require('../base').EncoderBuffer;
 var DecoderBuffer = require('../base').DecoderBuffer;
@@ -10610,9 +204,10 @@ var assert = require('minimalistic-assert');
 
 // Supported tags
 var tags = [
-  'seq', 'seqof', 'set', 'setof', 'octstr', 'bitstr', 'objid', 'bool',
-  'gentime', 'utctime', 'null_', 'enum', 'int', 'ia5str', 'utf8str', 'bmpstr',
-  'numstr', 'printstr'
+  'seq', 'seqof', 'set', 'setof', 'objid', 'bool',
+  'gentime', 'utctime', 'null_', 'enum', 'int',
+  'bitstr', 'bmpstr', 'charstr', 'genstr', 'graphstr', 'ia5str', 'iso646str',
+  'numstr', 'octstr', 'printstr', 't61str', 'unistr', 'utf8str', 'videostr'
 ];
 
 // Public methods list
@@ -10996,11 +591,7 @@ Node.prototype._decodeGeneric = function decodeGeneric(tag, input) {
     return null;
   if (tag === 'seqof' || tag === 'setof')
     return this._decodeList(input, tag, state.args[0]);
-  else if (tag === 'octstr' || tag === 'bitstr')
-    return this._decodeStr(input, tag);
-  else if (tag === 'ia5str' || tag === 'utf8str' || tag === 'bmpstr')
-    return this._decodeStr(input, tag);
-  else if (tag === 'numstr' || tag === 'printstr')
+  else if (/str$/.test(tag))
     return this._decodeStr(input, tag);
   else if (tag === 'objid' && state.args)
     return this._decodeObjid(input, state.args[0], state.args[1]);
@@ -11204,11 +795,7 @@ Node.prototype._encodeChoice = function encodeChoice(data, reporter) {
 Node.prototype._encodePrimitive = function encodePrimitive(tag, data) {
   var state = this._baseState;
 
-  if (tag === 'octstr' || tag === 'bitstr' || tag === 'ia5str')
-    return this._encodeStr(data, tag);
-  else if (tag === 'utf8str' || tag === 'bmpstr')
-    return this._encodeStr(data, tag);
-  else if (tag === 'numstr' || tag === 'printstr')
+  if (/str$/.test(tag))
     return this._encodeStr(data, tag);
   else if (tag === 'objid' && state.args)
     return this._encodeObjid(data, state.reverseArgs[0], state.args[1]);
@@ -11234,7 +821,7 @@ Node.prototype._isPrintstr = function isPrintstr(str) {
   return /^[A-Za-z0-9 '\(\)\+,\-\.\/:=\?]*$/.test(str);
 };
 
-},{"../base":48,"minimalistic-assert":395}],50:[function(require,module,exports){
+},{"../base":4,"minimalistic-assert":396}],6:[function(require,module,exports){
 var inherits = require('inherits');
 
 function Reporter(options) {
@@ -11338,7 +925,7 @@ ReporterError.prototype.rethrow = function rethrow(msg) {
   return this;
 };
 
-},{"inherits":191}],51:[function(require,module,exports){
+},{"inherits":147}],7:[function(require,module,exports){
 var constants = require('../constants');
 
 exports.tagClass = {
@@ -11382,7 +969,7 @@ exports.tag = {
 };
 exports.tagByName = constants._reverse(exports.tag);
 
-},{"../constants":52}],52:[function(require,module,exports){
+},{"../constants":8}],8:[function(require,module,exports){
 var constants = exports;
 
 // Helper
@@ -11403,7 +990,7 @@ constants._reverse = function reverse(map) {
 
 constants.der = require('./der');
 
-},{"./der":51}],53:[function(require,module,exports){
+},{"./der":7}],9:[function(require,module,exports){
 var inherits = require('inherits');
 
 var asn1 = require('../../asn1');
@@ -11529,33 +1116,12 @@ DERNode.prototype._decodeList = function decodeList(buffer, tag, decoder) {
 };
 
 DERNode.prototype._decodeStr = function decodeStr(buffer, tag) {
-  if (tag === 'octstr') {
-    return buffer.raw();
-  } else if (tag === 'bitstr') {
+  if (tag === 'bitstr') {
     var unused = buffer.readUInt8();
     if (buffer.isError(unused))
       return unused;
-
     return { unused: unused, data: buffer.raw() };
-  } else if (tag === 'ia5str' || tag === 'utf8str') {
-    return buffer.raw().toString();
-  } else if(tag === 'numstr') {
-    var numstr = buffer.raw().toString('ascii');
-    if (!this._isNumstr(numstr)) {
-      return buffer.error('Decoding of string type: ' +
-                          'numstr unsupported characters');
-    }
-
-    return numstr;
-  } else if (tag === 'printstr') {
-    var printstr = buffer.raw().toString('ascii');
-    if (!this._isPrintstr(printstr)) {
-      return buffer.error('Decoding of string type: ' +
-                          'printstr unsupported characters');
-    }
-
-    return printstr;
-  } else if(tag === 'bmpstr') {
+  } else if (tag === 'bmpstr') {
     var raw = buffer.raw();
     if (raw.length % 2 === 1)
       return buffer.error('Decoding of string type: bmpstr length mismatch');
@@ -11565,6 +1131,24 @@ DERNode.prototype._decodeStr = function decodeStr(buffer, tag) {
       str += String.fromCharCode(raw.readUInt16BE(i * 2));
     }
     return str;
+  } else if (tag === 'numstr') {
+    var numstr = buffer.raw().toString('ascii');
+    if (!this._isNumstr(numstr)) {
+      return buffer.error('Decoding of string type: ' +
+                          'numstr unsupported characters');
+    }
+    return numstr;
+  } else if (tag === 'octstr') {
+    return buffer.raw();
+  } else if (tag === 'printstr') {
+    var printstr = buffer.raw().toString('ascii');
+    if (!this._isPrintstr(printstr)) {
+      return buffer.error('Decoding of string type: ' +
+                          'printstr unsupported characters');
+    }
+    return printstr;
+  } else if (/str$/.test(tag)) {
+    return buffer.raw().toString();
   } else {
     return buffer.error('Decoding of string type: ' + tag + ' unsupported');
   }
@@ -11728,13 +1312,13 @@ function derDecodeLen(buf, primitive, fail) {
   return len;
 }
 
-},{"../../asn1":45,"inherits":191}],54:[function(require,module,exports){
+},{"../../asn1":1,"inherits":147}],10:[function(require,module,exports){
 var decoders = exports;
 
 decoders.der = require('./der');
 decoders.pem = require('./pem');
 
-},{"./der":53,"./pem":55}],55:[function(require,module,exports){
+},{"./der":9,"./pem":11}],11:[function(require,module,exports){
 var inherits = require('inherits');
 var Buffer = require('buffer').Buffer;
 
@@ -11786,7 +1370,7 @@ PEMDecoder.prototype.decode = function decode(data, options) {
   return DERDecoder.prototype.decode.call(this, input, options);
 };
 
-},{"../../asn1":45,"./der":53,"buffer":102,"inherits":191}],56:[function(require,module,exports){
+},{"../../asn1":1,"./der":9,"buffer":58,"inherits":147}],12:[function(require,module,exports){
 var inherits = require('inherits');
 var Buffer = require('buffer').Buffer;
 
@@ -11850,12 +1434,8 @@ DERNode.prototype._encodeComposite = function encodeComposite(tag,
 };
 
 DERNode.prototype._encodeStr = function encodeStr(str, tag) {
-  if (tag === 'octstr') {
-    return this._createEncoderBuffer(str);
-  } else if (tag === 'bitstr') {
+  if (tag === 'bitstr') {
     return this._createEncoderBuffer([ str.unused | 0, str.data ]);
-  } else if (tag === 'ia5str' || tag === 'utf8str') {
-    return this._createEncoderBuffer(str);
   } else if (tag === 'bmpstr') {
     var buf = new Buffer(str.length * 2);
     for (var i = 0; i < str.length; i++) {
@@ -11867,7 +1447,6 @@ DERNode.prototype._encodeStr = function encodeStr(str, tag) {
       return this.reporter.error('Encoding of string type: numstr supports ' +
                                  'only digits and space');
     }
-
     return this._createEncoderBuffer(str);
   } else if (tag === 'printstr') {
     if (!this._isPrintstr(str)) {
@@ -11878,7 +1457,8 @@ DERNode.prototype._encodeStr = function encodeStr(str, tag) {
                                  'dot, slash, colon, equal sign, ' +
                                  'question mark');
     }
-
+    return this._createEncoderBuffer(str);
+  } else if (/str$/.test(tag)) {
     return this._createEncoderBuffer(str);
   } else {
     return this.reporter.error('Encoding of string type: ' + tag +
@@ -12086,13 +1666,13 @@ function encodeTag(tag, primitive, cls, reporter) {
   return res;
 }
 
-},{"../../asn1":45,"buffer":102,"inherits":191}],57:[function(require,module,exports){
+},{"../../asn1":1,"buffer":58,"inherits":147}],13:[function(require,module,exports){
 var encoders = exports;
 
 encoders.der = require('./der');
 encoders.pem = require('./pem');
 
-},{"./der":56,"./pem":58}],58:[function(require,module,exports){
+},{"./der":12,"./pem":14}],14:[function(require,module,exports){
 var inherits = require('inherits');
 var Buffer = require('buffer').Buffer;
 
@@ -12117,7 +1697,7 @@ PEMEncoder.prototype.encode = function encode(data, options) {
   return out.join('\n');
 };
 
-},{"../../asn1":45,"./der":56,"buffer":102,"inherits":191}],59:[function(require,module,exports){
+},{"../../asn1":1,"./der":12,"buffer":58,"inherits":147}],15:[function(require,module,exports){
 // Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
 
 
@@ -12132,7 +1712,7 @@ module.exports = {
 
 };
 
-},{}],60:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 // Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
 
 var errors = require('./errors');
@@ -12161,7 +1741,7 @@ for (var e in errors) {
     module.exports[e] = errors[e];
 }
 
-},{"./errors":59,"./reader":61,"./types":62,"./writer":63}],61:[function(require,module,exports){
+},{"./errors":15,"./reader":17,"./types":18,"./writer":19}],17:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
 
@@ -12427,7 +2007,7 @@ module.exports = Reader;
 
 }).call(this,require("buffer").Buffer)
 
-},{"./errors":59,"./types":62,"assert":66,"buffer":102}],62:[function(require,module,exports){
+},{"./errors":15,"./types":18,"assert":22,"buffer":58}],18:[function(require,module,exports){
 // Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
 
 
@@ -12465,7 +2045,7 @@ module.exports = {
   Context: 128
 };
 
-},{}],63:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
 
@@ -12786,7 +2366,7 @@ module.exports = Writer;
 
 }).call(this,require("buffer").Buffer)
 
-},{"./errors":59,"./types":62,"assert":66,"buffer":102}],64:[function(require,module,exports){
+},{"./errors":15,"./types":18,"assert":22,"buffer":58}],20:[function(require,module,exports){
 // Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
 
 // If you have no idea what ASN.1 or BER is, see this:
@@ -12808,7 +2388,7 @@ module.exports = {
 
 };
 
-},{"./ber/index":60}],65:[function(require,module,exports){
+},{"./ber/index":16}],21:[function(require,module,exports){
 (function (Buffer,process){
 // Copyright (c) 2012, Mark Cavage. All rights reserved.
 // Copyright 2015 Joyent, Inc.
@@ -13019,7 +2599,7 @@ module.exports = _setExports(process.env.NODE_NDEBUG);
 
 }).call(this,{"isBuffer":require("../is-buffer/index.js")},require('_process'))
 
-},{"../is-buffer/index.js":192,"_process":418,"assert":66,"stream":488,"util":510}],66:[function(require,module,exports){
+},{"../is-buffer/index.js":148,"_process":419,"assert":22,"stream":489,"util":511}],22:[function(require,module,exports){
 // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
 //
 // THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!
@@ -13380,7 +2960,7 @@ var objectKeys = Object.keys || function (obj) {
   return keys;
 };
 
-},{"util/":510}],67:[function(require,module,exports){
+},{"util/":511}],23:[function(require,module,exports){
 
 /*!
  *  Copyright 2010 LearnBoost <dev@learnboost.com>
@@ -13594,7 +3174,7 @@ function canonicalizeResource (resource) {
 }
 module.exports.canonicalizeResource = canonicalizeResource
 
-},{"crypto":114,"url":506}],68:[function(require,module,exports){
+},{"crypto":70,"url":507}],24:[function(require,module,exports){
 (function (process,Buffer){
 var aws4 = exports,
     url = require('url'),
@@ -13912,32 +3492,31 @@ aws4.sign = function(request, credentials) {
 
 }).call(this,require('_process'),require("buffer").Buffer)
 
-},{"_process":418,"buffer":102,"crypto":114,"lru-cache":390,"querystring":432,"url":506}],69:[function(require,module,exports){
+},{"_process":419,"buffer":58,"crypto":70,"lru-cache":391,"querystring":433,"url":507}],25:[function(require,module,exports){
 ;(function (exports) {
   'use strict'
 
-  var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+  var i
+  var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+  var lookup = []
+  for (i = 0; i < code.length; i++) {
+    lookup[i] = code[i]
+  }
+  var revLookup = []
+
+  for (i = 0; i < code.length; ++i) {
+    revLookup[code.charCodeAt(i)] = i
+  }
+  revLookup['-'.charCodeAt(0)] = 62
+  revLookup['_'.charCodeAt(0)] = 63
 
   var Arr = (typeof Uint8Array !== 'undefined')
     ? Uint8Array
     : Array
 
-  var PLUS = '+'.charCodeAt(0)
-  var SLASH = '/'.charCodeAt(0)
-  var NUMBER = '0'.charCodeAt(0)
-  var LOWER = 'a'.charCodeAt(0)
-  var UPPER = 'A'.charCodeAt(0)
-  var PLUS_URL_SAFE = '-'.charCodeAt(0)
-  var SLASH_URL_SAFE = '_'.charCodeAt(0)
-
   function decode (elt) {
-    var code = elt.charCodeAt(0)
-    if (code === PLUS || code === PLUS_URL_SAFE) return 62 // '+'
-    if (code === SLASH || code === SLASH_URL_SAFE) return 63 // '/'
-    if (code < NUMBER) return -1 // no match
-    if (code < NUMBER + 10) return code - NUMBER + 26 + 26
-    if (code < UPPER + 26) return code - UPPER
-    if (code < LOWER + 26) return code - LOWER + 26
+    var v = revLookup[elt.charCodeAt(0)]
+    return v !== undefined ? v : -1
   }
 
   function b64ToByteArray (b64) {
@@ -13986,24 +3565,36 @@ aws4.sign = function(request, credentials) {
     return arr
   }
 
+  function encode (num) {
+    return lookup[num]
+  }
+
+  function tripletToBase64 (num) {
+    return encode(num >> 18 & 0x3F) + encode(num >> 12 & 0x3F) + encode(num >> 6 & 0x3F) + encode(num & 0x3F)
+  }
+
+  function encodeChunk (uint8, start, end) {
+    var temp
+    var output = []
+    for (var i = start; i < end; i += 3) {
+      temp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
+      output.push(tripletToBase64(temp))
+    }
+    return output.join('')
+  }
+
   function uint8ToBase64 (uint8) {
     var i
     var extraBytes = uint8.length % 3 // if we have 1 byte left, pad 2 bytes
     var output = ''
+    var parts = []
     var temp, length
-
-    function encode (num) {
-      return lookup.charAt(num)
-    }
-
-    function tripletToBase64 (num) {
-      return encode(num >> 18 & 0x3F) + encode(num >> 12 & 0x3F) + encode(num >> 6 & 0x3F) + encode(num & 0x3F)
-    }
+    var maxChunkLength = 16383 // must be multiple of 3
 
     // go through the array every three bytes, we'll deal with trailing stuff later
-    for (i = 0, length = uint8.length - extraBytes; i < length; i += 3) {
-      temp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
-      output += tripletToBase64(temp)
+
+    for (i = 0, length = uint8.length - extraBytes; i < length; i += maxChunkLength) {
+      parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > length ? length : (i + maxChunkLength)))
     }
 
     // pad the end with zeros, but make sure to not forget the extra bytes
@@ -14025,14 +3616,16 @@ aws4.sign = function(request, credentials) {
         break
     }
 
-    return output
+    parts.push(output)
+
+    return parts.join('')
   }
 
   exports.toByteArray = b64ToByteArray
   exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],70:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 (function (Buffer){
 var DuplexStream = require('readable-stream/duplex')
   , util         = require('util')
@@ -14264,7 +3857,7 @@ module.exports = BufferList
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102,"readable-stream/duplex":434,"util":510}],71:[function(require,module,exports){
+},{"buffer":58,"readable-stream/duplex":435,"util":511}],27:[function(require,module,exports){
 (function (module, exports) {
   'use strict';
 
@@ -17701,7 +7294,7 @@ module.exports = BufferList
   };
 })(typeof module === 'undefined' || module, this);
 
-},{}],72:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 var r;
 
 module.exports = function rand(len) {
@@ -17760,9 +7353,9 @@ if (typeof window === 'object') {
   }
 }
 
-},{}],73:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 
-},{}],74:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 (function (Buffer){
 // based on the aes implimentation in triple sec
 // https://github.com/keybase/triplesec
@@ -17944,7 +7537,7 @@ exports.AES = AES
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102}],75:[function(require,module,exports){
+},{"buffer":58}],31:[function(require,module,exports){
 (function (Buffer){
 var aes = require('./aes')
 var Transform = require('cipher-base')
@@ -18046,7 +7639,7 @@ function xorTest (a, b) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"./aes":74,"./ghash":79,"buffer":102,"buffer-xor":101,"cipher-base":106,"inherits":191}],76:[function(require,module,exports){
+},{"./aes":30,"./ghash":35,"buffer":58,"buffer-xor":57,"cipher-base":62,"inherits":147}],32:[function(require,module,exports){
 var ciphers = require('./encrypter')
 exports.createCipher = exports.Cipher = ciphers.createCipher
 exports.createCipheriv = exports.Cipheriv = ciphers.createCipheriv
@@ -18059,7 +7652,7 @@ function getCiphers () {
 }
 exports.listCiphers = exports.getCiphers = getCiphers
 
-},{"./decrypter":77,"./encrypter":78,"./modes":80}],77:[function(require,module,exports){
+},{"./decrypter":33,"./encrypter":34,"./modes":36}],33:[function(require,module,exports){
 (function (Buffer){
 var aes = require('./aes')
 var Transform = require('cipher-base')
@@ -18201,7 +7794,7 @@ exports.createDecipheriv = createDecipheriv
 
 }).call(this,require("buffer").Buffer)
 
-},{"./aes":74,"./authCipher":75,"./modes":80,"./modes/cbc":81,"./modes/cfb":82,"./modes/cfb1":83,"./modes/cfb8":84,"./modes/ctr":85,"./modes/ecb":86,"./modes/ofb":87,"./streamCipher":88,"buffer":102,"cipher-base":106,"evp_bytestokey":147,"inherits":191}],78:[function(require,module,exports){
+},{"./aes":30,"./authCipher":31,"./modes":36,"./modes/cbc":37,"./modes/cfb":38,"./modes/cfb1":39,"./modes/cfb8":40,"./modes/ctr":41,"./modes/ecb":42,"./modes/ofb":43,"./streamCipher":44,"buffer":58,"cipher-base":62,"evp_bytestokey":103,"inherits":147}],34:[function(require,module,exports){
 (function (Buffer){
 var aes = require('./aes')
 var Transform = require('cipher-base')
@@ -18328,7 +7921,7 @@ exports.createCipher = createCipher
 
 }).call(this,require("buffer").Buffer)
 
-},{"./aes":74,"./authCipher":75,"./modes":80,"./modes/cbc":81,"./modes/cfb":82,"./modes/cfb1":83,"./modes/cfb8":84,"./modes/ctr":85,"./modes/ecb":86,"./modes/ofb":87,"./streamCipher":88,"buffer":102,"cipher-base":106,"evp_bytestokey":147,"inherits":191}],79:[function(require,module,exports){
+},{"./aes":30,"./authCipher":31,"./modes":36,"./modes/cbc":37,"./modes/cfb":38,"./modes/cfb1":39,"./modes/cfb8":40,"./modes/ctr":41,"./modes/ecb":42,"./modes/ofb":43,"./streamCipher":44,"buffer":58,"cipher-base":62,"evp_bytestokey":103,"inherits":147}],35:[function(require,module,exports){
 (function (Buffer){
 var zeros = new Buffer(16)
 zeros.fill(0)
@@ -18431,7 +8024,7 @@ function xor (a, b) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102}],80:[function(require,module,exports){
+},{"buffer":58}],36:[function(require,module,exports){
 exports['aes-128-ecb'] = {
   cipher: 'AES',
   key: 128,
@@ -18604,7 +8197,7 @@ exports['aes-256-gcm'] = {
   type: 'auth'
 }
 
-},{}],81:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 var xor = require('buffer-xor')
 
 exports.encrypt = function (self, block) {
@@ -18623,7 +8216,7 @@ exports.decrypt = function (self, block) {
   return xor(out, pad)
 }
 
-},{"buffer-xor":101}],82:[function(require,module,exports){
+},{"buffer-xor":57}],38:[function(require,module,exports){
 (function (Buffer){
 var xor = require('buffer-xor')
 
@@ -18659,7 +8252,7 @@ function encryptStart (self, data, decrypt) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102,"buffer-xor":101}],83:[function(require,module,exports){
+},{"buffer":58,"buffer-xor":57}],39:[function(require,module,exports){
 (function (Buffer){
 function encryptByte (self, byteParam, decrypt) {
   var pad
@@ -18698,7 +8291,7 @@ function shiftIn (buffer, value) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102}],84:[function(require,module,exports){
+},{"buffer":58}],40:[function(require,module,exports){
 (function (Buffer){
 function encryptByte (self, byteParam, decrypt) {
   var pad = self._cipher.encryptBlock(self._prev)
@@ -18718,7 +8311,7 @@ exports.encrypt = function (self, chunk, decrypt) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102}],85:[function(require,module,exports){
+},{"buffer":58}],41:[function(require,module,exports){
 (function (Buffer){
 var xor = require('buffer-xor')
 
@@ -18754,7 +8347,7 @@ exports.encrypt = function (self, chunk) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102,"buffer-xor":101}],86:[function(require,module,exports){
+},{"buffer":58,"buffer-xor":57}],42:[function(require,module,exports){
 exports.encrypt = function (self, block) {
   return self._cipher.encryptBlock(block)
 }
@@ -18762,7 +8355,7 @@ exports.decrypt = function (self, block) {
   return self._cipher.decryptBlock(block)
 }
 
-},{}],87:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 (function (Buffer){
 var xor = require('buffer-xor')
 
@@ -18783,7 +8376,7 @@ exports.encrypt = function (self, chunk) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102,"buffer-xor":101}],88:[function(require,module,exports){
+},{"buffer":58,"buffer-xor":57}],44:[function(require,module,exports){
 (function (Buffer){
 var aes = require('./aes')
 var Transform = require('cipher-base')
@@ -18813,7 +8406,7 @@ StreamCipher.prototype._final = function () {
 
 }).call(this,require("buffer").Buffer)
 
-},{"./aes":74,"buffer":102,"cipher-base":106,"inherits":191}],89:[function(require,module,exports){
+},{"./aes":30,"buffer":58,"cipher-base":62,"inherits":147}],45:[function(require,module,exports){
 var ebtk = require('evp_bytestokey')
 var aes = require('browserify-aes/browser')
 var DES = require('browserify-des')
@@ -18888,7 +8481,7 @@ function getCiphers () {
 }
 exports.listCiphers = exports.getCiphers = getCiphers
 
-},{"browserify-aes/browser":76,"browserify-aes/modes":80,"browserify-des":90,"browserify-des/modes":91,"evp_bytestokey":147}],90:[function(require,module,exports){
+},{"browserify-aes/browser":32,"browserify-aes/modes":36,"browserify-des":46,"browserify-des/modes":47,"evp_bytestokey":103}],46:[function(require,module,exports){
 (function (Buffer){
 var CipherBase = require('cipher-base')
 var des = require('des.js')
@@ -18936,7 +8529,7 @@ DES.prototype._final = function () {
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102,"cipher-base":106,"des.js":116,"inherits":191}],91:[function(require,module,exports){
+},{"buffer":58,"cipher-base":62,"des.js":72,"inherits":147}],47:[function(require,module,exports){
 exports['des-ecb'] = {
   key: 8,
   iv: 0
@@ -18962,7 +8555,7 @@ exports['des-ede'] = {
   iv: 0
 }
 
-},{}],92:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 (function (Buffer){
 var bn = require('bn.js');
 var randomBytes = require('randombytes');
@@ -19007,7 +8600,7 @@ function getr(priv) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"bn.js":71,"buffer":102,"randombytes":433}],93:[function(require,module,exports){
+},{"bn.js":27,"buffer":58,"randombytes":434}],49:[function(require,module,exports){
 (function (Buffer){
 'use strict'
 exports['RSA-SHA224'] = exports.sha224WithRSAEncryption = {
@@ -19084,7 +8677,7 @@ exports['RSA-MD5'] = exports.md5WithRSAEncryption = {
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102}],94:[function(require,module,exports){
+},{"buffer":58}],50:[function(require,module,exports){
 (function (Buffer){
 var _algos = require('./algos')
 var createHash = require('create-hash')
@@ -19192,7 +8785,7 @@ module.exports = {
 
 }).call(this,require("buffer").Buffer)
 
-},{"./algos":93,"./sign":96,"./verify":97,"buffer":102,"create-hash":110,"inherits":191,"stream":488}],95:[function(require,module,exports){
+},{"./algos":49,"./sign":52,"./verify":53,"buffer":58,"create-hash":66,"inherits":147,"stream":489}],51:[function(require,module,exports){
 'use strict'
 exports['1.3.132.0.10'] = 'secp256k1'
 
@@ -19206,7 +8799,7 @@ exports['1.3.132.0.34'] = 'p384'
 
 exports['1.3.132.0.35'] = 'p521'
 
-},{}],96:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 (function (Buffer){
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
 var createHmac = require('create-hmac')
@@ -19396,7 +8989,7 @@ module.exports.makeKey = makeKey
 
 }).call(this,require("buffer").Buffer)
 
-},{"./curves":95,"bn.js":71,"browserify-rsa":92,"buffer":102,"create-hmac":113,"elliptic":129,"parse-asn1":412}],97:[function(require,module,exports){
+},{"./curves":51,"bn.js":27,"browserify-rsa":48,"buffer":58,"create-hmac":69,"elliptic":85,"parse-asn1":413}],53:[function(require,module,exports){
 (function (Buffer){
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
 var curves = require('./curves')
@@ -19504,7 +9097,7 @@ module.exports = verify
 
 }).call(this,require("buffer").Buffer)
 
-},{"./curves":95,"bn.js":71,"buffer":102,"elliptic":129,"parse-asn1":412}],98:[function(require,module,exports){
+},{"./curves":51,"bn.js":27,"buffer":58,"elliptic":85,"parse-asn1":413}],54:[function(require,module,exports){
 (function (process,Buffer){
 var msg = require('pako/lib/zlib/messages');
 var zstream = require('pako/lib/zlib/zstream');
@@ -19745,7 +9338,7 @@ exports.Zlib = Zlib;
 
 }).call(this,require('_process'),require("buffer").Buffer)
 
-},{"_process":418,"buffer":102,"pako/lib/zlib/constants":400,"pako/lib/zlib/deflate.js":402,"pako/lib/zlib/inflate.js":404,"pako/lib/zlib/messages":406,"pako/lib/zlib/zstream":408}],99:[function(require,module,exports){
+},{"_process":419,"buffer":58,"pako/lib/zlib/constants":401,"pako/lib/zlib/deflate.js":403,"pako/lib/zlib/inflate.js":405,"pako/lib/zlib/messages":407,"pako/lib/zlib/zstream":409}],55:[function(require,module,exports){
 (function (process,Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -20360,9 +9953,9 @@ util.inherits(Unzip, Zlib);
 
 }).call(this,require('_process'),require("buffer").Buffer)
 
-},{"./binding":98,"_process":418,"_stream_transform":442,"assert":66,"buffer":102,"util":510}],100:[function(require,module,exports){
-arguments[4][73][0].apply(exports,arguments)
-},{"dup":73}],101:[function(require,module,exports){
+},{"./binding":54,"_process":419,"_stream_transform":443,"assert":22,"buffer":58,"util":511}],56:[function(require,module,exports){
+arguments[4][29][0].apply(exports,arguments)
+},{"dup":29}],57:[function(require,module,exports){
 (function (Buffer){
 module.exports = function xor (a, b) {
   var length = Math.min(a.length, b.length)
@@ -20377,7 +9970,7 @@ module.exports = function xor (a, b) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102}],102:[function(require,module,exports){
+},{"buffer":58}],58:[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -20604,6 +10197,14 @@ function fromJsonObject (that, object) {
 if (Buffer.TYPED_ARRAY_SUPPORT) {
   Buffer.prototype.__proto__ = Uint8Array.prototype
   Buffer.__proto__ = Uint8Array
+  if (typeof Symbol !== 'undefined' && Symbol.species &&
+      Buffer[Symbol.species] === Buffer) {
+    // Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
+    Object.defineProperty(Buffer, Symbol.species, {
+      value: null,
+      configurable: true
+    })
+  }
 } else {
   // pre-set for values that may exist in the future
   Buffer.prototype.length = undefined
@@ -21836,14 +11437,14 @@ function blitBuffer (src, dst, offset, length) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"base64-js":69,"ieee754":188,"isarray":103}],103:[function(require,module,exports){
+},{"base64-js":25,"ieee754":144,"isarray":59}],59:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],104:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 module.exports = {
   "100": "Continue",
   "101": "Switching Protocols",
@@ -21856,9 +11457,11 @@ module.exports = {
   "205": "Reset Content",
   "206": "Partial Content",
   "207": "Multi-Status",
+  "208": "Already Reported",
+  "226": "IM Used",
   "300": "Multiple Choices",
   "301": "Moved Permanently",
-  "302": "Moved Temporarily",
+  "302": "Found",
   "303": "See Other",
   "304": "Not Modified",
   "305": "Use Proxy",
@@ -21872,17 +11475,18 @@ module.exports = {
   "405": "Method Not Allowed",
   "406": "Not Acceptable",
   "407": "Proxy Authentication Required",
-  "408": "Request Time-out",
+  "408": "Request Timeout",
   "409": "Conflict",
   "410": "Gone",
   "411": "Length Required",
   "412": "Precondition Failed",
-  "413": "Request Entity Too Large",
-  "414": "Request-URI Too Large",
+  "413": "Payload Too Large",
+  "414": "URI Too Long",
   "415": "Unsupported Media Type",
-  "416": "Requested Range Not Satisfiable",
+  "416": "Range Not Satisfiable",
   "417": "Expectation Failed",
   "418": "I'm a teapot",
+  "421": "Misdirected Request",
   "422": "Unprocessable Entity",
   "423": "Locked",
   "424": "Failed Dependency",
@@ -21895,16 +11499,17 @@ module.exports = {
   "501": "Not Implemented",
   "502": "Bad Gateway",
   "503": "Service Unavailable",
-  "504": "Gateway Time-out",
+  "504": "Gateway Timeout",
   "505": "HTTP Version Not Supported",
   "506": "Variant Also Negotiates",
   "507": "Insufficient Storage",
+  "508": "Loop Detected",
   "509": "Bandwidth Limit Exceeded",
   "510": "Not Extended",
   "511": "Network Authentication Required"
 }
 
-},{}],105:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 function Caseless (dict) {
   this.dict = dict || {}
 }
@@ -21972,7 +11577,7 @@ module.exports.httpify = function (resp, headers) {
   return c
 }
 
-},{}],106:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 (function (Buffer){
 var Transform = require('stream').Transform
 var inherits = require('inherits')
@@ -22067,7 +11672,7 @@ CipherBase.prototype._toString = function (value, enc, final) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102,"inherits":191,"stream":488,"string_decoder":493}],107:[function(require,module,exports){
+},{"buffer":58,"inherits":147,"stream":489,"string_decoder":494}],63:[function(require,module,exports){
 (function (Buffer){
 var util = require('util');
 var Stream = require('stream').Stream;
@@ -22260,7 +11865,7 @@ CombinedStream.prototype._emitError = function(err) {
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
 
-},{"../../is-buffer/index.js":192,"delayed-stream":115,"stream":488,"util":510}],108:[function(require,module,exports){
+},{"../../is-buffer/index.js":148,"delayed-stream":71,"stream":489,"util":511}],64:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -22372,7 +11977,7 @@ function objectToString(o) {
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
 
-},{"../../is-buffer/index.js":192}],109:[function(require,module,exports){
+},{"../../is-buffer/index.js":148}],65:[function(require,module,exports){
 (function (Buffer){
 var elliptic = require('elliptic');
 var BN = require('bn.js');
@@ -22499,7 +12104,7 @@ function formatReturnValue(bn, enc, len) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"bn.js":71,"buffer":102,"elliptic":129}],110:[function(require,module,exports){
+},{"bn.js":27,"buffer":58,"elliptic":85}],66:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 var inherits = require('inherits')
@@ -22556,7 +12161,7 @@ module.exports = function createHash (alg) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"./md5":112,"buffer":102,"cipher-base":106,"inherits":191,"ripemd160":460,"sha.js":462}],111:[function(require,module,exports){
+},{"./md5":68,"buffer":58,"cipher-base":62,"inherits":147,"ripemd160":461,"sha.js":463}],67:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 var intSize = 4;
@@ -22594,7 +12199,7 @@ function hash(buf, fn, hashSize, bigEndian) {
 exports.hash = hash;
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102}],112:[function(require,module,exports){
+},{"buffer":58}],68:[function(require,module,exports){
 'use strict';
 /*
  * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
@@ -22751,7 +12356,7 @@ function bit_rol(num, cnt)
 module.exports = function md5(buf) {
   return helpers.hash(buf, core_md5, 16);
 };
-},{"./helpers":111}],113:[function(require,module,exports){
+},{"./helpers":67}],69:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 var createHash = require('create-hash/browser');
@@ -22824,7 +12429,7 @@ module.exports = function createHmac(alg, key) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102,"create-hash/browser":110,"inherits":191,"stream":488}],114:[function(require,module,exports){
+},{"buffer":58,"create-hash/browser":66,"inherits":147,"stream":489}],70:[function(require,module,exports){
 'use strict'
 
 exports.randomBytes = exports.rng = exports.pseudoRandomBytes = exports.prng = require('randombytes')
@@ -22903,7 +12508,7 @@ var publicEncrypt = require('public-encrypt')
   }
 })
 
-},{"browserify-cipher":89,"browserify-sign":94,"browserify-sign/algos":93,"create-ecdh":109,"create-hash":110,"create-hmac":113,"diffie-hellman":122,"pbkdf2":414,"public-encrypt":419,"randombytes":433}],115:[function(require,module,exports){
+},{"browserify-cipher":45,"browserify-sign":50,"browserify-sign/algos":49,"create-ecdh":65,"create-hash":66,"create-hmac":69,"diffie-hellman":78,"pbkdf2":415,"public-encrypt":420,"randombytes":434}],71:[function(require,module,exports){
 var Stream = require('stream').Stream;
 var util = require('util');
 
@@ -23012,7 +12617,7 @@ DelayedStream.prototype._checkIfMaxDataSizeExceeded = function() {
   this.emit('error', new Error(message));
 };
 
-},{"stream":488,"util":510}],116:[function(require,module,exports){
+},{"stream":489,"util":511}],72:[function(require,module,exports){
 'use strict';
 
 exports.utils = require('./des/utils');
@@ -23021,7 +12626,7 @@ exports.DES = require('./des/des');
 exports.CBC = require('./des/cbc');
 exports.EDE = require('./des/ede');
 
-},{"./des/cbc":117,"./des/cipher":118,"./des/des":119,"./des/ede":120,"./des/utils":121}],117:[function(require,module,exports){
+},{"./des/cbc":73,"./des/cipher":74,"./des/des":75,"./des/ede":76,"./des/utils":77}],73:[function(require,module,exports){
 'use strict';
 
 var assert = require('minimalistic-assert');
@@ -23088,7 +12693,7 @@ proto._update = function _update(inp, inOff, out, outOff) {
   }
 };
 
-},{"inherits":191,"minimalistic-assert":395}],118:[function(require,module,exports){
+},{"inherits":147,"minimalistic-assert":396}],74:[function(require,module,exports){
 'use strict';
 
 var assert = require('minimalistic-assert');
@@ -23231,7 +12836,7 @@ Cipher.prototype._finalDecrypt = function _finalDecrypt() {
   return this._unpad(out);
 };
 
-},{"minimalistic-assert":395}],119:[function(require,module,exports){
+},{"minimalistic-assert":396}],75:[function(require,module,exports){
 'use strict';
 
 var assert = require('minimalistic-assert');
@@ -23376,7 +12981,7 @@ DES.prototype._decrypt = function _decrypt(state, lStart, rStart, out, off) {
   utils.rip(l, r, out, off);
 };
 
-},{"../des":116,"inherits":191,"minimalistic-assert":395}],120:[function(require,module,exports){
+},{"../des":72,"inherits":147,"minimalistic-assert":396}],76:[function(require,module,exports){
 'use strict';
 
 var assert = require('minimalistic-assert');
@@ -23433,7 +13038,7 @@ EDE.prototype._update = function _update(inp, inOff, out, outOff) {
 EDE.prototype._pad = DES.prototype._pad;
 EDE.prototype._unpad = DES.prototype._unpad;
 
-},{"../des":116,"inherits":191,"minimalistic-assert":395}],121:[function(require,module,exports){
+},{"../des":72,"inherits":147,"minimalistic-assert":396}],77:[function(require,module,exports){
 'use strict';
 
 exports.readUInt32BE = function readUInt32BE(bytes, off) {
@@ -23691,7 +13296,7 @@ exports.padSplit = function padSplit(num, size, group) {
   return out.join(' ');
 };
 
-},{}],122:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 (function (Buffer){
 var generatePrime = require('./lib/generatePrime')
 var primes = require('./lib/primes.json')
@@ -23738,7 +13343,7 @@ exports.createDiffieHellman = exports.DiffieHellman = createDiffieHellman
 
 }).call(this,require("buffer").Buffer)
 
-},{"./lib/dh":123,"./lib/generatePrime":124,"./lib/primes.json":125,"buffer":102}],123:[function(require,module,exports){
+},{"./lib/dh":79,"./lib/generatePrime":80,"./lib/primes.json":81,"buffer":58}],79:[function(require,module,exports){
 (function (Buffer){
 var BN = require('bn.js');
 var MillerRabin = require('miller-rabin');
@@ -23907,7 +13512,7 @@ function formatReturnValue(bn, enc) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"./generatePrime":124,"bn.js":71,"buffer":102,"miller-rabin":391,"randombytes":433}],124:[function(require,module,exports){
+},{"./generatePrime":80,"bn.js":27,"buffer":58,"miller-rabin":392,"randombytes":434}],80:[function(require,module,exports){
 var randomBytes = require('randombytes');
 module.exports = findPrime;
 findPrime.simpleSieve = simpleSieve;
@@ -24014,7 +13619,7 @@ function findPrime(bits, gen) {
 
 }
 
-},{"bn.js":71,"miller-rabin":391,"randombytes":433}],125:[function(require,module,exports){
+},{"bn.js":27,"miller-rabin":392,"randombytes":434}],81:[function(require,module,exports){
 module.exports={
     "modp1": {
         "gen": "02",
@@ -24049,7 +13654,7 @@ module.exports={
         "prime": "ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec6f44c42e9a637ed6b0bff5cb6f406b7edee386bfb5a899fa5ae9f24117c4b1fe649286651ece45b3dc2007cb8a163bf0598da48361c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552bb9ed529077096966d670c354e4abc9804f1746c08ca18217c32905e462e36ce3be39e772c180e86039b2783a2ec07a28fb5c55df06f4c52c9de2bcbf6955817183995497cea956ae515d2261898fa051015728e5a8aaac42dad33170d04507a33a85521abdf1cba64ecfb850458dbef0a8aea71575d060c7db3970f85a6e1e4c7abf5ae8cdb0933d71e8c94e04a25619dcee3d2261ad2ee6bf12ffa06d98a0864d87602733ec86a64521f2b18177b200cbbe117577a615d6c770988c0bad946e208e24fa074e5ab3143db5bfce0fd108e4b82d120a92108011a723c12a787e6d788719a10bdba5b2699c327186af4e23c1a946834b6150bda2583e9ca2ad44ce8dbbbc2db04de8ef92e8efc141fbecaa6287c59474e6bc05d99b2964fa090c3a2233ba186515be7ed1f612970cee2d7afb81bdd762170481cd0069127d5b05aa993b4ea988d8fddc186ffb7dc90a6c08f4df435c93402849236c3fab4d27c7026c1d4dcb2602646dec9751e763dba37bdf8ff9406ad9e530ee5db382f413001aeb06a53ed9027d831179727b0865a8918da3edbebcf9b14ed44ce6cbaced4bb1bdb7f1447e6cc254b332051512bd7af426fb8f401378cd2bf5983ca01c64b92ecf032ea15d1721d03f482d7ce6e74fef6d55e702f46980c82b5a84031900b1c9e59e7c97fbec7e8f323a97a7e36cc88be0f1d45b7ff585ac54bd407b22b4154aacc8f6d7ebf48e1d814cc5ed20f8037e0a79715eef29be32806a1d58bb7c5da76f550aa3d8a1fbff0eb19ccb1a313d55cda56c9ec2ef29632387fe8d76e3c0468043e8f663f4860ee12bf2d5b0b7474d6e694f91e6dbe115974a3926f12fee5e438777cb6a932df8cd8bec4d073b931ba3bc832b68d9dd300741fa7bf8afc47ed2576f6936ba424663aab639c5ae4f5683423b4742bf1c978238f16cbe39d652de3fdb8befc848ad922222e04a4037c0713eb57a81a23f0c73473fc646cea306b4bcbc8862f8385ddfa9d4b7fa2c087e879683303ed5bdd3a062b3cf5b3a278a66d2a13f83f44f82ddf310ee074ab6a364597e899a0255dc164f31cc50846851df9ab48195ded7ea1b1d510bd7ee74d73faf36bc31ecfa268359046f4eb879f924009438b481c6cd7889a002ed5ee382bc9190da6fc026e479558e4475677e9aa9e3050e2765694dfc81f56e880b96e7160c980dd98edd3dfffffffffffffffff"
     }
 }
-},{}],126:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 (function (Buffer){
 var crypto = require("crypto");
 var BigInteger = require("jsbn").BigInteger;
@@ -24111,7 +13716,7 @@ exports.ECKey = function(curve, key, isPublic)
 
 }).call(this,require("buffer").Buffer)
 
-},{"./lib/ec.js":127,"./lib/sec.js":128,"buffer":102,"crypto":114,"jsbn":205}],127:[function(require,module,exports){
+},{"./lib/ec.js":83,"./lib/sec.js":84,"buffer":58,"crypto":70,"jsbn":161}],83:[function(require,module,exports){
 // Basic Javascript Elliptic Curve implementation
 // Ported loosely from BouncyCastle's Java EC code
 // Only Fp curves implemented for now
@@ -24674,7 +14279,7 @@ var exports = {
 
 module.exports = exports
 
-},{"jsbn":205}],128:[function(require,module,exports){
+},{"jsbn":161}],84:[function(require,module,exports){
 // Named EC curves
 
 // Requires ec.js, jsbn.js, and jsbn2.js
@@ -24846,7 +14451,7 @@ module.exports = {
   "secp256r1":secp256r1
 }
 
-},{"./ec.js":127,"jsbn":205}],129:[function(require,module,exports){
+},{"./ec.js":83,"jsbn":161}],85:[function(require,module,exports){
 'use strict';
 
 var elliptic = exports;
@@ -24862,7 +14467,7 @@ elliptic.curves = require('./elliptic/curves');
 elliptic.ec = require('./elliptic/ec');
 elliptic.eddsa = require('./elliptic/eddsa');
 
-},{"../package.json":145,"./elliptic/curve":132,"./elliptic/curves":135,"./elliptic/ec":136,"./elliptic/eddsa":139,"./elliptic/hmac-drbg":142,"./elliptic/utils":144,"brorand":72}],130:[function(require,module,exports){
+},{"../package.json":101,"./elliptic/curve":88,"./elliptic/curves":91,"./elliptic/ec":92,"./elliptic/eddsa":95,"./elliptic/hmac-drbg":98,"./elliptic/utils":100,"brorand":28}],86:[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -25215,7 +14820,7 @@ BasePoint.prototype.dblp = function dblp(k) {
   return r;
 };
 
-},{"../../elliptic":129,"bn.js":71}],131:[function(require,module,exports){
+},{"../../elliptic":85,"bn.js":27}],87:[function(require,module,exports){
 'use strict';
 
 var curve = require('../curve');
@@ -25627,7 +15232,7 @@ Point.prototype.eq = function eq(other) {
 Point.prototype.toP = Point.prototype.normalize;
 Point.prototype.mixedAdd = Point.prototype.add;
 
-},{"../../elliptic":129,"../curve":132,"bn.js":71,"inherits":191}],132:[function(require,module,exports){
+},{"../../elliptic":85,"../curve":88,"bn.js":27,"inherits":147}],88:[function(require,module,exports){
 'use strict';
 
 var curve = exports;
@@ -25637,7 +15242,7 @@ curve.short = require('./short');
 curve.mont = require('./mont');
 curve.edwards = require('./edwards');
 
-},{"./base":130,"./edwards":131,"./mont":133,"./short":134}],133:[function(require,module,exports){
+},{"./base":86,"./edwards":87,"./mont":89,"./short":90}],89:[function(require,module,exports){
 'use strict';
 
 var curve = require('../curve');
@@ -25815,7 +15420,7 @@ Point.prototype.getX = function getX() {
   return this.x.fromRed();
 };
 
-},{"../../elliptic":129,"../curve":132,"bn.js":71,"inherits":191}],134:[function(require,module,exports){
+},{"../../elliptic":85,"../curve":88,"bn.js":27,"inherits":147}],90:[function(require,module,exports){
 'use strict';
 
 var curve = require('../curve');
@@ -26726,7 +16331,7 @@ JPoint.prototype.isInfinity = function isInfinity() {
   return this.z.cmpn(0) === 0;
 };
 
-},{"../../elliptic":129,"../curve":132,"bn.js":71,"inherits":191}],135:[function(require,module,exports){
+},{"../../elliptic":85,"../curve":88,"bn.js":27,"inherits":147}],91:[function(require,module,exports){
 'use strict';
 
 var curves = exports;
@@ -26933,7 +16538,7 @@ defineCurve('secp256k1', {
   ]
 });
 
-},{"../elliptic":129,"./precomputed/secp256k1":143,"hash.js":174}],136:[function(require,module,exports){
+},{"../elliptic":85,"./precomputed/secp256k1":99,"hash.js":130}],92:[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -27157,7 +16762,7 @@ EC.prototype.getKeyRecoveryParam = function(e, signature, Q, enc) {
   throw new Error('Unable to find valid recovery factor');
 };
 
-},{"../../elliptic":129,"./key":137,"./signature":138,"bn.js":71}],137:[function(require,module,exports){
+},{"../../elliptic":85,"./key":93,"./signature":94,"bn.js":27}],93:[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -27266,7 +16871,7 @@ KeyPair.prototype.inspect = function inspect() {
          ' pub: ' + (this.pub && this.pub.inspect()) + ' >';
 };
 
-},{"bn.js":71}],138:[function(require,module,exports){
+},{"bn.js":27}],94:[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -27403,7 +17008,7 @@ Signature.prototype.toDER = function toDER(enc) {
   return utils.encode(res, enc);
 };
 
-},{"../../elliptic":129,"bn.js":71}],139:[function(require,module,exports){
+},{"../../elliptic":85,"bn.js":27}],95:[function(require,module,exports){
 'use strict';
 
 var hash = require('hash.js');
@@ -27523,7 +17128,7 @@ EDDSA.prototype.isPoint = function isPoint(val) {
   return val instanceof this.pointClass;
 };
 
-},{"../../elliptic":129,"./key":140,"./signature":141,"hash.js":174}],140:[function(require,module,exports){
+},{"../../elliptic":85,"./key":96,"./signature":97,"hash.js":130}],96:[function(require,module,exports){
 'use strict';
 
 var elliptic = require('../../elliptic');
@@ -27621,7 +17226,7 @@ KeyPair.prototype.getPublic = function getPublic(enc) {
 
 module.exports = KeyPair;
 
-},{"../../elliptic":129}],141:[function(require,module,exports){
+},{"../../elliptic":85}],97:[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -27689,7 +17294,7 @@ Signature.prototype.toHex = function toHex() {
 
 module.exports = Signature;
 
-},{"../../elliptic":129,"bn.js":71}],142:[function(require,module,exports){
+},{"../../elliptic":85,"bn.js":27}],98:[function(require,module,exports){
 'use strict';
 
 var hash = require('hash.js');
@@ -27805,7 +17410,7 @@ HmacDRBG.prototype.generate = function generate(len, enc, add, addEnc) {
   return utils.encode(res, enc);
 };
 
-},{"../elliptic":129,"hash.js":174}],143:[function(require,module,exports){
+},{"../elliptic":85,"hash.js":130}],99:[function(require,module,exports){
 module.exports = {
   doubles: {
     step: 4,
@@ -28587,7 +18192,7 @@ module.exports = {
   }
 };
 
-},{}],144:[function(require,module,exports){
+},{}],100:[function(require,module,exports){
 'use strict';
 
 var utils = exports;
@@ -28762,12 +18367,12 @@ function intFromLE(bytes) {
 utils.intFromLE = intFromLE;
 
 
-},{"bn.js":71}],145:[function(require,module,exports){
+},{"bn.js":27}],101:[function(require,module,exports){
 module.exports={
   "_args": [
     [
       "elliptic@^6.0.0",
-      "/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/SDK/node_modules/browserify-sign"
+      "/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/HTML5/SDK/node_modules/browserify-sign"
     ]
   ],
   "_from": "elliptic@>=6.0.0 <7.0.0",
@@ -28798,7 +18403,7 @@ module.exports={
   "_shasum": "18e46d7306b0951275a2d42063270a14b74ebe99",
   "_shrinkwrap": null,
   "_spec": "elliptic@^6.0.0",
-  "_where": "/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/SDK/node_modules/browserify-sign",
+  "_where": "/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/HTML5/SDK/node_modules/browserify-sign",
   "author": {
     "email": "fedor@indutny.com",
     "name": "Fedor Indutny"
@@ -28863,7 +18468,7 @@ module.exports={
   "version": "6.2.3"
 }
 
-},{}],146:[function(require,module,exports){
+},{}],102:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -29163,7 +18768,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],147:[function(require,module,exports){
+},{}],103:[function(require,module,exports){
 (function (Buffer){
 var md5 = require('create-hash/md5')
 module.exports = EVP_BytesToKey
@@ -29236,7 +18841,7 @@ function EVP_BytesToKey (password, salt, keyLen, ivLen) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102,"create-hash/md5":112}],148:[function(require,module,exports){
+},{"buffer":58,"create-hash/md5":68}],104:[function(require,module,exports){
 'use strict';
 
 var hasOwn = Object.prototype.hasOwnProperty;
@@ -29324,7 +18929,7 @@ module.exports = function extend() {
 };
 
 
-},{}],149:[function(require,module,exports){
+},{}],105:[function(require,module,exports){
 /*
  * extsprintf.js: extended POSIX-style sprintf
  */
@@ -29492,7 +19097,7 @@ function dumpException(ex)
 	return (ret);
 }
 
-},{"assert":66,"util":510}],150:[function(require,module,exports){
+},{"assert":22,"util":511}],106:[function(require,module,exports){
 'use strict';
 
 /**
@@ -29568,7 +19173,7 @@ function createMap() {
 
 module.exports = MemoryCache;
 
-},{}],151:[function(require,module,exports){
+},{}],107:[function(require,module,exports){
 module.exports = ForeverAgent
 ForeverAgent.SSL = ForeverAgentSSL
 
@@ -29708,9 +19313,9 @@ function createConnectionSSL (port, host, options) {
   return tls.connect(options);
 }
 
-},{"http":489,"https":187,"net":100,"tls":100,"util":510}],152:[function(require,module,exports){
+},{"http":490,"https":143,"net":56,"tls":56,"util":511}],108:[function(require,module,exports){
 module.exports = FormData;
-},{}],153:[function(require,module,exports){
+},{}],109:[function(require,module,exports){
 var util = require('util')
 
 var INDENT_START = /[\{\[]/
@@ -29773,7 +19378,7 @@ module.exports = function() {
   return line
 }
 
-},{"util":510}],154:[function(require,module,exports){
+},{"util":511}],110:[function(require,module,exports){
 var isProperty = require('is-property')
 
 var gen = function(obj, prop) {
@@ -29787,7 +19392,7 @@ gen.property = function (prop) {
 
 module.exports = gen
 
-},{"is-property":195}],155:[function(require,module,exports){
+},{"is-property":151}],111:[function(require,module,exports){
 'use strict'
 
 function ValidationError (errors) {
@@ -29799,7 +19404,7 @@ ValidationError.prototype = Error.prototype
 
 module.exports = ValidationError
 
-},{}],156:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 'use strict'
 
 var Promise = require('pinkie-promise')
@@ -29823,7 +19428,7 @@ Object.keys(schemas).map(function (name) {
   module.exports[name] = promisify(schemas[name])
 })
 
-},{"./runner":157,"./schemas":165,"pinkie-promise":415}],157:[function(require,module,exports){
+},{"./runner":113,"./schemas":121,"pinkie-promise":416}],113:[function(require,module,exports){
 'use strict'
 
 var schemas = require('./schemas')
@@ -29854,7 +19459,7 @@ module.exports = function (schema, data, cb) {
   return valid
 }
 
-},{"./error":155,"./schemas":165,"is-my-json-valid":194}],158:[function(require,module,exports){
+},{"./error":111,"./schemas":121,"is-my-json-valid":150}],114:[function(require,module,exports){
 module.exports={
   "properties": {
     "beforeRequest": {
@@ -29869,7 +19474,7 @@ module.exports={
   }
 }
 
-},{}],159:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 module.exports={
   "oneOf": [{
     "type": "object",
@@ -29902,7 +19507,7 @@ module.exports={
   }]
 }
 
-},{}],160:[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 module.exports={
   "type": "object",
   "required": [
@@ -29931,7 +19536,7 @@ module.exports={
   }
 }
 
-},{}],161:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 module.exports={
   "type": "object",
   "required": [
@@ -29967,7 +19572,7 @@ module.exports={
   }
 }
 
-},{}],162:[function(require,module,exports){
+},{}],118:[function(require,module,exports){
 module.exports={
   "type": "object",
   "required": [
@@ -29987,7 +19592,7 @@ module.exports={
   }
 }
 
-},{}],163:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 module.exports={
   "type": "object",
   "optional": true,
@@ -30040,7 +19645,7 @@ module.exports={
   }
 }
 
-},{}],164:[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 module.exports={
   "type": "object",
   "required": [
@@ -30053,7 +19658,7 @@ module.exports={
   }
 }
 
-},{}],165:[function(require,module,exports){
+},{}],121:[function(require,module,exports){
 'use strict'
 
 var schemas = {
@@ -30104,7 +19709,7 @@ schemas.har.properties.log = schemas.log
 
 module.exports = schemas
 
-},{"./cache.json":158,"./cacheEntry.json":159,"./content.json":160,"./cookie.json":161,"./creator.json":162,"./entry.json":163,"./har.json":164,"./log.json":166,"./page.json":167,"./pageTimings.json":168,"./postData.json":169,"./record.json":170,"./request.json":171,"./response.json":172,"./timings.json":173}],166:[function(require,module,exports){
+},{"./cache.json":114,"./cacheEntry.json":115,"./content.json":116,"./cookie.json":117,"./creator.json":118,"./entry.json":119,"./har.json":120,"./log.json":122,"./page.json":123,"./pageTimings.json":124,"./postData.json":125,"./record.json":126,"./request.json":127,"./response.json":128,"./timings.json":129}],122:[function(require,module,exports){
 module.exports={
   "type": "object",
   "required": [
@@ -30140,7 +19745,7 @@ module.exports={
   }
 }
 
-},{}],167:[function(require,module,exports){
+},{}],123:[function(require,module,exports){
 module.exports={
   "type": "object",
   "optional": true,
@@ -30172,7 +19777,7 @@ module.exports={
   }
 }
 
-},{}],168:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
 module.exports={
   "type": "object",
   "properties": {
@@ -30190,7 +19795,7 @@ module.exports={
   }
 }
 
-},{}],169:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 module.exports={
   "type": "object",
   "optional": true,
@@ -30233,7 +19838,7 @@ module.exports={
   }
 }
 
-},{}],170:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 module.exports={
   "type": "object",
   "required": [
@@ -30253,7 +19858,7 @@ module.exports={
   }
 }
 
-},{}],171:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 module.exports={
   "type": "object",
   "required": [
@@ -30310,7 +19915,7 @@ module.exports={
   }
 }
 
-},{}],172:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 module.exports={
   "type": "object",
   "required": [
@@ -30364,7 +19969,7 @@ module.exports={
   }
 }
 
-},{}],173:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 module.exports={
   "required": [
     "send",
@@ -30406,7 +20011,7 @@ module.exports={
   }
 }
 
-},{}],174:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 var hash = exports;
 
 hash.utils = require('./hash/utils');
@@ -30423,7 +20028,7 @@ hash.sha384 = hash.sha.sha384;
 hash.sha512 = hash.sha.sha512;
 hash.ripemd160 = hash.ripemd.ripemd160;
 
-},{"./hash/common":175,"./hash/hmac":176,"./hash/ripemd":177,"./hash/sha":178,"./hash/utils":179}],175:[function(require,module,exports){
+},{"./hash/common":131,"./hash/hmac":132,"./hash/ripemd":133,"./hash/sha":134,"./hash/utils":135}],131:[function(require,module,exports){
 var hash = require('../hash');
 var utils = hash.utils;
 var assert = utils.assert;
@@ -30516,7 +20121,7 @@ BlockHash.prototype._pad = function pad() {
   return res;
 };
 
-},{"../hash":174}],176:[function(require,module,exports){
+},{"../hash":130}],132:[function(require,module,exports){
 var hmac = exports;
 
 var hash = require('../hash');
@@ -30566,7 +20171,7 @@ Hmac.prototype.digest = function digest(enc) {
   return this.outer.digest(enc);
 };
 
-},{"../hash":174}],177:[function(require,module,exports){
+},{"../hash":130}],133:[function(require,module,exports){
 var hash = require('../hash');
 var utils = hash.utils;
 
@@ -30712,7 +20317,7 @@ var sh = [
   8, 5, 12, 9, 12, 5, 14, 6, 8, 13, 6, 5, 15, 13, 11, 11
 ];
 
-},{"../hash":174}],178:[function(require,module,exports){
+},{"../hash":130}],134:[function(require,module,exports){
 var hash = require('../hash');
 var utils = hash.utils;
 var assert = utils.assert;
@@ -31278,7 +20883,7 @@ function g1_512_lo(xh, xl) {
   return r;
 }
 
-},{"../hash":174}],179:[function(require,module,exports){
+},{"../hash":130}],135:[function(require,module,exports){
 var utils = exports;
 var inherits = require('inherits');
 
@@ -31537,7 +21142,7 @@ function shr64_lo(ah, al, num) {
 };
 exports.shr64_lo = shr64_lo;
 
-},{"inherits":191}],180:[function(require,module,exports){
+},{"inherits":147}],136:[function(require,module,exports){
 /*
     HTTP Hawk Authentication Scheme
     Copyright (c) 2012-2014, Eran Hammer <eran@hammer.io>
@@ -32176,9 +21781,9 @@ if (typeof module !== 'undefined' && module.exports) {
 /* eslint-enable */
 // $lab:coverage:on$
 
-},{}],181:[function(require,module,exports){
+},{}],137:[function(require,module,exports){
 (function (process){
-/*! hellojs v1.10.1 | (c) 2012-2016 Andrew Dodson | MIT https://adodson.com/hello.js/LICENSE */
+/*! hellojs v1.11.0 | (c) 2012-2016 Andrew Dodson | MIT https://adodson.com/hello.js/LICENSE */
 // ES5 Object.create
 if (!Object.create) {
 
@@ -32395,6 +22000,29 @@ hello.utils.extend(hello, {
 			height: 550
 		},
 
+		// Default scope
+		// Many services require atleast a profile scope,
+		// HelloJS automatially includes the value of provider.scope_map.basic
+		// If that's not required it can be removed via hello.settings.scope.length = 0;
+		scope: ['basic'],
+
+		// Scope Maps
+		// This is the default module scope, these are the defaults which each service is mapped too.
+		// This list is only the popular ones being standardized.
+		// By including them here it prevents the scopes from being applied accidentally
+		// For less common scopes its assumed the Developer knows when to use the scope.
+		scope_map: {
+			basic: '',
+			email: '',
+			files: '',
+			friends: '',
+			photos: '',
+			publish: '',
+			publish_files: '',
+			share: '',
+			videos: ''
+		},
+
 		// Default service / network
 		default_service: null,
 
@@ -32460,14 +22088,6 @@ hello.utils.extend(hello, {
 		// Merge services if there already exists some
 		utils.extend(this.services, services);
 
-		// Format the incoming
-		for (x in this.services) {
-			if (this.services.hasOwnProperty(x)) {
-				this.services[x].scope = this.services[x].scope || {};
-			}
-		}
-
-		//
 		// Update the default settings with this one.
 		if (options) {
 			utils.extend(this.settings, options);
@@ -32597,16 +22217,16 @@ hello.utils.extend(hello, {
 		// Ensure this is a string - IE has a problem moving Arrays between windows
 		// Append the setup scope
 		var SCOPE_SPLIT = /[,\s]+/;
-		var scope = [];
+
+		// Include default scope settings (cloned).
+		var scope = _this.settings.scope ? [_this.settings.scope.toString()] : [];
+
+		// Extend the providers scope list with the default
+		var scopeMap = utils.merge(_this.settings.scope_map, provider.scope || {});
 
 		// Add user defined scopes...
 		if (opts.scope) {
 			scope.push(opts.scope.toString());
-		}
-
-		// Add any basic scope - the default
-		if ('basic' in provider.scope) {
-			scope.push('basic');
 		}
 
 		// Append scopes from a previous session.
@@ -32628,23 +22248,7 @@ hello.utils.extend(hello, {
 		// Map scopes to the providers naming convention
 		scope = scope.map(function(item) {
 			// Does this have a mapping?
-			if (item in provider.scope) {
-				return provider.scope[item];
-			}
-			else {
-				// Loop through all services and determine whether the scope is generic
-				for (var x in _this.services) {
-					var serviceScopes = _this.services[x].scope;
-					if (serviceScopes && item in serviceScopes) {
-						// Found an instance of this scope, so lets not assume its special
-						return '';
-					}
-				}
-
-				// This is a unique scope to this service so lets in it.
-				return item;
-			}
-
+			return (item in scopeMap) ? scopeMap[item] : item;
 		});
 
 		// Stringify and Arrayify so that double mapped scopes are given the chance to be formatted
@@ -33593,102 +23197,6 @@ hello.utils.extend(hello.utils, {
 			optionsArray.push(name + (value !== null ? '=' + value : ''));
 		});
 
-		// Create a function for reopening the popup, and assigning events to the new popup object
-		// This is a fix whereby triggering the
-		var open = function(url) {
-
-			// Trigger callback
-			var popup = window.open(
-				url,
-				'_blank',
-				optionsArray.join(',')
-			);
-
-			// PhoneGap support
-			// Add an event listener to listen to the change in the popup windows URL
-			// This must appear before popup.focus();
-			try {
-				if (popup && popup.addEventListener) {
-
-					// Get the origin of the redirect URI
-
-					var a = hello.utils.url(redirectUri);
-					var redirectUriOrigin = a.origin || (a.protocol + '//' + a.hostname);
-
-					// Listen to changes in the InAppBrowser window
-
-					popup.addEventListener('loadstart', function(e) {
-
-						var url = e.url;
-
-						// Is this the path, as given by the redirectUri?
-						// Check the new URL agains the redirectUriOrigin.
-						// According to #63 a user could click 'cancel' in some dialog boxes ....
-						// The popup redirects to another page with the same origin, yet we still wish it to close.
-
-						if (url.indexOf(redirectUriOrigin) !== 0) {
-							return;
-						}
-
-						// Split appart the URL
-						var a = hello.utils.url(url);
-
-						// We dont have window operations on the popup so lets create some
-						// The location can be augmented in to a location object like so...
-
-						var _popup = {
-							location: {
-								// Change the location of the popup
-								assign: function(location) {
-
-									// Unfourtunatly an app is may not change the location of a InAppBrowser window.
-									// So to shim this, just open a new one.
-
-									popup.addEventListener('exit', function() {
-
-										// For some reason its failing to close the window if a new window opens too soon.
-
-										setTimeout(function() {
-											open(location);
-										}, 1000);
-									});
-								},
-
-								search: a.search,
-								hash: a.hash,
-								href: a.href
-							},
-							close: function() {
-								if (popup.close) {
-									popup.close();
-								}
-							}
-						};
-
-						// Then this URL contains information which HelloJS must process
-						// URL string
-						// Window - any action such as window relocation goes here
-						// Opener - the parent window which opened this, aka this script
-
-						hello.utils.responseHandler(_popup, window);
-
-						// Always close the popup regardless of whether the hello.utils.responseHandler detects a state parameter or not in the querystring.
-						// Such situations might arise such as those in #63
-
-						_popup.close();
-
-					});
-				}
-			}
-			catch (e) {}
-
-			if (popup && popup.focus) {
-				popup.focus();
-			}
-
-			return popup;
-		};
-
 		// Call the open() function with the initial path
 		//
 		// OAuth redirect, fixes URI fragments from being lost in Safari
@@ -33702,7 +23210,17 @@ hello.utils.extend(hello.utils, {
 			url = redirectUri + '#oauth_redirect=' + encodeURIComponent(encodeURIComponent(url));
 		}
 
-		return open(url);
+		var popup = window.open(
+			url,
+			'_blank',
+			optionsArray.join(',')
+		);
+
+		if (popup && popup.focus) {
+			popup.focus();
+		}
+
+		return popup;
 	},
 
 	// OAuth and API response handler
@@ -35188,6 +24706,104 @@ if (typeof chrome === 'object' && typeof chrome.identity === 'object' && chrome.
 
 	})();
 }
+
+// Phonegap override for hello.phonegap.js
+(function() {
+
+	// Is this a phonegap implementation?
+	if (!(/^file:\/{3}[^\/]/.test(window.location.href) && window.cordova)) {
+		// Cordova is not included.
+		return;
+	}
+
+	// Augment the hidden iframe method
+	hello.utils.iframe = function(url, redirectUri) {
+		hello.utils.popup(url, redirectUri, {hidden: 'yes'});
+	};
+
+	// Augment the popup
+	var utilPopup = hello.utils.popup;
+
+	// Replace popup
+	hello.utils.popup = function(url, redirectUri, options) {
+
+		// Run the standard
+		var popup = utilPopup.call(this, url, redirectUri, options);
+
+		// Create a function for reopening the popup, and assigning events to the new popup object
+		// PhoneGap support
+		// Add an event listener to listen to the change in the popup windows URL
+		// This must appear before popup.focus();
+		try {
+			if (popup && popup.addEventListener) {
+
+				// Get the origin of the redirect URI
+
+				var a = hello.utils.url(redirectUri);
+				var redirectUriOrigin = a.origin || (a.protocol + '//' + a.hostname);
+
+				// Listen to changes in the InAppBrowser window
+
+				popup.addEventListener('loadstart', function(e) {
+
+					var url = e.url;
+
+					// Is this the path, as given by the redirectUri?
+					// Check the new URL agains the redirectUriOrigin.
+					// According to #63 a user could click 'cancel' in some dialog boxes ....
+					// The popup redirects to another page with the same origin, yet we still wish it to close.
+
+					if (url.indexOf(redirectUriOrigin) !== 0) {
+						return;
+					}
+
+					// Split appart the URL
+					var a = hello.utils.url(url);
+
+					// We dont have window operations on the popup so lets create some
+					// The location can be augmented in to a location object like so...
+
+					var _popup = {
+						location: {
+							// Change the location of the popup
+							assign: function(location) {
+
+								// Unfourtunatly an app is may not change the location of a InAppBrowser window.
+								// So to shim this, just open a new one.
+								popup.executeScript({code: 'window.location.href = "' + location + ';"'});
+							},
+
+							search: a.search,
+							hash: a.hash,
+							href: a.href
+						},
+						close: function() {
+							if (popup.close) {
+								popup.close();
+								try {
+									popup.closed = true;
+								}
+								catch (_e) {}
+							}
+						}
+					};
+
+					// Then this URL contains information which HelloJS must process
+					// URL string
+					// Window - any action such as window relocation goes here
+					// Opener - the parent window which opened this, aka this script
+
+					hello.utils.responseHandler(_popup, window);
+
+				});
+			}
+		}
+		catch (e) {}
+
+		return popup;
+	};
+
+})();
 
 (function(hello) {
 
@@ -37972,7 +27588,7 @@ if (typeof module === 'object' && module.exports) {
 
 }).call(this,require('_process'))
 
-},{"_process":418}],182:[function(require,module,exports){
+},{"_process":419}],138:[function(require,module,exports){
 // Copyright 2015 Joyent, Inc.
 
 var parser = require('./parser');
@@ -38003,7 +27619,7 @@ module.exports = {
   verifyHMAC: verify.verifyHMAC
 };
 
-},{"./parser":183,"./signer":184,"./utils":185,"./verify":186}],183:[function(require,module,exports){
+},{"./parser":139,"./signer":140,"./utils":141,"./verify":142}],139:[function(require,module,exports){
 // Copyright 2012 Joyent, Inc.  All rights reserved.
 
 var assert = require('assert-plus');
@@ -38323,7 +27939,7 @@ module.exports = {
 
 };
 
-},{"./utils":185,"assert-plus":65,"util":510}],184:[function(require,module,exports){
+},{"./utils":141,"assert-plus":21,"util":511}],140:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2012 Joyent, Inc.  All rights reserved.
 
@@ -38727,7 +28343,7 @@ module.exports = {
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
 
-},{"../../is-buffer/index.js":192,"./utils":185,"assert-plus":65,"crypto":114,"http":489,"jsprim":209,"sshpk":482,"util":510}],185:[function(require,module,exports){
+},{"../../is-buffer/index.js":148,"./utils":141,"assert-plus":21,"crypto":70,"http":490,"jsprim":165,"sshpk":483,"util":511}],141:[function(require,module,exports){
 // Copyright 2012 Joyent, Inc.  All rights reserved.
 
 var assert = require('assert-plus');
@@ -38841,7 +28457,7 @@ module.exports = {
   }
 };
 
-},{"assert-plus":65,"sshpk":482,"util":510}],186:[function(require,module,exports){
+},{"assert-plus":21,"sshpk":483,"util":511}],142:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -38934,7 +28550,7 @@ module.exports = {
 
 }).call(this,require("buffer").Buffer)
 
-},{"./utils":185,"assert-plus":65,"buffer":102,"crypto":114,"sshpk":482}],187:[function(require,module,exports){
+},{"./utils":141,"assert-plus":21,"buffer":58,"crypto":70,"sshpk":483}],143:[function(require,module,exports){
 var http = require('http');
 
 var https = module.exports;
@@ -38950,7 +28566,7 @@ https.request = function (params, cb) {
     return http.request.call(this, params, cb);
 }
 
-},{"http":489}],188:[function(require,module,exports){
+},{"http":490}],144:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -39036,7 +28652,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],189:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
 var idbModules = {  // jshint ignore:line
     util: {
         cleanInterface: false
@@ -42378,7 +31994,7 @@ var idbModules = {  // jshint ignore:line
 }(window, idbModules));
 
 
-},{}],190:[function(require,module,exports){
+},{}],146:[function(require,module,exports){
 
 var indexOf = [].indexOf;
 
@@ -42389,7 +32005,7 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
-},{}],191:[function(require,module,exports){
+},{}],147:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -42414,7 +32030,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],192:[function(require,module,exports){
+},{}],148:[function(require,module,exports){
 /**
  * Determine if an object is Buffer
  *
@@ -42433,7 +32049,7 @@ module.exports = function (obj) {
     ))
 }
 
-},{}],193:[function(require,module,exports){
+},{}],149:[function(require,module,exports){
 exports['date-time'] = /^\d{4}-(?:0[0-9]{1}|1[0-2]{1})-[0-9]{2}[tT ]\d{2}:\d{2}:\d{2}(\.\d+)?([zZ]|[+-]\d{2}:\d{2})$/
 exports['date'] = /^\d{4}-(?:0[0-9]{1}|1[0-2]{1})-[0-9]{2}$/
 exports['time'] = /^\d{2}:\d{2}:\d{2}$/
@@ -42449,7 +32065,7 @@ exports['style'] = /\s*(.+?):\s*([^;]+);?/g
 exports['phone'] = /^\+(?:[0-9] ?){6,14}[0-9]$/
 exports['utc-millisec'] = /^[0-9]{1,15}\.?[0-9]{0,15}$/
 
-},{}],194:[function(require,module,exports){
+},{}],150:[function(require,module,exports){
 var genobj = require('generate-object-property')
 var genfun = require('generate-function')
 var jsonpointer = require('jsonpointer')
@@ -42457,7 +32073,6 @@ var xtend = require('xtend')
 var formats = require('./formats')
 
 var get = function(obj, additionalSchemas, ptr) {
-  if (/^https?:\/\//.test(ptr)) return null
 
   var visit = function(sub) {
     if (sub && sub.id === ptr) return sub
@@ -42550,13 +32165,25 @@ var unique = function(array) {
   return true
 }
 
+var isMultipleOf = function(name, multipleOf) {
+  var res;
+  var factor = ((multipleOf | 0) !== multipleOf) ? Math.pow(10, multipleOf.toString().split('.').pop().length) : 1
+  if (factor > 1) {
+    var factorName = ((name | 0) !== name) ? Math.pow(10, name.toString().split('.').pop().length) : 1
+    if (factorName > factor) res = true
+    else res = Math.round(factor * name) % (factor * multipleOf)
+  }
+  else res = name % multipleOf;
+  return !res;
+}
+
 var toType = function(node) {
   return node.type
 }
 
 var compile = function(schema, cache, root, reporter, opts) {
   var fmts = opts ? xtend(formats, opts.formats) : formats
-  var scope = {unique:unique, formats:fmts}
+  var scope = {unique:unique, formats:fmts, isMultipleOf:isMultipleOf}
   var verbose = opts ? !!opts.verbose : false;
   var greedy = opts && opts.greedy !== undefined ?
     opts.greedy : false;
@@ -42602,7 +32229,7 @@ var compile = function(schema, cache, root, reporter, opts) {
       if (reporter === true) {
         validate('if (validate.errors === null) validate.errors = []')
         if (verbose) {
-          validate('validate.errors.push({field:%s,message:%s,value:%s})', formatName(prop || name), JSON.stringify(msg), value || name)
+          validate('validate.errors.push({field:%s,message:%s,value:%s,type:%s})', formatName(prop || name), JSON.stringify(msg), value || name, JSON.stringify(type))
         } else {
           validate('validate.errors.push({field:%s,message:%s})', formatName(prop || name), JSON.stringify(msg))
         }
@@ -42886,9 +32513,7 @@ var compile = function(schema, cache, root, reporter, opts) {
     if (node.multipleOf !== undefined) {
       if (type !== 'number' && type !== 'integer') validate('if (%s) {', types.number(name))
 
-      var factor = ((node.multipleOf | 0) !== node.multipleOf) ? Math.pow(10, node.multipleOf.toString().split('.').pop().length) : 1
-      if (factor > 1) validate('if ((%d*%s) % %d) {', factor, name, factor*node.multipleOf)
-      else validate('if (%s % %d) {', name, node.multipleOf)
+      validate('if (!isMultipleOf(%s, %d)) {', name, node.multipleOf)
 
       error('has a remainder')
       validate('}')
@@ -43026,13 +32651,13 @@ module.exports.filter = function(schema, opts) {
   }
 }
 
-},{"./formats":193,"generate-function":153,"generate-object-property":154,"jsonpointer":208,"xtend":513}],195:[function(require,module,exports){
+},{"./formats":149,"generate-function":109,"generate-object-property":110,"jsonpointer":164,"xtend":514}],151:[function(require,module,exports){
 "use strict"
 function isProperty(str) {
   return /^[$A-Z\_a-z\xaa\xb5\xba\xc0-\xd6\xd8-\xf6\xf8-\u02c1\u02c6-\u02d1\u02e0-\u02e4\u02ec\u02ee\u0370-\u0374\u0376\u0377\u037a-\u037d\u0386\u0388-\u038a\u038c\u038e-\u03a1\u03a3-\u03f5\u03f7-\u0481\u048a-\u0527\u0531-\u0556\u0559\u0561-\u0587\u05d0-\u05ea\u05f0-\u05f2\u0620-\u064a\u066e\u066f\u0671-\u06d3\u06d5\u06e5\u06e6\u06ee\u06ef\u06fa-\u06fc\u06ff\u0710\u0712-\u072f\u074d-\u07a5\u07b1\u07ca-\u07ea\u07f4\u07f5\u07fa\u0800-\u0815\u081a\u0824\u0828\u0840-\u0858\u08a0\u08a2-\u08ac\u0904-\u0939\u093d\u0950\u0958-\u0961\u0971-\u0977\u0979-\u097f\u0985-\u098c\u098f\u0990\u0993-\u09a8\u09aa-\u09b0\u09b2\u09b6-\u09b9\u09bd\u09ce\u09dc\u09dd\u09df-\u09e1\u09f0\u09f1\u0a05-\u0a0a\u0a0f\u0a10\u0a13-\u0a28\u0a2a-\u0a30\u0a32\u0a33\u0a35\u0a36\u0a38\u0a39\u0a59-\u0a5c\u0a5e\u0a72-\u0a74\u0a85-\u0a8d\u0a8f-\u0a91\u0a93-\u0aa8\u0aaa-\u0ab0\u0ab2\u0ab3\u0ab5-\u0ab9\u0abd\u0ad0\u0ae0\u0ae1\u0b05-\u0b0c\u0b0f\u0b10\u0b13-\u0b28\u0b2a-\u0b30\u0b32\u0b33\u0b35-\u0b39\u0b3d\u0b5c\u0b5d\u0b5f-\u0b61\u0b71\u0b83\u0b85-\u0b8a\u0b8e-\u0b90\u0b92-\u0b95\u0b99\u0b9a\u0b9c\u0b9e\u0b9f\u0ba3\u0ba4\u0ba8-\u0baa\u0bae-\u0bb9\u0bd0\u0c05-\u0c0c\u0c0e-\u0c10\u0c12-\u0c28\u0c2a-\u0c33\u0c35-\u0c39\u0c3d\u0c58\u0c59\u0c60\u0c61\u0c85-\u0c8c\u0c8e-\u0c90\u0c92-\u0ca8\u0caa-\u0cb3\u0cb5-\u0cb9\u0cbd\u0cde\u0ce0\u0ce1\u0cf1\u0cf2\u0d05-\u0d0c\u0d0e-\u0d10\u0d12-\u0d3a\u0d3d\u0d4e\u0d60\u0d61\u0d7a-\u0d7f\u0d85-\u0d96\u0d9a-\u0db1\u0db3-\u0dbb\u0dbd\u0dc0-\u0dc6\u0e01-\u0e30\u0e32\u0e33\u0e40-\u0e46\u0e81\u0e82\u0e84\u0e87\u0e88\u0e8a\u0e8d\u0e94-\u0e97\u0e99-\u0e9f\u0ea1-\u0ea3\u0ea5\u0ea7\u0eaa\u0eab\u0ead-\u0eb0\u0eb2\u0eb3\u0ebd\u0ec0-\u0ec4\u0ec6\u0edc-\u0edf\u0f00\u0f40-\u0f47\u0f49-\u0f6c\u0f88-\u0f8c\u1000-\u102a\u103f\u1050-\u1055\u105a-\u105d\u1061\u1065\u1066\u106e-\u1070\u1075-\u1081\u108e\u10a0-\u10c5\u10c7\u10cd\u10d0-\u10fa\u10fc-\u1248\u124a-\u124d\u1250-\u1256\u1258\u125a-\u125d\u1260-\u1288\u128a-\u128d\u1290-\u12b0\u12b2-\u12b5\u12b8-\u12be\u12c0\u12c2-\u12c5\u12c8-\u12d6\u12d8-\u1310\u1312-\u1315\u1318-\u135a\u1380-\u138f\u13a0-\u13f4\u1401-\u166c\u166f-\u167f\u1681-\u169a\u16a0-\u16ea\u16ee-\u16f0\u1700-\u170c\u170e-\u1711\u1720-\u1731\u1740-\u1751\u1760-\u176c\u176e-\u1770\u1780-\u17b3\u17d7\u17dc\u1820-\u1877\u1880-\u18a8\u18aa\u18b0-\u18f5\u1900-\u191c\u1950-\u196d\u1970-\u1974\u1980-\u19ab\u19c1-\u19c7\u1a00-\u1a16\u1a20-\u1a54\u1aa7\u1b05-\u1b33\u1b45-\u1b4b\u1b83-\u1ba0\u1bae\u1baf\u1bba-\u1be5\u1c00-\u1c23\u1c4d-\u1c4f\u1c5a-\u1c7d\u1ce9-\u1cec\u1cee-\u1cf1\u1cf5\u1cf6\u1d00-\u1dbf\u1e00-\u1f15\u1f18-\u1f1d\u1f20-\u1f45\u1f48-\u1f4d\u1f50-\u1f57\u1f59\u1f5b\u1f5d\u1f5f-\u1f7d\u1f80-\u1fb4\u1fb6-\u1fbc\u1fbe\u1fc2-\u1fc4\u1fc6-\u1fcc\u1fd0-\u1fd3\u1fd6-\u1fdb\u1fe0-\u1fec\u1ff2-\u1ff4\u1ff6-\u1ffc\u2071\u207f\u2090-\u209c\u2102\u2107\u210a-\u2113\u2115\u2119-\u211d\u2124\u2126\u2128\u212a-\u212d\u212f-\u2139\u213c-\u213f\u2145-\u2149\u214e\u2160-\u2188\u2c00-\u2c2e\u2c30-\u2c5e\u2c60-\u2ce4\u2ceb-\u2cee\u2cf2\u2cf3\u2d00-\u2d25\u2d27\u2d2d\u2d30-\u2d67\u2d6f\u2d80-\u2d96\u2da0-\u2da6\u2da8-\u2dae\u2db0-\u2db6\u2db8-\u2dbe\u2dc0-\u2dc6\u2dc8-\u2dce\u2dd0-\u2dd6\u2dd8-\u2dde\u2e2f\u3005-\u3007\u3021-\u3029\u3031-\u3035\u3038-\u303c\u3041-\u3096\u309d-\u309f\u30a1-\u30fa\u30fc-\u30ff\u3105-\u312d\u3131-\u318e\u31a0-\u31ba\u31f0-\u31ff\u3400-\u4db5\u4e00-\u9fcc\ua000-\ua48c\ua4d0-\ua4fd\ua500-\ua60c\ua610-\ua61f\ua62a\ua62b\ua640-\ua66e\ua67f-\ua697\ua6a0-\ua6ef\ua717-\ua71f\ua722-\ua788\ua78b-\ua78e\ua790-\ua793\ua7a0-\ua7aa\ua7f8-\ua801\ua803-\ua805\ua807-\ua80a\ua80c-\ua822\ua840-\ua873\ua882-\ua8b3\ua8f2-\ua8f7\ua8fb\ua90a-\ua925\ua930-\ua946\ua960-\ua97c\ua984-\ua9b2\ua9cf\uaa00-\uaa28\uaa40-\uaa42\uaa44-\uaa4b\uaa60-\uaa76\uaa7a\uaa80-\uaaaf\uaab1\uaab5\uaab6\uaab9-\uaabd\uaac0\uaac2\uaadb-\uaadd\uaae0-\uaaea\uaaf2-\uaaf4\uab01-\uab06\uab09-\uab0e\uab11-\uab16\uab20-\uab26\uab28-\uab2e\uabc0-\uabe2\uac00-\ud7a3\ud7b0-\ud7c6\ud7cb-\ud7fb\uf900-\ufa6d\ufa70-\ufad9\ufb00-\ufb06\ufb13-\ufb17\ufb1d\ufb1f-\ufb28\ufb2a-\ufb36\ufb38-\ufb3c\ufb3e\ufb40\ufb41\ufb43\ufb44\ufb46-\ufbb1\ufbd3-\ufd3d\ufd50-\ufd8f\ufd92-\ufdc7\ufdf0-\ufdfb\ufe70-\ufe74\ufe76-\ufefc\uff21-\uff3a\uff41-\uff5a\uff66-\uffbe\uffc2-\uffc7\uffca-\uffcf\uffd2-\uffd7\uffda-\uffdc][$A-Z\_a-z\xaa\xb5\xba\xc0-\xd6\xd8-\xf6\xf8-\u02c1\u02c6-\u02d1\u02e0-\u02e4\u02ec\u02ee\u0370-\u0374\u0376\u0377\u037a-\u037d\u0386\u0388-\u038a\u038c\u038e-\u03a1\u03a3-\u03f5\u03f7-\u0481\u048a-\u0527\u0531-\u0556\u0559\u0561-\u0587\u05d0-\u05ea\u05f0-\u05f2\u0620-\u064a\u066e\u066f\u0671-\u06d3\u06d5\u06e5\u06e6\u06ee\u06ef\u06fa-\u06fc\u06ff\u0710\u0712-\u072f\u074d-\u07a5\u07b1\u07ca-\u07ea\u07f4\u07f5\u07fa\u0800-\u0815\u081a\u0824\u0828\u0840-\u0858\u08a0\u08a2-\u08ac\u0904-\u0939\u093d\u0950\u0958-\u0961\u0971-\u0977\u0979-\u097f\u0985-\u098c\u098f\u0990\u0993-\u09a8\u09aa-\u09b0\u09b2\u09b6-\u09b9\u09bd\u09ce\u09dc\u09dd\u09df-\u09e1\u09f0\u09f1\u0a05-\u0a0a\u0a0f\u0a10\u0a13-\u0a28\u0a2a-\u0a30\u0a32\u0a33\u0a35\u0a36\u0a38\u0a39\u0a59-\u0a5c\u0a5e\u0a72-\u0a74\u0a85-\u0a8d\u0a8f-\u0a91\u0a93-\u0aa8\u0aaa-\u0ab0\u0ab2\u0ab3\u0ab5-\u0ab9\u0abd\u0ad0\u0ae0\u0ae1\u0b05-\u0b0c\u0b0f\u0b10\u0b13-\u0b28\u0b2a-\u0b30\u0b32\u0b33\u0b35-\u0b39\u0b3d\u0b5c\u0b5d\u0b5f-\u0b61\u0b71\u0b83\u0b85-\u0b8a\u0b8e-\u0b90\u0b92-\u0b95\u0b99\u0b9a\u0b9c\u0b9e\u0b9f\u0ba3\u0ba4\u0ba8-\u0baa\u0bae-\u0bb9\u0bd0\u0c05-\u0c0c\u0c0e-\u0c10\u0c12-\u0c28\u0c2a-\u0c33\u0c35-\u0c39\u0c3d\u0c58\u0c59\u0c60\u0c61\u0c85-\u0c8c\u0c8e-\u0c90\u0c92-\u0ca8\u0caa-\u0cb3\u0cb5-\u0cb9\u0cbd\u0cde\u0ce0\u0ce1\u0cf1\u0cf2\u0d05-\u0d0c\u0d0e-\u0d10\u0d12-\u0d3a\u0d3d\u0d4e\u0d60\u0d61\u0d7a-\u0d7f\u0d85-\u0d96\u0d9a-\u0db1\u0db3-\u0dbb\u0dbd\u0dc0-\u0dc6\u0e01-\u0e30\u0e32\u0e33\u0e40-\u0e46\u0e81\u0e82\u0e84\u0e87\u0e88\u0e8a\u0e8d\u0e94-\u0e97\u0e99-\u0e9f\u0ea1-\u0ea3\u0ea5\u0ea7\u0eaa\u0eab\u0ead-\u0eb0\u0eb2\u0eb3\u0ebd\u0ec0-\u0ec4\u0ec6\u0edc-\u0edf\u0f00\u0f40-\u0f47\u0f49-\u0f6c\u0f88-\u0f8c\u1000-\u102a\u103f\u1050-\u1055\u105a-\u105d\u1061\u1065\u1066\u106e-\u1070\u1075-\u1081\u108e\u10a0-\u10c5\u10c7\u10cd\u10d0-\u10fa\u10fc-\u1248\u124a-\u124d\u1250-\u1256\u1258\u125a-\u125d\u1260-\u1288\u128a-\u128d\u1290-\u12b0\u12b2-\u12b5\u12b8-\u12be\u12c0\u12c2-\u12c5\u12c8-\u12d6\u12d8-\u1310\u1312-\u1315\u1318-\u135a\u1380-\u138f\u13a0-\u13f4\u1401-\u166c\u166f-\u167f\u1681-\u169a\u16a0-\u16ea\u16ee-\u16f0\u1700-\u170c\u170e-\u1711\u1720-\u1731\u1740-\u1751\u1760-\u176c\u176e-\u1770\u1780-\u17b3\u17d7\u17dc\u1820-\u1877\u1880-\u18a8\u18aa\u18b0-\u18f5\u1900-\u191c\u1950-\u196d\u1970-\u1974\u1980-\u19ab\u19c1-\u19c7\u1a00-\u1a16\u1a20-\u1a54\u1aa7\u1b05-\u1b33\u1b45-\u1b4b\u1b83-\u1ba0\u1bae\u1baf\u1bba-\u1be5\u1c00-\u1c23\u1c4d-\u1c4f\u1c5a-\u1c7d\u1ce9-\u1cec\u1cee-\u1cf1\u1cf5\u1cf6\u1d00-\u1dbf\u1e00-\u1f15\u1f18-\u1f1d\u1f20-\u1f45\u1f48-\u1f4d\u1f50-\u1f57\u1f59\u1f5b\u1f5d\u1f5f-\u1f7d\u1f80-\u1fb4\u1fb6-\u1fbc\u1fbe\u1fc2-\u1fc4\u1fc6-\u1fcc\u1fd0-\u1fd3\u1fd6-\u1fdb\u1fe0-\u1fec\u1ff2-\u1ff4\u1ff6-\u1ffc\u2071\u207f\u2090-\u209c\u2102\u2107\u210a-\u2113\u2115\u2119-\u211d\u2124\u2126\u2128\u212a-\u212d\u212f-\u2139\u213c-\u213f\u2145-\u2149\u214e\u2160-\u2188\u2c00-\u2c2e\u2c30-\u2c5e\u2c60-\u2ce4\u2ceb-\u2cee\u2cf2\u2cf3\u2d00-\u2d25\u2d27\u2d2d\u2d30-\u2d67\u2d6f\u2d80-\u2d96\u2da0-\u2da6\u2da8-\u2dae\u2db0-\u2db6\u2db8-\u2dbe\u2dc0-\u2dc6\u2dc8-\u2dce\u2dd0-\u2dd6\u2dd8-\u2dde\u2e2f\u3005-\u3007\u3021-\u3029\u3031-\u3035\u3038-\u303c\u3041-\u3096\u309d-\u309f\u30a1-\u30fa\u30fc-\u30ff\u3105-\u312d\u3131-\u318e\u31a0-\u31ba\u31f0-\u31ff\u3400-\u4db5\u4e00-\u9fcc\ua000-\ua48c\ua4d0-\ua4fd\ua500-\ua60c\ua610-\ua61f\ua62a\ua62b\ua640-\ua66e\ua67f-\ua697\ua6a0-\ua6ef\ua717-\ua71f\ua722-\ua788\ua78b-\ua78e\ua790-\ua793\ua7a0-\ua7aa\ua7f8-\ua801\ua803-\ua805\ua807-\ua80a\ua80c-\ua822\ua840-\ua873\ua882-\ua8b3\ua8f2-\ua8f7\ua8fb\ua90a-\ua925\ua930-\ua946\ua960-\ua97c\ua984-\ua9b2\ua9cf\uaa00-\uaa28\uaa40-\uaa42\uaa44-\uaa4b\uaa60-\uaa76\uaa7a\uaa80-\uaaaf\uaab1\uaab5\uaab6\uaab9-\uaabd\uaac0\uaac2\uaadb-\uaadd\uaae0-\uaaea\uaaf2-\uaaf4\uab01-\uab06\uab09-\uab0e\uab11-\uab16\uab20-\uab26\uab28-\uab2e\uabc0-\uabe2\uac00-\ud7a3\ud7b0-\ud7c6\ud7cb-\ud7fb\uf900-\ufa6d\ufa70-\ufad9\ufb00-\ufb06\ufb13-\ufb17\ufb1d\ufb1f-\ufb28\ufb2a-\ufb36\ufb38-\ufb3c\ufb3e\ufb40\ufb41\ufb43\ufb44\ufb46-\ufbb1\ufbd3-\ufd3d\ufd50-\ufd8f\ufd92-\ufdc7\ufdf0-\ufdfb\ufe70-\ufe74\ufe76-\ufefc\uff21-\uff3a\uff41-\uff5a\uff66-\uffbe\uffc2-\uffc7\uffca-\uffcf\uffd2-\uffd7\uffda-\uffdc0-9\u0300-\u036f\u0483-\u0487\u0591-\u05bd\u05bf\u05c1\u05c2\u05c4\u05c5\u05c7\u0610-\u061a\u064b-\u0669\u0670\u06d6-\u06dc\u06df-\u06e4\u06e7\u06e8\u06ea-\u06ed\u06f0-\u06f9\u0711\u0730-\u074a\u07a6-\u07b0\u07c0-\u07c9\u07eb-\u07f3\u0816-\u0819\u081b-\u0823\u0825-\u0827\u0829-\u082d\u0859-\u085b\u08e4-\u08fe\u0900-\u0903\u093a-\u093c\u093e-\u094f\u0951-\u0957\u0962\u0963\u0966-\u096f\u0981-\u0983\u09bc\u09be-\u09c4\u09c7\u09c8\u09cb-\u09cd\u09d7\u09e2\u09e3\u09e6-\u09ef\u0a01-\u0a03\u0a3c\u0a3e-\u0a42\u0a47\u0a48\u0a4b-\u0a4d\u0a51\u0a66-\u0a71\u0a75\u0a81-\u0a83\u0abc\u0abe-\u0ac5\u0ac7-\u0ac9\u0acb-\u0acd\u0ae2\u0ae3\u0ae6-\u0aef\u0b01-\u0b03\u0b3c\u0b3e-\u0b44\u0b47\u0b48\u0b4b-\u0b4d\u0b56\u0b57\u0b62\u0b63\u0b66-\u0b6f\u0b82\u0bbe-\u0bc2\u0bc6-\u0bc8\u0bca-\u0bcd\u0bd7\u0be6-\u0bef\u0c01-\u0c03\u0c3e-\u0c44\u0c46-\u0c48\u0c4a-\u0c4d\u0c55\u0c56\u0c62\u0c63\u0c66-\u0c6f\u0c82\u0c83\u0cbc\u0cbe-\u0cc4\u0cc6-\u0cc8\u0cca-\u0ccd\u0cd5\u0cd6\u0ce2\u0ce3\u0ce6-\u0cef\u0d02\u0d03\u0d3e-\u0d44\u0d46-\u0d48\u0d4a-\u0d4d\u0d57\u0d62\u0d63\u0d66-\u0d6f\u0d82\u0d83\u0dca\u0dcf-\u0dd4\u0dd6\u0dd8-\u0ddf\u0df2\u0df3\u0e31\u0e34-\u0e3a\u0e47-\u0e4e\u0e50-\u0e59\u0eb1\u0eb4-\u0eb9\u0ebb\u0ebc\u0ec8-\u0ecd\u0ed0-\u0ed9\u0f18\u0f19\u0f20-\u0f29\u0f35\u0f37\u0f39\u0f3e\u0f3f\u0f71-\u0f84\u0f86\u0f87\u0f8d-\u0f97\u0f99-\u0fbc\u0fc6\u102b-\u103e\u1040-\u1049\u1056-\u1059\u105e-\u1060\u1062-\u1064\u1067-\u106d\u1071-\u1074\u1082-\u108d\u108f-\u109d\u135d-\u135f\u1712-\u1714\u1732-\u1734\u1752\u1753\u1772\u1773\u17b4-\u17d3\u17dd\u17e0-\u17e9\u180b-\u180d\u1810-\u1819\u18a9\u1920-\u192b\u1930-\u193b\u1946-\u194f\u19b0-\u19c0\u19c8\u19c9\u19d0-\u19d9\u1a17-\u1a1b\u1a55-\u1a5e\u1a60-\u1a7c\u1a7f-\u1a89\u1a90-\u1a99\u1b00-\u1b04\u1b34-\u1b44\u1b50-\u1b59\u1b6b-\u1b73\u1b80-\u1b82\u1ba1-\u1bad\u1bb0-\u1bb9\u1be6-\u1bf3\u1c24-\u1c37\u1c40-\u1c49\u1c50-\u1c59\u1cd0-\u1cd2\u1cd4-\u1ce8\u1ced\u1cf2-\u1cf4\u1dc0-\u1de6\u1dfc-\u1dff\u200c\u200d\u203f\u2040\u2054\u20d0-\u20dc\u20e1\u20e5-\u20f0\u2cef-\u2cf1\u2d7f\u2de0-\u2dff\u302a-\u302f\u3099\u309a\ua620-\ua629\ua66f\ua674-\ua67d\ua69f\ua6f0\ua6f1\ua802\ua806\ua80b\ua823-\ua827\ua880\ua881\ua8b4-\ua8c4\ua8d0-\ua8d9\ua8e0-\ua8f1\ua900-\ua909\ua926-\ua92d\ua947-\ua953\ua980-\ua983\ua9b3-\ua9c0\ua9d0-\ua9d9\uaa29-\uaa36\uaa43\uaa4c\uaa4d\uaa50-\uaa59\uaa7b\uaab0\uaab2-\uaab4\uaab7\uaab8\uaabe\uaabf\uaac1\uaaeb-\uaaef\uaaf5\uaaf6\uabe3-\uabea\uabec\uabed\uabf0-\uabf9\ufb1e\ufe00-\ufe0f\ufe20-\ufe26\ufe33\ufe34\ufe4d-\ufe4f\uff10-\uff19\uff3f]*$/.test(str)
 }
 module.exports = isProperty
-},{}],196:[function(require,module,exports){
+},{}],152:[function(require,module,exports){
 module.exports      = isTypedArray
 isTypedArray.strict = isStrictTypedArray
 isTypedArray.loose  = isLooseTypedArray
@@ -43075,12 +32700,12 @@ function isLooseTypedArray(arr) {
   return names[toString.call(arr)]
 }
 
-},{}],197:[function(require,module,exports){
+},{}],153:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
 
-},{}],198:[function(require,module,exports){
+},{}],154:[function(require,module,exports){
 var stream = require('stream')
 
 
@@ -43109,7 +32734,7 @@ module.exports.isReadable = isReadable
 module.exports.isWritable = isWritable
 module.exports.isDuplex   = isDuplex
 
-},{"stream":488}],199:[function(require,module,exports){
+},{"stream":489}],155:[function(require,module,exports){
 "use strict";
 
 /*
@@ -43146,7 +32771,7 @@ var utils = require('./lib/utils');
 
 module.exports = ns;
 
-},{"./lib/curve255":201,"./lib/dh":202,"./lib/eddsa":203,"./lib/utils":204}],200:[function(require,module,exports){
+},{"./lib/curve255":157,"./lib/dh":158,"./lib/eddsa":159,"./lib/utils":160}],156:[function(require,module,exports){
 "use strict";
 /**
  * @fileOverview
@@ -43629,7 +33254,7 @@ var crypto = require('crypto');
 
 module.exports = ns;
 
-},{"crypto":114}],201:[function(require,module,exports){
+},{"crypto":70}],157:[function(require,module,exports){
 "use strict";
 /**
  * @fileOverview
@@ -43852,7 +33477,7 @@ var utils = require('./utils');
 
 module.exports = ns;
 
-},{"./core":200,"./utils":204}],202:[function(require,module,exports){
+},{"./core":156,"./utils":160}],158:[function(require,module,exports){
 (function (Buffer){
 "use strict";
 /**
@@ -43968,7 +33593,7 @@ module.exports = ns;
 
 }).call(this,require("buffer").Buffer)
 
-},{"./core":200,"./curve255":201,"./utils":204,"buffer":102}],203:[function(require,module,exports){
+},{"./core":156,"./curve255":157,"./utils":160,"buffer":58}],159:[function(require,module,exports){
 (function (Buffer){
 "use strict";
 /**
@@ -44546,7 +34171,7 @@ module.exports = ns;
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
 
-},{"../../is-buffer/index.js":192,"./core":200,"./curve255":201,"./utils":204,"crypto":114,"jsbn":205}],204:[function(require,module,exports){
+},{"../../is-buffer/index.js":148,"./core":156,"./curve255":157,"./utils":160,"crypto":70,"jsbn":161}],160:[function(require,module,exports){
 "use strict";
 /**
  * @fileOverview
@@ -44746,7 +34371,7 @@ var core = require('./core');
 
 module.exports = ns;
 
-},{"./core":200}],205:[function(require,module,exports){
+},{"./core":156}],161:[function(require,module,exports){
 (function(){
 
     // Copyright (c) 2005  Tom Wu
@@ -46106,7 +35731,7 @@ module.exports = ns;
 
 }).call(this);
 
-},{}],206:[function(require,module,exports){
+},{}],162:[function(require,module,exports){
 /**
  * JSONSchema Validator - Validates JavaScript objects using JSON Schemas
  *	(http://www.json.com/json-schema-proposal/)
@@ -46368,7 +35993,7 @@ exports.mustBeValid = function(result){
 return exports;
 });
 
-},{}],207:[function(require,module,exports){
+},{}],163:[function(require,module,exports){
 exports = module.exports = stringify
 exports.getSerialize = serializer
 
@@ -46397,7 +36022,7 @@ function serializer(replacer, cycleReplacer) {
   }
 }
 
-},{}],208:[function(require,module,exports){
+},{}],164:[function(require,module,exports){
 var untilde = function(str) {
   return str.replace(/~./g, function(m) {
     switch (m) {
@@ -46475,7 +36100,7 @@ var set = function(obj, pointer, value) {
 exports.get = get
 exports.set = set
 
-},{}],209:[function(require,module,exports){
+},{}],165:[function(require,module,exports){
 /*
  * lib/jsprim.js: utilities for primitive JavaScript types
  */
@@ -46955,7 +36580,10608 @@ function mergeObjects(provided, overrides, defaults)
 	return (rv);
 }
 
-},{"assert":66,"extsprintf":149,"json-schema":206,"util":510,"verror":511}],210:[function(require,module,exports){
+},{"assert":22,"extsprintf":105,"json-schema":162,"util":511,"verror":512}],166:[function(require,module,exports){
+module.exports={
+  "_args": [
+    [
+      "kinvey-sdk-core@3.0.0-beta.8",
+      "/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/HTML5/SDK"
+    ]
+  ],
+  "_from": "kinvey-sdk-core@3.0.0-beta.8",
+  "_id": "kinvey-sdk-core@3.0.0-beta.8",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/kinvey-sdk-core",
+  "_nodeVersion": "4.2.4",
+  "_npmOperationalInternal": {
+    "host": "packages-9-west.internal.npmjs.com",
+    "tmp": "tmp/kinvey-sdk-core-3.0.0-beta.8.tgz_1456414267638_0.27401130669750273"
+  },
+  "_npmUser": {
+    "email": "thomas.conner@me.com",
+    "name": "thomas.conner"
+  },
+  "_npmVersion": "3.5.2",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "kinvey-sdk-core",
+    "raw": "kinvey-sdk-core@3.0.0-beta.8",
+    "rawSpec": "3.0.0-beta.8",
+    "scope": null,
+    "spec": "3.0.0-beta.8",
+    "type": "version"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_shasum": "7a1f302b807e1bec25f6ab09938824cf76f1b62a",
+  "_shrinkwrap": null,
+  "_spec": "kinvey-sdk-core@3.0.0-beta.8",
+  "_where": "/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/HTML5/SDK",
+  "author": {
+    "name": "Kinvey, Inc."
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015",
+            "stage-2"
+          ],
+          "ignore": "//node_modules/(?!qs/)/"
+        }
+      ]
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/Kinvey/js-library-dev/issues"
+  },
+  "dependencies": {
+    "fast-memory-cache": "^2.0.4",
+    "hellojs": "^1.10.1",
+    "indexeddbshim": "^2.2.1",
+    "lodash": "^4.3.0",
+    "loglevel": "^1.3.1",
+    "qs": "^6.0.1",
+    "request": "^2.67.0",
+    "sift": "^3.0.0",
+    "url-pattern": "^1.0.0"
+  },
+  "description": "Kinvey JavaScript Library",
+  "devDependencies": {
+    "babel-core": "^6.4.5",
+    "babel-eslint": "^4.1.6",
+    "babel-polyfill": "^6.3.14",
+    "babel-preset-es2015": "^6.0.0",
+    "babel-preset-stage-0": "^6.3.13",
+    "babel-preset-stage-2": "^6.0.15",
+    "babel-register": "^6.3.13",
+    "babelify": "^7.2.0",
+    "browserify": "^13.0.0",
+    "chai": "^3.1.0",
+    "chai-as-promised": "^5.1.0",
+    "config": "^1.19.0",
+    "del": "^2.0.2",
+    "dotenv": "^1.2.0",
+    "envify": "^3.4.0",
+    "esdoc": "^0.4.0",
+    "eslint": "^1.8.0",
+    "eslint-config-airbnb": "^3.0.2",
+    "exorcist": "^0.4.0",
+    "glob": "^6.0.0",
+    "gulp": "^3.9.0",
+    "gulp-add-src": "^0.2.0",
+    "gulp-babel": "^6.1.1",
+    "gulp-bump": "^1.0.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-debug": "^2.1.2",
+    "gulp-eslint": "^1.0.0",
+    "gulp-file": "^0.2.0",
+    "gulp-filter": "^3.0.1",
+    "gulp-git": "^1.6.1",
+    "gulp-gzip": "^1.2.0",
+    "gulp-if": "^2.0.0",
+    "gulp-istanbul": "^0.10.0",
+    "gulp-load-plugins": "^1.0.0",
+    "gulp-mocha": "^2.0.0",
+    "gulp-plumber": "^1.0.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-s3-upload": "^1.5.1",
+    "gulp-shell": "^0.5.0",
+    "gulp-size": "^2.0.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-streamify": "^1.0.2",
+    "gulp-uglify": "^1.5.1",
+    "gulp-util": "^3.0.6",
+    "gulp-watch": "^4.3.5",
+    "gulp-wrapper": "^1.0.0",
+    "isparta": "^4.0.0",
+    "json-loader": "^0.5.3",
+    "karma": "^0.13.17",
+    "karma-browserify": "^4.4.2",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-mocha": "^0.2.1",
+    "karma-mocha-reporter": "^1.1.5",
+    "karma-phantomjs-launcher": "^0.2.2",
+    "karma-sauce-launcher": "^0.3.0",
+    "merge-stream": "^1.0.0",
+    "mocha": "^2.3.4",
+    "mocha-jenkins-reporter": "^0.1.9",
+    "mocha-phantomjs": "^4.0.2",
+    "nock": "^4.0.0",
+    "phantomjs": "^1.9.19",
+    "run-sequence": "^1.1.4",
+    "sinon": "^1.12.2",
+    "sinon-chai": "^2.7.0",
+    "uglifyify": "^3.0.1",
+    "uid": "0.0.2",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "vinyl-transform": "^1.0.0",
+    "wallabify": "0.0.12",
+    "wrench": "^1.5.8",
+    "yargs": "^3.27.0"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "7a1f302b807e1bec25f6ab09938824cf76f1b62a",
+    "tarball": "http://registry.npmjs.org/kinvey-sdk-core/-/kinvey-sdk-core-3.0.0-beta.8.tgz"
+  },
+  "gitHead": "599950daa498a6098b5e47b66dd6cc3a355b8454",
+  "homepage": "https://github.com/Kinvey/js-library-dev#readme",
+  "license": "MIT",
+  "main": "src/kinvey.js",
+  "maintainers": [
+    {
+      "name": "thomas.conner",
+      "email": "thomas.conner@me.com"
+    }
+  ],
+  "name": "kinvey-sdk-core",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kinvey/js-library-dev.git"
+  },
+  "scripts": {
+    "build": "gulp build",
+    "eslint-pre-commit": "./scripts/eslint-pre-commit.sh",
+    "lint": "gulp lint",
+    "test": "gulp",
+    "validate": "npm ls"
+  },
+  "version": "3.0.0-beta.8"
+}
+
+},{}],167:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _errors = require('./errors');
+
+var _isPlainObject = require('lodash/isPlainObject');
+
+var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
+
+var _clone = require('lodash/clone');
+
+var _clone2 = _interopRequireDefault(_clone);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var aclAttribute = process.env.KINVEY_ACL_ATTRIBUTE || '_acl';
+var privateAclSymbol = Symbol();
+
+/**
+ * @private
+ */
+
+var PrivateAcl = function () {
+  function PrivateAcl() {
+    var entity = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, PrivateAcl);
+
+    if (!(0, _isPlainObject2.default)(entity)) {
+      throw new _errors.KinveyError('entity argument must be an object');
+    }
+
+    /**
+     * The kmd properties.
+     *
+     * @private
+     * @type {Object}
+     */
+    this.acl = entity[aclAttribute];
+  }
+
+  _createClass(PrivateAcl, [{
+    key: 'addReader',
+    value: function addReader(user) {
+      var r = this.acl.r || [];
+
+      if (r.indexOf(user) === -1) {
+        r.push(user);
+      }
+
+      this.acl.r = r;
+      return this;
+    }
+  }, {
+    key: 'addReaderGroup',
+    value: function addReaderGroup(group) {
+      var groups = this.acl.groups || {};
+      var r = groups.r || [];
+
+      if (r.indexOf(group) === -1) {
+        r.push(group);
+      }
+
+      groups.r = r;
+      this.acl.groups = groups;
+      return this;
+    }
+  }, {
+    key: 'addWriter',
+    value: function addWriter(user) {
+      var w = this.acl.w || [];
+
+      if (w.indexOf(user) === -1) {
+        w.push(user);
+      }
+
+      this.acl.w = w;
+      return this;
+    }
+  }, {
+    key: 'addWriterGroup',
+    value: function addWriterGroup(group) {
+      var groups = this.acl.groups || {};
+      var w = groups.w || [];
+
+      if (w.indexOf(group) === -1) {
+        w.push(group);
+      }
+
+      groups.w = w;
+      this.acl.groups = groups;
+      return this;
+    }
+  }, {
+    key: 'isGloballyReadable',
+    value: function isGloballyReadable() {
+      return this.acl.gr || false;
+    }
+  }, {
+    key: 'isGloballyWritable',
+    value: function isGloballyWritable() {
+      return this.acl.gw || false;
+    }
+  }, {
+    key: 'removeReader',
+    value: function removeReader(user) {
+      var r = this.acl.r || [];
+      var pos = r.indexOf(user);
+
+      if (pos !== -1) {
+        r.splice(pos, 1);
+      }
+
+      this.acl.r = r;
+      return this;
+    }
+  }, {
+    key: 'removeReaderGroup',
+    value: function removeReaderGroup(group) {
+      var groups = this.acl.groups || {};
+      var r = groups.r || [];
+      var pos = r.indexOf(group);
+
+      if (pos !== -1) {
+        r.splice(pos, 1);
+      }
+
+      groups.r = r;
+      this.acl.groups = groups;
+      return this;
+    }
+  }, {
+    key: 'removeWriter',
+    value: function removeWriter(user) {
+      var w = this.acl.w || [];
+      var pos = w.indexOf(user);
+
+      if (pos !== -1) {
+        w.splice(pos, 1);
+      }
+
+      this.acl.w = w;
+      return this;
+    }
+  }, {
+    key: 'removeWriterGroup',
+    value: function removeWriterGroup(group) {
+      var groups = this.acl.groups || {};
+      var w = groups.w || [];
+      var pos = w.indexOf(group);
+
+      if (pos !== -1) {
+        w.splice(pos, 1);
+      }
+
+      groups.w = w;
+      this.acl.groups = groups;
+      return this;
+    }
+  }, {
+    key: 'toJSON',
+    value: function toJSON() {
+      return (0, _clone2.default)(this.acl, true);
+    }
+  }, {
+    key: 'creator',
+    get: function get() {
+      return this.acl.creator;
+    }
+  }, {
+    key: 'readers',
+    get: function get() {
+      return this.acl.r || [];
+    }
+  }, {
+    key: 'writers',
+    get: function get() {
+      return this.acl.w || [];
+    }
+  }, {
+    key: 'readerGroups',
+    get: function get() {
+      return this.acl.groups ? this.acl.groups.r : [];
+    }
+  }, {
+    key: 'writerGroups',
+    get: function get() {
+      return this.acl.groups ? this.acl.groups.w : [];
+    }
+  }, {
+    key: 'globallyReadable',
+    set: function set(gr) {
+      this.acl.gr = gr || false;
+    }
+  }, {
+    key: 'globallyWritable',
+    set: function set(gw) {
+      this.acl.gw = gw || false;
+    }
+  }]);
+
+  return PrivateAcl;
+}();
+
+/**
+ * Wrapper for reading and setting permissions on an entity level.
+ *
+ * @example
+ * var entity = { _acl: {} };
+ * var acl = new Kinvey.Acl(entity);
+ */
+
+
+var Acl = function () {
+  function Acl(acl) {
+    _classCallCheck(this, Acl);
+
+    this[privateAclSymbol] = new PrivateAcl(acl);
+  }
+
+  /**
+   * Returns the user id of the user that originally created the entity.
+   *
+   * @returns {?string} The user id, or `null` if not set.
+   */
+
+
+  _createClass(Acl, [{
+    key: 'addReader',
+
+
+    /**
+     * Adds a user to the list of users that are explicitly allowed to read the
+     * entity.
+     *
+     * @param   {string}  user  The user id.
+     * @returns {Acl}           The ACL.
+     */
+    value: function addReader(user) {
+      this[privateAclSymbol].addReader(user);
+      return this;
+    }
+
+    /**
+     * Adds a user group to the list of user groups that are explicitly allowed
+     * to read the entity.
+     *
+     * @param   {string}  group   The group id.
+     * @returns {Acl}             The ACL.
+     */
+
+  }, {
+    key: 'addReaderGroup',
+    value: function addReaderGroup(group) {
+      this[privateAclSymbol].addReaderGroup(group);
+      return this;
+    }
+
+    /**
+     * Adds a user to the list of users that are explicitly allowed to modify the
+     * entity.
+     *
+     * @param   {string}  user    The user id.
+     * @returns {Acl}             The ACL.
+     */
+
+  }, {
+    key: 'addWriter',
+    value: function addWriter(user) {
+      this[privateAclSymbol].addWriter(user);
+      return this;
+    }
+
+    /**
+     * Adds a user group to the list of user groups that are explicitly allowed
+     * to modify the entity.
+     *
+     * @param   {string}  group   The group id.
+     * @returns {Acl}             The ACL.
+     */
+
+  }, {
+    key: 'addWriterGroup',
+    value: function addWriterGroup(group) {
+      this[privateAclSymbol].addWriterGroup(group);
+      return this;
+    }
+
+    /**
+     * Returns whether the entity is globally readable.
+     *
+     * @returns {boolean}
+     */
+
+  }, {
+    key: 'isGloballyReadable',
+    value: function isGloballyReadable() {
+      return this[privateAclSymbol].isGloballyReadable();
+    }
+
+    /**
+     * Returns whether the entity is globally writable.
+     *
+     * @returns {boolean}
+     */
+
+  }, {
+    key: 'isGloballyWritable',
+    value: function isGloballyWritable() {
+      return this[privateAclSymbol].isGloballyWritable();
+    }
+
+    /**
+     * Removes a user from the list of users that are explicitly allowed to read
+     * the entity.
+     *
+     * @param   {string}  user    The user id.
+     * @returns {Acl}             The ACL.
+     */
+
+  }, {
+    key: 'removeReader',
+    value: function removeReader(user) {
+      this[privateAclSymbol].removeReader(user);
+      return this;
+    }
+
+    /**
+     * Removes a user group from the list of user groups that are explicitly
+     * allowed to read the entity.
+     *
+     * @param   {string}  group   The group id.
+     * @returns {Acl}             The ACL.
+     */
+
+  }, {
+    key: 'removeReaderGroup',
+    value: function removeReaderGroup(group) {
+      this[privateAclSymbol].removeReaderGroup(group);
+      return this;
+    }
+
+    /**
+     * Removes a user from the list of users that are explicitly allowed to
+     * modify the entity.
+     *
+     * @param   {string}  user    The user id.
+     * @returns {Acl}             The ACL.
+     */
+
+  }, {
+    key: 'removeWriter',
+    value: function removeWriter(user) {
+      this[privateAclSymbol].removeWriter(user);
+      return this;
+    }
+
+    /**
+     * Removes a user group from the list of user groups that are explicitly
+     * allowed to modify the entity.
+     *
+     * @param   {string}  group   The group id.
+     * @returns {Acl}             The ACL.
+     */
+
+  }, {
+    key: 'removeWriterGroup',
+    value: function removeWriterGroup(group) {
+      this[privateAclSymbol].removeWriterGroup(group);
+      return this;
+    }
+
+    /**
+     * Returns JSON representation of the entity ACL.
+     *
+     * @returns {Object} The entity ACL.
+     */
+
+  }, {
+    key: 'toJSON',
+    value: function toJSON() {
+      return this[privateAclSymbol].toJSON();
+    }
+  }, {
+    key: 'creator',
+    get: function get() {
+      return this[privateAclSymbol].creator;
+    }
+
+    /**
+     * Returns the list of users that are explicitly allowed to read the entity.
+     *
+     * @returns {Array} The list of users.
+     */
+
+  }, {
+    key: 'readers',
+    get: function get() {
+      return this[privateAclSymbol].readers;
+    }
+
+    /**
+     * Returns the list of user groups that are explicitly allowed to read the
+     * entity.
+     *
+     * @returns {Array} The list of user groups.
+     */
+
+  }, {
+    key: 'readerGroups',
+    get: function get() {
+      return this[privateAclSymbol].readerGroups;
+    }
+
+    /**
+     * Returns the list of user groups that are explicitly allowed to read the
+     * entity.
+     *
+     * @returns {Array} The list of user groups.
+     */
+
+  }, {
+    key: 'writerGroups',
+    get: function get() {
+      return this[privateAclSymbol].writerGroups;
+    }
+
+    /**
+     * Returns the list of users that are explicitly allowed to modify the
+     * entity.
+     *
+     * @returns {Array} The list of users.
+     */
+
+  }, {
+    key: 'writers',
+    get: function get() {
+      return this[privateAclSymbol].writers;
+    }
+
+    /**
+     * Specifies whether the entity is globally readable.
+     *
+     * @param {boolean} [gr=true] Make the entity globally readable.
+     */
+
+  }, {
+    key: 'globallyReadable',
+    set: function set(gr) {
+      this[privateAclSymbol].globallyReadable = gr;
+    }
+
+    /**
+     * Specifies whether the entity is globally writable.
+     *
+     * @param {boolean} [gw=true] Make the entity globally writable.
+     */
+
+  }, {
+    key: 'globallyWritable',
+    set: function set(gw) {
+      this[privateAclSymbol].globallyWritable = gw;
+    }
+  }]);
+
+  return Acl;
+}();
+
+exports.default = Acl;
+
+}).call(this,require('_process'))
+
+},{"./errors":173,"_process":419,"lodash/clone":347,"lodash/isPlainObject":366}],168:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _errors = require('./errors');
+
+var _query3 = require('./query');
+
+var _query4 = _interopRequireDefault(_query3);
+
+var _clone = require('lodash/clone');
+
+var _clone2 = _interopRequireDefault(_clone);
+
+var _result = require('lodash/result');
+
+var _result2 = _interopRequireDefault(_result);
+
+var _assign = require('lodash/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
+var _forEach = require('lodash/forEach');
+
+var _forEach2 = _interopRequireDefault(_forEach);
+
+var _isObject = require('lodash/isObject');
+
+var _isObject2 = _interopRequireDefault(_isObject);
+
+var _isString = require('lodash/isString');
+
+var _isString2 = _interopRequireDefault(_isString);
+
+var _isFunction = require('lodash/isFunction');
+
+var _isFunction2 = _interopRequireDefault(_isFunction);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var privateAggregationSymbol = Symbol();
+
+var PrivateAggregation = function () {
+  function PrivateAggregation(options) {
+    _classCallCheck(this, PrivateAggregation);
+
+    options = (0, _assign2.default)({
+      query: null,
+      initial: {},
+      key: {},
+      reduce: function () {}.toString()
+    }, options);
+
+    this.query(options.query);
+    this._initial = options.initial;
+    this._key = options.key;
+    this._reduce = options.reduce;
+  }
+
+  _createClass(PrivateAggregation, [{
+    key: 'by',
+    value: function by(field) {
+      this._key[field] = true;
+      return this;
+    }
+  }, {
+    key: 'initial',
+    value: function initial(objectOrKey, value) {
+      if (typeof value === 'undefined' && !(0, _isObject2.default)(objectOrKey)) {
+        throw new _errors.KinveyError('objectOrKey argument must be an Object.');
+      }
+
+      if ((0, _isObject2.default)(objectOrKey)) {
+        this._initial = objectOrKey;
+      } else {
+        this._initial[objectOrKey] = value;
+      }
+
+      return this;
+    }
+  }, {
+    key: 'query',
+    value: function query(_query) {
+      if (_query && !(_query instanceof _query4.default)) {
+        _query = new _query4.default((0, _result2.default)(_query, 'toJSON', _query));
+      }
+
+      this._query = _query;
+      return this;
+    }
+  }, {
+    key: 'process',
+    value: function process() {
+      var documents = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+
+      var groups = {};
+      var response = [];
+      var aggregation = this.toJSON();
+      var reduce = aggregation.reduce.replace(/function[\s\S]*?\([\s\S]*?\)/, '');
+      aggregation.reduce = new Function(['doc', 'out'], reduce); // eslint-disable-line no-new-func
+
+      if (this._query) {
+        documents = this._query.process(documents);
+      }
+
+      (0, _forEach2.default)(documents, function (document) {
+        var group = {};
+
+        for (var name in document) {
+          if (document.hasOwnProperty(name)) {
+            group[name] = document[name];
+          }
+        }
+
+        var key = JSON.stringify(group);
+        if (!groups[key]) {
+          groups[key] = group;
+
+          for (var attr in aggregation.initial) {
+            if (aggregation.initial.hasOwnProperty(attr)) {
+              groups[key][attr] = aggregation.initial[attr];
+            }
+          }
+        }
+
+        aggregation.reduce(document, groups[key]);
+      });
+
+      for (var segment in groups) {
+        if (groups.hasOwnProperty(segment)) {
+          response.push(groups[segment]);
+        }
+      }
+
+      return response;
+    }
+  }, {
+    key: 'reduce',
+    value: function reduce(fn) {
+      if ((0, _isFunction2.default)(fn)) {
+        fn = fn.toString();
+      }
+
+      if (!(0, _isString2.default)(fn)) {
+        throw new _errors.KinveyError('fn argument must be of type function or string.');
+      }
+
+      this._reduce = fn;
+      return this;
+    }
+  }, {
+    key: 'toJSON',
+    value: function toJSON() {
+      var json = {
+        key: this._key,
+        initial: this._initial,
+        reduce: this._reduce,
+        condition: this._query ? this._query.toJSON().filter : {},
+        query: this._query ? this._query.toJSON() : null
+      };
+
+      return (0, _clone2.default)(json, true);
+    }
+  }]);
+
+  return PrivateAggregation;
+}();
+
+var Aggregation = function () {
+  function Aggregation(options) {
+    _classCallCheck(this, Aggregation);
+
+    this[privateAggregationSymbol] = new PrivateAggregation(options);
+  }
+
+  _createClass(Aggregation, [{
+    key: 'by',
+    value: function by(field) {
+      this[privateAggregationSymbol].by(field);
+      return this;
+    }
+  }, {
+    key: 'initial',
+    value: function initial(objectOrKey, value) {
+      this[privateAggregationSymbol].initial(objectOrKey, value);
+      return this;
+    }
+  }, {
+    key: 'process',
+    value: function process(response) {
+      return this[privateAggregationSymbol].process(response);
+    }
+  }, {
+    key: 'query',
+    value: function query(_query2) {
+      this[privateAggregationSymbol].query(_query2);
+      return this;
+    }
+  }, {
+    key: 'reduce',
+    value: function reduce(fn) {
+      this[privateAggregationSymbol].reduce(fn);
+      return this;
+    }
+  }, {
+    key: 'toJSON',
+    value: function toJSON() {
+      return this[privateAggregationSymbol].toJSON();
+    }
+  }], [{
+    key: 'count',
+    value: function count() {
+      var field = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+
+      var aggregation = new Aggregation();
+
+      if (field) {
+        aggregation.by(field);
+      }
+
+      aggregation.initial({ result: 0 });
+      aggregation.reduce(function (doc, out) {
+        out.result += 1;
+      });
+      return aggregation;
+    }
+  }, {
+    key: 'sum',
+    value: function sum() {
+      var field = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+
+      field = field.replace('\'', '\\\'');
+
+      var aggregation = new Aggregation();
+      aggregation.initial({ result: 0 });
+      aggregation.reduce('function(doc, out) { ' + (' out.result += doc["' + field + '"]; ') + '}');
+      return aggregation;
+    }
+  }, {
+    key: 'min',
+    value: function min() {
+      var field = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+
+      field = field.replace('\'', '\\\'');
+
+      var aggregation = new Aggregation();
+      aggregation.initial({ result: Infinity });
+      aggregation.reduce('function(doc, out) { ' + (' out.result = Math.min(out.result, doc["' + field + '"]); ') + '}');
+      return aggregation;
+    }
+  }, {
+    key: 'max',
+    value: function max() {
+      var field = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+
+      field = field.replace('\'', '\\\'');
+
+      var aggregation = new Aggregation();
+      aggregation.initial({ result: -Infinity });
+      aggregation.reduce('function(doc, out) { ' + (' out.result = Math.max(out.result, doc["' + field + '"]); ') + '}');
+      return aggregation;
+    }
+  }, {
+    key: 'average',
+    value: function average() {
+      var field = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+
+      field = field.replace('\'', '\\\'');
+
+      var aggregation = new Aggregation();
+      aggregation.initial({ count: 0, result: 0 });
+      aggregation.reduce('function(doc, out) { ' + (' out.result = (out.result * out.count + doc["' + field + '"]) / (out.count + 1);') + ' out.count += 1;' + '}');
+      return aggregation;
+    }
+  }]);
+
+  return Aggregation;
+}();
+
+exports.default = Aggregation;
+
+},{"./errors":173,"./query":178,"lodash/assign":345,"lodash/clone":347,"lodash/forEach":350,"lodash/isFunction":360,"lodash/isObject":364,"lodash/isString":368,"lodash/result":382}],169:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _errors = require('./errors');
+
+var _enums = require('./enums');
+
+var _localRequest = require('./requests/localRequest');
+
+var _localRequest2 = _interopRequireDefault(_localRequest);
+
+var _networkRequest = require('./requests/networkRequest');
+
+var _networkRequest2 = _interopRequireDefault(_networkRequest);
+
+var _deltaFetchRequest = require('./requests/deltaFetchRequest');
+
+var _deltaFetchRequest2 = _interopRequireDefault(_deltaFetchRequest);
+
+var _url = require('url');
+
+var _url2 = _interopRequireDefault(_url);
+
+var _qs = require('qs');
+
+var _qs2 = _interopRequireDefault(_qs);
+
+var _clone = require('lodash/clone');
+
+var _clone2 = _interopRequireDefault(_clone);
+
+var _assign = require('lodash/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var localNamespace = process.env.KINVEY_LOCAL_NAMESPACE || 'local';
+var activeUserCollectionName = process.env.KINVEY_ACTIVE_USER_COLLECTION || 'activeUser';
+var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
+var kmdAttribute = process.env.KINVEY_KMD_ATTRIBUTE || '_kmd';
+var sharedInstanceSymbol = Symbol();
+
+/**
+ * The Client class stores information regarding your application. You can create mutiple clients
+ * to send requests to different environments on the Kinvey platform.
+ *
+ * @example
+ * var client = new Kinvey.Client({
+ *   appKey: '<appKey>',
+ *   appSecret: '<appSecret>'
+ * });
+ */
+
+var Client = function () {
+  /**
+   * Creates a new instance of the Client class. An `options.appKey` must be provided along with
+   * either and `options.appSecret` or `options.masterSecret`.
+   *
+   * @param {Object}    options                             Options
+   * @param {string}    [options.protocol='https']          Protocl used for requests
+   * @param {string}    [options.host='baas.kinvey.com']    Host used for requests
+   * @param {string}    options.appKey                      App Key
+   * @param {string}    [options.appSecret]                 App Secret
+   * @param {string}    [options.masterSecret]              App Master Secret
+   * @param {string}    [options.encryptionKey]             App Encryption Key
+   *
+   * @throws {KinveyError}  If an `options.appKey` is not provided.
+   * @throws {KinveyError}  If neither an `options.appSecret` or `options.masterSecret` is provided.
+   */
+
+  function Client() {
+    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, Client);
+
+    options = (0, _assign2.default)({
+      protocol: process.env.KINVEY_API_PROTOCOL || 'https',
+      host: process.env.KINVEY_API_HOST || 'baas.kinvey.com'
+    }, options);
+
+    if (!options.appKey && !options.appId) {
+      throw new _errors.KinveyError('No App Key was provided. ' + 'Unable to create a new Client without an App Key.');
+    }
+
+    if (!options.appSecret && !options.masterSecret) {
+      throw new _errors.KinveyError('No App Secret or Master Secret was provided. ' + 'Unable to create a new Client without an App Key.');
+    }
+
+    /**
+     * @type {string}
+     */
+    this.protocol = options.protocol;
+
+    /**
+     * @type {string}
+     */
+    this.host = options.host;
+
+    /**
+     * @type {string}
+     */
+    this.appKey = options.appKey || options.appId;
+
+    /**
+     * @type {string|undefined}
+     */
+    this.appSecret = options.appSecret;
+
+    /**
+     * @type {string|undefined}
+     */
+    this.masterSecret = options.masterSecret;
+
+    /**
+     * @type {string|undefined}
+     */
+    this.encryptionKey = options.encryptionKey;
+  }
+
+  /**
+   * Authenticate through (1) user credentials, (2) Master Secret, or (3) App
+   * Secret.
+   *
+   * @returns {Promise}
+   */
+
+
+  _createClass(Client, [{
+    key: 'allAuth',
+    value: function allAuth() {
+      var _this = this;
+
+      return this.sessionAuth().catch(function () {
+        return _this.basicAuth();
+      });
+    }
+
+    /**
+     * Authenticate through App Secret.
+     *
+     * @returns {Promise}
+     */
+
+  }, {
+    key: 'appAuth',
+    value: function appAuth() {
+      return Promise.resolve({
+        scheme: 'Basic',
+        username: this.appKey,
+        password: this.appSecret
+      });
+    }
+
+    /**
+     * Authenticate through (1) Master Secret, or (2) App Secret.
+     *
+     * @returns {Promise}
+     */
+
+  }, {
+    key: 'basicAuth',
+    value: function basicAuth() {
+      var _this2 = this;
+
+      return this.masterAuth().catch(function () {
+        return _this2.appAuth();
+      });
+    }
+
+    /**
+     * Authenticate through (1) user credentials, or (2) Master Secret.
+     *
+     * @returns {Promise}
+     */
+
+  }, {
+    key: 'defaultAuth',
+    value: function defaultAuth() {
+      var _this3 = this;
+
+      return this.sessionAuth().catch(function (err) {
+        return _this3.masterAuth().catch(function () {
+          return Promise.reject(err);
+        });
+      });
+    }
+
+    /**
+     * Authenticate through Master Secret.
+     *
+     * @returns {Promise}
+     */
+
+  }, {
+    key: 'masterAuth',
+    value: function masterAuth() {
+      if (!this.appKey || !this.masterSecret) {
+        var error = new Error('Missing client credentials');
+        return Promise.reject(error);
+      }
+
+      var promise = Promise.resolve({
+        scheme: 'Basic',
+        username: this.appKey,
+        password: this.masterSecret
+      });
+
+      return promise;
+    }
+
+    /**
+     * Do not authenticate.
+     *
+     * @returns {Promise}
+     */
+
+  }, {
+    key: 'noAuth',
+    value: function noAuth() {
+      return Promise.resolve(null);
+    }
+
+    /**
+     * Authenticate through user credentials.
+     *
+     * @returns {Promise}
+     */
+
+  }, {
+    key: 'sessionAuth',
+    value: function sessionAuth() {
+      return this.getActiveUser().then(function (activeUser) {
+        if (!activeUser) {
+          throw new Error('There is not an active user.');
+        }
+
+        return {
+          scheme: 'Kinvey',
+          credentials: activeUser[kmdAttribute].authtoken
+        };
+      });
+    }
+  }, {
+    key: 'getActiveUser',
+    value: function getActiveUser() {
+      var _this4 = this;
+
+      var promise = Promise.resolve().then(function () {
+        return _this4.executeLocalRequest({
+          method: _enums.HttpMethod.GET,
+          pathname: '/' + localNamespace + '/' + _this4.appKey + '/' + activeUserCollectionName
+        });
+      }).then(function (response) {
+        var data = response.data;
+
+        if (data.length === 0) {
+          return null;
+        }
+
+        return data[0];
+      }).catch(function (err) {
+        if (err instanceof _errors.NotFoundError) {
+          return null;
+        }
+
+        throw err;
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'setActiveUser',
+    value: function setActiveUser(user) {
+      var _this5 = this;
+
+      var promise = this.getActiveUser().then(function (activeUser) {
+        if (activeUser) {
+          return _this5.executeLocalRequest({
+            method: _enums.HttpMethod.DELETE,
+            pathname: '/' + localNamespace + '/' + _this5.appKey + '/' + activeUserCollectionName + '/' + activeUser[idAttribute]
+          }).then(function () {
+            _this5.session = null;
+          });
+        }
+      }).then(function () {
+        if (user) {
+          return _this5.executeLocalRequest({
+            method: _enums.HttpMethod.POST,
+            pathname: '/' + localNamespace + '/' + _this5.appKey + '/' + activeUserCollectionName,
+            data: user
+          });
+        }
+      }).then(function (response) {
+        return response ? response.data : null;
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'executeLocalRequest',
+    value: function executeLocalRequest() {
+      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      options = (0, _assign2.default)({
+        method: _enums.HttpMethod.GET,
+        pathname: '/',
+        flags: {
+          _: Math.random().toString(36).substr(2)
+        }
+      }, options);
+      options.flags = _qs2.default.parse(options.flags);
+
+      var request = new _localRequest2.default({
+        method: options.method,
+        headers: options.headers,
+        url: _url2.default.format({
+          protocol: this.protocol,
+          host: this.host,
+          pathname: options.pathname,
+          query: options.flags
+        }),
+        properties: options.properties,
+        query: options.query,
+        data: options.data,
+        timeout: options.timeout
+      });
+      return request.execute();
+    }
+  }, {
+    key: 'executeNetworkRequest',
+    value: function executeNetworkRequest() {
+      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      options = (0, _assign2.default)({
+        method: _enums.HttpMethod.GET,
+        pathname: '/',
+        flags: {
+          _: Math.random().toString(36).substr(2)
+        }
+      }, options);
+      options.flags = _qs2.default.parse(options.flags);
+
+      var request = new _networkRequest2.default({
+        method: options.method,
+        headers: options.headers,
+        auth: options.auth,
+        url: _url2.default.format({
+          protocol: this.protocol,
+          host: this.host,
+          pathname: options.pathname,
+          query: options.flags
+        }),
+        properties: options.properties,
+        query: options.query,
+        data: options.data,
+        timeout: options.timeout
+      });
+      return request.execute();
+    }
+  }, {
+    key: 'executeDeltaFetchRequest',
+    value: function executeDeltaFetchRequest() {
+      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      options = (0, _assign2.default)({
+        method: _enums.HttpMethod.GET,
+        pathname: '/',
+        flags: {
+          _: Math.random().toString(36).substr(2)
+        }
+      }, options);
+      options.flags = _qs2.default.parse(options.flags);
+
+      var request = new _deltaFetchRequest2.default({
+        method: options.method,
+        headers: options.headers,
+        auth: options.auth,
+        url: _url2.default.format({
+          protocol: this.protocol,
+          host: this.host,
+          pathname: options.pathname,
+          query: options.flags
+        }),
+        properties: options.properties,
+        query: options.query,
+        data: options.data,
+        timeout: options.timeout
+      });
+      return request.execute();
+    }
+
+    /**
+     * Returns an object containing all the information for this Client.
+     *
+     * @return {Object} JSON
+     */
+
+  }, {
+    key: 'toJSON',
+    value: function toJSON() {
+      var json = {
+        protocol: this.protocol,
+        host: this.host,
+        appKey: this.appKey,
+        appSecret: this.appSecret,
+        masterSecret: this.masterSecret,
+        encryptionKey: this.encryptionKey
+      };
+
+      return (0, _clone2.default)(json, true);
+    }
+
+    /**
+     * Initializes the library by creating a new instance of the
+     * Client class and storing it as a shared instance.
+     *
+     * @param {Object}    options                             Options
+     * @param {string}    [options.protocol='https']          Protocl used for requests
+     * @param {string}    [options.host='baas.kinvey.com']    Host used for requests
+     * @param {string}    options.appKey                      App Key
+     * @param {string}    [options.appSecret]                 App Secret
+     * @param {string}    [options.masterSecret]              App Master Secret
+     * @param {string}    [options.encryptionKey]             App Encryption Key
+     *
+     * @throws {KinveyError}  If an `options.appKey` is not provided.
+     * @throws {KinveyError}  If neither an `options.appSecret` or `options.masterSecret` is provided.
+     *
+     * @return {Client}  An instance of Client.
+     *
+     * @example
+     * var client = Kinvey.Client.init({
+     *   appKey: '<appKey>',
+     *   appSecret: '<appSecret>'
+     * });
+     */
+
+  }], [{
+    key: 'init',
+    value: function init(options) {
+      var client = new Client(options);
+      Client[sharedInstanceSymbol] = client;
+      return client;
+    }
+
+    /**
+     * Returns the shared client instance used by the library.
+     *
+     * @throws {KinveyError} If `Kinvey.init()` has not been called.
+     *
+     * @return {Client} The shared instance.
+     */
+
+  }, {
+    key: 'sharedInstance',
+    value: function sharedInstance() {
+      var client = Client[sharedInstanceSymbol];
+
+      if (!client) {
+        throw new _errors.KinveyError('You have not initialized the library. ' + 'Please call Kinvey.init() to initialize the library.');
+      }
+
+      return client;
+    }
+  }]);
+
+  return Client;
+}();
+
+exports.default = Client;
+
+}).call(this,require('_process'))
+
+},{"./enums":172,"./errors":173,"./requests/deltaFetchRequest":193,"./requests/localRequest":194,"./requests/networkRequest":195,"_process":419,"lodash/assign":345,"lodash/clone":347,"qs":427,"url":507}],170:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _client = require('./client');
+
+var _client2 = _interopRequireDefault(_client);
+
+var _enums = require('./enums');
+
+var _errors = require('./errors');
+
+var _isString = require('lodash/isString');
+
+var _isString2 = _interopRequireDefault(_isString);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var rpcNamespace = process.env.KINVEY_RPC_NAMESPACE || 'rpc';
+
+/**
+ * Executes a custom command.
+ */
+
+var Command = function () {
+  function Command() {
+    _classCallCheck(this, Command);
+  }
+
+  _createClass(Command, null, [{
+    key: 'execute',
+
+    /**
+     * Execute a custom command. A promise will be returned that will be resolved
+     * with the result of the command or rejected with an error.
+     *
+     * @param   {String}          command                           Command to execute.
+     * @param   {Object}          [args]                            Command arguments
+     * @param   {Object}          [options]                         Options
+     * @param   {Properties}      [options.properties]              Custom properties to send with
+     *                                                              the request.
+     * @param   {Number}          [options.timeout]                 Timeout for the request.
+     * @return  {Promise}                                           Promise
+     *
+     * @example
+     * var promise = Kinvey.Command.execute('myCustomCommand').then(function(data) {
+     *   ...
+     * }).catch(function(error) {
+     *   ...
+     * });
+     */
+    value: function execute(command, args) {
+      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+      var client = _client2.default.sharedInstance();
+
+      if (!command) {
+        throw new _errors.KinveyError('A command is required.');
+      }
+
+      if (!(0, _isString2.default)(command)) {
+        throw new _errors.KinveyError('Command must be a string.');
+      }
+
+      return client.executeNetworkRequest({
+        method: _enums.HttpMethod.POST,
+        pathname: '/' + rpcNamespace + '/' + options.client.appKey + '/custom/' + command,
+        properties: options.properties,
+        auth: client.defaultAuth(),
+        data: args,
+        timeout: options.timeout
+      }).then(function (response) {
+        return response.data;
+      });
+    }
+  }]);
+
+  return Command;
+}();
+
+exports.default = Command;
+
+}).call(this,require('_process'))
+
+},{"./client":169,"./enums":172,"./errors":173,"_process":419,"lodash/isString":368}],171:[function(require,module,exports){
+(function (process,global){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _package = require('../package.json');
+
+var _package2 = _interopRequireDefault(_package);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * @private
+ */
+
+var Device = function () {
+  function Device() {
+    _classCallCheck(this, Device);
+  }
+
+  _createClass(Device, [{
+    key: 'isCordova',
+    value: function isCordova() {
+      try {
+        return typeof global.cordova !== 'undefined' && typeof global.device !== 'undefined';
+      } catch (err) {
+        // Catch any errors
+      }
+
+      return false;
+    }
+  }, {
+    key: 'isHTML',
+    value: function isHTML() {
+      try {
+        return typeof window !== 'undefined';
+      } catch (err) {
+        // Catch any errors
+      }
+
+      return false;
+    }
+  }, {
+    key: 'isNode',
+    value: function isNode() {
+      try {
+        return Object.prototype.toString.call(global.process) === '[object process]';
+      } catch (err) {
+        // Catch any errors
+      }
+
+      return false;
+    }
+  }, {
+    key: 'isPhoneGap',
+    value: function isPhoneGap() {
+      return this.isCordova();
+    }
+  }, {
+    key: 'isTitanium',
+    value: function isTitanium() {
+      return typeof global.Titanium !== 'undefined';
+    }
+  }, {
+    key: 'toJSON',
+    value: function toJSON() {
+      return {
+        os: this.os,
+        platform: this.platform,
+        library: this.library
+      };
+    }
+  }, {
+    key: 'os',
+    get: function get() {
+      var name = 'mobileweb';
+      var version = undefined;
+
+      if (this.isCordova()) {
+        name = global.device.platform;
+        version = global.device.version;
+      } else if (this.isTitanium()) {
+        var platform = global.Titanium.Platform;
+        name = platform.getName() === 'iPhone OS' ? 'ios' : platform.getName();
+        version = platform.getVersion();
+      }
+
+      return {
+        name: name.toLowerCase(),
+        version: version
+      };
+    }
+  }, {
+    key: 'platform',
+    get: function get() {
+      var name = undefined;
+      var version = undefined;
+
+      if (this.isCordova()) {
+        name = 'cordova';
+        version = global.device.cordova;
+      } else if (this.isHTML()) {
+        var userAgent = global.navigator.userAgent.toLowerCase();
+        var rChrome = /(chrome)\/([\w]+)/;
+        var rFirefox = /(firefox)\/([\w.]+)/;
+        var rIE = /(msie) ([\w.]+)/i;
+        var rOpera = /(opera)(?:.*version)?[ \/]([\w.]+)/;
+        var rSafari = /(safari)\/([\w.]+)/;
+        var browser = rChrome.exec(userAgent) || rFirefox.exec(userAgent) || rIE.exec(userAgent) || rOpera.exec(userAgent) || rSafari.exec(userAgent) || [];
+        name = browser[1];
+        version = browser[2];
+      } else if (this.isNode()) {
+        name = global.process.title;
+        version = global.process.version;
+      } else if (this.isTitanium()) {
+        name = 'titanium';
+        version = global.Titanium.getVersion();
+      }
+
+      return {
+        name: name.toLowerCase(),
+        version: version
+      };
+    }
+  }, {
+    key: 'library',
+    get: function get() {
+      return {
+        build: process.env.KINVEY_PLATFORM_ENV || 'html5',
+        version: _package2.default.version
+      };
+    }
+  }]);
+
+  return Device;
+}();
+
+exports.default = Device;
+
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"../package.json":166,"_process":419}],172:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Enum for Mobile Identity Connect authorization grants.
+ */
+var AuthorizationGrant = {
+  AuthorizationCodeLoginPage: 'AuthorizationCodeLoginPage',
+  AuthorizationCodeAPI: 'AuthorizationCodeAPI'
+};
+Object.freeze(AuthorizationGrant);
+exports.AuthorizationGrant = AuthorizationGrant;
+
+/**
+ * Enum for DataStore types.
+ */
+
+var DataStoreType = {
+  Sync: 'Sync',
+  Cache: 'Cache',
+  Network: 'Network'
+};
+Object.freeze(DataStoreType);
+exports.DataStoreType = DataStoreType;
+
+/**
+ * @private
+ * Enum for Http Methods.
+ */
+
+var HttpMethod = {
+  GET: 'GET',
+  POST: 'POST',
+  PATCH: 'PATCH',
+  PUT: 'PUT',
+  DELETE: 'DELETE'
+};
+Object.freeze(HttpMethod);
+exports.HttpMethod = HttpMethod;
+
+/**
+ * Enum for Social Identities.
+ */
+
+var SocialIdentity = {
+  Facebook: 'facebook',
+  Google: 'google',
+  LinkedIn: 'linkedin'
+};
+Object.freeze(SocialIdentity);
+exports.SocialIdentity = SocialIdentity;
+
+/**
+ * @provate
+ * Enum for Status Codes.
+ */
+
+var StatusCode = {
+  Ok: 200,
+  Created: 201,
+  RedirectTemporarily: 301,
+  RedirectPermanetly: 302,
+  NotFound: 404,
+  ServerError: 500
+};
+Object.freeze(StatusCode);
+exports.StatusCode = StatusCode;
+
+},{}],173:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.NoResponseError = exports.NotFoundError = exports.NetworkConnectionError = exports.KinveyError = exports.InvalidCredentialsError = exports.InsufficientCredentialsError = exports.ActiveUserError = undefined;
+
+var _util = require('util');
+
+var _util2 = _interopRequireDefault(_util);
+
+var _isFunction = require('lodash/isFunction');
+
+var _isFunction2 = _interopRequireDefault(_isFunction);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * @private
+ */
+Error.extend = function extend(name) {
+  var SubType = function SubType(message, debug) {
+    if (!(this instanceof SubType)) {
+      return new SubType(message, debug);
+    }
+
+    this.name = name;
+    this.message = message;
+    this.description = message;
+    this.debug = debug;
+
+    if ((0, _isFunction2.default)(Error.captureStackTrace)) {
+      Error.captureStackTrace(this, this.constructor);
+    }
+  };
+
+  _util2.default.inherits(SubType, this);
+
+  SubType.prototype.toString = function toString() {
+    return this.name + ': ' + _util2.default.inspect(this.message);
+  };
+
+  SubType.extend = this.extend;
+  return SubType;
+};
+
+var ActiveUserError = exports.ActiveUserError = Error.extend('ActiveUserError');
+var InsufficientCredentialsError = exports.InsufficientCredentialsError = Error.extend('InsufficientCredentialsError');
+var InvalidCredentialsError = exports.InvalidCredentialsError = Error.extend('InvalidCredentialsError');
+var KinveyError = exports.KinveyError = Error.extend('KinveyError');
+var NetworkConnectionError = exports.NetworkConnectionError = Error.extend('NetworkConnectionError');
+var NotFoundError = exports.NotFoundError = Error.extend('NotFoundError');
+var NoResponseError = exports.NoResponseError = Error.extend('NoResponseError');
+
+},{"lodash/isFunction":360,"util":511}],174:[function(require,module,exports){
+(function (process){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _aggregation = require('./aggregation');
+
+var _aggregation2 = _interopRequireDefault(_aggregation);
+
+var _client = require('./client');
+
+var _client2 = _interopRequireDefault(_client);
+
+var _command = require('./command');
+
+var _command2 = _interopRequireDefault(_command);
+
+var _filesStore = require('./stores/filesStore');
+
+var _filesStore2 = _interopRequireDefault(_filesStore);
+
+var _log = require('./log');
+
+var _log2 = _interopRequireDefault(_log);
+
+var _metadata = require('./metadata');
+
+var _metadata2 = _interopRequireDefault(_metadata);
+
+var _query = require('./query');
+
+var _query2 = _interopRequireDefault(_query);
+
+var _dataStore = require('./stores/dataStore');
+
+var _dataStore2 = _interopRequireDefault(_dataStore);
+
+var _sync = require('./sync');
+
+var _sync2 = _interopRequireDefault(_sync);
+
+var _user = require('./user');
+
+var _enums = require('./enums');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var appdataNamespace = process.env.KINVEY_DATASTORE_NAMESPACE || 'appdata';
+
+var Kinvey = function () {
+  function Kinvey() {
+    _classCallCheck(this, Kinvey);
+  }
+
+  _createClass(Kinvey, null, [{
+    key: 'init',
+
+    /**
+     * Initializes the library with your app's information.
+     *
+     * @param   {Object}        options                         Options
+     * @param   {string}        options.appKey                  My app key
+     * @param   {string}        [options.appSecret]             My app secret
+     * @param   {string}        [options.masterSecret]          My app's master secret
+     * @param   {string}        [options.encryptionKey]         My app's encryption key
+     * @param   {string}        [options.protocol]              The protocol of the client.
+     * @param   {string}        [options.host]                  The host of the client.
+     * @return  {Client}                                        An instance of Client.
+     *
+     * @throws  {KinveyError}  If an `options.appKey` is not provided.
+     * @throws  {KinveyError}  If neither an `options.appSecret` or `options.masterSecret` is provided.
+     *
+     * @example
+     * var client = Kinvey.init({
+     *   appKey: 'appKey',
+     *   appSecret: 'appSecret'
+     * });
+     */
+    value: function init(options) {
+      var client = _client2.default.init(options);
+      return client;
+    }
+
+    /**
+     * Pings the Kinvey service.
+     *
+     * @returns {Promise} The response.
+     */
+
+  }, {
+    key: 'ping',
+    value: function ping() {
+      var client = _client2.default.sharedInstance();
+
+      return client.executeNetworkRequest({
+        method: _enums.HttpMethod.GET,
+        auth: client.allAuth(),
+        pathname: appdataNamespace + '/' + client.appKey
+      }).then(function (response) {
+        return response.data;
+      });
+    }
+  }]);
+
+  return Kinvey;
+}();
+
+Kinvey.Aggregation = _aggregation2.default;
+Kinvey.AuthorizationGrant = _enums.AuthorizationGrant;
+Kinvey.Command = _command2.default;
+Kinvey.DataStore = _dataStore2.default;
+Kinvey.DataStoreType = _enums.DataStoreType;
+Kinvey.FileStore = _filesStore2.default;
+Kinvey.Log = _log2.default;
+Kinvey.Metadata = _metadata2.default;
+Kinvey.Promise = Promise;
+Kinvey.Query = _query2.default;
+Kinvey.SocialIdentity = _enums.SocialIdentity;
+Kinvey.Sync = _sync2.default;
+Kinvey.User = _user.User;
+module.exports = Kinvey;
+
+}).call(this,require('_process'))
+
+},{"./aggregation":168,"./client":169,"./command":170,"./enums":172,"./log":175,"./metadata":176,"./query":178,"./stores/dataStore":200,"./stores/filesStore":201,"./sync":204,"./user":205,"_process":419}],175:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _loglevel = require('loglevel');
+
+var _loglevel2 = _interopRequireDefault(_loglevel);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var originalFactory = _loglevel2.default.methodFactory;
+
+_loglevel2.default.methodFactory = function methodFactory(methodName, logLevel, loggerName) {
+  var rawMethod = originalFactory(methodName, logLevel, loggerName);
+
+  return function log(message) {
+    rawMethod('Kinvey: ' + message);
+  };
+};
+
+_loglevel2.default.setLevel(_loglevel2.default.levels.ERROR);
+exports.default = _loglevel2.default;
+
+},{"loglevel":390}],176:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _errors = require('./errors');
+
+var _clone = require('lodash/clone');
+
+var _clone2 = _interopRequireDefault(_clone);
+
+var _isPlainObject = require('lodash/isPlainObject');
+
+var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var kmdAttribute = process.env.KINVEY_KMD_ATTRIBUTE || '_kmd';
+var privateMetadataSymbol = Symbol();
+
+/**
+ * @private
+ */
+
+var PrivateMetadata = function () {
+  function PrivateMetadata() {
+    var entity = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, PrivateMetadata);
+
+    if (!(0, _isPlainObject2.default)(entity)) {
+      throw new _errors.KinveyError('entity argument must be an object');
+    }
+
+    /**
+     * The kmd properties.
+     *
+     * @private
+     * @type {Object}
+     */
+    this.kmd = entity[kmdAttribute];
+
+    /**
+     * The entity.
+     *
+     * @private
+     * @type {Object}
+     */
+    this.entity = entity;
+  }
+
+  _createClass(PrivateMetadata, [{
+    key: 'toJSON',
+    value: function toJSON() {
+      return (0, _clone2.default)(this.kmd, true);
+    }
+  }, {
+    key: 'createdAt',
+    get: function get() {
+      if (this.kmd.ect) {
+        return Date.parse(this.kmd.ect);
+      }
+
+      return undefined;
+    }
+  }, {
+    key: 'emailVerification',
+    get: function get() {
+      return this.kmd.emailVerification.status;
+    }
+  }, {
+    key: 'lastModified',
+    get: function get() {
+      if (this.kmd.lmt) {
+        return Date.parse(this.kmd.lmt);
+      }
+
+      return undefined;
+    }
+  }, {
+    key: 'authtoken',
+    get: function get() {
+      return this.kmd.authtoken;
+    },
+    set: function set(authtoken) {
+      this.kmd.authtoken = authtoken;
+    }
+  }]);
+
+  return PrivateMetadata;
+}();
+
+/**
+ * Wrapper for accessing the `_kmd` properties of an entity.
+ */
+
+
+var Metadata = function () {
+  function Metadata(entity) {
+    _classCallCheck(this, Metadata);
+
+    this[privateMetadataSymbol] = new PrivateMetadata(entity);
+  }
+
+  /**
+   * Returns the date when the entity was created.
+   *
+   * @returns {?Date} Created at date, or `null` if not set.
+   */
+
+
+  _createClass(Metadata, [{
+    key: 'toJSON',
+
+
+    /**
+     * Returns JSON representation of the entity.
+     *
+     * @returns {Object} The metadata.
+     */
+    value: function toJSON() {
+      return this[privateMetadataSymbol].toJSON();
+    }
+  }, {
+    key: 'createdAt',
+    get: function get() {
+      return this[privateMetadataSymbol].createdAt;
+    }
+
+    /**
+    * Returns the email verification status.
+    *
+    * @returns {?Object} The email verification status, or `null` if not set.
+    */
+
+  }, {
+    key: 'emailVerification',
+    get: function get() {
+      return this[privateMetadataSymbol].emailVerification;
+    }
+
+    /**
+     * Returns the date when the entity was last modified.
+     *
+     * @returns {?Date} Last modified date, or `null` if not set.
+     */
+
+  }, {
+    key: 'lastModified',
+    get: function get() {
+      return this[privateMetadataSymbol].lastModified;
+    }
+  }, {
+    key: 'lmt',
+    get: function get() {
+      return this.lastModified;
+    }
+  }, {
+    key: 'authtoken',
+    get: function get() {
+      return this[privateMetadataSymbol].authtoken;
+    },
+    set: function set(authtoken) {
+      this[privateMetadataSymbol].authtoken = authtoken;
+    }
+  }]);
+
+  return Metadata;
+}();
+
+exports.default = Metadata;
+
+}).call(this,require('_process'))
+
+},{"./errors":173,"_process":419,"lodash/clone":347,"lodash/isPlainObject":366}],177:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _enums = require('./enums');
+
+var _errors = require('./errors');
+
+var _networkRequest = require('./requests/networkRequest');
+
+var _networkRequest2 = _interopRequireDefault(_networkRequest);
+
+var _device = require('./device');
+
+var _device2 = _interopRequireDefault(_device);
+
+var _client = require('./client');
+
+var _client2 = _interopRequireDefault(_client);
+
+var _popup = require('./utils/popup');
+
+var _popup2 = _interopRequireDefault(_popup);
+
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
+var _url = require('url');
+
+var _url2 = _interopRequireDefault(_url);
+
+var _isString = require('lodash/isString');
+
+var _isString2 = _interopRequireDefault(_isString);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var authPathname = process.env.KINVEY_MIC_AUTH_PATHNAME || '/oauth/auth';
+var tokenPathname = process.env.KINVEY_MIC_TOKEN_PATHNAME || '/oauth/token';
+
+/**
+ * @private
+ */
+
+var MobileIdentityConnect = function () {
+  function MobileIdentityConnect() {
+    _classCallCheck(this, MobileIdentityConnect);
+
+    var sharedClient = _client2.default.sharedInstance();
+    this.client = new _client2.default({
+      protocol: 'https:',
+      host: 'auth.kinvey.com',
+      appKey: sharedClient.appKey,
+      appSecret: sharedClient.appSecret,
+      masterSecret: sharedClient.masterSecret,
+      encryptionKey: sharedClient.encryptionKey
+    });
+  }
+
+  _createClass(MobileIdentityConnect, [{
+    key: 'login',
+    value: function login(redirectUri) {
+      var _this = this;
+
+      var authorizationGrant = arguments.length <= 1 || arguments[1] === undefined ? _enums.AuthorizationGrant.AuthorizationCodeLoginPage : arguments[1];
+      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+      var clientId = this.client.appKey;
+      var device = new _device2.default();
+
+      var promise = Promise.resolve().then(function () {
+        if (authorizationGrant === _enums.AuthorizationGrant.AuthorizationCodeLoginPage && !device.isNode()) {
+          // Step 1: Request a code
+          return _this.requestCodeWithPopup(clientId, redirectUri, options);
+        } else if (authorizationGrant === _enums.AuthorizationGrant.AuthorizationCodeAPI && device.isNode()) {
+          // Step 1a: Request a temp login url
+          return _this.requestTempLoginUrl(clientId, redirectUri, options).then(function (url) {
+            // Step 1b: Request a code
+            return _this.requestCodeWithUrl(url, clientId, redirectUri, options);
+          });
+        }
+
+        throw new _errors.KinveyError('The authorization grant ' + authorizationGrant + ' is unsupported. ' + 'Please use a supported authorization grant.');
+      }).then(function (code) {
+        // Step 3: Request a token
+        return _this.requestToken(code, clientId, redirectUri, options);
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'requestTempLoginUrl',
+    value: function requestTempLoginUrl(clientId, redirectUri) {
+      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+      var pathname = '/';
+
+      if (options.version) {
+        var version = options.version;
+
+        if (!(0, _isString2.default)(version)) {
+          version = String(version);
+        }
+
+        pathname = _path2.default.join(pathname, version.indexOf('v') === 0 ? version : 'v' + version);
+      }
+
+      return this.client.executeNetworkRequest({
+        method: _enums.HttpMethod.POST,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        pathname: _path2.default.join(pathname, authPathname),
+        properties: options.properties,
+        data: {
+          client_id: clientId,
+          redirect_uri: redirectUri,
+          response_type: 'code'
+        }
+      }).then(function (response) {
+        return response.data.temp_login_uri;
+      });
+    }
+  }, {
+    key: 'requestCodeWithPopup',
+    value: function requestCodeWithPopup(clientId, redirectUri) {
+      var _this2 = this;
+
+      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+      var promise = Promise.resolve().then(function () {
+        var pathname = '/';
+
+        if (options.version) {
+          var version = options.version;
+
+          if (!(0, _isString2.default)(version)) {
+            version = String(version);
+          }
+
+          pathname = _path2.default.join(pathname, version.indexOf('v') === 0 ? version : 'v' + version);
+        }
+
+        var popup = new _popup2.default(_url2.default.format({
+          protocol: _this2.client.protocl,
+          host: _this2.client.host,
+          pathname: _path2.default.join(pathname, authPathname),
+          query: {
+            client_id: clientId,
+            redirect_uri: redirectUri,
+            response_type: 'code'
+          }
+        }));
+        return popup.open();
+      }).then(function (popup) {
+        return new Promise(function (resolve, reject) {
+          function loadHandler(loadedUrl) {
+            if (loadedUrl.indexOf(redirectUri) === 0) {
+              popup.removeAllListeners();
+              popup.close();
+              resolve(_url2.default.parse(loadedUrl, true).query.code);
+            }
+          }
+
+          function closeHandler() {
+            popup.removeAllListeners();
+            reject(new Error('Login has been cancelled.'));
+          }
+
+          popup.on('load', loadHandler);
+          popup.on('close', closeHandler);
+        });
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'requestCodeWithUrl',
+    value: function requestCodeWithUrl(loginUrl, clientId, redirectUri) {
+      var options = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+
+      var promise = Promise.resolve().then(function () {
+        var request = new _networkRequest2.default({
+          method: _enums.HttpMethod.POST,
+          url: loginUrl,
+          properties: options.properties,
+          data: {
+            client_id: clientId,
+            redirect_uri: redirectUri,
+            response_type: 'code',
+            username: options.username,
+            password: options.password
+          },
+          followRedirect: false
+        });
+        request.setHeader('Content-Type', 'application/x-www-form-urlencoded');
+        return request.execute();
+      }).then(function (response) {
+        var location = response.getHeader('location');
+
+        if (location) {
+          return _url2.default.parse(location, true).query.code;
+        }
+
+        throw new _errors.KinveyError('Unable to authorize user with username ' + options.username + '.');
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'requestToken',
+    value: function requestToken(code, clientId, redirectUri) {
+      var options = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+
+      return this.client.executeNetworkRequest({
+        method: _enums.HttpMethod.POST,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        pathname: tokenPathname,
+        properties: options.properties,
+        auth: this.client.appAuth(),
+        data: {
+          grant_type: 'authorization_code',
+          client_id: clientId,
+          redirect_uri: redirectUri,
+          code: code
+        }
+      }).then(function (response) {
+        return response.data;
+      });
+    }
+  }], [{
+    key: 'login',
+    value: function login(redirectUri, authorizationGrant, options) {
+      var mic = new MobileIdentityConnect();
+      return mic.login(redirectUri, authorizationGrant, options);
+    }
+  }, {
+    key: 'identity',
+    get: function get() {
+      return process.env.KINVEY_MIC_IDENTITY || 'kinveyAuth';
+    }
+  }]);
+
+  return MobileIdentityConnect;
+}();
+
+exports.default = MobileIdentityConnect;
+
+}).call(this,require('_process'))
+
+},{"./client":169,"./device":171,"./enums":172,"./errors":173,"./requests/networkRequest":195,"./utils/popup":207,"_process":419,"lodash/isString":368,"path":414,"url":507}],178:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _object = require('./utils/object');
+
+var _sift = require('sift');
+
+var _sift2 = _interopRequireDefault(_sift);
+
+var _clone = require('lodash/clone');
+
+var _clone2 = _interopRequireDefault(_clone);
+
+var _assign = require('lodash/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
+var _isArray = require('lodash/isArray');
+
+var _isArray2 = _interopRequireDefault(_isArray);
+
+var _isNumber = require('lodash/isNumber');
+
+var _isNumber2 = _interopRequireDefault(_isNumber);
+
+var _isString = require('lodash/isString');
+
+var _isString2 = _interopRequireDefault(_isString);
+
+var _isObject = require('lodash/isObject');
+
+var _isObject2 = _interopRequireDefault(_isObject);
+
+var _isRegExp = require('lodash/isRegExp');
+
+var _isRegExp2 = _interopRequireDefault(_isRegExp);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var privateQuerySymbol = Symbol();
+
+var PrivateQuery = function () {
+  function PrivateQuery(options) {
+    _classCallCheck(this, PrivateQuery);
+
+    options = (0, _assign2.default)({
+      fields: [],
+      filter: {},
+      sort: {},
+      limit: null,
+      skip: 0
+    }, options);
+
+    /**
+     * Fields to select.
+     *
+     * @type {Array}
+     */
+    this._fields = options.fields;
+
+    /**
+     * The MongoDB query.
+     *
+     * @type {Object}
+     */
+    this._filter = options.filter;
+
+    /**
+     * The sorting order.
+     *
+     * @type {Object}
+     */
+    this._sort = options.sort;
+
+    /**
+     * Number of documents to select.
+     *
+     * @type {?Number}
+     */
+    this._limit = options.limit;
+
+    /**
+     * Number of documents to skip from the start.
+     *
+     * @type {Number}
+     */
+    this._skip = options.skip;
+
+    /**
+     * Maintain reference to the parent query in case the query is part of a
+     * join.
+     *
+     * @type {?PrivateQuery}
+     */
+    this.parent = null;
+  }
+
+  /**
+   * Adds an equal to filter to the query. Requires `field` to equal `value`.
+   * Any existing filters on `field` will be discarded.
+   * http://docs.mongodb.org/manual/reference/operators/#comparison
+   *
+   * @param   {String}        field     Field.
+   * @param   {*}             value     Value.
+   * @returns {Query}                   The query.
+   */
+
+
+  _createClass(PrivateQuery, [{
+    key: 'equalTo',
+    value: function equalTo(field, value) {
+      this._filter[field] = value;
+      return this;
+    }
+
+    /**
+     * Adds a contains filter to the query. Requires `field` to contain at least
+     * one of the members of `list`.
+     * http://docs.mongodb.org/manual/reference/operator/in/
+     *
+     * @param   {String}        field     Field.
+     * @param   {Array}         values    List of values.
+     * @throws  {Error}                   `values` must be of type: `Array`.
+     * @returns {Query}                   The query.
+     */
+
+  }, {
+    key: 'contains',
+    value: function contains(field, values) {
+      if (!(0, _isArray2.default)(values)) {
+        values = [values];
+      }
+
+      return this.addFilter(field, '$in', values);
+    }
+
+    /**
+     * Adds a contains all filter to the query. Requires `field` to contain all
+     * members of `list`.
+     * http://docs.mongodb.org/manual/reference/operator/all/
+     *
+     * @param   {String}  field     Field.
+     * @param   {Array}   values    List of values.
+     * @throws  {Error}             `values` must be of type: `Array`.
+     * @returns {Query}             The query.
+     */
+
+  }, {
+    key: 'containsAll',
+    value: function containsAll(field, values) {
+      if (!(0, _isArray2.default)(values)) {
+        values = [values];
+      }
+
+      return this.addFilter(field, '$all', values);
+    }
+
+    /**
+     * Adds a greater than filter to the query. Requires `field` to be greater
+     * than `value`.
+     * http://docs.mongodb.org/manual/reference/operator/gt/
+     *
+     * @param   {String}          field     Field.
+     * @param   {Number|String}   value     Value.
+     * @throws  {Error}                     `value` must be of type: `number` or `string`.
+     * @returns {Query}                     The query.
+     */
+
+  }, {
+    key: 'greaterThan',
+    value: function greaterThan(field, value) {
+      if (!(0, _isNumber2.default)(value) && !(0, _isString2.default)(value)) {
+        throw new Error('You must supply a number or string.');
+      }
+
+      return this.addFilter(field, '$gt', value);
+    }
+  }, {
+    key: 'greaterThanOrEqualTo',
+    value: function greaterThanOrEqualTo(field, value) {
+      if (!(0, _isNumber2.default)(value) && !(0, _isString2.default)(value)) {
+        throw new Error('You must supply a number or string.');
+      }
+
+      return this.addFilter(field, '$gte', value);
+    }
+  }, {
+    key: 'lessThan',
+    value: function lessThan(field, value) {
+      if (!(0, _isNumber2.default)(value) && !(0, _isString2.default)(value)) {
+        throw new Error('You must supply a number or string.');
+      }
+
+      return this.addFilter(field, '$lt', value);
+    }
+  }, {
+    key: 'lessThanOrEqualTo',
+    value: function lessThanOrEqualTo(field, value) {
+      if (!(0, _isNumber2.default)(value) && !(0, _isString2.default)(value)) {
+        throw new Error('You must supply a number or string.');
+      }
+
+      return this.addFilter(field, '$lte', value);
+    }
+  }, {
+    key: 'notEqualTo',
+    value: function notEqualTo(field, value) {
+      return this.addFilter(field, '$ne', value);
+    }
+  }, {
+    key: 'notContainedIn',
+    value: function notContainedIn(field, values) {
+      if (!(0, _isArray2.default)(values)) {
+        values = [values];
+      }
+
+      return this.addFilter(field, '$nin', values);
+    }
+  }, {
+    key: 'and',
+    value: function and() {
+      return this.join('$and', Array.prototype.slice.call(arguments));
+    }
+  }, {
+    key: 'nor',
+    value: function nor() {
+      if (this.parent && this.parent.filter.$and) {
+        return this.parent.nor.apply(this.parent, arguments);
+      }
+
+      return this.join('$nor', Array.prototype.slice.call(arguments));
+    }
+  }, {
+    key: 'or',
+    value: function or() {
+      if (this.parent) {
+        return this.parent.or.apply(this.parent, arguments);
+      }
+
+      return this.join('$or', Array.prototype.slice.call(arguments));
+    }
+  }, {
+    key: 'exists',
+    value: function exists(field, flag) {
+      flag = typeof flag === 'undefined' ? true : flag || false;
+      return this.addFilter(field, '$exists', flag);
+    }
+  }, {
+    key: 'mod',
+    value: function mod(field, divisor, remainder) {
+      remainder = remainder || 0;
+
+      if ((0, _isString2.default)(divisor)) {
+        divisor = parseFloat(divisor);
+      }
+
+      if ((0, _isString2.default)(remainder)) {
+        remainder = parseFloat(remainder);
+      }
+
+      if (!(0, _isNumber2.default)(divisor)) {
+        throw new Error('Divisor must be a number.');
+      }
+
+      if (!(0, _isNumber2.default)(remainder)) {
+        throw new Error('Remainder must be a number.');
+      }
+
+      return this.addFilter(field, '$mod', [divisor, remainder]);
+    }
+  }, {
+    key: 'matches',
+    value: function matches(field, regExp, options) {
+      options = options || {};
+
+      if (!(0, _isRegExp2.default)(regExp)) {
+        regExp = new RegExp(regExp);
+      }
+
+      if ((regExp.ignoreCase || options.ignoreCase) && options.ignoreCase !== false) {
+        throw new Error('ignoreCase glag is not supported.');
+      }
+
+      if (regExp.source.indexOf('^') !== 0) {
+        throw new Error('regExp must have `^` at the beginning of the expression ' + 'to make it an anchored expression.');
+      }
+
+      var flags = [];
+
+      if ((regExp.multiline || options.multiline) && options.multiline !== false) {
+        flags.push('m');
+      }
+
+      if (options.extended) {
+        flags.push('x');
+      }
+
+      if (options.dotMatchesAll) {
+        flags.push('s');
+      }
+
+      var result = this.addFilter(field, '$regex', regExp.source);
+
+      if (flags.length) {
+        this.addFilter(field, '$options', flags.join(''));
+      }
+
+      return result;
+    }
+  }, {
+    key: 'near',
+    value: function near(field, coord, maxDistance) {
+      if (!(0, _isArray2.default)(coord) || !coord[0] || !coord[1]) {
+        throw new Error('coord argument must be of type: [number, number]');
+      }
+
+      coord[0] = parseFloat(coord[0]);
+      coord[1] = parseFloat(coord[1]);
+
+      var result = this.addFilter(field, '$nearSphere', [coord[0], coord[1]]);
+
+      if (maxDistance) {
+        this.addFilter(field, '$maxDistance', maxDistance);
+      }
+
+      return result;
+    }
+  }, {
+    key: 'withinBox',
+    value: function withinBox(field, bottomLeftCoord, upperRightCoord) {
+      if (!(0, _isArray2.default)(bottomLeftCoord) || !bottomLeftCoord[0] || !bottomLeftCoord[1]) {
+        throw new Error('bottomLeftCoord argument must be of type: [number, number]');
+      }
+
+      if (!(0, _isArray2.default)(upperRightCoord) || !upperRightCoord[0] || !upperRightCoord[1]) {
+        throw new Error('upperRightCoord argument must be of type: [number, number]');
+      }
+
+      bottomLeftCoord[0] = parseFloat(bottomLeftCoord[0]);
+      bottomLeftCoord[1] = parseFloat(bottomLeftCoord[1]);
+      upperRightCoord[0] = parseFloat(upperRightCoord[0]);
+      upperRightCoord[1] = parseFloat(upperRightCoord[1]);
+
+      var coords = [[bottomLeftCoord[0], bottomLeftCoord[1]], [upperRightCoord[0], upperRightCoord[1]]];
+      return this.addFilter(field, '$within', { $box: coords });
+    }
+  }, {
+    key: 'withinPolygon',
+    value: function withinPolygon(field, coords) {
+      if (!(0, _isArray2.default)(coords) || coords.length > 3) {
+        throw new Error('coords argument must be of type: [[number, number]]');
+      }
+
+      coords = coords.map(function (coord) {
+        if (!coord[0] || !coord[1]) {
+          throw new Error('coords argument must be of type: [number, number]');
+        }
+
+        return [parseFloat(coord[0]), parseFloat(coord[1])];
+      });
+
+      return this.addFilter(field, '$within', { $polygon: coords });
+    }
+  }, {
+    key: 'size',
+    value: function size(field, _size) {
+      if ((0, _isString2.default)(_size)) {
+        _size = parseFloat(_size);
+      }
+
+      if (!(0, _isNumber2.default)(_size)) {
+        throw new Error('size argument must be a number');
+      }
+
+      return this.addFilter(field, '$size', _size);
+    }
+  }, {
+    key: 'fields',
+    value: function fields(_fields) {
+      _fields = _fields || [];
+
+      if (!(0, _isArray2.default)(_fields)) {
+        throw new Error('fields argument must an Array.');
+      }
+
+      if (this.parent) {
+        this.parent.fields(_fields);
+      } else {
+        this._fields = _fields;
+      }
+
+      return this;
+    }
+  }, {
+    key: 'limit',
+    value: function limit(_limit) {
+      if ((0, _isString2.default)(_limit)) {
+        _limit = parseFloat(_limit);
+      }
+
+      if (_limit && !(0, _isNumber2.default)(_limit)) {
+        throw new Error('limit argument must be of type: number.');
+      }
+
+      if (this._parent) {
+        this.parent.limit(_limit);
+      } else {
+        this._limit = _limit;
+      }
+
+      return this;
+    }
+  }, {
+    key: 'skip',
+    value: function skip(_skip) {
+      if ((0, _isString2.default)(_skip)) {
+        _skip = parseFloat(_skip);
+      }
+
+      if (!(0, _isNumber2.default)(_skip)) {
+        throw new Error('skip argument must be of type: number.');
+      }
+
+      if (this.parent) {
+        this.parent.skip(_skip);
+      } else {
+        this._skip = _skip;
+      }
+
+      return this;
+    }
+  }, {
+    key: 'ascending',
+    value: function ascending(field) {
+      if (this.parent) {
+        this.parent.ascending(field);
+      } else {
+        this._sort[field] = 1;
+      }
+
+      return this;
+    }
+  }, {
+    key: 'descending',
+    value: function descending(field) {
+      if (this.parent) {
+        this.parent.descending(field);
+      } else {
+        this._sort[field] = -1;
+      }
+
+      return this;
+    }
+  }, {
+    key: 'sort',
+    value: function sort(_sort) {
+      if (_sort && !(0, _isObject2.default)(_sort)) {
+        throw new Error('sort argument must be of type: Object.');
+      }
+
+      if (this.parent) {
+        this.parent.sort(_sort);
+      } else {
+        this._sort = _sort || {};
+      }
+
+      return this;
+    }
+
+    /**
+     * Adds a filter to the query.
+     *
+     * @param   {String}          field       Field.
+     * @param   {String}          condition   Condition.
+     * @param   {*}               value       Value.
+     * @returns {PrivateQuery}                The query.
+     */
+
+  }, {
+    key: 'addFilter',
+    value: function addFilter(field, condition, values) {
+      if (!(0, _isObject2.default)(this._filter[field])) {
+        this._filter[field] = {};
+      }
+
+      this._filter[field][condition] = values;
+      return this;
+    }
+
+    /**
+     * Joins the current query with another query using an operator.
+     *
+     * @param   {String}                    operator    Operator.
+     * @param   {PrivateQuery[]|Object[]}   queries     Queries.
+     * @throws  {Error}                                `query` must be of type: `Kinvey.Query[]` or `Object[]`.
+     * @returns {PrivateQuery}                          The query.
+     */
+
+  }, {
+    key: 'join',
+    value: function join(operator, queries) {
+      var _this = this;
+      var currentQuery = {};
+
+      // Cast, validate, and parse arguments. If `queries` are supplied, obtain
+      // the `filter` for joining. The eventual return function will be the
+      // current query.
+      queries = queries.map(function (query) {
+        if (!(query instanceof PrivateQuery)) {
+          if ((0, _isObject2.default)(query)) {
+            query = new PrivateQuery(query);
+          } else {
+            throw new Error('query argument must be of type: Kinvey.Query[] or Object[].');
+          }
+        }
+
+        return query.toJSON().filter;
+      });
+
+      // If there are no `queries` supplied, create a new (empty) `Query`.
+      // This query is the right-hand side of the join expression, and will be
+      // returned to allow for a fluent interface.
+      if (queries.length === 0) {
+        _this = new PrivateQuery();
+        queries = [_this.toJSON().filter];
+        _this.parent = this; // Required for operator precedence and `toJSON`.
+      }
+
+      // Join operators operate on the top-level of `filter`. Since the `toJSON`
+      // magic requires `filter` to be passed by reference, we cannot simply re-
+      // assign `filter`. Instead, empty it without losing the reference.
+      for (var member in this._filter) {
+        if (this._filter.hasOwnProperty(member)) {
+          currentQuery[member] = this._filter[member];
+          delete this._filter[member];
+        }
+      }
+
+      // `currentQuery` is the left-hand side query. Join with `queries`.
+      this._filter[operator] = [currentQuery].concat(queries);
+
+      // Return the current query if there are `queries`, and the new (empty)
+      // `PrivateQuery` otherwise.
+      return _this;
+    }
+
+    /**
+     * Processes the data by applying fields, sort, limit, and skip.
+     *
+     * @param   {Array}   data    The raw data.
+     * @throws  {Error}               `data` must be of type: `Array`.
+     * @returns {Array}               The processed data.
+     */
+
+  }, {
+    key: '_process',
+    value: function _process(data) {
+      var _this2 = this;
+
+      if (data) {
+        var _ret = function () {
+          // Validate arguments.
+          if (!(0, _isArray2.default)(data)) {
+            throw new Error('data argument must be of type: Array.');
+          }
+
+          // Apply the query
+          var json = _this2.toJSON();
+          data = (0, _sift2.default)(json.filter, data);
+
+          // Remove fields
+          if (json.fields && json.fields.length > 0) {
+            data = data.map(function (item) {
+              for (var key in item) {
+                if (item.hasOwnProperty(key) && json.fields.indexOf(key) === -1) {
+                  delete item[key];
+                }
+              }
+
+              return item;
+            });
+          }
+
+          // Sorting.
+          data = data.sort(function (a, b) {
+            for (var field in json.sort) {
+              if (json.sort.hasOwnProperty(field)) {
+                // Find field in objects.
+                var aField = (0, _object.nested)(a, field);
+                var bField = (0, _object.nested)(b, field);
+
+                // Elements which do not contain the field should always be sorted
+                // lower.
+                if (aField && !bField) {
+                  return -1;
+                }
+
+                if (bField && !aField) {
+                  return 1;
+                }
+
+                // Sort on the current field. The modifier adjusts the sorting order
+                // (ascending (-1), or descending(1)). If the fields are equal,
+                // continue sorting based on the next field (if any).
+                if (aField !== bField) {
+                  var modifier = json.sort[field]; // 1 or -1.
+                  return (aField < bField ? -1 : 1) * modifier;
+                }
+              }
+            }
+
+            return 0;
+          });
+
+          // Limit and skip.
+          if (json.limit) {
+            return {
+              v: data.slice(json.skip, json.skip + json.limit)
+            };
+          }
+
+          return {
+            v: data.slice(json.skip)
+          };
+        }();
+
+        if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+      }
+
+      return data;
+    }
+
+    /**
+     * Returns JSON representation of the query.
+     *
+     * @returns {Object} JSON object-literal.
+     */
+
+  }, {
+    key: 'toJSON',
+    value: function toJSON() {
+      if (this.parent) {
+        return this.parent.toJSON();
+      }
+
+      // Return set of parameters.
+      var json = {
+        fields: this._fields,
+        filter: this._filter,
+        sort: this._sort,
+        skip: this._skip,
+        limit: this._limit
+      };
+
+      return (0, _clone2.default)(json, true);
+    }
+  }]);
+
+  return PrivateQuery;
+}();
+
+var Query = function () {
+  function Query(options) {
+    _classCallCheck(this, Query);
+
+    this[privateQuerySymbol] = new PrivateQuery(options);
+  }
+
+  /**
+   * Adds an equal to filter to the query. Requires `field` to equal `value`.
+   * Any existing filters on `field` will be discarded.
+   * http://docs.mongodb.org/manual/reference/operators/#comparison
+   *
+   * @param   {String}        field     Field.
+   * @param   {*}             value     Value.
+   * @returns {Query}                   The query.
+   */
+
+
+  _createClass(Query, [{
+    key: 'equalTo',
+    value: function equalTo(field, value) {
+      this[privateQuerySymbol].equalTo(field, value);
+      return this;
+    }
+
+    /**
+     * Adds a contains filter to the query. Requires `field` to contain at least
+     * one of the members of `list`.
+     * http://docs.mongodb.org/manual/reference/operator/in/
+     *
+     * @param   {String}        field     Field.
+     * @param   {Array}         values    List of values.
+     * @throws  {Error}                   `values` must be of type: `Array`.
+     * @returns {Query}                   The query.
+     */
+
+  }, {
+    key: 'contains',
+    value: function contains(field, values) {
+      this[privateQuerySymbol].contains(field, values);
+      return this;
+    }
+
+    /**
+     * Adds a contains all filter to the query. Requires `field` to contain all
+     * members of `list`.
+     * http://docs.mongodb.org/manual/reference/operator/all/
+     *
+     * @param   {String}  field     Field.
+     * @param   {Array}   values    List of values.
+     * @throws  {Error}             `values` must be of type: `Array`.
+     * @returns {Query}             The query.
+     */
+
+  }, {
+    key: 'containsAll',
+    value: function containsAll(field, values) {
+      this[privateQuerySymbol].containsAll(field, values);
+      return this;
+    }
+
+    /**
+     * Adds a greater than filter to the query. Requires `field` to be greater
+     * than `value`.
+     * http://docs.mongodb.org/manual/reference/operator/gt/
+     *
+     * @param   {String}          field     Field.
+     * @param   {Number|String}   value     Value.
+     * @throws  {Error}                     `value` must be of type: `number` or `string`.
+     * @returns {Query}                     The query.
+     */
+
+  }, {
+    key: 'greaterThan',
+    value: function greaterThan(field, value) {
+      this[privateQuerySymbol].greaterThan(field, value);
+      return this;
+    }
+  }, {
+    key: 'greaterThanOrEqualTo',
+    value: function greaterThanOrEqualTo(field, value) {
+      this[privateQuerySymbol].greaterThanOrEqualToe(field, value);
+      return this;
+    }
+  }, {
+    key: 'lessThan',
+    value: function lessThan(field, value) {
+      this[privateQuerySymbol].lessThan(field, value);
+      return this;
+    }
+  }, {
+    key: 'lessThanOrEqualTo',
+    value: function lessThanOrEqualTo(field, value) {
+      this[privateQuerySymbol].lessThanOrEqualTo(field, value);
+      return this;
+    }
+  }, {
+    key: 'notEqualTo',
+    value: function notEqualTo(field, value) {
+      this[privateQuerySymbol].notEqualTo(field, value);
+      return this;
+    }
+  }, {
+    key: 'notContainedIn',
+    value: function notContainedIn(field, values) {
+      this[privateQuerySymbol].notContainedIn(field, values);
+      return this;
+    }
+  }, {
+    key: 'and',
+    value: function and() {
+      this[privateQuerySymbol].and.apply(this[privateQuerySymbol], arguments);
+      return this;
+    }
+  }, {
+    key: 'nor',
+    value: function nor() {
+      this[privateQuerySymbol].nor.apply(this[privateQuerySymbol], arguments);
+      return this;
+    }
+  }, {
+    key: 'or',
+    value: function or() {
+      this[privateQuerySymbol].or.apply(this[privateQuerySymbol], arguments);
+      return this;
+    }
+  }, {
+    key: 'exists',
+    value: function exists(field, flag) {
+      this[privateQuerySymbol].exists(field, flag);
+      return this;
+    }
+  }, {
+    key: 'mod',
+    value: function mod(field, divisor, remainder) {
+      this[privateQuerySymbol].mod(field, divisor, remainder);
+      return this;
+    }
+  }, {
+    key: 'matches',
+    value: function matches(field, regExp, options) {
+      this[privateQuerySymbol].matches(field, regExp, options);
+      return this;
+    }
+  }, {
+    key: 'near',
+    value: function near(field, coord, maxDistance) {
+      this[privateQuerySymbol].near(field, coord, maxDistance);
+      return this;
+    }
+  }, {
+    key: 'withinBox',
+    value: function withinBox(field, bottomLeftCoord, upperRightCoord) {
+      this[privateQuerySymbol].withinBox(field, bottomLeftCoord, upperRightCoord);
+      return this;
+    }
+  }, {
+    key: 'withinPolygon',
+    value: function withinPolygon(field, coords) {
+      this[privateQuerySymbol].withinPolygon(field, coords);
+      return this;
+    }
+  }, {
+    key: 'size',
+    value: function size(field, _size2) {
+      this[privateQuerySymbol].size(field, _size2);
+      return this;
+    }
+  }, {
+    key: 'fields',
+    value: function fields(_fields2) {
+      this[privateQuerySymbol].fields(_fields2);
+      return this;
+    }
+  }, {
+    key: 'limit',
+    value: function limit(_limit2) {
+      this[privateQuerySymbol].limit(_limit2);
+      return this;
+    }
+  }, {
+    key: 'skip',
+    value: function skip(_skip2) {
+      this[privateQuerySymbol].skip(_skip2);
+      return this;
+    }
+  }, {
+    key: 'ascending',
+    value: function ascending(field) {
+      this[privateQuerySymbol].ascending(field);
+      return this;
+    }
+  }, {
+    key: 'descending',
+    value: function descending(field) {
+      this[privateQuerySymbol].descending(field);
+      return this;
+    }
+  }, {
+    key: 'sort',
+    value: function sort(_sort2) {
+      this[privateQuerySymbol].sort(_sort2);
+      return this;
+    }
+  }, {
+    key: '_process',
+    value: function _process(data) {
+      return this[privateQuerySymbol]._process(data);
+    }
+
+    /**
+     * Returns JSON representation of the query.
+     *
+     * @returns {Object} JSON object-literal.
+     */
+
+  }, {
+    key: 'toJSON',
+    value: function toJSON() {
+      return this[privateQuerySymbol].toJSON();
+    }
+  }]);
+
+  return Query;
+}();
+
+exports.default = Query;
+
+},{"./utils/object":206,"lodash/assign":345,"lodash/clone":347,"lodash/isArray":355,"lodash/isNumber":363,"lodash/isObject":364,"lodash/isRegExp":367,"lodash/isString":368,"sift":470}],179:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var levels = [];
+var c0 = String.fromCharCode(9500);
+var c1 = String.fromCharCode(9472);
+var c2 = String.fromCharCode(9492);
+var c3 = String.fromCharCode(9474);
+
+function compose(node, end) {
+  if (node.level === 0) {
+    return node.value;
+  }
+
+  var ret = '\r\n';
+  var c = end ? c2 : c0;
+
+  for (var i = 1; i < node.level; i++) {
+    ret = '' + ret + (levels[i] ? ' ' : c3);
+    ret = ret + '  ';
+  }
+
+  return '' + ret + c + c1 + ' ' + node.value;
+}
+
+/**
+ * @private
+ */
+var AsciiTree = exports.AsciiTree = {
+  generate: function generate() {
+    var _this = this;
+
+    var tree = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+    var end = arguments[1];
+
+    var result = compose(tree, end);
+
+    if (tree.nodes.length > 0) {
+      (function () {
+        var last = tree.nodes.length - 1;
+        tree.nodes.forEach(function (subTree, index) {
+          levels[subTree.level] = index === last;
+          result = result + _this.generate(subTree, index === last);
+        });
+      })();
+    }
+
+    return result;
+  }
+};
+
+},{}],180:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.KinveyMiddleware = exports.Middleware = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _asciiTree = require('./asciiTree');
+
+var _urlPattern = require('url-pattern');
+
+var _urlPattern2 = _interopRequireDefault(_urlPattern);
+
+var _errors = require('../errors');
+
+var _url = require('url');
+
+var _url2 = _interopRequireDefault(_url);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * @private
+ */
+
+var Middleware = exports.Middleware = function () {
+  function Middleware() {
+    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Middleware' : arguments[0];
+
+    _classCallCheck(this, Middleware);
+
+    this.name = name;
+  }
+
+  _createClass(Middleware, [{
+    key: 'handle',
+    value: function handle() {
+      var request = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      return Promise.resolve(request);
+    }
+  }, {
+    key: 'generateTree',
+    value: function generateTree() {
+      var level = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+
+      var root = {
+        value: this.name,
+        level: level,
+        nodes: []
+      };
+      return root;
+    }
+  }, {
+    key: 'toString',
+    value: function toString() {
+      var root = this.generateTree();
+      return _asciiTree.AsciiTree.generate(root);
+    }
+  }]);
+
+  return Middleware;
+}();
+
+/**
+ * @private
+ */
+
+
+var KinveyMiddleware = exports.KinveyMiddleware = function (_Middleware) {
+  _inherits(KinveyMiddleware, _Middleware);
+
+  function KinveyMiddleware() {
+    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey Middleware' : arguments[0];
+
+    _classCallCheck(this, KinveyMiddleware);
+
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(KinveyMiddleware).call(this, name));
+  }
+
+  _createClass(KinveyMiddleware, [{
+    key: 'handle',
+    value: function handle(request) {
+      return new Promise(function (resolve, reject) {
+        if (request) {
+          var pathname = _url2.default.parse(request.url).pathname;
+          var pattern = new _urlPattern2.default('(/:namespace)(/)(:appKey)(/)(:collection)(/)(:id)(/)');
+          var matches = pattern.match(pathname) || {};
+          return resolve({
+            namespace: matches.namespace,
+            appKey: matches.appKey,
+            collection: matches.collection,
+            id: matches.id
+          });
+        }
+
+        reject(new _errors.KinveyError('Request is null. Please provide a valid request.', request));
+      });
+    }
+  }]);
+
+  return KinveyMiddleware;
+}(Middleware);
+
+},{"../errors":173,"./asciiTree":179,"url":507,"url-pattern":506}],181:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.CacheMiddleware = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _middleware = require('../middleware');
+
+var _db = require('../persistence/db');
+
+var _enums = require('../../enums');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * @private
+ */
+
+var CacheMiddleware = exports.CacheMiddleware = function (_KinveyMiddleware) {
+  _inherits(CacheMiddleware, _KinveyMiddleware);
+
+  function CacheMiddleware() {
+    var adapters = arguments.length <= 0 || arguments[0] === undefined ? [_db.DBAdapter.IndexedDB, _db.DBAdapter.WebSQL, _db.DBAdapter.LocalStorage, _db.DBAdapter.Memory] : arguments[0];
+
+    _classCallCheck(this, CacheMiddleware);
+
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(CacheMiddleware).call(this, 'Kinvey Cache Middleware'));
+
+    _this.adapters = adapters;
+    return _this;
+  }
+
+  _createClass(CacheMiddleware, [{
+    key: 'handle',
+    value: function handle(request) {
+      var _this2 = this;
+
+      return _get(Object.getPrototypeOf(CacheMiddleware.prototype), 'handle', this).call(this, request).then(function (_ref) {
+        var appKey = _ref.appKey;
+        var collection = _ref.collection;
+        var id = _ref.id;
+
+        var method = request.method;
+        var query = request.query;
+        var data = request.data;
+        var db = new _db.DB(appKey, _this2.adapters);
+        var promise = undefined;
+
+        if (method === _enums.HttpMethod.GET) {
+          if (id) {
+            if (id === '_count') {
+              promise = db.count(collection, query);
+            } else if (id === '_group') {
+              promise = db.group(collection, data);
+            } else {
+              promise = db.findById(collection, id);
+            }
+          } else {
+            promise = db.find(collection, query);
+          }
+        } else if (method === _enums.HttpMethod.POST || method === _enums.HttpMethod.PUT) {
+          promise = db.save(collection, data);
+        } else if (method === _enums.HttpMethod.DELETE) {
+          if (id) {
+            promise = db.removeById(collection, id);
+          } else {
+            promise = db.remove(collection, query);
+          }
+        }
+
+        return promise.then(function (result) {
+          var statusCode = _enums.StatusCode.Ok;
+
+          if (method === _enums.HttpMethod.POST) {
+            statusCode = _enums.StatusCode.Created;
+          }
+
+          request.response = {
+            statusCode: statusCode,
+            headers: {},
+            data: result
+          };
+
+          return request;
+        });
+      });
+    }
+  }]);
+
+  return CacheMiddleware;
+}(_middleware.KinveyMiddleware);
+
+},{"../../enums":172,"../middleware":180,"../persistence/db":189}],182:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.HttpMiddleware = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _middleware = require('../middleware');
+
+var _enums = require('../../enums');
+
+var _errors = require('../../errors');
+
+var _request = require('request');
+
+var _request2 = _interopRequireDefault(_request);
+
+var _result = require('lodash/result');
+
+var _result2 = _interopRequireDefault(_result);
+
+var _isEmpty = require('lodash/isEmpty');
+
+var _isEmpty2 = _interopRequireDefault(_isEmpty);
+
+var _isString = require('lodash/isString');
+
+var _isString2 = _interopRequireDefault(_isString);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * @private
+ */
+
+var HttpMiddleware = exports.HttpMiddleware = function (_KinveyMiddleware) {
+  _inherits(HttpMiddleware, _KinveyMiddleware);
+
+  function HttpMiddleware() {
+    _classCallCheck(this, HttpMiddleware);
+
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(HttpMiddleware).call(this, 'Kinvey Http Middleware'));
+  }
+
+  _createClass(HttpMiddleware, [{
+    key: 'handle',
+    value: function handle(request) {
+      return _get(Object.getPrototypeOf(HttpMiddleware.prototype), 'handle', this).call(this, request).then(function () {
+        var options = {
+          url: request.url,
+          method: request.method,
+          headers: request.headers,
+          qs: {},
+          followRedirect: request.followRedirect
+        };
+
+        if (request.query) {
+          var query = (0, _result2.default)(request.query, 'toJSON', request.query);
+          options.qs.query = query.filter;
+
+          if (!(0, _isEmpty2.default)(query.fields)) {
+            options.qs.fields = query.fields.join(',');
+          }
+
+          if (query.limit) {
+            options.qs.limit = query.limit;
+          }
+
+          if (query.skip > 0) {
+            options.qs.skip = query.skip;
+          }
+
+          if (!(0, _isEmpty2.default)(query.sort)) {
+            options.qs.sort = query.sort;
+          }
+        }
+
+        for (var key in options.qs) {
+          if (options.qs.hasOwnProperty(key)) {
+            options.qs[key] = (0, _isString2.default)(options.qs[key]) ? options.qs[key] : JSON.stringify(options.qs[key]);
+          }
+        }
+
+        if (request.data && (request.method === _enums.HttpMethod.PATCH || request.method === _enums.HttpMethod.POST || request.method === _enums.HttpMethod.PUT)) {
+          options.body = request.data;
+        }
+
+        return new Promise(function (resolve, reject) {
+          (0, _request2.default)(options, function (err, response, body) {
+            if (err) {
+              if (err.code === 'ENOTFOUND') {
+                return reject(new _errors.NetworkConnectionError('It looks like you do not have a network connection. ' + 'Please check that you are connected to a network and try again.'));
+              }
+
+              return reject(err);
+            }
+
+            request.response = {
+              statusCode: response.statusCode,
+              headers: response.headers,
+              data: body
+            };
+
+            resolve(request);
+          });
+        });
+      });
+    }
+  }]);
+
+  return HttpMiddleware;
+}(_middleware.KinveyMiddleware);
+
+},{"../../enums":172,"../../errors":173,"../middleware":180,"lodash/isEmpty":359,"lodash/isString":368,"lodash/result":382,"request":445}],183:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ParseMiddleware = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _middleware = require('../middleware');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * @private
+ */
+
+var ParseMiddleware = exports.ParseMiddleware = function (_KinveyMiddleware) {
+  _inherits(ParseMiddleware, _KinveyMiddleware);
+
+  function ParseMiddleware() {
+    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey Parse Middleware' : arguments[0];
+
+    _classCallCheck(this, ParseMiddleware);
+
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(ParseMiddleware).call(this, name));
+  }
+
+  _createClass(ParseMiddleware, [{
+    key: 'handle',
+    value: function handle(request) {
+      return _get(Object.getPrototypeOf(ParseMiddleware.prototype), 'handle', this).call(this, request).then(function () {
+        var response = request.response;
+
+        if (response && response.data) {
+          var contentType = response.headers['content-type'] || response.headers['Content-Type'];
+
+          if (contentType.indexOf('application/json') === 0) {
+            try {
+              response.data = JSON.parse(response.data);
+            } catch (err) {
+              response.data = response.data;
+            }
+
+            request.response = response;
+          }
+        }
+
+        return request;
+      });
+    }
+  }]);
+
+  return ParseMiddleware;
+}(_middleware.KinveyMiddleware);
+
+},{"../middleware":180}],184:[function(require,module,exports){
+(function (global){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.SerializeMiddleware = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _middleware = require('../middleware');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * @private
+ */
+
+var SerializeMiddleware = exports.SerializeMiddleware = function (_KinveyMiddleware) {
+  _inherits(SerializeMiddleware, _KinveyMiddleware);
+
+  function SerializeMiddleware() {
+    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey Serialize Middleware' : arguments[0];
+
+    _classCallCheck(this, SerializeMiddleware);
+
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(SerializeMiddleware).call(this, name));
+  }
+
+  _createClass(SerializeMiddleware, [{
+    key: 'handle',
+    value: function handle(request) {
+      return _get(Object.getPrototypeOf(SerializeMiddleware.prototype), 'handle', this).call(this, request).then(function () {
+        if (request && request.data) {
+          var contentType = request.headers['content-type'] || request.headers['Content-Type'];
+
+          if (contentType.indexOf('application/json') === 0) {
+            request.data = JSON.stringify(request.data);
+          } else if (contentType.indexOf('application/x-www-form-urlencoded') === 0) {
+            var data = request.data;
+            var str = [];
+
+            for (var p in data) {
+              if (data.hasOwnProperty(p)) {
+                str.push(global.encodeURIComponent(p) + '=' + global.encodeURIComponent(data[p]));
+              }
+            }
+
+            request.data = str.join('&');
+          }
+        }
+
+        return request;
+      });
+    }
+  }]);
+
+  return SerializeMiddleware;
+}(_middleware.KinveyMiddleware);
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"../middleware":180}],185:[function(require,module,exports){
+(function (global){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.IndexedDB = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _errors = require('../../../errors');
+
+var _forEach = require('lodash/forEach');
+
+var _forEach2 = _interopRequireDefault(_forEach);
+
+var _isArray = require('lodash/isArray');
+
+var _isArray2 = _interopRequireDefault(_isArray);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var indexedDB = null;
+var dbCache = {};
+
+var TransactionMode = {
+  ReadWrite: 'readwrite',
+  ReadOnly: 'readonly'
+};
+Object.freeze(TransactionMode);
+
+if (typeof window !== 'undefined') {
+  require('indexeddbshim');
+  global.shimIndexedDB.__useShim();
+  indexedDB = global.indexedDB || global.mozIndexedDB || global.webkitIndexedDB || global.msIndexedDB || global.shimIndexedDB;
+}
+
+/**
+ * @private
+ */
+
+var IndexedDB = exports.IndexedDB = function () {
+  function IndexedDB() {
+    var name = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
+
+    _classCallCheck(this, IndexedDB);
+
+    this.name = name;
+    this.inTransaction = false;
+    this.queue = [];
+  }
+
+  _createClass(IndexedDB, [{
+    key: 'openTransaction',
+    value: function openTransaction(collection) {
+      var write = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+      var success = arguments[2];
+
+      var _this = this;
+
+      var error = arguments[3];
+      var force = arguments.length <= 4 || arguments[4] === undefined ? false : arguments[4];
+
+      var db = dbCache[this.name];
+
+      if (db) {
+        if (db.objectStoreNames.contains(collection)) {
+          try {
+            var mode = write ? TransactionMode.ReadWrite : TransactionMode.ReadOnly;
+            var txn = db.transaction([collection], mode);
+
+            if (txn) {
+              var store = txn.objectStore(collection);
+              return success(store);
+            }
+
+            throw new _errors.KinveyError('Unable to open a transaction for the ' + collection + ' ' + ('collection on the ' + this.name + ' indexedDB database.'));
+          } catch (err) {
+            return error(err);
+          }
+        } else if (!write) {
+          return error(new _errors.NotFoundError('The ' + collection + ' collection was not found on ' + ('the ' + this.name + ' indexedDB database.')));
+        }
+      }
+
+      if (!force && this.inTransaction) {
+        return this.queue.push(function () {
+          _this.openTransaction(collection, write, success, error);
+        });
+      }
+
+      // Switch flag
+      this.inTransaction = true;
+      var request = undefined;
+
+      if (db) {
+        var version = db.version + 1;
+        request = indexedDB.open(this.name, version);
+      } else {
+        request = indexedDB.open(this.name);
+      }
+
+      // If the database is opened with an higher version than its current, the
+      // `upgradeneeded` event is fired. Save the handle to the database, and
+      // create the collection.
+      request.onupgradeneeded = function (e) {
+        db = e.target.result;
+
+        if (write) {
+          db.createObjectStore(collection, { keyPath: '_id' });
+        }
+      };
+
+      // The `success` event is fired after `upgradeneeded` terminates.
+      // Save the handle to the database.
+      request.onsuccess = function (e) {
+        db = e.target.result;
+        dbCache[_this.name] = db;
+
+        // If a second instance of the same IndexedDB database performs an
+        // upgrade operation, the `versionchange` event is fired. Then, close the
+        // database to allow the external upgrade to proceed.
+        db.onversionchange = function () {
+          if (db) {
+            db.close();
+            db = null;
+            dbCache[_this.name] = null;
+          }
+        };
+
+        // Try to obtain the collection handle by recursing. Append the handlers
+        // to empty the queue upon success and failure. Set the `force` flag so
+        // all but the current transaction remain queued.
+        var wrap = function wrap(done) {
+          return function (arg) {
+            done(arg);
+
+            // Switch flag
+            _this.inTransaction = false;
+
+            // The database handle has been established, we can now safely empty
+            // the queue. The queue must be emptied before invoking the concurrent
+            // operations to avoid infinite recursion.
+            if (_this.queue.length > 0) {
+              var pending = _this.queue;
+              _this.queue = [];
+              (0, _forEach2.default)(pending, function (fn) {
+                fn.call(_this);
+              });
+            }
+          };
+        };
+
+        _this.openTransaction(collection, write, wrap(success), wrap(error), true);
+      };
+
+      request.onblocked = function () {
+        error(new _errors.KinveyError('The ' + _this.name + ' indexedDB database version can\'t be upgraded ' + 'because the database is already open.'));
+      };
+
+      request.onerror = function (e) {
+        error(new _errors.KinveyError('Unable to open the ' + _this.name + ' indexedDB database. ' + ('Received the error code ' + e.target.errorCode + '.')));
+      };
+    }
+  }, {
+    key: 'find',
+    value: function find(collection) {
+      var _this2 = this;
+
+      var promise = new Promise(function (resolve, reject) {
+        if (!collection) {
+          return reject(new _errors.KinveyError('A collection was not provided.'));
+        }
+
+        _this2.openTransaction(collection, false, function (store) {
+          var request = store.openCursor();
+          var response = [];
+
+          request.onsuccess = function onSuccess(e) {
+            var cursor = e.target.result;
+
+            if (cursor) {
+              response.push(cursor.value);
+              return cursor.continue();
+            }
+
+            resolve(response);
+          };
+
+          request.onerror = function (e) {
+            reject(new _errors.KinveyError('An error occurred while fetching data from the ' + collection + ' ' + ('collection on the ' + _this2.name + ' indexedDB database. Received the error code ' + e.target.errorCode + '.')));
+          };
+        }, function (error) {
+          if (error instanceof _errors.NotFoundError) {
+            return resolve([]);
+          }
+
+          reject(error);
+        });
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'findById',
+    value: function findById(collection, id) {
+      var _this3 = this;
+
+      var promise = new Promise(function (resolve, reject) {
+        _this3.openTransaction(collection, false, function (store) {
+          var request = store.get(id);
+
+          request.onsuccess = function (e) {
+            var entity = e.target.result;
+
+            if (entity) {
+              return resolve(entity);
+            }
+
+            reject(new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this3.name + ' indexedDB database.')));
+          };
+
+          request.onerror = function (e) {
+            reject(new _errors.KinveyError('An error occurred while retrieving an entity with _id = ' + id + ' ' + ('from the ' + collection + ' collection on the ' + _this3.name + ' indexedDB database. ') + ('Received the error code ' + e.target.errorCode + '.')));
+          };
+        }, function (error) {
+          if (error instanceof _errors.NotFoundError) {
+            return reject(new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this3.name + ' indexedDB database.')));
+          }
+
+          reject(error);
+        });
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'save',
+    value: function save(collection, entities) {
+      var _this4 = this;
+
+      if (!(0, _isArray2.default)(entities)) {
+        return this.save(collection, entities);
+      }
+
+      if (entities.length === 0) {
+        return Promise.resolve(entities);
+      }
+
+      var promise = new Promise(function (resolve, reject) {
+        _this4.openTransaction(collection, true, function (store) {
+          var request = store.transaction;
+
+          (0, _forEach2.default)(entities, function (entity) {
+            store.put(entity);
+          });
+
+          request.oncomplete = function onComplete() {
+            resolve(entities);
+          };
+
+          request.onerror = function (e) {
+            reject(new _errors.KinveyError('An error occurred while saving the entities to the ' + collection + ' ' + ('collection on the ' + _this4.name + ' indexedDB database. Received the error code ' + e.target.errorCode + '.')));
+          };
+        }, reject);
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'removeById',
+    value: function removeById(collection, id) {
+      var _this5 = this;
+
+      var promise = new Promise(function (resolve, reject) {
+        _this5.openTransaction(collection, true, function (store) {
+          var request = store.transaction;
+          var doc = store.get(id);
+          store.delete(id);
+
+          request.oncomplete = function () {
+            if (!doc.result) {
+              return reject(new _errors.NotFoundError('An entity with id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this5.name + ' indexedDB database.')));
+            }
+
+            resolve({
+              count: 1,
+              entities: [doc.result]
+            });
+          };
+
+          request.onerror = function (e) {
+            reject(new _errors.KinveyError('An error occurred while deleting an entity with id = ' + id + ' ' + ('in the ' + collection + ' collection on the ' + _this5.name + ' indexedDB database. ') + ('Received the error code ' + e.target.errorCode + '.')));
+          };
+        }, reject);
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'destroy',
+    value: function destroy() {
+      var _this6 = this;
+
+      var promise = new Promise(function (resolve, reject) {
+        if (_this6.db) {
+          _this6.db.close();
+          _this6.db = null;
+        }
+
+        var request = indexedDB.deleteDatabase(_this6.name);
+
+        request.onsuccess = function onSuccess() {
+          resolve(null);
+        };
+
+        request.onerror = function (e) {
+          reject(new _errors.KinveyError('An error occurred while destroying the ' + _this6.name + ' ' + ('indexedDB database. Received the error code ' + e.target.errorCode + '.')));
+        };
+      });
+
+      return promise;
+    }
+  }], [{
+    key: 'isSupported',
+    value: function isSupported() {
+      return indexedDB ? true : false;
+    }
+  }]);
+
+  return IndexedDB;
+}();
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"../../../errors":173,"indexeddbshim":145,"lodash/forEach":350,"lodash/isArray":355}],186:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.LocalStorage = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _errors = require('../../../errors');
+
+var _keyBy = require('lodash/keyBy');
+
+var _keyBy2 = _interopRequireDefault(_keyBy);
+
+var _merge = require('lodash/merge');
+
+var _merge2 = _interopRequireDefault(_merge);
+
+var _values = require('lodash/values');
+
+var _values2 = _interopRequireDefault(_values);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
+var localStorage = undefined;
+
+if (typeof window !== 'undefined') {
+  localStorage = window.localStorage;
+}
+
+/**
+ * @private
+ */
+
+var LocalStorage = exports.LocalStorage = function () {
+  function LocalStorage() {
+    var name = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
+
+    _classCallCheck(this, LocalStorage);
+
+    this.name = name;
+  }
+
+  _createClass(LocalStorage, [{
+    key: 'find',
+    value: function find(collection) {
+      var _this = this;
+
+      return Promise.resolve().then(function () {
+        var data = localStorage.getItem('' + _this.name + collection);
+
+        try {
+          return JSON.parse(data);
+        } catch (err) {
+          return data;
+        }
+      }).then(function (entities) {
+        if (!entities) {
+          return [];
+        }
+
+        return entities;
+      });
+    }
+  }, {
+    key: 'findById',
+    value: function findById(collection, id) {
+      var _this2 = this;
+
+      return this.find(collection).then(function (entities) {
+        var entity = find(entities, function (entity) {
+          return entity[idAttribute] === id;
+        });
+
+        if (!entity) {
+          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this2.name + ' memory database.'));
+        }
+
+        return entity;
+      });
+    }
+  }, {
+    key: 'save',
+    value: function save(collection, entities) {
+      var _this3 = this;
+
+      return this.find(collection).then(function (existingEntities) {
+        var existingEntitiesById = (0, _keyBy2.default)(existingEntities, idAttribute);
+        var entitiesById = (0, _keyBy2.default)(entities, idAttribute);
+
+        for (var id in existingEntitiesById) {
+          if (existingEntitiesById.hasOwnProperty(id)) {
+            var existingEntity = existingEntitiesById[id];
+            var entity = entitiesById[id];
+
+            if (entity) {
+              entitiesById[id] = (0, _merge2.default)(existingEntity, entity);
+            }
+          }
+        }
+
+        localStorage.setItem('' + _this3.name + collection, JSON.stringify((0, _values2.default)(entitiesById)));
+        return entities;
+      });
+    }
+  }, {
+    key: 'removeById',
+    value: function removeById(collection, id) {
+      var _this4 = this;
+
+      return this.find(collection).then(function (entities) {
+        var entitiesById = (0, _keyBy2.default)(entities, idAttribute);
+        var entity = entitiesById[id];
+
+        if (!entity) {
+          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this4.name + ' memory database.'));
+        }
+
+        delete entitiesById[id];
+        localStorage.setItem('' + _this4.name + collection, JSON.stringify((0, _values2.default)(entitiesById)));
+
+        return {
+          count: 1,
+          entities: [entity]
+        };
+      });
+    }
+  }], [{
+    key: 'isSupported',
+    value: function isSupported() {
+      var item = 'testLocalStorageSupport';
+      try {
+        localStorage.setItem(item, item);
+        localStorage.removeItem(item);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+  }]);
+
+  return LocalStorage;
+}();
+
+}).call(this,require('_process'))
+
+},{"../../../errors":173,"_process":419,"lodash/keyBy":371,"lodash/merge":376,"lodash/values":388}],187:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Memory = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _errors = require('../../../errors');
+
+var _fastMemoryCache = require('fast-memory-cache');
+
+var _fastMemoryCache2 = _interopRequireDefault(_fastMemoryCache);
+
+var _keyBy = require('lodash/keyBy');
+
+var _keyBy2 = _interopRequireDefault(_keyBy);
+
+var _merge = require('lodash/merge');
+
+var _merge2 = _interopRequireDefault(_merge);
+
+var _values = require('lodash/values');
+
+var _values2 = _interopRequireDefault(_values);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
+
+/**
+ * @private
+ */
+
+var Memory = exports.Memory = function () {
+  function Memory() {
+    var name = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
+
+    _classCallCheck(this, Memory);
+
+    this.name = name;
+    this.cache = new _fastMemoryCache2.default();
+  }
+
+  _createClass(Memory, [{
+    key: 'find',
+    value: function find(collection) {
+      var _this = this;
+
+      return Promise.resolve().then(function () {
+        var data = _this.cache.get('' + _this.name + collection);
+
+        try {
+          return JSON.parse(data);
+        } catch (err) {
+          return data;
+        }
+      }).then(function (entities) {
+        if (!entities) {
+          return [];
+        }
+
+        return entities;
+      });
+    }
+  }, {
+    key: 'findById',
+    value: function findById(collection, id) {
+      var _this2 = this;
+
+      return this.find(collection).then(function (entities) {
+        var entity = find(entities, function (entity) {
+          return entity[idAttribute] === id;
+        });
+
+        if (!entity) {
+          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this2.name + ' memory database.'));
+        }
+
+        return entity;
+      });
+    }
+  }, {
+    key: 'save',
+    value: function save(collection, entities) {
+      var _this3 = this;
+
+      return this.find(collection).then(function (existingEntities) {
+        var existingEntitiesById = (0, _keyBy2.default)(existingEntities, idAttribute);
+        var entitiesById = (0, _keyBy2.default)(entities, idAttribute);
+
+        for (var id in existingEntitiesById) {
+          if (existingEntitiesById.hasOwnProperty(id)) {
+            var existingEntity = existingEntitiesById[id];
+            var entity = entitiesById[id];
+
+            if (entity) {
+              entitiesById[id] = (0, _merge2.default)(existingEntity, entity);
+            }
+          }
+        }
+
+        _this3.cache.set('' + _this3.name + collection, JSON.stringify((0, _values2.default)(entitiesById)));
+        return entities;
+      });
+    }
+  }, {
+    key: 'removeById',
+    value: function removeById(collection, id) {
+      var _this4 = this;
+
+      return this.find(collection).then(function (entities) {
+        var entitiesById = (0, _keyBy2.default)(entities, idAttribute);
+        var entity = entitiesById[id];
+
+        if (!entity) {
+          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this4.name + ' memory database.'));
+        }
+
+        delete entitiesById[id];
+        _this4.cache.set('' + _this4.name + collection, JSON.stringify((0, _values2.default)(entitiesById)));
+
+        return {
+          count: 1,
+          entities: [entity]
+        };
+      });
+    }
+  }], [{
+    key: 'isSupported',
+    value: function isSupported() {
+      return true;
+    }
+  }]);
+
+  return Memory;
+}();
+
+}).call(this,require('_process'))
+
+},{"../../../errors":173,"_process":419,"fast-memory-cache":106,"lodash/keyBy":371,"lodash/merge":376,"lodash/values":388}],188:[function(require,module,exports){
+(function (process,global){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.WebSQL = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _errors = require('../../../errors');
+
+var _map = require('lodash/map');
+
+var _map2 = _interopRequireDefault(_map);
+
+var _forEach = require('lodash/forEach');
+
+var _forEach2 = _interopRequireDefault(_forEach);
+
+var _isArray = require('lodash/isArray');
+
+var _isArray2 = _interopRequireDefault(_isArray);
+
+var _isFunction = require('lodash/isFunction');
+
+var _isFunction2 = _interopRequireDefault(_isFunction);
+
+var _isString = require('lodash/isString');
+
+var _isString2 = _interopRequireDefault(_isString);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
+var masterCollectionName = 'sqlite_master';
+var size = 5 * 1000 * 1000; // Database size in bytes
+var webSQL = null;
+var dbCache = {};
+
+if (typeof window !== 'undefined') {
+  webSQL = {
+    openDatabase: typeof openDatabase !== 'undefined' ? openDatabase : global.openDatabase
+  };
+}
+
+/**
+ * @private
+ */
+
+var WebSQL = exports.WebSQL = function () {
+  function WebSQL() {
+    var name = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
+
+    _classCallCheck(this, WebSQL);
+
+    this.name = name;
+  }
+
+  _createClass(WebSQL, [{
+    key: 'openTransaction',
+    value: function openTransaction(collection, query, parameters) {
+      var _this = this;
+
+      var write = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
+
+      var db = dbCache[this.name];
+      var escapedCollection = '"' + collection + '"';
+      var isMaster = collection === masterCollectionName;
+      var isMulti = (0, _isArray2.default)(query);
+
+      query = isMulti ? query : [[query, parameters]];
+
+      if (!db) {
+        db = webSQL.openDatabase(this.name, 1, '', size);
+        dbCache[this.name] = db;
+      }
+
+      var promise = new Promise(function (resolve, reject) {
+        var writeTxn = write || !(0, _isFunction2.default)(db.readTransaction);
+        db[writeTxn ? 'transaction' : 'readTransaction'](function (tx) {
+          if (write && !isMaster) {
+            tx.executeSql('CREATE TABLE IF NOT EXISTS ' + escapedCollection + ' ' + '(key BLOB PRIMARY KEY NOT NULL, value BLOB NOT NULL)');
+          }
+
+          var pending = query.length;
+          var responses = [];
+
+          (0, _forEach2.default)(query, function (parts) {
+            var sql = parts[0].replace('#{collection}', escapedCollection);
+
+            tx.executeSql(sql, parts[1], function (_, resultSet) {
+              var response = {
+                rowCount: resultSet.rowsAffected,
+                result: []
+              };
+
+              if (resultSet.rows.length) {
+                for (var i = 0, len = resultSet.rows.length; i < len; i++) {
+                  try {
+                    var value = resultSet.rows.item(i).value;
+                    var entity = isMaster ? value : JSON.parse(value);
+                    response.result.push(entity);
+                  } catch (err) {
+                    // Catch the error
+                  }
+                }
+              }
+
+              responses.push(response);
+              pending = pending - 1;
+
+              if (pending === 0) {
+                resolve(isMulti ? responses : responses.shift());
+              }
+            });
+          });
+        }, function (err) {
+          err = (0, _isString2.default)(err) ? err : err.message;
+
+          if (err && err.indexOf('no such table') === -1) {
+            return reject(new _errors.NotFoundError('The ' + collection + ' collection was not found on ' + ('the ' + _this.name + ' webSQL database.')));
+          }
+
+          var query = 'SELECT name AS value from #{collection} WHERE type = ? AND name = ?';
+          var parameters = ['table', collection];
+
+          _this.openTransaction(masterCollectionName, query, parameters).then(function (response) {
+            if (response.result.length === 0) {
+              return reject(new _errors.NotFoundError('The ' + collection + ' collection was not found on ' + ('the ' + _this.name + ' webSQL database.')));
+            }
+
+            reject(new _errors.KinveyError('Unable to open a transaction for the ' + collection + ' ' + ('collection on the ' + _this.name + ' webSQL database.')));
+          }).catch(function (err) {
+            reject(new _errors.KinveyError('Unable to open a transaction for the ' + collection + ' ' + ('collection on the ' + _this.name + ' webSQL database.'), err));
+          });
+        });
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'find',
+    value: function find(collection) {
+      var sql = 'SELECT value FROM #{collection}';
+      var promise = this.openTransaction(collection, sql, []).then(function (response) {
+        return response.result;
+      }).catch(function (error) {
+        if (error instanceof _errors.NotFoundError) {
+          return [];
+        }
+
+        throw error;
+      });
+      return promise;
+    }
+  }, {
+    key: 'findById',
+    value: function findById(collection, id) {
+      var _this2 = this;
+
+      var sql = 'SELECT value FROM #{collection} WHERE key = ?';
+      var promise = this.openTransaction(collection, sql, [id]).then(function (response) {
+        var entities = response.result;
+
+        if (entities.length === 0) {
+          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this2.name + ' webSQL database.'));
+        }
+
+        return entities[0];
+      });
+      return promise;
+    }
+  }, {
+    key: 'save',
+    value: function save(collection, entities) {
+      var queries = [];
+      entities = (0, _map2.default)(entities, function (entity) {
+        queries.push(['REPLACE INTO #{collection} (key, value) VALUES (?, ?)', [entity[idAttribute], JSON.stringify(entity)]]);
+
+        return entity;
+      });
+
+      var promise = this.openTransaction(collection, queries, null, true).then(function () {
+        return entities;
+      });
+      return promise;
+    }
+  }, {
+    key: 'removeById',
+    value: function removeById(collection, id) {
+      var _this3 = this;
+
+      var promise = this.openTransaction(collection, [['SELECT value FROM #{collection} WHERE key = ?', [id]], ['DELETE FROM #{collection} WHERE key = ?', [id]]], null, true).then(function (response) {
+        var entities = response[0].result;
+        var count = response[1].rowCount;
+        count = count ? count : entities.length;
+
+        if (count === 0) {
+          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this3.name + ' webSQL database.'));
+        }
+
+        return {
+          count: 1,
+          entities: entities
+        };
+      });
+
+      return promise;
+    }
+  }], [{
+    key: 'isSupported',
+    value: function isSupported() {
+      return webSQL ? true : false;
+    }
+  }]);
+
+  return WebSQL;
+}();
+
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"../../../errors":173,"_process":419,"lodash/forEach":350,"lodash/isArray":355,"lodash/isFunction":360,"lodash/isString":368,"lodash/map":375}],189:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.DB = exports.DBAdapter = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _query = require('../../query');
+
+var _query2 = _interopRequireDefault(_query);
+
+var _aggregation = require('../../aggregation');
+
+var _aggregation2 = _interopRequireDefault(_aggregation);
+
+var _indexeddb = require('./adapters/indexeddb');
+
+var _localstorage = require('./adapters/localstorage');
+
+var _memory = require('./adapters/memory');
+
+var _websql = require('./adapters/websql');
+
+var _log = require('../../log');
+
+var _log2 = _interopRequireDefault(_log);
+
+var _map = require('lodash/map');
+
+var _map2 = _interopRequireDefault(_map);
+
+var _result = require('lodash/result');
+
+var _result2 = _interopRequireDefault(_result);
+
+var _reduce = require('lodash/reduce');
+
+var _reduce2 = _interopRequireDefault(_reduce);
+
+var _forEach = require('lodash/forEach');
+
+var _forEach2 = _interopRequireDefault(_forEach);
+
+var _isString = require('lodash/isString');
+
+var _isString2 = _interopRequireDefault(_isString);
+
+var _isArray = require('lodash/isArray');
+
+var _isArray2 = _interopRequireDefault(_isArray);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
+var kmdAttribute = process.env.KINVEY_KMD_ATTRIBUTE || '_kmd';
+
+/**
+ * @private
+ * Enum for DB Adapters.
+ */
+var DBAdapter = {
+  IndexedDB: 'IndexedDB',
+  LocalStorage: 'LocalStorage',
+  Memory: 'Memory',
+  WebSQL: 'WebSQL'
+};
+Object.freeze(DBAdapter);
+exports.DBAdapter = DBAdapter;
+
+/**
+ * @private
+ */
+
+var DB = exports.DB = function () {
+  function DB() {
+    var _this = this;
+
+    var dbName = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
+    var adapters = arguments.length <= 1 || arguments[1] === undefined ? [DBAdapter.Memory] : arguments[1];
+
+    _classCallCheck(this, DB);
+
+    if (!(0, _isArray2.default)(adapters)) {
+      adapters = [adapters];
+    }
+
+    (0, _forEach2.default)(adapters, function (adapter) {
+      switch (adapter) {
+        case DBAdapter.IndexedDB:
+          if (_indexeddb.IndexedDB.isSupported()) {
+            _this.adapter = new _indexeddb.IndexedDB(dbName);
+            return false;
+          }
+
+          break;
+        case DBAdapter.LocalStorage:
+          if (_localstorage.LocalStorage.isSupported()) {
+            _this.adapter = new _localstorage.LocalStorage(dbName);
+            return false;
+          }
+
+          break;
+        case DBAdapter.Memory:
+          if (_memory.Memory.isSupported()) {
+            _this.adapter = new _memory.Memory(dbName);
+            return false;
+          }
+
+          break;
+        case DBAdapter.WebSQL:
+          if (_websql.WebSQL.isSupported()) {
+            _this.adapter = new _websql.WebSQL(dbName);
+            return false;
+          }
+
+          break;
+        default:
+          _log2.default.warn('The ' + adapter + ' adapter is is not recognized.');
+      }
+    });
+
+    if (!this.adapter) {
+      if (_memory.Memory.isSupported()) {
+        _log2.default.error('Provided adapters are unsupported on this platform. ' + 'Defaulting to StoreAdapter.Memory adapter.', adapters);
+        this.adapter = new _memory.Memory(dbName);
+      } else {
+        _log2.default.error('Provided adapters are unsupported on this platform.', adapters);
+      }
+    }
+  }
+
+  _createClass(DB, [{
+    key: 'isLocalObjectId',
+    value: function isLocalObjectId(id) {
+      return id.indexOf(this.objectIdPrefix) === 0 ? true : false;
+    }
+  }, {
+    key: 'generateObjectId',
+    value: function generateObjectId() {
+      var length = arguments.length <= 0 || arguments[0] === undefined ? 24 : arguments[0];
+
+      var chars = 'abcdef0123456789';
+      var objectId = '';
+
+      for (var i = 0, j = chars.length; i < length; i++) {
+        var pos = Math.floor(Math.random() * j);
+        objectId += chars.substring(pos, pos + 1);
+      }
+
+      objectId = '' + this.objectIdPrefix + objectId;
+      return objectId;
+    }
+  }, {
+    key: 'find',
+    value: function find(collection, query) {
+      var promise = this.adapter.find(collection).then(function (entities) {
+        if (query && !(query instanceof _query2.default)) {
+          query = new _query2.default((0, _result2.default)(query, 'toJSON', query));
+        }
+
+        if (entities.length > 0 && query) {
+          entities = query._process(entities);
+        }
+
+        return entities;
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'count',
+    value: function count(collection, query) {
+      var promise = this.find(collection, query).then(function (entities) {
+        return entities.length;
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'group',
+    value: function group(collection, aggregation) {
+      var promise = this.find(collection).then(function (entities) {
+        if (!(aggregation instanceof _aggregation2.default)) {
+          aggregation = new _aggregation2.default((0, _result2.default)(aggregation, 'toJSON', aggregation));
+        }
+
+        return aggregation.process(entities);
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'findById',
+    value: function findById(collection, id) {
+      if (!(0, _isString2.default)(id)) {
+        _log2.default.warn(id + ' is not a string. Casting to a string value.', id);
+        id = String(id);
+      }
+
+      var promise = this.adapter.findById(collection, id);
+      return promise;
+    }
+  }, {
+    key: 'save',
+    value: function save(collection) {
+      var _this2 = this;
+
+      var entities = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
+
+      var singular = false;
+
+      if (!entities) {
+        return Promise.resolve(null);
+      }
+
+      if (!(0, _isArray2.default)(entities)) {
+        singular = true;
+        entities = [entities];
+      }
+
+      entities = (0, _map2.default)(entities, function (entity) {
+        var _id = entity[idAttribute];
+        var kmd = entity[kmdAttribute] || {};
+
+        if (!_id) {
+          _id = _this2.generateObjectId();
+          kmd.local = true;
+        }
+
+        delete kmd.lmt;
+        entity[idAttribute] = _id;
+        entity[kmdAttribute] = kmd;
+        return entity;
+      });
+
+      return this.adapter.save(collection, entities).then(function (data) {
+        if (singular && data.length > 0) {
+          return data[0];
+        }
+
+        return data;
+      });
+    }
+  }, {
+    key: 'remove',
+    value: function remove(collection, query) {
+      var _this3 = this;
+
+      if (query && !(query instanceof _query2.default)) {
+        query = new _query2.default((0, _result2.default)(query, 'toJSON', query));
+      }
+
+      // Removing should not take the query sort, limit, and skip into account.
+      if (query) {
+        query.sort(null).limit(null).skip(0);
+      }
+
+      var promise = this.find(collection, query).then(function (entities) {
+        var promises = entities.map(function (entity) {
+          return _this3.removeById(collection, entity[idAttribute]);
+        });
+
+        return Promise.all(promises);
+      }).then(function (responses) {
+        return (0, _reduce2.default)(responses, function (result, response) {
+          result.count += response.count;
+          result.entities.concat(response.entities);
+          return result;
+        }, {
+          count: 0,
+          entities: []
+        });
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'removeById',
+    value: function removeById(collection, id) {
+      if (!id) {
+        return Promise.resolve({
+          count: 0,
+          entities: []
+        });
+      }
+
+      var promise = this.adapter.removeById(collection, id);
+      return promise;
+    }
+  }, {
+    key: 'objectIdPrefix',
+    get: function get() {
+      return '';
+    }
+  }]);
+
+  return DB;
+}();
+
+}).call(this,require('_process'))
+
+},{"../../aggregation":168,"../../log":175,"../../query":178,"./adapters/indexeddb":185,"./adapters/localstorage":186,"./adapters/memory":187,"./adapters/websql":188,"_process":419,"lodash/forEach":350,"lodash/isArray":355,"lodash/isString":368,"lodash/map":375,"lodash/reduce":380,"lodash/result":382}],190:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.KinveyRack = exports.Rack = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _middleware = require('./middleware');
+
+var _result = require('lodash/result');
+
+var _result2 = _interopRequireDefault(_result);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * @private
+ */
+
+var Rack = exports.Rack = function (_Middleware) {
+  _inherits(Rack, _Middleware);
+
+  function Rack() {
+    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Rack' : arguments[0];
+
+    _classCallCheck(this, Rack);
+
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Rack).call(this, name));
+
+    _this._middlewares = [];
+    _this.canceled = false;
+    return _this;
+  }
+
+  _createClass(Rack, [{
+    key: 'getMiddleware',
+    value: function getMiddleware() {
+      var index = arguments.length <= 0 || arguments[0] === undefined ? -1 : arguments[0];
+
+      var middlewares = this.middlewares;
+
+      if (index < -1 || index >= middlewares.length) {
+        throw new Error('Index ' + index + ' is out of bounds.');
+      }
+
+      return middlewares[index];
+    }
+  }, {
+    key: 'use',
+    value: function use(middleware) {
+      if (middleware) {
+        if (middleware instanceof _middleware.Middleware) {
+          this._middlewares.push(middleware);
+          return;
+        }
+
+        throw new Error('Unable to use the middleware. It must be an instance of Middleware.');
+      }
+    }
+  }, {
+    key: 'useBefore',
+    value: function useBefore(middlewareClass, middleware) {
+      if (middleware) {
+        if (middleware instanceof _middleware.Middleware) {
+          var middlewares = this.middlewares;
+          var index = middlewares.findIndex(function (existingMiddleware) {
+            return existingMiddleware instanceof middlewareClass;
+          });
+
+          if (index > -1) {
+            middlewares.splice(index, 0, middleware);
+            this._middlewares = middlewares;
+          }
+
+          return;
+        }
+
+        throw new Error('Unable to use the middleware. It must be an instance of Middleware.');
+      }
+    }
+  }, {
+    key: 'useAfter',
+    value: function useAfter(middlewareClass, middleware) {
+      if (middleware) {
+        if (middleware instanceof _middleware.Middleware) {
+          var middlewares = this.middlewares;
+          var index = middlewares.findIndex(function (existingMiddleware) {
+            return existingMiddleware instanceof middlewareClass;
+          });
+
+          if (index > -1) {
+            middlewares.splice(index + 1, 0, middleware);
+            this._middlewares = middlewares;
+          }
+
+          return;
+        }
+
+        throw new Error('Unable to use the middleware. It must be an instance of Middleware.');
+      }
+    }
+  }, {
+    key: 'swap',
+    value: function swap(middlewareClass, middleware) {
+      if (middleware) {
+        if (middleware instanceof _middleware.Middleware) {
+          var middlewares = this.middlewares;
+          var index = middlewares.findIndex(function (existingMiddleware) {
+            return existingMiddleware instanceof middlewareClass;
+          });
+
+          if (index > -1) {
+            middlewares.splice(index, 1, middleware);
+            this._middlewares = middlewares;
+          }
+
+          return;
+        }
+
+        throw new Error('Unable to use the middleware. It must be an instance of Middleware.');
+      }
+    }
+  }, {
+    key: 'remove',
+    value: function remove(middlewareClass) {
+      var middlewares = this.middlewares;
+      var index = middlewares.findIndex(function (existingMiddleware) {
+        return existingMiddleware instanceof middlewareClass;
+      });
+
+      if (index > -1) {
+        middlewares.splice(index, 1);
+        this._middlewares = middlewares;
+        this.remove(middlewareClass);
+      }
+    }
+  }, {
+    key: 'reset',
+    value: function reset() {
+      this._middlewares = [];
+    }
+  }, {
+    key: 'execute',
+    value: function execute(request) {
+      if (!request) {
+        return Promise.reject(new Error('Request is null. Please provide a valid request.'));
+      }
+
+      return this._execute(0, this.middlewares, request);
+    }
+  }, {
+    key: '_execute',
+    value: function _execute(index, middlewares, request) {
+      var _this2 = this;
+
+      if (index < -1 || index >= middlewares.length) {
+        throw new Error('Index ' + index + ' is out of bounds.');
+      }
+
+      var middleware = middlewares[index];
+      return middleware.handle(request).then(function (response) {
+        index = index + 1;
+
+        if (index < middlewares.length) {
+          return _this2._execute(index, middlewares, response);
+        }
+
+        return response;
+      });
+    }
+  }, {
+    key: 'cancel',
+    value: function cancel() {
+      this.canceled = true;
+    }
+  }, {
+    key: 'handle',
+    value: function handle(request) {
+      return this.execute(request);
+    }
+  }, {
+    key: 'generateTree',
+    value: function generateTree() {
+      var level = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+
+      var root = _get(Object.getPrototypeOf(Rack.prototype), 'generateTree', this).call(this, level);
+      var middlewares = this.middlewares;
+
+      middlewares.forEach(function (middleware) {
+        root.nodes.push(middleware.generateTree(level + 1));
+      });
+
+      return root;
+    }
+  }, {
+    key: 'middlewares',
+    get: function get() {
+      return this._middlewares.slice();
+    }
+  }]);
+
+  return Rack;
+}(_middleware.Middleware);
+
+/**
+ * @private
+ */
+
+
+var KinveyRack = exports.KinveyRack = function (_Rack) {
+  _inherits(KinveyRack, _Rack);
+
+  function KinveyRack() {
+    _classCallCheck(this, KinveyRack);
+
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(KinveyRack).apply(this, arguments));
+  }
+
+  _createClass(KinveyRack, [{
+    key: 'execute',
+    value: function execute(request) {
+      request = (0, _result2.default)(request, 'toJSON', request);
+      var promise = _get(Object.getPrototypeOf(KinveyRack.prototype), 'execute', this).call(this, request).then(function (request) {
+        return request.response;
+      });
+      return promise;
+    }
+  }]);
+
+  return KinveyRack;
+}(Rack);
+
+},{"./middleware":180,"lodash/result":382}],191:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.CacheRack = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _rack = require('../rack');
+
+var _cache = require('../middleware/cache');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var sharedInstanceSymbol = Symbol();
+
+/**
+ * @private
+ */
+
+var CacheRack = exports.CacheRack = function (_KinveyRack) {
+  _inherits(CacheRack, _KinveyRack);
+
+  function CacheRack() {
+    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey Cache Rack' : arguments[0];
+
+    _classCallCheck(this, CacheRack);
+
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(CacheRack).call(this, name));
+
+    _this.use(new _cache.CacheMiddleware());
+    return _this;
+  }
+
+  _createClass(CacheRack, null, [{
+    key: 'sharedInstance',
+    value: function sharedInstance() {
+      var instance = CacheRack[sharedInstanceSymbol];
+
+      if (!instance) {
+        instance = new CacheRack();
+        CacheRack[sharedInstanceSymbol] = instance;
+      }
+
+      return instance;
+    }
+  }]);
+
+  return CacheRack;
+}(_rack.KinveyRack);
+
+},{"../middleware/cache":181,"../rack":190}],192:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.NetworkRack = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _rack = require('../rack');
+
+var _serialize = require('../middleware/serialize');
+
+var _http = require('../middleware/http');
+
+var _parse = require('../middleware/parse');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var sharedInstanceSymbol = Symbol();
+
+/**
+ * @private
+ */
+
+var NetworkRack = exports.NetworkRack = function (_KinveyRack) {
+  _inherits(NetworkRack, _KinveyRack);
+
+  function NetworkRack() {
+    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey Network Rack' : arguments[0];
+
+    _classCallCheck(this, NetworkRack);
+
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(NetworkRack).call(this, name));
+
+    _this.use(new _serialize.SerializeMiddleware());
+    _this.use(new _http.HttpMiddleware());
+    _this.use(new _parse.ParseMiddleware());
+    return _this;
+  }
+
+  _createClass(NetworkRack, null, [{
+    key: 'sharedInstance',
+    value: function sharedInstance() {
+      var instance = NetworkRack[sharedInstanceSymbol];
+
+      if (!instance) {
+        instance = new NetworkRack();
+        NetworkRack[sharedInstanceSymbol] = instance;
+      }
+
+      return instance;
+    }
+  }]);
+
+  return NetworkRack;
+}(_rack.KinveyRack);
+
+},{"../middleware/http":182,"../middleware/parse":183,"../middleware/serialize":184,"../rack":190}],193:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _request = require('./request');
+
+var _request2 = _interopRequireDefault(_request);
+
+var _response = require('./response');
+
+var _response2 = _interopRequireDefault(_response);
+
+var _enums = require('../enums');
+
+var _errors = require('../errors');
+
+var _query3 = require('../query');
+
+var _query4 = _interopRequireDefault(_query3);
+
+var _localRequest = require('./localRequest');
+
+var _localRequest2 = _interopRequireDefault(_localRequest);
+
+var _networkRequest2 = require('./networkRequest');
+
+var _networkRequest3 = _interopRequireDefault(_networkRequest2);
+
+var _keyBy = require('lodash/keyBy');
+
+var _keyBy2 = _interopRequireDefault(_keyBy);
+
+var _reduce = require('lodash/reduce');
+
+var _reduce2 = _interopRequireDefault(_reduce);
+
+var _result = require('lodash/result');
+
+var _result2 = _interopRequireDefault(_result);
+
+var _values = require('lodash/values');
+
+var _values2 = _interopRequireDefault(_values);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
+var kmdAttribute = process.env.KINVEY_KMD_ATTRIBUTE || '_kmd';
+var lmtAttribute = process.env.KINVEY_LMT_ATTRIBUTE || 'lmt';
+var maxIdsPerRequest = process.env.KINVEY_MAX_IDS || 200;
+
+/**
+ * @private
+ */
+
+var DeltaFetchRequest = function (_Request) {
+  _inherits(DeltaFetchRequest, _Request);
+
+  function DeltaFetchRequest() {
+    _classCallCheck(this, DeltaFetchRequest);
+
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(DeltaFetchRequest).apply(this, arguments));
+  }
+
+  _createClass(DeltaFetchRequest, [{
+    key: 'execute',
+    value: function execute() {
+      var _this2 = this;
+
+      var promise = _get(Object.getPrototypeOf(DeltaFetchRequest.prototype), 'execute', this).call(this).then(function () {
+        if (_this2.method !== _enums.HttpMethod.GET) {
+          throw new Error('Invalid http method. Http GET requests are only supported by DeltaFetchRequests.');
+        }
+
+        var localRequest = new _localRequest2.default({
+          method: _enums.HttpMethod.GET,
+          url: _this2.url,
+          headers: _this2.headers,
+          auth: _this2.auth,
+          query: _this2.query,
+          timeout: _this2.timeout
+        });
+        return localRequest.execute();
+      }).catch(function (err) {
+        if (err instanceof _errors.NotFoundError) {
+          return new _response2.default({
+            statusCode: _enums.StatusCode.Ok,
+            data: []
+          });
+        }
+
+        throw err;
+      }).then(function (cacheResponse) {
+        var cacheDocuments = (0, _keyBy2.default)(cacheResponse.data, idAttribute);
+        var query = new _query4.default((0, _result2.default)(_this2.query, 'toJSON', _this2.query));
+        query.fields([idAttribute, kmdAttribute]);
+        var networkRequest = new _networkRequest3.default({
+          method: _enums.HttpMethod.GET,
+          url: _this2.url,
+          headers: _this2.headers,
+          auth: _this2.auth,
+          query: query,
+          timeout: _this2.timeout
+        });
+
+        return networkRequest.execute().then(function (networkResponse) {
+          var networkDocuments = (0, _keyBy2.default)(networkResponse.data, idAttribute);
+          var deltaSet = networkDocuments;
+
+          for (var id in cacheDocuments) {
+            if (cacheDocuments.hasOwnProperty(id)) {
+              var cacheDocument = cacheDocuments[id];
+              var networkDocument = networkDocuments[id];
+
+              if (networkDocument) {
+                if (networkDocument[kmdAttribute] && cacheDocument[kmdAttribute] && networkDocument[kmdAttribute][lmtAttribute] === cacheDocument[kmdAttribute][lmtAttribute]) {
+                  delete deltaSet[id];
+                } else {
+                  delete cacheDocuments[id];
+                }
+              } else {
+                delete cacheDocuments[id];
+              }
+            }
+          }
+
+          var deltaSetIds = Object.keys(deltaSet);
+          var promises = [];
+          var i = 0;
+
+          while (i < deltaSetIds.length) {
+            var _query = new _query4.default();
+            var ids = deltaSetIds.slice(i, deltaSetIds.length > maxIdsPerRequest + i ? maxIdsPerRequest : deltaSetIds.length);
+            _query.contains(idAttribute, ids);
+            var _networkRequest = new _networkRequest3.default({
+              method: _enums.HttpMethod.GET,
+              url: _this2.url,
+              headers: _this2.headers,
+              auth: _this2.auth,
+              query: _query,
+              timeout: _this2.timeout
+            });
+
+            var _promise = _networkRequest.execute().catch(function () {
+              return new _response2.default({
+                statusCode: _enums.StatusCode.ServerError
+              });
+            });
+            promises.push(_promise);
+
+            i += maxIdsPerRequest;
+          }
+
+          return Promise.all(promises).then(function (responses) {
+            var initialResponse = new _response2.default({
+              statusCode: _enums.StatusCode.Ok,
+              data: []
+            });
+            return (0, _reduce2.default)(responses, function (result, response) {
+              if (response.isSuccess()) {
+                result.addHeaders(response.headers);
+                result.data = result.data.concat(response.data);
+              }
+
+              return result;
+            }, initialResponse);
+          }).then(function (response) {
+            response.data = response.data.concat((0, _values2.default)(cacheDocuments));
+
+            if (_this2.query) {
+              var _query2 = new _query4.default((0, _result2.default)(_this2.query, 'toJSON', _this2.query));
+              _query2.skip(0).limit(0);
+              response.data = _query2._process(response.data);
+            }
+
+            return response;
+          });
+        });
+      });
+
+      return promise;
+    }
+  }]);
+
+  return DeltaFetchRequest;
+}(_request2.default);
+
+exports.default = DeltaFetchRequest;
+
+}).call(this,require('_process'))
+
+},{"../enums":172,"../errors":173,"../query":178,"./localRequest":194,"./networkRequest":195,"./request":197,"./response":198,"_process":419,"lodash/keyBy":371,"lodash/reduce":380,"lodash/result":382,"lodash/values":388}],194:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _request = require('./request');
+
+var _request2 = _interopRequireDefault(_request);
+
+var _response = require('./response');
+
+var _response2 = _interopRequireDefault(_response);
+
+var _cacheRack = require('../rack/racks/cacheRack');
+
+var _errors = require('../errors');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * @private
+ */
+
+var LocalRequest = function (_Request) {
+  _inherits(LocalRequest, _Request);
+
+  function LocalRequest() {
+    _classCallCheck(this, LocalRequest);
+
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(LocalRequest).apply(this, arguments));
+  }
+
+  _createClass(LocalRequest, [{
+    key: 'execute',
+    value: function execute() {
+      var _this2 = this;
+
+      var promise = _get(Object.getPrototypeOf(LocalRequest.prototype), 'execute', this).call(this).then(function () {
+        var rack = _cacheRack.CacheRack.sharedInstance();
+        return rack.execute(_this2.toJSON());
+      }).then(function (response) {
+        if (!response) {
+          throw new _errors.NoResponseError();
+        }
+
+        return new _response2.default({
+          statusCode: response.statusCode,
+          headers: response.headers,
+          data: response.data
+        });
+      }).then(function (response) {
+        if (!response.isSuccess()) {
+          throw response.error;
+        }
+
+        return response;
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'cancel',
+    value: function cancel() {
+      var rack = _cacheRack.CacheRack.sharedInstance();
+      rack.cancel();
+    }
+  }]);
+
+  return LocalRequest;
+}(_request2.default);
+
+exports.default = LocalRequest;
+
+},{"../errors":173,"../rack/racks/cacheRack":191,"./request":197,"./response":198}],195:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _request = require('./request');
+
+var _request2 = _interopRequireDefault(_request);
+
+var _response = require('./response');
+
+var _response2 = _interopRequireDefault(_response);
+
+var _networkRack = require('../rack/racks/networkRack');
+
+var _errors = require('../errors');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * @private
+ */
+
+var NetworkRequest = function (_Request) {
+  _inherits(NetworkRequest, _Request);
+
+  function NetworkRequest() {
+    _classCallCheck(this, NetworkRequest);
+
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(NetworkRequest).apply(this, arguments));
+  }
+
+  _createClass(NetworkRequest, [{
+    key: 'execute',
+    value: function execute() {
+      var _this2 = this;
+
+      var promise = _get(Object.getPrototypeOf(NetworkRequest.prototype), 'execute', this).call(this).then(function () {
+        var networkRack = _networkRack.NetworkRack.sharedInstance();
+        return networkRack.execute(_this2.toJSON());
+      }).then(function (response) {
+        if (!response) {
+          throw new _errors.NoResponseError();
+        }
+
+        return new _response2.default({
+          statusCode: response.statusCode,
+          headers: response.headers,
+          data: response.data
+        });
+      }).then(function (response) {
+        if (!response.isSuccess()) {
+          throw response.error;
+        }
+
+        return response;
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'cancel',
+    value: function cancel() {
+      var networkRack = _networkRack.NetworkRack.sharedInstance();
+      networkRack.cancel();
+    }
+  }]);
+
+  return NetworkRequest;
+}(_request2.default);
+
+exports.default = NetworkRequest;
+
+},{"../errors":173,"../rack/racks/networkRack":192,"./request":197,"./response":198}],196:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _clone = require('lodash/clone');
+
+var _clone2 = _interopRequireDefault(_clone);
+
+var _isPlainObject = require('lodash/isPlainObject');
+
+var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
+
+var _errors = require('../errors');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var privatePropertiesSymbol = Symbol();
+var appVersionKey = 'appVersion';
+
+var PrivateProperties = function () {
+  function PrivateProperties() {
+    var properties = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, PrivateProperties);
+
+    this.properties = properties;
+  }
+
+  _createClass(PrivateProperties, [{
+    key: 'addProperties',
+    value: function addProperties(properties) {
+      var _this = this;
+
+      Object.keys(properties).forEach(function (key) {
+        var value = properties[key];
+
+        if (value) {
+          _this.properties[key] = value;
+        } else {
+          delete _this.properties[key];
+        }
+      });
+    }
+  }, {
+    key: 'clear',
+    value: function clear() {
+      this.properties = {};
+    }
+  }, {
+    key: 'clearProperty',
+    value: function clearProperty(key) {
+      var properties = this.properties;
+
+      if (key && properties.hasOwnProperty(key)) {
+        delete properties[key];
+      }
+    }
+  }, {
+    key: 'toJSON',
+    value: function toJSON() {
+      return (0, _clone2.default)(this.properties, true);
+    }
+  }, {
+    key: 'properties',
+    get: function get() {
+      return this._properties;
+    },
+    set: function set(properties) {
+      this._properties = (0, _clone2.default)(properties, true);
+    }
+  }]);
+
+  return PrivateProperties;
+}();
+
+/**
+ * Properties class
+ */
+
+
+var Properties = function () {
+  /**
+   * This is the constructor.
+   *
+   * @param  {Object} properties Request properties
+   */
+
+  function Properties(properties) {
+    _classCallCheck(this, Properties);
+
+    this[privatePropertiesSymbol] = new PrivateProperties(properties);
+  }
+
+  /**
+   * Set the request properties.
+   *
+   * @param {Object} properties Request properties
+   */
+
+
+  _createClass(Properties, [{
+    key: 'getProperty',
+
+
+    /**
+     * Returns the request property for the key or `undefined` if
+     * it has not been set.
+     *
+     * @param  {String} key Request property key
+     * @return {*} Request property value
+     */
+    value: function getProperty(key) {
+      var properties = this.toJSON();
+
+      if (key && properties.hasOwnProperty(key)) {
+        return properties[key];
+      }
+
+      return undefined;
+    }
+
+    /**
+     * Sets the request property key to the value.
+     *
+     * @param {String} key Request property key
+     * @param {*} value Request property value
+     * @return {RequestProperties} The request properties instance.
+     */
+
+  }, {
+    key: 'setProperty',
+    value: function setProperty(key, value) {
+      var properties = {};
+      properties[key] = value;
+      this.addProperties(properties);
+      return this;
+    }
+
+    /**
+     * Adds the properties to the exisiting request properties
+     * replacing any that already existed.
+     *
+     * @param {Object} properties Custom request properties
+     * @throws {KinveyError} If properties argument is not an object.
+     * @return {RequestProperties} The request properties instance.
+     */
+
+  }, {
+    key: 'addProperties',
+    value: function addProperties() {
+      var properties = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      if (!(0, _isPlainObject2.default)(properties)) {
+        throw new _errors.KinveyError('properties argument must be an object');
+      }
+
+      var privateProperties = this[privatePropertiesSymbol];
+      privateProperties.addProperties(properties);
+      return this;
+    }
+
+    /**
+     * Clears all the request properties.
+     *
+     * @return {RequestProperties} The request properties instance.
+     */
+
+  }, {
+    key: 'clear',
+    value: function clear() {
+      var privateProperties = this[privatePropertiesSymbol];
+      privateProperties.clear();
+      return this;
+    }
+
+    /**
+     * Clears the request property.
+     *
+     * @param  {String} key Request property key
+     * @return {RequestProperties} The request properties instance.
+     */
+
+  }, {
+    key: 'clearProperty',
+    value: function clearProperty(key) {
+      var privateProperties = this[privatePropertiesSymbol];
+      privateProperties.clearProperty(key);
+      return this;
+    }
+
+    /**
+     * Clears the app version property.
+     *
+     * @return {RequestProperties} The request properties instance.
+     */
+
+  }, {
+    key: 'clearAppVersion',
+    value: function clearAppVersion() {
+      return this.clearProperty(appVersionKey);
+    }
+
+    /**
+     * Returns a JSON representation of the request properties.
+     *
+     * @return {Object} Request properties JSON.
+     */
+
+  }, {
+    key: 'toJSON',
+    value: function toJSON() {
+      var privateProperties = this[privatePropertiesSymbol];
+      return privateProperties.toJSON();
+    }
+  }, {
+    key: 'properties',
+    set: function set(properties) {
+      this.clear().addProperties(properties);
+    }
+
+    /**
+     * Return the app version request property.
+     *
+     * @return {String} App version
+     */
+
+  }, {
+    key: 'appVersion',
+    get: function get() {
+      return this.getProperty(appVersionKey);
+    }
+
+    /**
+     * Set the app version request property. The app version can be provided
+     * in major.minor.patch format or something specific to your application.
+     *
+     * @param  {Any} version App version.
+     * @return {RequestProperties} The request properties instance.
+     */
+    ,
+    set: function set(version) {
+      version = Array.prototype.slice.call(arguments, 1);
+      var major = version[0];
+      var minor = version[1];
+      var patch = version[2];
+      var appVersion = '';
+
+      if (major) {
+        appVersion = (major + '').trim();
+      }
+
+      if (minor) {
+        appVersion = ('.' + minor).trim();
+      }
+
+      if (patch) {
+        appVersion = ('.' + patch).trim();
+      }
+
+      this.setProperty(appVersionKey, appVersion);
+      return this;
+    }
+  }]);
+
+  return Properties;
+}();
+
+exports.default = Properties;
+
+},{"../errors":173,"lodash/clone":347,"lodash/isPlainObject":366}],197:[function(require,module,exports){
+(function (process,Buffer){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _enums = require('../enums');
+
+var _device = require('../device');
+
+var _device2 = _interopRequireDefault(_device);
+
+var _properties = require('./properties');
+
+var _properties2 = _interopRequireDefault(_properties);
+
+var _string = require('../utils/string');
+
+var _assign = require('lodash/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
+var _result = require('lodash/result');
+
+var _result2 = _interopRequireDefault(_result);
+
+var _clone = require('lodash/clone');
+
+var _clone2 = _interopRequireDefault(_clone);
+
+var _forEach = require('lodash/forEach');
+
+var _forEach2 = _interopRequireDefault(_forEach);
+
+var _isString = require('lodash/isString');
+
+var _isString2 = _interopRequireDefault(_isString);
+
+var _isPlainObject = require('lodash/isPlainObject');
+
+var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * @private
+ */
+
+var Request = function () {
+  function Request() {
+    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, Request);
+
+    options = (0, _assign2.default)({
+      method: _enums.HttpMethod.GET,
+      headers: {},
+      url: null,
+      data: null,
+      timeout: process.env.KINVEY_DEFAULT_TIMEOUT || 10000,
+      followRedirect: true
+    }, options);
+
+    this.method = options.method;
+    this.url = options.url;
+    this.data = options.data || options.body;
+    this.timeout = options.timeout;
+    this.followRedirect = options.followRedirect;
+    this.executing = false;
+
+    var headers = options.headers && (0, _isPlainObject2.default)(options.headers) ? options.headers : {};
+
+    if (!headers.Accept || !headers.accept) {
+      headers.Accept = 'application/json; charset=utf-8';
+    }
+
+    this.addHeaders(headers);
+  }
+
+  _createClass(Request, [{
+    key: 'getHeader',
+    value: function getHeader(name) {
+      if (name) {
+        if (!(0, _isString2.default)(name)) {
+          name = String(name);
+        }
+
+        var headers = this.headers || {};
+        var keys = Object.keys(headers);
+
+        for (var i = 0, len = keys.length; i < len; i++) {
+          var key = keys[i];
+
+          if (key.toLowerCase() === name.toLowerCase()) {
+            return headers[key];
+          }
+        }
+      }
+
+      return undefined;
+    }
+  }, {
+    key: 'setHeader',
+    value: function setHeader(name, value) {
+      if (!name || !value) {
+        throw new Error('A name and value must be provided to set a header.');
+      }
+
+      if (!(0, _isString2.default)(name)) {
+        name = String(name);
+      }
+
+      var headers = this.headers || {};
+
+      if (!(0, _isString2.default)(value)) {
+        headers[name] = JSON.stringify(value);
+      } else {
+        headers[name] = value;
+      }
+
+      this.headers = headers;
+    }
+  }, {
+    key: 'addHeaders',
+    value: function addHeaders(headers) {
+      var _this = this;
+
+      if (!(0, _isPlainObject2.default)(headers)) {
+        throw new Error('Headers argument must be an object.');
+      }
+
+      var names = Object.keys(headers);
+
+      (0, _forEach2.default)(names, function (name) {
+        var value = headers[name];
+        _this.setHeader(name, value);
+      });
+    }
+  }, {
+    key: 'removeHeader',
+    value: function removeHeader(name) {
+      if (name) {
+        if (!(0, _isString2.default)(name)) {
+          name = String(name);
+        }
+
+        var headers = this.headers || {};
+        delete headers[name];
+        this.headers = headers;
+      }
+    }
+  }, {
+    key: 'clearHeaders',
+    value: function clearHeaders() {
+      this.headers = {};
+    }
+  }, {
+    key: 'isExecuting',
+    value: function isExecuting() {
+      return this.executing ? true : false;
+    }
+  }, {
+    key: 'execute',
+    value: function execute() {
+      var _this2 = this;
+
+      if (this.executing) {
+        return Promise.reject(new Error('Unable to execute the request. The request is already executing.'));
+      }
+
+      this.executing = Promise.resolve().then(function (response) {
+        _this2.executing = false;
+        return response;
+      }).catch(function (err) {
+        _this2.executing = false;
+        throw err;
+      });
+
+      return this.executing;
+    }
+  }, {
+    key: 'toJSON',
+    value: function toJSON() {
+      var json = {
+        method: this.method,
+        headers: this.headers,
+        url: this.url,
+        data: this.data,
+        followRedirect: this.followRedirect
+      };
+
+      return (0, _clone2.default)(json, true);
+    }
+  }, {
+    key: 'method',
+    get: function get() {
+      return this._method;
+    },
+    set: function set(method) {
+      if (!(0, _isString2.default)(method)) {
+        method = String(method);
+      }
+
+      method = method.toUpperCase();
+
+      switch (method) {
+        case _enums.HttpMethod.GET:
+        case _enums.HttpMethod.POST:
+        case _enums.HttpMethod.PATCH:
+        case _enums.HttpMethod.PUT:
+        case _enums.HttpMethod.DELETE:
+          this._method = method;
+          break;
+        default:
+          throw new Error('Invalid Http Method. Only GET, POST, PATCH, PUT, and DELETE are allowed.');
+      }
+    }
+  }, {
+    key: 'body',
+    get: function get() {
+      return this.data;
+    },
+    set: function set(body) {
+      this.data = body;
+    }
+  }, {
+    key: 'data',
+    get: function get() {
+      return this._data;
+    },
+    set: function set(data) {
+      if (data) {
+        var contentTypeHeader = this.getHeader('Content-Type');
+        if (!contentTypeHeader) {
+          this.setHeader('Content-Type', 'application/json; charset=utf-8');
+        }
+      } else {
+        this.removeHeader('Content-Type');
+      }
+
+      this._data = data;
+    }
+  }]);
+
+  return Request;
+}();
+
+/**
+ * @private
+ */
+
+
+var KinveyRequest = function (_Request) {
+  _inherits(KinveyRequest, _Request);
+
+  function KinveyRequest() {
+    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, KinveyRequest);
+
+    var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(KinveyRequest).call(this, options));
+
+    options = (0, _assign2.default)({
+      properties: null,
+      auth: null,
+      query: null
+    }, options);
+
+    _this3.properties = options.properties;
+    _this3.auth = options.auth;
+    _this3.query = (0, _result2.default)(options.query, 'toJSON', options.query);
+
+    var headers = {};
+    headers['X-Kinvey-Api-Version'] = process.env.KINVEY_API_VERSION || 3;
+
+    var device = new _device2.default();
+    headers['X-Kinvey-Device-Information'] = JSON.stringify(device.toJSON());
+
+    if (options.contentType) {
+      headers['X-Kinvey-Content-Type'] = options.contentType;
+    }
+
+    if (options.skipBL === true) {
+      headers['X-Kinvey-Skip-Business-Logic'] = true;
+    }
+
+    if (options.trace === true) {
+      headers['X-Kinvey-Include-Headers-In-Response'] = 'X-Kinvey-Request-Id';
+      headers['X-Kinvey-ResponseWrapper'] = true;
+    }
+
+    _this3.addHeaders(headers);
+    return _this3;
+  }
+
+  _createClass(KinveyRequest, [{
+    key: 'execute',
+    value: function execute() {
+      var _this4 = this;
+
+      var promise = _get(Object.getPrototypeOf(KinveyRequest.prototype), 'execute', this).call(this).then(function () {
+        return _this4.auth;
+      }).then(function (authInfo) {
+        if (authInfo) {
+          var credentials = authInfo.credentials;
+
+          if (authInfo.username) {
+            credentials = new Buffer(authInfo.username + ':' + authInfo.password).toString('base64');
+          }
+
+          _this4.setHeader('Authorization', authInfo.scheme + ' ' + credentials);
+        }
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'toJSON',
+    value: function toJSON() {
+      var json = _get(Object.getPrototypeOf(KinveyRequest.prototype), 'toJSON', this).call(this);
+      json.query = this.query;
+      return (0, _clone2.default)(json, true);
+    }
+  }, {
+    key: 'authHandler',
+    set: function set(authHandler) {
+      this.authHandler = authHandler;
+    }
+  }, {
+    key: 'properties',
+    set: function set(properties) {
+      if (properties) {
+        if (!(properties instanceof _properties2.default)) {
+          properties = new _properties2.default((0, _result2.default)(properties, 'toJSON', properties));
+        }
+
+        var appVersion = properties.appVersion;
+
+        if (appVersion) {
+          this.setHeader('X-Kinvey-Client-App-Version', appVersion);
+        } else {
+          this.removeHeader('X-Kinvey-Client-App-Version');
+        }
+
+        var customProperties = (0, _result2.default)(properties, 'toJSON', {});
+        delete customProperties.appVersion;
+        var customPropertiesHeader = JSON.stringify(customProperties);
+        var customPropertiesByteCount = (0, _string.byteCount)(customPropertiesHeader);
+        var customPropertiesMaxBytesAllowed = process.env.KINVEY_MAX_HEADER_BYTES || 2000;
+
+        if (customPropertiesByteCount >= customPropertiesMaxBytesAllowed) {
+          throw new Error('The custom properties are ' + customPropertiesByteCount + ' bytes.' + ('It must be less then ' + customPropertiesMaxBytesAllowed + ' bytes.'), 'Please remove some custom properties.');
+        }
+
+        this.setHeader('X-Kinvey-Custom-Request-Properties', customPropertiesHeader);
+      }
+    }
+  }]);
+
+  return KinveyRequest;
+}(Request);
+
+exports.default = KinveyRequest;
+
+}).call(this,require('_process'),require("buffer").Buffer)
+
+},{"../device":171,"../enums":172,"../utils/string":208,"./properties":196,"_process":419,"buffer":58,"lodash/assign":345,"lodash/clone":347,"lodash/forEach":350,"lodash/isPlainObject":366,"lodash/isString":368,"lodash/result":382}],198:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _enums = require('../enums');
+
+var _errors = require('../errors');
+
+var _assign = require('lodash/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
+var _clone = require('lodash/clone');
+
+var _clone2 = _interopRequireDefault(_clone);
+
+var _forEach = require('lodash/forEach');
+
+var _forEach2 = _interopRequireDefault(_forEach);
+
+var _isString = require('lodash/isString');
+
+var _isString2 = _interopRequireDefault(_isString);
+
+var _isPlainObject = require('lodash/isPlainObject');
+
+var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * @private
+ */
+
+var Response = function () {
+  function Response() {
+    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, Response);
+
+    options = (0, _assign2.default)({
+      statusCode: _enums.StatusCode.Ok,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8'
+      },
+      data: null
+    }, options);
+
+    this.statusCode = options.statusCode;
+    this.addHeaders(options.headers);
+    this.data = options.data;
+  }
+
+  _createClass(Response, [{
+    key: 'getHeader',
+    value: function getHeader(name) {
+      if (name) {
+        if (!(0, _isString2.default)(name)) {
+          name = String(name);
+        }
+
+        var headers = this.headers || {};
+        var keys = Object.keys(headers);
+
+        for (var i = 0, len = keys.length; i < len; i++) {
+          var key = keys[i];
+
+          if (key.toLowerCase() === name.toLowerCase()) {
+            return headers[key];
+          }
+        }
+      }
+
+      return undefined;
+    }
+  }, {
+    key: 'setHeader',
+    value: function setHeader(name, value) {
+      if (!name || !value) {
+        throw new Error('A name and value must be provided to set a header.');
+      }
+
+      if (!(0, _isString2.default)(name)) {
+        name = String(name);
+      }
+
+      var headers = this.headers || {};
+
+      if (!(0, _isString2.default)(value)) {
+        headers[name] = JSON.stringify(value);
+      } else {
+        headers[name] = value;
+      }
+
+      this.headers = headers;
+    }
+  }, {
+    key: 'addHeaders',
+    value: function addHeaders(headers) {
+      var _this = this;
+
+      if (!(0, _isPlainObject2.default)(headers)) {
+        throw new Error('Headers argument must be an object.');
+      }
+
+      var names = Object.keys(headers);
+
+      (0, _forEach2.default)(names, function (name) {
+        var value = headers[name];
+        _this.setHeader(name, value);
+      });
+    }
+  }, {
+    key: 'removeHeader',
+    value: function removeHeader(name) {
+      if (name) {
+        if (!(0, _isString2.default)(name)) {
+          name = String(name);
+        }
+
+        var headers = this.headers || {};
+        delete headers[name];
+        this.headers = headers;
+      }
+    }
+  }, {
+    key: 'clearHeaders',
+    value: function clearHeaders() {
+      this.headers = {};
+    }
+  }, {
+    key: 'isSuccess',
+    value: function isSuccess() {
+      return this.statusCode >= 200 && this.statusCode < 300;
+    }
+  }, {
+    key: 'toJSON',
+    value: function toJSON() {
+      var json = {
+        statusCode: this.statusCode,
+        headers: this.headers,
+        data: this.data
+      };
+      return json;
+    }
+  }, {
+    key: 'error',
+    get: function get() {
+      if (this.isSuccess()) {
+        return null;
+      }
+
+      var data = (0, _clone2.default)(this.data, true) || {};
+      var name = data.name || data.error;
+      var message = data.message || data.description;
+      var debug = data.debug;
+
+      if (name === 'EntityNotFound' || name === 'CollectionNotFound' || name === 'AppNotFound' || name === 'UserNotFound' || name === 'BlobNotFound' || name === 'DocumentNotFound') {
+        return new _errors.NotFoundError(message, debug);
+      } else if (name === 'InsufficientCredentials') {
+        return new _errors.InsufficientCredentialsError(message, debug);
+      } else if (name === 'InvalidCredentials') {
+        return new _errors.InvalidCredentialsError(message, debug);
+      }
+
+      return new _errors.KinveyError(message, debug);
+    }
+  }]);
+
+  return Response;
+}();
+
+exports.default = Response;
+
+},{"../enums":172,"../errors":173,"lodash/assign":345,"lodash/clone":347,"lodash/forEach":350,"lodash/isPlainObject":366,"lodash/isString":368}],199:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _networkStore = require('./networkStore');
+
+var _networkStore2 = _interopRequireDefault(_networkStore);
+
+var _response = require('../requests/response');
+
+var _response2 = _interopRequireDefault(_response);
+
+var _enums = require('../enums');
+
+var _errors = require('../errors');
+
+var _query = require('../query');
+
+var _query2 = _interopRequireDefault(_query);
+
+var _aggregation = require('../aggregation');
+
+var _aggregation2 = _interopRequireDefault(_aggregation);
+
+var _assign = require('lodash/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
+var _forEach = require('lodash/forEach');
+
+var _forEach2 = _interopRequireDefault(_forEach);
+
+var _clone = require('lodash/clone');
+
+var _clone2 = _interopRequireDefault(_clone);
+
+var _map = require('lodash/map');
+
+var _map2 = _interopRequireDefault(_map);
+
+var _log = require('../log');
+
+var _log2 = _interopRequireDefault(_log);
+
+var _isArray = require('lodash/isArray');
+
+var _isArray2 = _interopRequireDefault(_isArray);
+
+var _keyBy = require('lodash/keyBy');
+
+var _keyBy2 = _interopRequireDefault(_keyBy);
+
+var _object = require('../utils/object');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
+var appdataNamespace = process.env.KINVEY_DATASTORE_NAMESPACE || 'appdata';
+var syncCollectionName = process.env.KINVEY_SYNC_COLLECTION_NAME || 'sync';
+var kmdAttribute = process.env.KINVEY_KMD_ATTRIBUTE || '_kmd';
+
+/**
+ * The CacheStore class is used to find, save, update, remove, count and group enitities
+ * in a collection on the network using a cache on the device.
+ */
+
+var CacheStore = function (_NetworkStore) {
+  _inherits(CacheStore, _NetworkStore);
+
+  /**
+   * Creates a new instance of the CacheStore class.
+   *
+   * @param   {string}  name   Name of the collection
+   *
+   * @throws  {KinveyError}   If the name provided is not a string.
+   */
+
+  function CacheStore(name) {
+    _classCallCheck(this, CacheStore);
+
+    /**
+     * @type {Number}
+     */
+
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(CacheStore).call(this, name));
+
+    _this.ttl = undefined;
+    return _this;
+  }
+
+  /**
+   * The sync pathname for the store.
+   *
+   * @param   {Client}   [client]     Client
+   * @return  {string}                Sync pathname
+   */
+
+
+  _createClass(CacheStore, [{
+    key: 'find',
+
+
+    /**
+     * Finds all entities in a collection. A query can be optionally provided to return
+     * a subset of all entities in a collection or omitted to return all entities in
+     * a collection. The number of entities returned will adhere to the limits specified
+     * at http://devcenter.kinvey.com/rest/guides/datastore#queryrestrictions. A
+     * promise will be returned that will be resolved with the entities or rejected with
+     * an error.
+     *
+     * @param   {Query}                 [query]                                   Query used to filter result.
+     * @param   {Object}                [options]                                 Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @param   {Number}                [options.ttl]                             Time to live for data retrieved
+     *                                                                            from the cache.
+     * @return  {Promise}                                                         Promise
+     */
+    value: function find(query) {
+      var _this2 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      _log2.default.debug('Retrieving the entities in the ' + this.name + ' collection.', query);
+
+      options = (0, _assign2.default)({
+        useDeltaFetch: true
+      }, options);
+
+      if (query && !(query instanceof _query2.default)) {
+        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
+      }
+
+      var promise = Promise.resolve().then(function () {
+        return _this2.client.executeLocalRequest({
+          method: _enums.HttpMethod.GET,
+          pathname: _this2._pathname,
+          properties: options.properties,
+          auth: _this2.client.defaultAuth(),
+          query: query,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        var result = {
+          cache: response.data
+        };
+
+        result.networkPromise = _this2.syncCount().then(function (count) {
+          if (count > 0) {
+            return _this2.push().then(function () {
+              return _this2.syncCount();
+            });
+          }
+
+          return count;
+        }).then(function (count) {
+          if (count > 0) {
+            throw new _errors.KinveyError('Unable to load data from the network. There are ' + count + ' entities that need ' + 'to be synced before data is loaded from the network.');
+          }
+
+          if (options.useDeltaFetch) {
+            return _this2.client.executeDeltaFetchRequest({
+              method: _enums.HttpMethod.GET,
+              pathname: _this2._pathname,
+              properties: options.properties,
+              auth: _this2.client.defaultAuth(),
+              query: query,
+              timeout: options.timeout
+            }).then(function (response) {
+              return response.data;
+            });
+          }
+
+          return _get(Object.getPrototypeOf(CacheStore.prototype), 'find', _this2).call(_this2, query, options);
+        }).then(function (data) {
+          var removedEntityIds = Object.keys((0, _keyBy2.default)(data, idAttribute));
+          var removeQuery = new _query2.default();
+          removeQuery.contains(idAttribute, removedEntityIds);
+
+          return _this2.client.executeLocalRequest({
+            method: _enums.HttpMethod.DELETE,
+            pathname: _this2._pathname,
+            properties: options.properties,
+            auth: _this2.client.defaultAuth(),
+            query: removeQuery,
+            timeout: options.timeout
+          }).then(function () {
+            return _this2._updateCache(data);
+          });
+        });
+
+        return result;
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Retrieved the entities in the ' + _this2.name + ' collection.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to retrieve the entities in the ' + _this2.name + ' collection.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Groups entities in a collection. An aggregation can be optionally provided to group
+     * a subset of entities in a collection or omitted to group all the entities
+     * in a collection. A promise will be returned that will be resolved with the result
+     * or rejected with an error.
+     *
+     * @param   {Aggregation}           aggregation                               Aggregation used to group entities.
+     * @param   {Object}                [options]                                 Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @param   {Number}                [options.ttl]                             Time to live for data retrieved
+     *                                                                            from the cache.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'group',
+    value: function group(aggregation) {
+      var _this3 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      _log2.default.debug('Grouping the entities in the ' + this.name + ' collection.', aggregation, options);
+
+      options = (0, _assign2.default)({
+        force: false
+      }, options);
+
+      if (!(aggregation instanceof _aggregation2.default)) {
+        return Promise.reject(new _errors.KinveyError('Invalid aggregation. ' + 'It must be an instance of the Kinvey.Aggregation class.'));
+      }
+
+      var promise = Promise.resolve().then(function () {
+        return _this3.client.executeLocalRequest({
+          method: _enums.HttpMethod.GET,
+          pathname: _this3._pathname + '/_group',
+          properties: options.properties,
+          auth: _this3.client.defaultAuth(),
+          data: aggregation.toJSON(),
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        var result = {
+          cache: response.data
+        };
+
+        result.networkPromise = _this3.syncCount().then(function (count) {
+          if (count > 0) {
+            return _this3.push().then(function () {
+              return _this3.syncCount();
+            });
+          }
+
+          return count;
+        }).then(function (count) {
+          if (count > 0) {
+            throw new _errors.KinveyError('Unable to load data from the network. There are ' + count + ' entities that need ' + 'to be synced before data is loaded from the network.');
+          }
+
+          return _get(Object.getPrototypeOf(CacheStore.prototype), 'group', _this3).call(_this3, aggregation, options);
+        });
+
+        return result;
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Grouped the entities in the ' + _this3.name + ' collection.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to group the entities in the ' + _this3.name + ' collection.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Counts entities in a collection. A query can be optionally provided to count
+     * a subset of entities in a collection or omitted to count all the entities
+     * in a collection. A promise will be returned that will be resolved with the count
+     * or rejected with an error.
+     *
+     * @param   {Query}                 [query]                                   Query to count a subset of entities.
+     * @param   {Object}                [options]                                 Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @param   {Number}                [options.ttl]                             Time to live for data retrieved
+     *                                                                            from the cache.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'count',
+    value: function count(query) {
+      var _this4 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      _log2.default.debug('Counting the number of entities in the ' + this.name + ' collection.', query);
+
+      options = (0, _assign2.default)({
+        force: false
+      }, options);
+
+      if (query && !(query instanceof _query2.default)) {
+        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
+      }
+
+      var promise = Promise.resolve().then(function () {
+        return _this4.client.executeLocalRequest({
+          method: _enums.HttpMethod.GET,
+          pathname: _this4._pathname + '/_count',
+          properties: options.properties,
+          auth: _this4.client.defaultAuth(),
+          query: query,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        var result = {
+          cache: response.data
+        };
+
+        result.networkPromise = _this4.syncCount().then(function (count) {
+          if (count > 0) {
+            return _this4.push().then(function () {
+              return _this4.syncCount();
+            });
+          }
+
+          return count;
+        }).then(function (count) {
+          if (count > 0) {
+            throw new _errors.KinveyError('Unable to load data from the network. There are ' + count + ' entities that need ' + 'to be synced before data is loaded from the network.');
+          }
+
+          return _get(Object.getPrototypeOf(CacheStore.prototype), 'count', _this4).call(_this4, query, options);
+        });
+
+        return result;
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Counted the number of entities in the ' + _this4.name + ' collection.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to count the number of entities in the ' + _this4.name + ' collection.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Retrieves a single entity in a collection by id. A promise will be returned that will
+     * be resolved with the entity or rejected with an error.
+     *
+     * @param   {string}                id                                        Document Id
+     * @param   {Object}                [options]                                 Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @param   {Number}                [options.ttl]                             Time to live for data retrieved
+     *                                                                            from the cache.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'findById',
+    value: function findById(id) {
+      var _this5 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      if (!id) {
+        _log2.default.warn('No id was provided to retrieve an entity.', id);
+        return Promise.resolve(null);
+      }
+
+      _log2.default.debug('Retrieving the entity in the ' + this.name + ' collection with id = ' + id + '.');
+
+      options = (0, _assign2.default)({
+        force: false,
+        useDeltaFetch: true
+      }, options);
+
+      var promise = Promise.resolve().then(function () {
+        return _this5.client.executeLocalRequest({
+          method: _enums.HttpMethod.GET,
+          pathname: _this5._pathname + '/' + id,
+          properties: options.properties,
+          auth: _this5.client.defaultAuth(),
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        var result = {
+          cache: response.data
+        };
+
+        result.networkPromise = _this5.syncCount().then(function (count) {
+          if (count > 0) {
+            return _this5.push().then(function () {
+              return _this5.syncCount();
+            });
+          }
+
+          return count;
+        }).then(function (count) {
+          if (count > 0) {
+            throw new _errors.KinveyError('Unable to load data from the network. There are ' + count + ' entities that need ' + 'to be synced before data is loaded from the network.');
+          }
+
+          if (options.useDeltaFetch) {
+            return _this5.client.executeDeltaFetchRequest({
+              method: _enums.HttpMethod.GET,
+              pathname: _this5._pathname + '/' + id,
+              properties: options.properties,
+              auth: _this5.client.defaultAuth(),
+              timeout: options.timeout
+            }).then(function (response) {
+              return response.data;
+            });
+          }
+
+          return _get(Object.getPrototypeOf(CacheStore.prototype), 'findById', _this5).call(_this5, id, options);
+        }).then(function (data) {
+          return _this5._updateCache(data);
+        }).catch(function (err) {
+          if (err instanceof _errors.NotFoundError) {
+            return _this5.client.executeLocalRequest({
+              method: _enums.HttpMethod.DELETE,
+              pathname: _this5._pathname + '/' + id,
+              properties: options.properties,
+              auth: _this5.client.defaultAuth(),
+              timeout: options.timeout
+            }).then(function () {
+              throw err;
+            });
+          }
+
+          throw err;
+        });
+
+        return result;
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Retrieved the entity in the ' + _this5.name + ' collection with id = ' + id + '.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to retrieve the entity in the ' + _this5.name + ' collection with id = ' + id + '.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Save a entity or an array of entities to a collection. A promise will be returned that
+     * will be resolved with the saved entity/entities or rejected with an error.
+     *
+     * @param   {Object|Array}          entities                                  Entity or entities to save.
+     * @param   {Object}                [options]                                 Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @param   {Number}                [options.ttl]                             Time to live for data saved
+     *                                                                            in the cache.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'save',
+    value: function save(entity) {
+      var _this6 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      if (!entity) {
+        _log2.default.warn('No entity was provided to be saved.', entity);
+        return Promise.resolve(null);
+      }
+
+      if (entity[idAttribute]) {
+        _log2.default.warn('Entity argument contains an _id. Calling update instead.', entity);
+        return this.update(entity, options);
+      }
+
+      _log2.default.debug('Saving the entity(s) to the ' + this.name + ' collection.', entity);
+
+      var promise = Promise.resolve().then(function () {
+        return _this6.client.executeLocalRequest({
+          method: _enums.HttpMethod.POST,
+          pathname: _this6._pathname,
+          properties: options.properties,
+          auth: _this6.client.defaultAuth(),
+          data: entity,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return _this6._updateSync(response.data, options).then(function () {
+          var data = (0, _isArray2.default)(response.data) ? response.data : [response.data];
+          var ids = Object.keys((0, _keyBy2.default)(data, idAttribute));
+          var query = new _query2.default().contains(idAttribute, ids);
+          return _this6.push(query, options);
+        }).then(function () {
+          return response.data;
+        });
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Saved the entity(s) to the ' + _this6.name + ' collection.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to save the entity(s) to the ' + _this6.name + ' collection.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Updates a entity or an array of entities in a collection. A promise will be returned that
+     * will be resolved with the updated entity/entities or rejected with an error.
+     *
+     * @param   {Object|Array}          entities                                  Entity or entities to update.
+     * @param   {Object}                [options]                                 Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @param   {Number}                [options.ttl]                             Time to live for data updated
+     *                                                                            in the cache.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'update',
+    value: function update(entity) {
+      var _this7 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      if (!entity) {
+        _log2.default.warn('No entity was provided to be updated.', entity);
+        return Promise.resolve(null);
+      }
+
+      if (!entity[idAttribute]) {
+        _log2.default.warn('Entity argument does not contain an _id. Calling save instead.', entity);
+        return this.save(entity, options);
+      }
+
+      _log2.default.debug('Updating the entity(s) in the ' + this.name + ' collection.', entity);
+
+      var promise = Promise.resolve().then(function () {
+        return _this7.client.executeLocalRequest({
+          method: _enums.HttpMethod.PUT,
+          pathname: _this7._pathname + '/' + entity[idAttribute],
+          properties: options.properties,
+          auth: _this7.client.defaultAuth(),
+          data: entity,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return _this7._updateSync(response.data, options).then(function () {
+          var data = (0, _isArray2.default)(response.data) ? response.data : [response.data];
+          var ids = Object.keys((0, _keyBy2.default)(data, idAttribute));
+          var query = new _query2.default().contains(idAttribute, ids);
+          return _this7.push(query, options);
+        }).then(function () {
+          return response.data;
+        });
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Updated the entity(s) in the ' + _this7.name + ' collection.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to update the entity(s) in the ' + _this7.name + ' collection.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Remove entities in a collection. A query can be optionally provided to remove
+     * a subset of entities in a collection or omitted to remove all entities in a
+     * collection. A promise will be returned that will be resolved with a count of the
+     * number of entities removed or rejected with an error.
+     *
+     * @param   {Query}                 [query]                                   Query
+     * @param   {Object}                options                                   Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'remove',
+    value: function remove(query) {
+      var _this8 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      _log2.default.debug('Removing the entities in the ' + this.name + ' collection.', query);
+
+      if (query && !(query instanceof _query2.default)) {
+        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
+      }
+
+      var promise = Promise.resolve().then(function () {
+        return _this8.client.executeLocalRequest({
+          method: _enums.HttpMethod.DELETE,
+          pathname: _this8._pathname,
+          properties: options.properties,
+          auth: _this8.client.defaultAuth(),
+          query: query,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return _this8._updateSync(response.data.entities, options).then(function () {
+          var query = new _query2.default().contains(idAttribute, []);
+          return _this8.push(query, options);
+        }).then(function () {
+          return response.data;
+        });
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Removed the entities in the ' + _this8.name + ' collection.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to remove the entities in the ' + _this8.name + ' collection.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Remove an entity in a collection. A promise will be returned that will be
+     * resolved with a count of the number of entities removed or rejected with an error.
+     *
+     * @param   {string}                id                                        Document Id
+     * @param   {Object}                options                                   Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'removeById',
+    value: function removeById(id) {
+      var _this9 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      if (!id) {
+        _log2.default.warn('No id was provided to be removed.', id);
+        return Promise.resolve(null);
+      }
+
+      _log2.default.debug('Removing an entity in the ' + this.name + ' collection with id = ' + id + '.');
+
+      var promise = Promise.resolve().then(function () {
+        return _this9.client.executeLocalRequest({
+          method: _enums.HttpMethod.DELETE,
+          pathname: _this9._pathname + '/' + id,
+          properties: options.properties,
+          auth: _this9.client.defaultAuth(),
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return _this9._updateSync(response.data.entities, options).then(function () {
+          var query = new _query2.default().contains(idAttribute, [id]);
+          return _this9.push(query, options);
+        }).then(function () {
+          return response.data;
+        });
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Removed the entity in the ' + _this9.name + ' collection with id = ' + id + '.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to remove the entity in the ' + _this9.name + ' collection with id = ' + id + '.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Push sync items for a collection to the network. A promise will be returned that will be
+     * resolved with the result of the push or rejected with an error.
+     *
+     * @param   {Query}                 [query]                                   Query to push a subset of items.
+     * @param   {Object}                options                                   Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @return  {Promise}                                                         Promise
+     *
+     * @example
+     * var store = Kinvey.DataStore.getInstance('books');
+     * store.push().then(function(result) {
+     *   ...
+     * }).catch(function(err) {
+     *   ...
+     * });
+     */
+
+  }, {
+    key: 'push',
+    value: function push(query) {
+      var _this10 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      if (query && !(query instanceof _query2.default)) {
+        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
+      }
+
+      var promise = Promise.resolve().then(function () {
+        return _this10.client.executeLocalRequest({
+          method: _enums.HttpMethod.GET,
+          pathname: _this10._syncPathname,
+          properties: options.properties,
+          query: query,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        var save = [];
+        var remove = [];
+        var entities = response.data.entities;
+        var ids = Object.keys(entities);
+        var size = response.data.size;
+
+        var promises = (0, _map2.default)(ids, function (id) {
+          var metadata = (0, _clone2.default)(entities[id], true);
+          return _this10.client.executeLocalRequest({
+            method: _enums.HttpMethod.GET,
+            pathname: _this10._pathname + '/' + id,
+            properties: metadata.properties,
+            auth: _this10.client.defaultAuth(),
+            timeout: options.timeout
+          }).then(function (response) {
+            save.push(response.data);
+            return response.data;
+          }).catch(function (err) {
+            if (err instanceof _errors.NotFoundError) {
+              remove.push(id);
+              return null;
+            }
+
+            throw err;
+          });
+        });
+
+        return Promise.all(promises).then(function () {
+          var saved = (0, _map2.default)(save, function (entity) {
+            var metadata = (0, _clone2.default)(entities[entity[idAttribute]], true);
+            var isLocalEntity = (0, _object.nested)(entity, kmdAttribute + '.local');
+
+            if (isLocalEntity) {
+              var _ret = function () {
+                var originalId = entity[idAttribute];
+                delete entity[idAttribute];
+                delete entity[kmdAttribute];
+
+                return {
+                  v: _this10.client.executeNetworkRequest({
+                    method: _enums.HttpMethod.POST,
+                    pathname: _this10._pathname,
+                    properties: metadata.properties,
+                    auth: _this10.client.defaultAuth(),
+                    data: entity,
+                    timeout: options.timeout
+                  }).then(function (response) {
+                    return _this10.client.executeLocalRequest({
+                      method: _enums.HttpMethod.PUT,
+                      pathname: _this10._pathname,
+                      properties: metadata.properties,
+                      data: response.data,
+                      timeout: options.timeout
+                    });
+                  }).then(function () {
+                    return _this10.client.executeLocalRequest({
+                      method: _enums.HttpMethod.DELETE,
+                      pathname: _this10._pathname + '/' + originalId,
+                      properties: metadata.properties,
+                      auth: _this10.client.defaultAuth(),
+                      timeout: options.timeout
+                    }).then(function (response) {
+                      var result = response.data;
+                      if (result.count === 1) {
+                        size = size - 1;
+                        delete entities[originalId];
+                        return {
+                          _id: originalId,
+                          entity: entity
+                        };
+                      }
+
+                      return {
+                        _id: originalId,
+                        error: new _errors.KinveyError('Expected count to be 1 but instead it was ' + result.count + ' ' + ('when trying to remove entity with _id ' + originalId + '.'))
+                      };
+                    });
+                  }).catch(function (err) {
+                    return {
+                      _id: originalId,
+                      error: err
+                    };
+                  })
+                };
+              }();
+
+              if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+            }
+
+            return _this10.client.executeNetworkRequest({
+              method: _enums.HttpMethod.PUT,
+              pathname: _this10._pathname + '/' + entity[idAttribute],
+              properties: metadata.properties,
+              auth: _this10.client.defaultAuth(),
+              data: entity,
+              timeout: options.timeout
+            }).then(function (response) {
+              size = size - 1;
+              delete entities[response.data[idAttribute]];
+              return {
+                _id: response.data[idAttribute],
+                entity: response.data
+              };
+            }).catch(function (err) {
+              // If the credentials used to authenticate this request are
+              // not authorized to run the operation then just remove the entity
+              // from the sync table
+              if (err instanceof _errors.InsufficientCredentialsError) {
+                size = size - 1;
+                delete entities[entity[idAttribute]];
+                return {
+                  _id: entity[idAttribute],
+                  error: err
+                };
+              }
+
+              return {
+                _id: entity[idAttribute],
+                error: err
+              };
+            });
+          });
+
+          var removed = (0, _map2.default)(remove, function (id) {
+            var metadata = (0, _clone2.default)(entities[id], true);
+            return _this10.client.executeNetworkRequest({
+              method: _enums.HttpMethod.DELETE,
+              pathname: _this10._pathname + '/' + id,
+              properties: metadata.properties,
+              auth: _this10.client.defaultAuth(),
+              timeout: options.timeout
+            }).then(function (response) {
+              var result = response.data;
+
+              if (result.count === 1) {
+                size = size - 1;
+                delete entities[id];
+                return {
+                  _id: id
+                };
+              }
+
+              return {
+                _id: id,
+                error: new _errors.KinveyError('Expected count to be 1 but instead it was ' + result.count + ' ' + ('when trying to remove entity with _id ' + id + '.'))
+              };
+            }).catch(function (err) {
+              // If the credentials used to authenticate this request are
+              // not authorized to run the operation or the entity was
+              // not found then just remove the entity from the sync table
+              if (err instanceof _errors.NotFoundError || err instanceof _errors.InsufficientCredentialsError) {
+                size = size - 1;
+                delete entities[id];
+                return {
+                  _id: id,
+                  error: err
+                };
+              }
+
+              return {
+                _id: id,
+                error: err
+              };
+            });
+          });
+
+          return Promise.all([Promise.all(saved), Promise.all(removed)]);
+        }).then(function (results) {
+          var savedResults = results[0];
+          var removedResults = results[1];
+          var result = {
+            collection: _this10.name,
+            success: [],
+            error: []
+          };
+
+          (0, _forEach2.default)(savedResults, function (savedResult) {
+            if (savedResult.error) {
+              result.error.push(savedResult);
+            } else {
+              result.success.push(savedResult);
+            }
+          });
+
+          (0, _forEach2.default)(removedResults, function (removedResult) {
+            if (removedResult.error) {
+              result.error.push(removedResult);
+            } else {
+              result.success.push(removedResult);
+            }
+          });
+
+          return result;
+        }).then(function (result) {
+          response.data.size = size;
+          response.data.entities = entities;
+
+          return _this10.client.executeLocalRequest({
+            method: _enums.HttpMethod.PUT,
+            pathname: _this10._syncPathname,
+            properties: options.properties,
+            data: response.data,
+            timeout: options.timeout
+          }).then(function () {
+            return result;
+          });
+        });
+      }).catch(function (err) {
+        if (err instanceof _errors.NotFoundError) {
+          return {
+            collection: _this10.name,
+            success: [],
+            error: []
+          };
+        }
+
+        throw err;
+      });
+
+      return promise;
+    }
+
+    /**
+     * Pull items for a collection from the network to your local cache. A promise will be
+     * returned that will be resolved with the result of the pull or rejected with an error.
+     *
+     * @param   {Query}                 [query]                                   Query to pull a subset of items.
+     * @param   {Object}                options                                   Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @return  {Promise}                                                         Promise
+     *
+     * @example
+     * var store = Kinvey.Store.getInstance('books');
+     * store.pull().then(function(result) {
+     *   ...
+     * }).catch(function(err) {
+     *   ...
+     * });
+     */
+
+  }, {
+    key: 'pull',
+    value: function pull(query) {
+      var _this11 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      var promise = this.syncCount(null, options).then(function (count) {
+        if (count > 0) {
+          throw new _errors.KinveyError('Unable to pull data. You must push the pending sync items first.', 'Call store.push() to push the pending sync items before you pull new data.');
+        }
+
+        return _this11.find(query, options);
+      }).then(function (result) {
+        return result.network;
+      });
+
+      return promise;
+    }
+
+    /**
+     * Sync items for a collection. This will push pending sync items first and then
+     * pull items from the network into your local cache. A promise will be
+     * returned that will be resolved with the result of the pull or rejected with an error.
+     *
+     * @param   {Query}                 [query]                                   Query to pull a subset of items.
+     * @param   {Object}                options                                   Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @return  {Promise}                                                         Promise
+     *
+     * @example
+     * var store = Kinvey.Store.getInstance('books');
+     * store.sync().then(function(result) {
+     *   ...
+     * }).catch(function(err) {
+     *   ...
+     * });
+     */
+
+  }, {
+    key: 'sync',
+    value: function sync(query) {
+      var _this12 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      var promise = this.push(null, options).then(function (pushResponse) {
+        return _this12.pull(query, options).then(function (pullResponse) {
+          return {
+            push: pushResponse,
+            pull: pullResponse
+          };
+        });
+      });
+
+      return promise;
+    }
+
+    /**
+     * Count the number of entities waiting to be pushed to the network. A promise will be
+     * returned with the count of entities or rejected with an error.
+     *
+     * @param   {Query}                 [query]                                   Query to count a subset of entities.
+     * @param   {Object}                options                                   Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @param   {Number}                [options.ttl]                             Time to live for data retrieved
+     *                                                                            from the local cache.
+     * @return  {Promise}                                                         Promise
+     *
+     * @example
+     * var store = Kinvey.Store.getInstance('books');
+     * store.syncCount().then(function(count) {
+     *   ...
+     * }).catch(function(err) {
+     *   ...
+     * });
+     */
+
+  }, {
+    key: 'syncCount',
+    value: function syncCount(query) {
+      var _this13 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      if (query && !(query instanceof _query2.default)) {
+        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
+      }
+
+      var promise = Promise.resolve().then(function () {
+        return _this13.client.executeLocalRequest({
+          method: _enums.HttpMethod.GET,
+          pathname: _this13._syncPathname,
+          properties: options.properties,
+          query: query,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return response.data.size || 0;
+      }).catch(function (err) {
+        if (err instanceof _errors.NotFoundError) {
+          return 0;
+        }
+
+        throw err;
+      });
+
+      return promise;
+    }
+
+    /**
+     * Add or update entities stored in the cache. A promise will be returned with the entities
+     * or rejected with an error.
+     *
+     * @param   {Object|Array}          entities                                  Entity(s) to add or update in the cache.
+     * @param   {Object}                options                                   Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: '_updateCache',
+    value: function _updateCache(entities) {
+      var _this14 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      var promise = Promise.resolve().then(function () {
+        return _this14.client.executeLocalRequest({
+          method: _enums.HttpMethod.PUT,
+          pathname: _this14._pathname,
+          properties: options.properties,
+          data: entities,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return response.data;
+      });
+
+      return promise;
+    }
+
+    /**
+     * Add entities to be pushed. A promise will be returned with null or rejected with an error.
+     *
+     * @param   {Object|Array}          entities                                  Entity(s) to add to the sync table.
+     * @param   {Object}                options                                   Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: '_updateSync',
+    value: function _updateSync(entities) {
+      var _this15 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      if (!this.name) {
+        return Promise.reject(new _errors.KinveyError('Unable to add entities to the sync table for a store with no name.'));
+      }
+
+      if (!entities) {
+        return Promise.resolve(null);
+      }
+
+      var promise = Promise.resolve().then(function () {
+        return _this15.client.executeLocalRequest({
+          method: _enums.HttpMethod.GET,
+          pathname: _this15._syncPathname,
+          properties: options.properties,
+          timeout: options.timeout
+        });
+      }).catch(function (err) {
+        if (err instanceof _errors.NotFoundError) {
+          return new _response2.default({
+            statusCode: _enums.StatusCode.Ok,
+            data: {
+              _id: _this15.name,
+              entities: {},
+              size: 0
+            }
+          });
+        }
+
+        throw err;
+      }).then(function (response) {
+        var syncData = response.data || {
+          _id: _this15.name,
+          entities: {},
+          size: 0
+        };
+
+        if (!(0, _isArray2.default)(entities)) {
+          entities = [entities];
+        }
+
+        (0, _forEach2.default)(entities, function (entity) {
+          if (entity[idAttribute]) {
+            if (!syncData.entities.hasOwnProperty(entity[idAttribute])) {
+              syncData.size = syncData.size + 1;
+            }
+
+            syncData.entities[entity[idAttribute]] = {
+              lmt: entity[kmdAttribute] ? entity[kmdAttribute].lmt : null
+            };
+          }
+        });
+
+        return _this15.client.executeLocalRequest({
+          method: _enums.HttpMethod.PUT,
+          pathname: _this15._syncPathname,
+          properties: options.properties,
+          data: syncData,
+          timeout: options.timeout
+        });
+      }).then(function () {
+        return null;
+      });
+
+      return promise;
+    }
+  }, {
+    key: '_syncPathname',
+    get: function get() {
+      if (!this.name) {
+        throw new Error('Unable to get a sync pathname for a collection with no name.');
+      }
+
+      return '/' + appdataNamespace + '/' + this.client.appKey + '/' + syncCollectionName + '/' + this.name;
+    }
+  }]);
+
+  return CacheStore;
+}(_networkStore2.default);
+
+exports.default = CacheStore;
+
+}).call(this,require('_process'))
+
+},{"../aggregation":168,"../enums":172,"../errors":173,"../log":175,"../query":178,"../requests/response":198,"../utils/object":206,"./networkStore":202,"_process":419,"lodash/assign":345,"lodash/clone":347,"lodash/forEach":350,"lodash/isArray":355,"lodash/keyBy":371,"lodash/map":375}],200:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _networkStore = require('./networkStore');
+
+var _networkStore2 = _interopRequireDefault(_networkStore);
+
+var _cacheStore = require('./cacheStore');
+
+var _cacheStore2 = _interopRequireDefault(_cacheStore);
+
+var _syncStore = require('./syncStore');
+
+var _syncStore2 = _interopRequireDefault(_syncStore);
+
+var _enums = require('../enums');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var DataStore = function () {
+  function DataStore() {
+    _classCallCheck(this, DataStore);
+  }
+
+  _createClass(DataStore, null, [{
+    key: 'getInstance',
+
+    /**
+     * Returns an instance of the Store class based on the type provided.
+     *
+     * @param  {string}       name                        Name of the collection.
+     * @param  {StoreType}    [type=DataStoreType.Cache]  Type of store to return.
+     * @return {Object}                                   Store
+     */
+    value: function getInstance(name) {
+      var type = arguments.length <= 1 || arguments[1] === undefined ? _enums.DataStoreType.Cache : arguments[1];
+
+      var store = undefined;
+
+      switch (type) {
+        case _enums.DataStoreType.Sync:
+          store = new _syncStore2.default(name);
+          break;
+        case _enums.DataStoreType.Network:
+          store = new _networkStore2.default(name);
+          break;
+        case _enums.DataStoreType.Cache:
+        default:
+          store = new _cacheStore2.default(name);
+      }
+
+      return store;
+    }
+  }]);
+
+  return DataStore;
+}();
+
+exports.default = DataStore;
+
+},{"../enums":172,"./cacheStore":199,"./networkStore":202,"./syncStore":203}],201:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _networkStore = require('./networkStore');
+
+var _networkStore2 = _interopRequireDefault(_networkStore);
+
+var _networkRequest = require('../requests/networkRequest');
+
+var _networkRequest2 = _interopRequireDefault(_networkRequest);
+
+var _enums = require('../enums');
+
+var _errors = require('../errors');
+
+var _assign = require('lodash/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
+var _map = require('lodash/map');
+
+var _map2 = _interopRequireDefault(_map);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var filesNamespace = process.env.KINVEY_FILES_NAMESPACE || 'blob';
+var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
+
+/**
+ * The FilesStore class is used to find, save, update, remove, count and group files.
+ */
+
+var FilesStore = function (_NetworkStore) {
+  _inherits(FilesStore, _NetworkStore);
+
+  function FilesStore() {
+    _classCallCheck(this, FilesStore);
+
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(FilesStore).apply(this, arguments));
+  }
+
+  _createClass(FilesStore, [{
+    key: 'find',
+
+
+    /**
+     * Finds all files. A query can be optionally provided to return
+     * a subset of all the files for your application or omitted to return all the files.
+     * The number of files returned will adhere to the limits specified
+     * at http://devcenter.kinvey.com/rest/guides/datastore#queryrestrictions. A
+     * promise will be returned that will be resolved with the files or rejected with
+     * an error.
+     *
+     * @param   {Query}                 [query]                                   Query used to filter result.
+     * @param   {Object}                [options]                                 Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @param   {Boolean}               [options.tls]                             Use Transport Layer Security
+     * @param   {Boolean}               [options.download]                        Download the files
+     * @return  {Promise}                                                         Promise
+     *
+     * @example
+     * var filesStore = new Kinvey.FilesStore();
+     * var query = new Kinvey.Query();
+     * query.equalTo('location', 'Boston');
+     * files.find(query, {
+     *   tls: true, // Use transport layer security
+     *   ttl: 60 * 60 * 24, // 1 day in seconds
+     *   download: true // download the files
+     * }).then(function(files) {
+     *   ...
+     * }).catch(function(err) {
+     *   ...
+     * });
+     */
+    value: function find(query) {
+      var _this2 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      options = (0, _assign2.default)({
+        download: false,
+        tls: false
+      }, options);
+
+      options.flags = {
+        tls: options.tls === true ? true : false,
+        ttl_in_seconds: options.ttl
+      };
+
+      var promise = _get(Object.getPrototypeOf(FilesStore.prototype), 'find', this).call(this, query, options).then(function (files) {
+        if (options.download === true) {
+          var promises = (0, _map2.default)(files, function (file) {
+            return _this2.downloadByUrl(file._downloadURL, options);
+          });
+          return Promise.all(promises);
+        }
+
+        return files;
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'findById',
+    value: function findById(id, options) {
+      return this.download(id, options);
+    }
+
+    /**
+     * Download a file. A promise will be returned that will be resolved with the file or rejected with
+     * an error.
+     *
+     * @param   {string}        name                                          Name
+     * @param   {Object}        [options]                                     Options
+     * @param   {Boolean}       [options.tls]                                 Use Transport Layer Security
+     * @param   {Number}        [options.ttl]                                 Time To Live (in seconds)
+     * @param   {Boolean}       [options.stream]                              Stream the file
+     * @param   {DataPolicy}    [options.dataPolicy=DataPolicy.NetworkFirst]    Data policy
+     * @param   {AuthType}      [options.authType=AuthType.Default]           Auth type
+     * @return  {Promise}                                                     Promise
+     *
+     * @example
+     * var files = new Kinvey.Files();
+     * files.download('BostonTeaParty.png', {
+     *   tls: true, // Use transport layer security
+     *   ttl: 60 * 60 * 24, // 1 day in seconds
+     *   stream: true // stream the file
+     * }).then(function(file) {
+     *   ...
+     * }).catch(function(err) {
+     *   ...
+     * });
+     */
+
+  }, {
+    key: 'download',
+    value: function download(name) {
+      var _this3 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      options = (0, _assign2.default)({
+        stream: false,
+        tls: false
+      }, options);
+
+      options.flags = {
+        tls: options.tls === true ? true : false,
+        ttl_in_seconds: options.ttl
+      };
+
+      var promise = _get(Object.getPrototypeOf(FilesStore.prototype), 'findById', this).call(this, name, options).then(function (file) {
+        if (options.stream === true) {
+          return file;
+        }
+
+        return _this3.downloadByUrl(file._downloadURL, options);
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'downloadByUrl',
+    value: function downloadByUrl(url) {
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      var promise = Promise.resolve().then(function () {
+        var request = new _networkRequest2.default({
+          method: _enums.HttpMethod.GET,
+          url: url,
+          timeout: options.timeout
+        });
+        request.setHeader('Accept', options.mimeType || 'application-octet-stream');
+        request.removeHeader('Content-Type');
+        request.removeHeader('X-Kinvey-Api-Version');
+        return request.execute();
+      }).then(function (response) {
+        return response.data;
+      });
+
+      return promise;
+    }
+
+    /**
+     * Stream a file. A promise will be returned that will be resolved with the file or rejected with
+     * an error.
+     *
+     * @param   {string}        name                                          File name
+     * @param   {Object}        [options]                                     Options
+     * @param   {Boolean}       [options.tls]                                 Use Transport Layer Security
+     * @param   {Number}        [options.ttl]                                 Time To Live (in seconds)
+     * @param   {DataPolicy}    [options.dataPolicy=DataPolicy.NetworkFirst]    Data policy
+     * @param   {AuthType}      [options.authType=AuthType.Default]           Auth type
+     * @return  {Promise}                                                     Promise
+     *
+     * @example
+     * var files = new Kinvey.Files();
+     * files.stream('BostonTeaParty.png', {
+     *   tls: true, // Use transport layer security
+     *   ttl: 60 * 60 * 24, // 1 day in seconds
+     * }).then(function(file) {
+     *   ...
+     * }).catch(function(err) {
+     *   ...
+     * });
+     */
+
+  }, {
+    key: 'stream',
+    value: function stream(name) {
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      options.stream = true;
+      return this.download(name, options);
+    }
+  }, {
+    key: 'upload',
+    value: function upload(file) {
+      var _this4 = this;
+
+      var metadata = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+      metadata._filename = metadata._filename || file._filename || file.name;
+      metadata.size = metadata.size || file.size || file.length;
+      metadata.mimeType = metadata.mimeType || file.mimeType || file.type || 'application/octet-stream';
+
+      options = (0, _assign2.default)({
+        properties: null,
+        timeout: undefined,
+        public: false,
+        handler: function handler() {}
+      }, options);
+
+      if (options.public) {
+        metadata._public = true;
+      }
+
+      var promise = Promise.resolve().then(function () {
+        var requestOptions = {
+          headers: {
+            'X-Kinvey-Content-Type': metadata.mimeType
+          },
+          properties: options.properties,
+          auth: _this4.client.defaultAuth(),
+          timeout: options.timeout,
+          data: metadata
+        };
+
+        if (metadata[idAttribute]) {
+          requestOptions.method = _enums.HttpMethod.PUT;
+          requestOptions.pathname = _this4._pathname + '/' + metadata._id;
+        } else {
+          requestOptions.method = _enums.HttpMethod.POST;
+          requestOptions.pathname = _this4._pathname;
+        }
+
+        return _this4.client.executeNetworkRequest(requestOptions);
+      }).then(function (response) {
+        var uploadUrl = response.data._uploadURL;
+        var headers = response.data._requiredHeaders || {};
+        headers['Content-Type'] = metadata.mimeType;
+        headers['Content-Length'] = metadata.size;
+
+        // Delete fields from the response
+        delete response.data._expiresAt;
+        delete response.data._requiredHeaders;
+        delete response.data._uploadURL;
+
+        // Upload the file
+        var request = new _networkRequest2.default({
+          method: _enums.HttpMethod.PUT,
+          url: uploadUrl,
+          data: file
+        });
+        request.clearHeaders();
+        request.addHeaders(headers);
+
+        return request.execute().then(function (uploadResponse) {
+          if (uploadResponse.isSuccess()) {
+            response.data._data = file;
+            return response.data;
+          }
+
+          throw uploadResponse.error;
+        });
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'save',
+    value: function save() {
+      return Promise.reject(new _errors.KinveyError('Please use `upload()` to save files.'));
+    }
+  }, {
+    key: 'update',
+    value: function update() {
+      return Promise.reject(new _errors.KinveyError('Please use `upload()` to update files.'));
+    }
+  }, {
+    key: '_pathname',
+
+    /**
+     * The pathname for the store.
+     *
+     * @return  {string}                Pathname
+     */
+    get: function get() {
+      return '/' + filesNamespace + '/' + this.client.appKey;
+    }
+  }]);
+
+  return FilesStore;
+}(_networkStore2.default);
+
+exports.default = FilesStore;
+
+}).call(this,require('_process'))
+
+},{"../enums":172,"../errors":173,"../requests/networkRequest":195,"./networkStore":202,"_process":419,"lodash/assign":345,"lodash/map":375}],202:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _aggregation = require('../aggregation');
+
+var _aggregation2 = _interopRequireDefault(_aggregation);
+
+var _enums = require('../enums');
+
+var _errors = require('../errors');
+
+var _client = require('../client');
+
+var _client2 = _interopRequireDefault(_client);
+
+var _query = require('../query');
+
+var _query2 = _interopRequireDefault(_query);
+
+var _assign = require('lodash/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
+var _log = require('../log');
+
+var _log2 = _interopRequireDefault(_log);
+
+var _isArray = require('lodash/isArray');
+
+var _isArray2 = _interopRequireDefault(_isArray);
+
+var _isString = require('lodash/isString');
+
+var _isString2 = _interopRequireDefault(_isString);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var appdataNamespace = process.env.KINVEY_DATASTORE_NAMESPACE || 'appdata';
+var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
+
+/**
+ * The NetworkStore class is used to find, save, update, remove, count and group enitities
+ * in a collection on the network.
+ */
+
+var NetworkStore = function () {
+  /**
+   * Creates a new instance of the NetworkStore class.
+   *
+   * @param   {string}  name   Name of the collection
+   *
+   * @throws  {KinveyError}   If the name provided is not a string.
+   */
+
+  function NetworkStore(name) {
+    _classCallCheck(this, NetworkStore);
+
+    if (name && !(0, _isString2.default)(name)) {
+      throw new _errors.KinveyError('Name must be a string.');
+    }
+
+    /**
+     * @type {string}
+     */
+    this.name = name;
+
+    /**
+     * @private
+     * @type {Client}
+     */
+    this.client = _client2.default.sharedInstance();
+  }
+
+  /**
+   * The pathname for the store.
+   *
+   * @return  {string}                Pathname
+   */
+
+
+  _createClass(NetworkStore, [{
+    key: 'find',
+
+
+    /**
+     * Finds all entities in a collection. A query can be optionally provided to return
+     * a subset of all entities in a collection or omitted to return all entities in
+     * a collection. The number of entities returned will adhere to the limits specified
+     * at http://devcenter.kinvey.com/rest/guides/datastore#queryrestrictions. A
+     * promise will be returned that will be resolved with the entities or rejected with
+     * an error.
+     *
+     * @param   {Query}                 [query]                                   Query used to filter result.
+     * @param   {Object}                [options]                                 Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @return  {Promise}                                                         Promise
+     */
+    value: function find(query) {
+      var _this = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      _log2.default.debug('Retrieving the entities in the ' + this.name + ' collection.', query);
+
+      options = (0, _assign2.default)({
+        properties: null,
+        timeout: undefined,
+        flags: null,
+        handler: function handler() {}
+      }, options);
+
+      if (query && !(query instanceof _query2.default)) {
+        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
+      }
+
+      var promise = Promise.resolve().then(function () {
+        return _this.client.executeNetworkRequest({
+          method: _enums.HttpMethod.GET,
+          pathname: _this._pathname,
+          properties: options.properties,
+          auth: _this.client.defaultAuth(),
+          query: query,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return response.data;
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Retrieved the entities in the ' + _this.name + ' collection.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to retrieve the entities in the ' + _this.name + ' collection.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Groups entities in a collection. An aggregation can be optionally provided to group
+     * a subset of entities in a collection or omitted to group all the entities
+     * in a collection. A promise will be returned that will be resolved with the result
+     * or rejected with an error.
+     *
+     * @param   {Aggregation}           aggregation                               Aggregation used to group entities.
+     * @param   {Object}                [options]                                 Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'group',
+    value: function group(aggregation) {
+      var _this2 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      _log2.default.debug('Grouping the entities in the ' + this.name + ' collection.', aggregation, options);
+
+      options = (0, _assign2.default)({
+        properties: null,
+        timeout: undefined,
+        useDeltaFetch: true,
+        handler: function handler() {}
+      }, options);
+
+      if (!(aggregation instanceof _aggregation2.default)) {
+        return Promise.reject(new _errors.KinveyError('Invalid aggregation. ' + 'It must be an instance of the Kinvey.Aggregation class.'));
+      }
+
+      var promise = Promise.resolve().then(function () {
+        return _this2.client.executeNetworkRequest({
+          method: _enums.HttpMethod.GET,
+          pathname: _this2._pathname + '/_group',
+          properties: options.properties,
+          auth: _this2.client.defaultAuth(),
+          data: aggregation.toJSON(),
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return response.data;
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Grouped the entities in the ' + _this2.name + ' collection.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to group the entities in the ' + _this2.name + ' collection.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Counts entities in a collection. A query can be optionally provided to count
+     * a subset of entities in a collection or omitted to count all the entities
+     * in a collection. A promise will be returned that will be resolved with the count
+     * or rejected with an error.
+     *
+     * @param   {Query}                 [query]                                   Query to count a subset of entities.
+     * @param   {Object}                [options]                                 Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'count',
+    value: function count(query) {
+      var _this3 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      _log2.default.debug('Counting the number of entities in the ' + this.name + ' collection.', query);
+
+      options = (0, _assign2.default)({
+        properties: null,
+        timeout: undefined,
+        useDeltaFetch: true,
+        handler: function handler() {}
+      }, options);
+
+      if (query && !(query instanceof _query2.default)) {
+        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
+      }
+
+      var promise = Promise.resolve().then(function () {
+        return _this3.client.executeNetworkRequest({
+          method: _enums.HttpMethod.GET,
+          pathname: _this3._pathname + '/_count',
+          properties: options.properties,
+          auth: _this3.client.defaultAuth(),
+          query: query,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return response.data;
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Counted the number of entities in the ' + _this3.name + ' collection.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to count the number of entities in the ' + _this3.name + ' collection.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Retrieves a single entity in a collection by id. A promise will be returned that will
+     * be resolved with the entity or rejected with an error.
+     *
+     * @param   {string}                id                                        Document Id
+     * @param   {Object}                [options]                                 Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'findById',
+    value: function findById(id) {
+      var _this4 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      if (!id) {
+        _log2.default.warn('No id was provided to retrieve an entity.', id);
+        return Promise.resolve(null);
+      }
+
+      _log2.default.debug('Retrieving the entity in the ' + this.name + ' collection with id = ' + id + '.');
+
+      options = (0, _assign2.default)({
+        properties: null,
+        timeout: undefined,
+        handler: function handler() {}
+      }, options);
+
+      var promise = Promise.resolve().then(function () {
+        return _this4.client.executeNetworkRequest({
+          method: _enums.HttpMethod.GET,
+          pathname: _this4._pathname + '/' + id,
+          properties: options.properties,
+          auth: _this4.client.defaultAuth(),
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        if (response.isSuccess()) {
+          return (0, _isArray2.default)(response.data) && response.data.length === 1 ? response.data[0] : response.data;
+        }
+
+        throw response.error;
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Retrieved the entity in the ' + _this4.name + ' collection with id = ' + id + '.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to retrieve the entity in the ' + _this4.name + ' collection with id = ' + id + '.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Save a entity or an array of entities to a collection. A promise will be returned that
+     * will be resolved with the saved entity/entities or rejected with an error.
+     *
+     * @param   {Object|Array}          doc                                       Document or entities to save.
+     * @param   {Object}                options                                   Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'save',
+    value: function save(entity) {
+      var _this5 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      if (!entity) {
+        _log2.default.warn('No entity was provided to be saved.', entity);
+        return Promise.resolve(null);
+      }
+
+      if (entity._id) {
+        _log2.default.warn('Entity argument contains an _id. Calling update instead.', entity);
+        return this.update(entity, options);
+      }
+
+      _log2.default.debug('Saving the entity(s) to the ' + this.name + ' collection.', entity);
+
+      options = (0, _assign2.default)({
+        properties: null,
+        timeout: undefined,
+        handler: function handler() {}
+      }, options);
+
+      var promise = Promise.resolve().then(function () {
+        return _this5.client.executeNetworkRequest({
+          method: _enums.HttpMethod.POST,
+          pathname: _this5._pathname,
+          properties: options.properties,
+          auth: _this5.client.defaultAuth(),
+          data: entity,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return response.data;
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Saved the entity(s) to the ' + _this5.name + ' collection.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to save the entity(s) to the ' + _this5.name + ' collection.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Updates a entity or an array of entities in a collection. A promise will be returned that
+     * will be resolved with the updated entity/entities or rejected with an error.
+     *
+     * @param   {Model|Array}           entity                                    Entity or entities to update.
+     * @param   {Object}                options                                   Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'update',
+    value: function update(entity) {
+      var _this6 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      if (!entity) {
+        _log2.default.warn('No entity was provided to be updated.', entity);
+        return Promise.resolve(null);
+      }
+
+      if (!entity._id) {
+        _log2.default.warn('Entity argument does not contain an _id. Calling save instead.', entity);
+        return this.save(entity, options);
+      }
+
+      _log2.default.debug('Updating the entity(s) in the ' + this.name + ' collection.', entity);
+
+      options = (0, _assign2.default)({
+        properties: null,
+        timeout: undefined,
+        handler: function handler() {}
+      }, options);
+
+      var promise = Promise.resolve().then(function () {
+        return _this6.client.executeNetworkRequest({
+          method: _enums.HttpMethod.PUT,
+          pathname: _this6._pathname + '/' + entity[idAttribute],
+          properties: options.properties,
+          auth: _this6.client.defaultAuth(),
+          data: entity,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return response.data;
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Updated the entity(s) in the ' + _this6.name + ' collection.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to update the entity(s) in the ' + _this6.name + ' collection.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Remove entities in a collection. A query can be optionally provided to remove
+     * a subset of entities in a collection or omitted to remove all entities in a
+     * collection. A promise will be returned that will be resolved with a count of the
+     * number of entities removed or rejected with an error.
+     *
+     * @param   {Query}                 [query]                                   Query
+     * @param   {Object}                options                                   Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'remove',
+    value: function remove(query) {
+      var _this7 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      _log2.default.debug('Removing the entities in the ' + this.name + ' collection.', query);
+
+      options = (0, _assign2.default)({
+        properties: null,
+        timeout: undefined,
+        handler: function handler() {}
+      }, options);
+
+      if (query && !(query instanceof _query2.default)) {
+        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
+      }
+
+      var promise = Promise.resolve().then(function () {
+        return _this7.client.executeNetworkRequest({
+          method: _enums.HttpMethod.DELETE,
+          pathname: _this7._pathname,
+          properties: options.properties,
+          auth: _this7.client.defaultAuth(),
+          query: query,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return response.data;
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Removed the entities in the ' + _this7.name + ' collection.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to remove the entities in the ' + _this7.name + ' collection.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Remove an entity in a collection. A promise will be returned that will be
+     * resolved with a count of the number of entities removed or rejected with an error.
+     *
+     * @param   {string}                id                                        Document Id
+     * @param   {Object}                options                                   Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'removeById',
+    value: function removeById(id) {
+      var _this8 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      if (!id) {
+        _log2.default.warn('No id was provided to be removed.', id);
+        return Promise.resolve(null);
+      }
+
+      _log2.default.debug('Removing an entity in the ' + this.name + ' collection with id = ' + id + '.');
+
+      options = (0, _assign2.default)({
+        properties: null,
+        timeout: undefined,
+        handler: function handler() {}
+      }, options);
+
+      var promise = Promise.resolve().then(function () {
+        return _this8.client.executeNetworkRequest({
+          method: _enums.HttpMethod.DELETE,
+          pathname: _this8._pathname + '/' + id,
+          properties: options.properties,
+          auth: _this8.client.defaultAuth(),
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return response.data;
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Removed the entity in the ' + _this8.name + ' collection with id = ' + id + '.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to remove the entity in the ' + _this8.name + ' collection with id = ' + id + '.', err);
+      });
+
+      return promise;
+    }
+  }, {
+    key: '_pathname',
+    get: function get() {
+      var pathname = '/' + appdataNamespace + '/' + this.client.appKey;
+
+      if (this.name) {
+        pathname = pathname + '/' + this.name;
+      }
+
+      return pathname;
+    }
+  }]);
+
+  return NetworkStore;
+}();
+
+exports.default = NetworkStore;
+
+}).call(this,require('_process'))
+
+},{"../aggregation":168,"../client":169,"../enums":172,"../errors":173,"../log":175,"../query":178,"_process":419,"lodash/assign":345,"lodash/isArray":355,"lodash/isString":368}],203:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _cacheStore = require('./cacheStore');
+
+var _cacheStore2 = _interopRequireDefault(_cacheStore);
+
+var _aggregation = require('../aggregation');
+
+var _aggregation2 = _interopRequireDefault(_aggregation);
+
+var _enums = require('../enums');
+
+var _errors = require('../errors');
+
+var _query = require('../query');
+
+var _query2 = _interopRequireDefault(_query);
+
+var _log = require('../log');
+
+var _log2 = _interopRequireDefault(_log);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var SyncStore = function (_CacheStore) {
+  _inherits(SyncStore, _CacheStore);
+
+  function SyncStore() {
+    _classCallCheck(this, SyncStore);
+
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(SyncStore).apply(this, arguments));
+  }
+
+  _createClass(SyncStore, [{
+    key: 'find',
+
+
+    /**
+     * Finds all entities in a collection. A query can be optionally provided to return
+     * a subset of all entities in a collection or omitted to return all entities in
+     * a collection. The number of entities returned will adhere to the limits specified
+     * at http://devcenter.kinvey.com/rest/guides/datastore#queryrestrictions. A
+     * promise will be returned that will be resolved with the entities or rejected with
+     * an error.
+     *
+     * @param   {Query}                 [query]                                   Query used to filter result.
+     * @param   {Object}                [options]                                 Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @param   {Number}                [options.ttl]                             Time to live for data retrieved
+     *                                                                            from the cache.
+     * @return  {Promise}                                                         Promise
+     */
+    value: function find(query) {
+      var _this2 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      _log2.default.debug('Retrieving the entities in the ' + this.name + ' collection.', query);
+
+      if (query && !(query instanceof _query2.default)) {
+        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
+      }
+
+      var promise = Promise.resolve().then(function () {
+        return _this2.client.executeLocalRequest({
+          method: _enums.HttpMethod.GET,
+          pathname: _this2._pathname,
+          properties: options.properties,
+          query: query,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return response.data;
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Retrieved the entities in the ' + _this2.name + ' collection.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to retrieve the entities in the ' + _this2.name + ' collection.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Groups entities in a collection. An aggregation can be optionally provided to group
+     * a subset of entities in a collection or omitted to group all the entities
+     * in a collection. A promise will be returned that will be resolved with the result
+     * or rejected with an error.
+     *
+     * @param   {Aggregation}           aggregation                               Aggregation used to group entities.
+     * @param   {Object}                [options]                                 Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @param   {Number}                [options.ttl]                             Time to live for data retrieved
+     *                                                                            from the cache.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'group',
+    value: function group(aggregation) {
+      var _this3 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      _log2.default.debug('Grouping the entities in the ' + this.name + ' collection.', aggregation, options);
+
+      if (!(aggregation instanceof _aggregation2.default)) {
+        return Promise.reject(new _errors.KinveyError('Invalid aggregation. ' + 'It must be an instance of the Kinvey.Aggregation class.'));
+      }
+
+      var promise = Promise.resolve().then(function () {
+        return _this3.client.executeLocalRequest({
+          method: _enums.HttpMethod.GET,
+          pathname: _this3._pathname + '/_group',
+          properties: options.properties,
+          data: aggregation.toJSON(),
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return response.data;
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Grouped the entities in the ' + _this3.name + ' collection.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to group the entities in the ' + _this3.name + ' collection.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Counts entities in a collection. A query can be optionally provided to count
+     * a subset of entities in a collection or omitted to count all the entities
+     * in a collection. A promise will be returned that will be resolved with the count
+     * or rejected with an error.
+     *
+     * @param   {Query}                 [query]                                   Query to count a subset of entities.
+     * @param   {Object}                [options]                                 Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @param   {Number}                [options.ttl]                             Time to live for data retrieved
+     *                                                                            from the cache.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'count',
+    value: function count(query) {
+      var _this4 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      _log2.default.debug('Counting the number of entities in the ' + this.name + ' collection.', query);
+
+      if (query && !(query instanceof _query2.default)) {
+        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
+      }
+
+      var promise = Promise.resolve().then(function () {
+        return _this4.client.executeLocalRequest({
+          method: _enums.HttpMethod.GET,
+          pathname: _this4._pathname + '/_count',
+          properties: options.properties,
+          query: query,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return response.data;
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Counted the number of entities in the ' + _this4.name + ' collection.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to count the number of entities in the ' + _this4.name + ' collection.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Retrieves a single entity in a collection by id. A promise will be returned that will
+     * be resolved with the entity or rejected with an error.
+     *
+     * @param   {string}                id                                        Document Id
+     * @param   {Object}                [options]                                 Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @param   {Number}                [options.ttl]                             Time to live for data retrieved
+     *                                                                            from the cache.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'findById',
+    value: function findById(id) {
+      var _this5 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      if (!id) {
+        _log2.default.warn('No id was provided to retrieve an entity.', id);
+        return Promise.resolve(null);
+      }
+
+      _log2.default.debug('Retrieving the entity in the ' + this.name + ' collection with id = ' + id + '.');
+
+      var promise = Promise.resolve().then(function () {
+        return _this5.client.executeLocalRequest({
+          method: _enums.HttpMethod.GET,
+          pathname: _this5._pathname + '/' + id,
+          properties: options.properties,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return response.data;
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Retrieved the entity in the ' + _this5.name + ' collection with id = ' + id + '.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to retrieve the entity in the ' + _this5.name + ' collection with id = ' + id + '.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Save a entity or an array of entities to a collection. A promise will be returned that
+     * will be resolved with the saved entity/entities or rejected with an error.
+     *
+     * @param   {Object|Array}          entities                                  Entity or entities to save.
+     * @param   {Object}                [options]                                 Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @param   {Number}                [options.ttl]                             Time to live for data saved
+     *                                                                            in the cache.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'save',
+    value: function save(entity) {
+      var _this6 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      if (!entity) {
+        _log2.default.warn('No entity was provided to be saved.', entity);
+        return Promise.resolve(null);
+      }
+
+      if (entity._id) {
+        _log2.default.warn('Entity argument contains an _id. Calling update instead.', entity);
+        return this.update(entity, options);
+      }
+
+      _log2.default.debug('Saving the entity(s) to the ' + this.name + ' collection.', entity);
+
+      var promise = Promise.resolve().then(function () {
+        return _this6.client.executeLocalRequest({
+          method: _enums.HttpMethod.POST,
+          pathname: _this6._pathname,
+          properties: options.properties,
+          data: entity,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return _this6._updateSync(response.data, options).then(function () {
+          return response.data;
+        });
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Saved the entity(s) to the ' + _this6.name + ' collection.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to save the entity(s) to the ' + _this6.name + ' collection.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Updates a entity or an array of entities in a collection. A promise will be returned that
+     * will be resolved with the updated entity/entities or rejected with an error.
+     *
+     * @param   {Object|Array}          entities                                  Entity or entities to update.
+     * @param   {Object}                [options]                                 Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @param   {Number}                [options.ttl]                             Time to live for data updated
+     *                                                                            in the cache.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'update',
+    value: function update(entity) {
+      var _this7 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      if (!entity) {
+        _log2.default.warn('No entity was provided to be updated.', entity);
+        return Promise.resolve(null);
+      }
+
+      if (!entity._id) {
+        _log2.default.warn('Entity argument does not contain an _id. Calling save instead.', entity);
+        return this.save(entity, options);
+      }
+
+      _log2.default.debug('Updating the entity(s) in the ' + this.name + ' collection.', entity);
+
+      var promise = Promise.resolve().then(function () {
+        return _this7.client.executeLocalRequest({
+          method: _enums.HttpMethod.PUT,
+          pathname: _this7._pathname + '/' + entity._id,
+          properties: options.properties,
+          data: entity,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return _this7._updateSync(response.data, options).then(function () {
+          return response.data;
+        });
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Updated the entity(s) in the ' + _this7.name + ' collection.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to update the entity(s) in the ' + _this7.name + ' collection.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Remove entities in a collection. A query can be optionally provided to remove
+     * a subset of entities in a collection or omitted to remove all entities in a
+     * collection. A promise will be returned that will be resolved with a count of the
+     * number of entities removed or rejected with an error.
+     *
+     * @param   {Query}                 [query]                                   Query
+     * @param   {Object}                options                                   Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'remove',
+    value: function remove(query) {
+      var _this8 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      _log2.default.debug('Removing the entities in the ' + this.name + ' collection.', query);
+
+      if (query && !(query instanceof _query2.default)) {
+        return Promise.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
+      }
+
+      var promise = Promise.resolve().then(function () {
+        return _this8.client.executeLocalRequest({
+          method: _enums.HttpMethod.DELETE,
+          pathname: _this8._pathname,
+          properties: options.properties,
+          query: query,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return _this8._updateSync(response.data.entities, options).then(function () {
+          return response.data;
+        });
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Removed the entities in the ' + _this8.name + ' collection.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to remove the entities in the ' + _this8.name + ' collection.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Remove an entity in a collection. A promise will be returned that will be
+     * resolved with a count of the number of entities removed or rejected with an error.
+     *
+     * @param   {string}                id                                        Document Id
+     * @param   {Object}                options                                   Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'removeById',
+    value: function removeById(id) {
+      var _this9 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      if (!id) {
+        _log2.default.warn('No id was provided to be removed.', id);
+        return Promise.resolve(null);
+      }
+
+      _log2.default.debug('Removing an entity in the ' + this.name + ' collection with id = ' + id + '.');
+
+      var promise = Promise.resolve().then(function () {
+        return _this9.client.executeLocalRequest({
+          method: _enums.HttpMethod.DELETE,
+          pathname: _this9._pathname + '/' + id,
+          properties: options.properties,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return _this9._updateSync(response.data.entities, options).then(function () {
+          return response.data;
+        });
+      });
+
+      promise.then(function (response) {
+        _log2.default.info('Removed the entity in the ' + _this9.name + ' collection with id = ' + id + '.', response);
+      }).catch(function (err) {
+        _log2.default.error('Failed to remove the entity in the ' + _this9.name + ' collection with id = ' + id + '.', err);
+      });
+
+      return promise;
+    }
+
+    /**
+     * Pull items for a collection from the network to your local cache. A promise will be
+     * returned that will be resolved with the result of the pull or rejected with an error.
+     *
+     * @param   {Query}                 [query]                                   Query to pull a subset of items.
+     * @param   {Object}                options                                   Options
+     * @param   {Properties}            [options.properties]                      Custom properties to send with
+     *                                                                            the request.
+     * @param   {Number}                [options.timeout]                         Timeout for the request.
+     * @return  {Promise}                                                         Promise
+     */
+
+  }, {
+    key: 'pull',
+    value: function pull(query) {
+      var _this10 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      var promise = this.syncCount(null, options).then(function (count) {
+        if (count > 0) {
+          throw new _errors.KinveyError('Unable to pull data. You must push the pending sync items first.', 'Call store.push() to push the pending sync items before you pull new data.');
+        }
+
+        return _get(Object.getPrototypeOf(SyncStore.prototype), 'find', _this10).call(_this10, query, options);
+      }).then(function (result) {
+        return result.network;
+      });
+
+      return promise;
+    }
+  }]);
+
+  return SyncStore;
+}(_cacheStore2.default);
+
+exports.default = SyncStore;
+
+},{"../aggregation":168,"../enums":172,"../errors":173,"../log":175,"../query":178,"./cacheStore":199}],204:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _dataStore = require('./stores/dataStore');
+
+var _dataStore2 = _interopRequireDefault(_dataStore);
+
+var _query = require('./query');
+
+var _query2 = _interopRequireDefault(_query);
+
+var _enums = require('./enums');
+
+var _reduce = require('lodash/reduce');
+
+var _reduce2 = _interopRequireDefault(_reduce);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var enabledSymbol = Symbol();
+var syncCollectionName = process.env.KINVEY_SYNC_COLLECTION_NAME || 'sync';
+
+var Sync = {
+  isEnabled: function isEnabled() {
+    return Sync[enabledSymbol];
+  },
+  enable: function enable() {
+    Sync[enabledSymbol] = true;
+  },
+  disable: function disable() {
+    Sync[enabledSymbol] = false;
+  },
+  count: function count(query, options) {
+    var syncStore = _dataStore2.default.getInstance(syncCollectionName, _enums.DataStoreType.Sync);
+    var promise = syncStore.find(query, options).then(function (syncData) {
+      return (0, _reduce2.default)(syncData, function (result, data) {
+        return result + data.size;
+      }, 0);
+    });
+    return promise;
+  },
+  push: function push(options) {
+    var syncStore = _dataStore2.default.getInstance(syncCollectionName, _enums.DataStoreType.Sync);
+    var query = new _query2.default();
+    query.greaterThan('size', 0);
+    var promise = syncStore.find(query, options).then(function (syncData) {
+      var promises = syncData.map(function (data) {
+        var store = _dataStore2.default.getInstance(data._id, _enums.DataStoreType.Sync);
+        return store.push();
+      });
+      return Promise.all(promises);
+    });
+    return promise;
+  },
+  sync: function sync() {
+    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    var syncStore = _dataStore2.default.getInstance(syncCollectionName, _enums.DataStoreType.Sync);
+    var promise = syncStore.find(null, options).then(function (syncData) {
+      var promises = syncData.map(function (data) {
+        var store = _dataStore2.default.getInstance(data._id, _enums.DataStoreType.Sync);
+        return store.sync();
+      });
+      return Promise.all(promises);
+    });
+    return promise;
+  }
+};
+
+// Set sync default state
+Sync[enabledSymbol] = process.env.KINVEY_SYNC_DEFAULT_STATE || true;
+exports.default = Sync;
+
+}).call(this,require('_process'))
+
+},{"./enums":172,"./query":178,"./stores/dataStore":200,"_process":419,"lodash/reduce":380}],205:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.User = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _client = require('./client');
+
+var _client2 = _interopRequireDefault(_client);
+
+var _query = require('./query');
+
+var _query2 = _interopRequireDefault(_query);
+
+var _acl = require('./acl');
+
+var _acl2 = _interopRequireDefault(_acl);
+
+var _metadata = require('./metadata');
+
+var _metadata2 = _interopRequireDefault(_metadata);
+
+var _errors = require('./errors');
+
+var _mic = require('./mic');
+
+var _mic2 = _interopRequireDefault(_mic);
+
+var _enums = require('./enums');
+
+var _assign = require('lodash/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
+var _result = require('lodash/result');
+
+var _result2 = _interopRequireDefault(_result);
+
+var _clone = require('lodash/clone');
+
+var _clone2 = _interopRequireDefault(_clone);
+
+var _forEach = require('lodash/forEach');
+
+var _forEach2 = _interopRequireDefault(_forEach);
+
+var _isObject = require('lodash/isObject');
+
+var _isObject2 = _interopRequireDefault(_isObject);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var appdataNamespace = process.env.KINVEY_DATASTORE_NAMESPACE || 'appdata';
+var usersNamespace = process.env.KINVEY_USERS_NAMESPACE || 'user';
+var rpcNamespace = process.env.KINVEY_RPC_NAMESPACE || 'rpc';
+var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
+var kmdAttribute = process.env.KINVEY_KMD_ATTRIBUTE || '_kmd';
+var socialIdentityAttribute = process.env.KINVEY_SOCIAL_IDENTITY_ATTRIBUTE || '_socialIdentity';
+var usernameAttribute = process.env.KINVEY_USERNAME_ATTRIBUTE || 'username';
+var emailAttribute = process.env.KINVEY_EMAIL_ATTRIBUTE || 'email';
+var hello = undefined;
+
+if (typeof window !== 'undefined') {
+  hello = require('hellojs');
+}
+
+/**
+ * The User class is used to represent a single user on the Kinvey platform.
+ * Use the user class to manage the active user lifecycle and perform user operations.
+ */
+
+var User = exports.User = function () {
+  /**
+   * Create a new instance of a User.
+   *
+   * @param  {Object}   [data={}]    Data for the user.
+   * @return {User}                  User
+   *
+   * @example
+   * var user = new User();
+   */
+
+  function User() {
+    var data = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, User);
+
+    /**
+     * The users data.
+     *
+     * @type {Object}
+     */
+    this.data = data;
+
+    /**
+     * @private
+     * The client used by this user.
+     *
+     * @type {Client}
+     */
+    this.client = _client2.default.sharedInstance();
+  }
+
+  /**
+   * The _id for the user.
+   *
+   * @return {?string} _id
+   *
+   * @example
+   * var _id = user._id;
+   */
+
+
+  _createClass(User, [{
+    key: 'setAsActiveUser',
+
+
+    /**
+     * Set this user as the active user.
+     *
+     * @return {Promise<User>}  The active user.
+     *
+     * @example
+     * var promise = user.setAsActiveUser();
+     * promise.then(function(activeUser) {
+     *   ...
+     * }).catch(function(error) {
+     *   ...
+     * });
+     */
+    value: function setAsActiveUser() {
+      return User.setActiveUser(this, this.client);
+    }
+
+    /**
+     * Checks if this user is the active user.
+     *
+     * @return {Promise<Boolean>} True or false if this user is the active user.
+     *
+     * @example
+     * var promise = user.isActiveUser();
+     * promise.then(function(isActiveUser) {
+     *   ...
+     * }).catch(function(error) {
+     *   ...
+     * });
+     */
+
+  }, {
+    key: 'isActiveUser',
+    value: function isActiveUser() {
+      var _this = this;
+
+      return this.client.getActiveUser().then(function (activeUser) {
+        if (activeUser && activeUser[idAttribute] === _this._id) {
+          return true;
+        }
+
+        return false;
+      });
+    }
+
+    /**
+     * Login using a username or password.
+     *
+     * @param  {string|Object}      usernameOrData    Username or an object with username
+     *                                                and password properties.
+     * @param  {string}             [password]        Users password.
+     * @param  {Object}             [options={}]      Options
+     * @return {Promise<User>}                        The logged in user.
+     *
+     * @example
+     * var promise = user.login('username', 'password');
+     * promise.then(function(user) {
+     *   ...
+     * }).catch(function(error) {
+     *   ...
+     * });
+     */
+
+  }, {
+    key: 'login',
+    value: function login(usernameOrData, password) {
+      var _this2 = this;
+
+      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+      if (!(0, _isObject2.default)(usernameOrData)) {
+        usernameOrData = {
+          username: usernameOrData,
+          password: password
+        };
+      }
+
+      if (!usernameOrData._socialIdentity) {
+        if (usernameOrData.username) {
+          usernameOrData.username = String(usernameOrData.username).trim();
+        }
+
+        if (usernameOrData.password) {
+          usernameOrData.password = String(usernameOrData.password).trim();
+        }
+      }
+
+      var promise = this.isActiveUser().then(function (isActiveUser) {
+        if (isActiveUser) {
+          throw new _errors.ActiveUserError('This user is already the active user.');
+        }
+
+        return _this2.client.getActiveUser();
+      }).then(function (activeUser) {
+        if (activeUser) {
+          throw new _errors.ActiveUserError('An active user already exists. ' + 'Please call logout the active user before you login.');
+        }
+
+        var _usernameOrData = usernameOrData;
+        var username = _usernameOrData.username;
+        var password = _usernameOrData.password;
+        var _socialIdentity = _usernameOrData._socialIdentity;
+
+
+        if ((!username || username === '' || !password || password === '') && !_socialIdentity) {
+          throw new _errors.KinveyError('Username and/or password missing. ' + 'Please provide both a username and password to login.');
+        }
+
+        return _this2.client.executeNetworkRequest({
+          method: _enums.HttpMethod.POST,
+          pathname: '/' + usersNamespace + '/' + _this2.client.appKey + '/login',
+          data: usernameOrData,
+          auth: _this2.client.appAuth(),
+          properties: options.properties,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        return _this2.client.setActiveUser(response.data).then(function () {
+          _this2.data = response.data;
+          return _this2;
+        });
+      });
+
+      return promise;
+    }
+
+    /**
+     * Login using Mobile Identity Connect.
+     *
+     * @param  {string}                 redirectUri                                                         The redirect uri used
+     *                                                                                                      for MIC logins.
+     * @param  {AuthorizationGrant}     [authorizationGrant=AuthoizationGrant.AuthorizationCodeLoginPage]   MIC authorization grant to use.
+     * @param  {Object}                 [options={}]                                                        Options
+     * @return {Promise<User>}                                                                              The logged in user.
+     *
+     * @example
+     * var promise = user.loginWithMIC('http://example.com');
+     * promise.then(function(user) {
+     *   ...
+     * }).catch(function(error) {
+     *   ...
+     * });
+     */
+
+  }, {
+    key: 'loginWithMIC',
+    value: function loginWithMIC(redirectUri, authorizationGrant) {
+      var _this3 = this;
+
+      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+      return _mic2.default.login(redirectUri, authorizationGrant, options).then(function (token) {
+        return _this3.connect(_mic2.default.identity, token.access_token, token.expires_in, options);
+      });
+    }
+
+    /**
+     * Logout the user. If the user was the active user then the active user will be set to null.
+     *
+     * @param  {Object}         [options={}]    Options
+     * @return {Promise<User>}                  The logged out user.
+     *
+     * @example
+     * var promise = user.logout();
+     * promise.then(function(user) {
+     *   ...
+     * }).catch(function(error) {
+     *   ...
+     * });
+     */
+
+  }, {
+    key: 'logout',
+    value: function logout() {
+      var _this4 = this;
+
+      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      return this.client.executeNetworkRequest({
+        method: _enums.HttpMethod.POST,
+        pathname: '/' + usersNamespace + '/' + this.client.appKey + '/_logout',
+        auth: this.client.sessionAuth(),
+        properties: options.properties,
+        timeout: options.timeout
+      }).then(function () {
+        return _this4.isActiveUser();
+      }).catch(function () {
+        return _this4.isActiveUser();
+      }).then(function (isActiveUser) {
+        if (isActiveUser) {
+          return _this4.client.setActiveUser(null);
+        }
+      }).then(function () {
+        return _this4;
+      });
+    }
+
+    /**
+     * @private
+     * Returns true or false if identity connect is supported.
+     *
+     * @return {Boolean}  True or false if identity connect is supported.
+     *
+     * @example
+     * var isIdentityConnectSupported = user.isIdentityConnectSupported();
+     */
+
+  }, {
+    key: 'isIdentityConnectSupported',
+    value: function isIdentityConnectSupported() {
+      return hello ? true : false;
+    }
+
+    /**
+     * Connect using Facebook.
+     *
+     * @param  {Object}         [options={}]  Options
+     * @return {Promise<User>}                The connected user.
+     *
+     * @example
+     * var promise = user.connectWithFacebook();
+     * promise.then(function(user) {
+     *   ...
+     * }).catch(function(error) {
+     *   ...
+     * });
+     */
+
+  }, {
+    key: 'connectWithFacebook',
+    value: function connectWithFacebook() {
+      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      return this.connectWithIdentity(_enums.SocialIdentity.Facebook, options);
+    }
+
+    /**
+     * Connect using Google.
+     *
+     * @param  {Object}         [options={}]  Options
+     * @return {Promise<User>}                The connected user.
+     *
+     * @example
+     * var promise = user.connectWithGoogle();
+     * promise.then(function(user) {
+     *   ...
+     * }).catch(function(error) {
+     *   ...
+     * });
+     */
+
+  }, {
+    key: 'connectWithGoogle',
+    value: function connectWithGoogle() {
+      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      return this.connectWithIdentity(_enums.SocialIdentity.Google, options);
+    }
+
+    /**
+     * Connect using LinkedIn.
+     *
+     * @param  {Object}         [options={}]  Options
+     * @return {Promise<User>}                The connected user.
+     *
+     * @example
+     * var promise = user.connectWithLinkedIn();
+     * promise.then(function(user) {
+     *   ...
+     * }).catch(function(error) {
+     *   ...
+     * });
+     */
+
+  }, {
+    key: 'connectWithLinkedIn',
+    value: function connectWithLinkedIn() {
+      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      return this.connectWithIdentity(_enums.SocialIdentity.LinkedIn, options);
+    }
+
+    /**
+     * Connect using an identity (Facebook, Google, LinkedIn etc.).
+     *
+     * @param  {SocialIdentity|string}         identity                                Identity used to connect the user.
+     * @param  {Object}                        [options={}]                            Options
+     * @param  {string}                        [options.collectionName='Identities']   Collection name to use to lookup credentials
+     *                                                                                 for the identity.
+     * @return {Promise<User>}                                                         The connected user.
+     *
+     * @example
+     * var promise = user.connectWithIdentity(SocialIdentity.Facebook);
+     * promise.then(function(user) {
+     *   ...
+     * }).catch(function(error) {
+     *   ...
+     * });
+     */
+
+  }, {
+    key: 'connectWithIdentity',
+    value: function connectWithIdentity(identity) {
+      var _this5 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      if (!identity) {
+        return Promise.reject(new _errors.KinveyError('An identity is required to connect the user.'));
+      }
+
+      if (this.isIdentityConnectSupported()) {
+        return Promise.reject(new _errors.KinveyError('Unable to connect to identity ' + identity + ' on this platform.'));
+      }
+
+      options = (0, _assign2.default)({
+        collectionName: 'Identities'
+      }, options);
+
+      var promise = Promise.resolve().then(function () {
+        var query = new _query2.default().equalTo('identity', identity);
+        return _this5.client.executeNetworkRequest({
+          method: _enums.HttpMethod.GET,
+          pathname: '/' + appdataNamespace + '/' + _this5.client.appKey + '/' + options.collectionName,
+          auth: _this5.client.defaultAuth(),
+          query: query,
+          properties: options.properties,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        if (response.data.length === 1) {
+          var helloSettings = {};
+          helloSettings[identity] = response.data[0].key || response.data[0].appId || response.data[0].clientId;
+          hello.init(helloSettings);
+          return hello(identity).login();
+        }
+
+        throw new _errors.KinveyError('Unsupported identity.');
+      }).then(function () {
+        var authResponse = hello(identity).getAuthResponse();
+        return _this5.connect(identity, authResponse.access_token, authResponse.expires_in, options);
+      });
+
+      return promise;
+    }
+
+    /**
+     * @private
+     *
+     * Connects with the provided accessToken and identity.
+     *
+     * @param  {SocialIdentity|string}         identity      Identity used to connect the user.
+     * @param  {string}                        accessToken   Access token for the identity.
+     * @param  {number}                        [expiresIn]   Time in seconds for how long the access token is valid.
+     * @param  {Object}                        [options={}]  Options
+     * @return {Promise<User>}                               The connected user.
+     *
+     * @example
+     * var promise = user.connect(SocialIdentity.Facebook, 'facebook-access-token');
+     * promise.then(function(user) {
+     *   ...
+     * }).catch(function(error) {
+     *   ...
+     * });
+     */
+
+  }, {
+    key: 'connect',
+    value: function connect(identity, accessToken, expiresIn) {
+      var _this6 = this;
+
+      var options = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+
+      options = (0, _assign2.default)({
+        create: true
+      }, options);
+
+      var user = {};
+      user[socialIdentityAttribute] = {};
+      user[socialIdentityAttribute][identity] = {
+        access_token: accessToken,
+        expires_in: expiresIn
+      };
+
+      var promise = this.client.getActiveUser().then(function (activeUser) {
+        if (activeUser) {
+          activeUser[socialIdentityAttribute] = user[socialIdentityAttribute];
+          options._identity = identity;
+          return _this6.update(activeUser, options);
+        }
+
+        return _this6.login(user, null, options);
+      }).catch(function (err) {
+        if (options.create && err instanceof _errors.NotFoundError) {
+          return _this6.signup(user, options).then(function () {
+            return _this6.connect(identity, accessToken, expiresIn, options);
+          });
+        }
+      });
+
+      return promise;
+    }
+
+    /**
+     * Sign up. If options.state is set to true then the user
+     * will be set as the active user after succesfully signing up the
+     * user.
+     *
+     * @param  {User|Object}    data                    Users data.
+     * @param  {Object}         [options={}]            Options
+     * @param  {Boolean}        [options.state=true]    If set to true, the user will be
+     *                                                  set as the active user after successfully
+     *                                                  being signed up.
+     * @return {Promise<User>}                          The signed up user.
+     *
+     * @example
+     * var promise = user.signup({
+     *   username: 'admin',
+     *   password: 'admin'
+     * });
+     * promise.then(function(user) {
+     *   ...
+     * }).catch(function(error) {
+     *   ...
+     * });
+     */
+
+  }, {
+    key: 'signup',
+    value: function signup(data) {
+      var _this7 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      options = (0, _assign2.default)({
+        state: true
+      }, options);
+
+      var promise = Promise.resolve().then(function () {
+        if (options.state === true) {
+          return _this7.client.getActiveUser().then(function (activeUser) {
+            if (activeUser) {
+              throw new _errors.ActiveUserError('An active user already exists. ' + 'Please call logout the active user before you login.');
+            }
+          });
+        }
+      }).then(function () {
+        return _this7.client.executeNetworkRequest({
+          method: _enums.HttpMethod.POST,
+          pathname: '/' + usersNamespace + '/' + _this7.client.appKey,
+          auth: _this7.client.appAuth(),
+          data: (0, _result2.default)(data, 'toJSON', data),
+          properties: options.properties,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        _this7.data = response.data;
+
+        if (options.state === true) {
+          return _this7.client.setActiveUser(_this7.data).then(function () {
+            return _this7;
+          });
+        }
+
+        return _this7;
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'update',
+    value: function update(data) {
+      var _this8 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      var tokens = [];
+
+      var promise = Promise.resolve().then(function () {
+        if (!data[idAttribute]) {
+          throw new _errors.KinveyError('data argument must contain an _id');
+        }
+
+        if (data[socialIdentityAttribute]) {
+          for (var identity in data[socialIdentityAttribute]) {
+            if (data[socialIdentityAttribute].hasOwnProperty(identity)) {
+              if (data[socialIdentityAttribute][identity] && options._identity !== identity) {
+                tokens.push({
+                  identity: identity,
+                  access_token: data[socialIdentityAttribute][identity].access_token,
+                  access_token_secret: data[socialIdentityAttribute][identity].access_token_secret
+                });
+                delete data[socialIdentityAttribute][identity].access_token;
+                delete data[socialIdentityAttribute][identity].access_token_secret;
+              }
+            }
+          }
+        }
+
+        return _this8.client.executeNetworkRequest({
+          method: _enums.HttpMethod.PUT,
+          pathname: '/' + usersNamespace + '/' + _this8.client.appKey + '/' + data[idAttribute],
+          auth: _this8.client.sessionAuth(),
+          data: data,
+          properties: options.properties,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        var data = response.data;
+
+        (0, _forEach2.default)(tokens, function (token) {
+          var identity = token.identity;
+
+          if (data[socialIdentityAttribute] && data[socialIdentityAttribute][identity]) {
+            data[socialIdentityAttribute][identity].access_token = token.access_token;
+            data[socialIdentityAttribute][identity].access_token_secret = token.access_token_secret;
+          }
+        });
+
+        return _this8.client.getActiveUser().then(function (activeUser) {
+          _this8.data = data;
+
+          if (activeUser && data[idAttribute] === activeUser[idAttribute]) {
+            return _this8.client.setActiveUser(data).then(function () {
+              return _this8;
+            });
+          }
+
+          return _this8;
+        });
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'me',
+    value: function me(options) {
+      var _this9 = this;
+
+      var promise = Promise.resolve().then(function () {
+        return _this9.client.executeNetworkRequest({
+          method: _enums.HttpMethod.GET,
+          pathname: '/' + usersNamespace + '/' + _this9.client.appKey + '/_me',
+          auth: _this9.client.sessionAuth(),
+          properties: options.properties,
+          timeout: options.timeout
+        });
+      }).then(function (response) {
+        _this9.data = response.data;
+
+        if (!_this9.authtoken) {
+          return _this9.client.getActiveUser().then(function (activeUser) {
+            if (activeUser) {
+              _this9.authtoken = activeUser[kmdAttribute].authtoken;
+            }
+
+            return _this9;
+          });
+        }
+
+        return _this9;
+      }).then(function () {
+        return _this9.client.setActiveUser(_this9.data);
+      }).then(function () {
+        return _this9;
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'verifyEmail',
+    value: function verifyEmail(username, options) {
+      var promise = this.client.executeNetworkRequest({
+        method: _enums.HttpMethod.POST,
+        pathname: '/' + rpcNamespace + '/' + this.client.appKey + '/' + username + '/user-email-verification-initiate',
+        auth: this.client.appAuth(),
+        properties: options.properties,
+        timeout: options.timeout
+      });
+      return promise;
+    }
+  }, {
+    key: 'forgotUsername',
+    value: function forgotUsername(email, options) {
+      var promise = this.client.executeNetworkRequest({
+        method: _enums.HttpMethod.POST,
+        pathname: '/' + rpcNamespace + '/' + this.client.appKey + '/user-forgot-username',
+        auth: this.client.appAuth(),
+        data: { email: email },
+        properties: options.properties,
+        timeout: options.timeout
+      });
+      return promise;
+    }
+  }, {
+    key: 'resetPassword',
+    value: function resetPassword(username, options) {
+      var promise = this.client.executeNetworkRequest({
+        method: _enums.HttpMethod.POST,
+        pathname: '/' + rpcNamespace + '/' + this.client.appKey + '/' + username + '/user-password-reset-initiate',
+        auth: this.client.appAuth(),
+        properties: options.properties,
+        timeout: options.timeout
+      });
+      return promise;
+    }
+  }, {
+    key: 'toJSON',
+    value: function toJSON() {
+      return (0, _clone2.default)(this.data, true);
+    }
+  }, {
+    key: '_id',
+    get: function get() {
+      return this.data[idAttribute];
+    }
+
+    /**
+     * The _acl for the user.
+     *
+     * @return {Acl} _acl
+     *
+     * @example
+     * var _acl = user._acl;
+     */
+
+  }, {
+    key: '_acl',
+    get: function get() {
+      return new _acl2.default(this.data);
+    }
+
+    /**
+     * The metadata for the user.
+     *
+     * @return {Metadata} metadata
+     *
+     * @example
+     * var metadata = user.metadata;
+     */
+
+  }, {
+    key: 'metadata',
+    get: function get() {
+      return new _metadata2.default(this.data);
+    }
+
+    /**
+     * The _kmd for the user.
+     *
+     * @return {Metadata} _kmd
+     *
+     * @example
+     * var _kmd = user._kmd;
+     */
+
+  }, {
+    key: '_kmd',
+    get: function get() {
+      return this.metadata;
+    }
+
+    /**
+     * The auth token for the user.
+     *
+     * @return {?string} Auth token
+     *
+     * @example
+     * var authtoken = user.authtoken;
+     */
+
+  }, {
+    key: 'authtoken',
+    get: function get() {
+      return this.metadata.authtoken;
+    }
+
+    /**
+     * Set the auth token for the user.
+     *
+     * @param  {?string} authtoken Auth token
+     *
+     * @example
+     * user.authtoken = 'authtoken';
+     */
+    ,
+    set: function set(authtoken) {
+      var kmd = this._kmd;
+      kmd.authtoken = authtoken;
+      this.data[kmdAttribute] = kmd.toJSON();
+    }
+
+    /**
+     * The username for the user.
+     *
+     * @return {?string} Username
+     *
+     * @example
+     * var username = user.username;
+     */
+
+  }, {
+    key: 'username',
+    get: function get() {
+      return this.data[usernameAttribute];
+    }
+
+    /**
+     * The email for the user.
+     *
+     * @return {?string} Email
+     *
+     * @example
+     * var email = user.email;
+     */
+
+  }, {
+    key: 'email',
+    get: function get() {
+      return this.data[emailAttribute];
+    }
+
+    /**
+     * Gets the active user. You can optionally provide a client
+     * to use to lookup the active user.
+     *
+     * @param  {Client}           [client=Client.sharedInstance()]   Client to use to set the active user.
+     * @return {Promise<User>}                                       The active user on the client. The
+     *                                                               active user could be null if one does
+     *                                                               not exist.
+     *
+     * @example
+     * var _id = user._id;
+     */
+
+  }], [{
+    key: 'getActiveUser',
+    value: function getActiveUser() {
+      var client = arguments.length <= 0 || arguments[0] === undefined ? _client2.default.sharedInstance() : arguments[0];
+
+      return client.getActiveUser().then(function (data) {
+        var user = null;
+
+        if (data) {
+          user = new User(data);
+          user.client = client;
+        }
+
+        return user;
+      });
+    }
+
+    /**
+     * Sets the active user. You can optionally provide a client to
+     * set the active user on. Only one active user per client is
+     * allowed.
+     *
+     * @param  {?(User|Object)}      [user]                               User to set as the active user.
+     * @param  {Client}              [client=Client.sharedInstance()]     The client to use to set the active user on.
+     * @return {Promise<User>}                                            The active user on the client. The active user
+     *                                                                    could be null if one does not exist.
+     *
+     * @example
+     * var user = new User();
+     * var promise = User.setActiveUser(user);
+     * promise.then(function(activeUser) {
+     *   ...
+     * }).catch(function(error) {
+     *   ...
+     * });
+     */
+
+  }, {
+    key: 'setActiveUser',
+    value: function setActiveUser(user) {
+      var client = arguments.length <= 1 || arguments[1] === undefined ? _client2.default.sharedInstance() : arguments[1];
+
+      var data = (0, _result2.default)(user, 'toJSON', user);
+      return client.setActiveUser(data).then(function () {
+        return User.getActiveUser();
+      });
+    }
+  }]);
+
+  return User;
+}();
+
+}).call(this,require('_process'))
+
+},{"./acl":167,"./client":169,"./enums":172,"./errors":173,"./metadata":176,"./mic":177,"./query":178,"_process":419,"hellojs":137,"lodash/assign":345,"lodash/clone":347,"lodash/forEach":350,"lodash/isObject":364,"lodash/result":382}],206:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.nested = nested;
+exports.isDefined = isDefined;
+
+var _clone = require('lodash/clone');
+
+var _clone2 = _interopRequireDefault(_clone);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * @private
+ */
+function nested(obj, dotProperty, value) {
+  obj = (0, _clone2.default)(obj, true);
+
+  if (!dotProperty) {
+    obj = value ? value : obj;
+    return obj;
+  }
+
+  var parts = dotProperty.split('.');
+  var current = parts.shift();
+  while (current && obj) {
+    obj = obj[current];
+    current = parts.shift();
+  }
+
+  return value ? value : obj;
+}
+
+/**
+ * @private
+ */
+function isDefined(obj) {
+  return obj !== undefined && obj !== null;
+}
+
+},{"lodash/clone":347}],207:[function(require,module,exports){
+(function (global){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _device = require('../device');
+
+var _device2 = _interopRequireDefault(_device);
+
+var _events = require('events');
+
+var _bind = require('lodash/bind');
+
+var _bind2 = _interopRequireDefault(_bind);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* global Titanium:false */
+
+
+var privatePopupSymbol = Symbol();
+
+/**
+ * @private
+ */
+
+var PrivatePopup = function (_EventEmitter) {
+  _inherits(PrivatePopup, _EventEmitter);
+
+  function PrivatePopup() {
+    var url = arguments.length <= 0 || arguments[0] === undefined ? '/' : arguments[0];
+
+    _classCallCheck(this, PrivatePopup);
+
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PrivatePopup).call(this));
+
+    _this.url = url;
+    _this.eventListeners = {
+      loadHandler: (0, _bind2.default)(_this.loadHandler, _this),
+      clickHandler: (0, _bind2.default)(_this.clickHandler, _this),
+      closeHandler: (0, _bind2.default)(_this.closeHandler, _this)
+    };
+    return _this;
+  }
+
+  _createClass(PrivatePopup, [{
+    key: 'open',
+    value: function open() {
+      var _this2 = this;
+
+      var device = new _device2.default();
+      var promise = new Promise(function (resolve, reject) {
+        if (device.isCordova()) {
+          _this2.popup = global.open(_this2.url, '_blank', 'location=yes');
+
+          if (_this2.popup) {
+            _this2.popup.addEventListener('loadstart', _this2.eventListeners.loadHandler);
+            _this2.popup.addEventListener('exit', _this2.eventListeners.closeHandler);
+          } else {
+            reject(new Error('The popup was blocked.'));
+          }
+        } else if (device.isTitanium()) {
+          _this2.tiWebView = Titanium.UI.createWebView({
+            width: '100%',
+            height: '100%',
+            url: _this2.url
+          });
+
+          _this2.popup = Titanium.UI.createWindow({
+            backgroundColor: 'white',
+            barColor: '#000',
+            title: 'Mobile Identity Connect',
+            modal: true
+          });
+          _this2.popup.add(_this2.tiWebView);
+
+          if (device.os.name === 'ios') {
+            _this2.tiWin = Titanium.UI.createWindow({
+              backgroundColor: 'white',
+              barColor: '#e3e3e3',
+              title: 'Mobile Identity Connect'
+            });
+            _this2.tiWin.add(_this2.tiWebView);
+
+            _this2.tiCloseButton = Titanium.UI.createButton({
+              title: 'Close',
+              style: Titanium.UI.iPhone.SystemButtonStyle.DONE
+            });
+            _this2.tiWin.setLeftNavButton(_this2.tiCloseButton);
+            _this2.tiCloseButton.addEventListener('click', _this2.eventListeners.clickHandler);
+
+            _this2.popup = Titanium.UI.iOS.createNavigationWindow({
+              backgroundColor: 'white',
+              window: _this2.tiWin,
+              modal: true
+            });
+          } else if (device.os.name === 'android') {
+            _this2.popup.addEventListener('androidback', _this2.eventListeners.closeHandler);
+          }
+
+          _this2.tiWebView.addEventListener('load', _this2.eventListeners.loadHandler);
+          _this2.tiWebView.addEventListener('error', _this2.eventListeners.loadHandler);
+          _this2.popup.addEventListener('close', _this2.eventListeners.closeHandler);
+
+          _this2.popup.open();
+        } else {
+          _this2.popup = global.open(_this2.url, '_blank', 'toolbar=no,location=no');
+
+          if (_this2.popup) {
+            _this2.interval = setInterval(function () {
+              if (_this2.popup.closed) {
+                _this2.closeHandler();
+              } else {
+                try {
+                  _this2.loadHandler({
+                    url: _this2.popup.location.href
+                  });
+                } catch (e) {
+                  // catch any errors due to cross domain issues
+                }
+              }
+            }, 100);
+          } else {
+            reject(new Error('The popup was blocked.'));
+          }
+        }
+
+        resolve();
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'close',
+    value: function close() {
+      var _this3 = this;
+
+      var promise = new Promise(function (resolve) {
+        _this3.popup.close();
+        resolve();
+      });
+      return promise;
+    }
+  }, {
+    key: 'loadHandler',
+    value: function loadHandler(event) {
+      this.emit('load', event.url);
+    }
+  }, {
+    key: 'clickHandler',
+    value: function clickHandler() {
+      this.close();
+    }
+  }, {
+    key: 'closeHandler',
+    value: function closeHandler() {
+      var device = new _device2.default();
+      clearTimeout(this.interval);
+
+      if (device.isCordova()) {
+        this.popup.removeEventListener('loadstart', this.eventListeners.loadHandler);
+        this.popup.removeEventListener('exit', this.eventListeners.closeHander);
+      } else if (device.isTitanium()) {
+        this.tiWebView.removeEventListener('load', this.eventListeners.loadHandler);
+        this.tiWebView.removeEventListener('error', this.eventListeners.loadHandler);
+        this.popup.removeEventListener('close', this.eventListeners.closeHandler);
+
+        if (device.os.name === 'ios') {
+          this.tiCloseButton.removeEventListener('click', this.eventListeners.clickHandler);
+        } else if (device.os.name === 'android') {
+          this.popup.close();
+          this.popup.removeEventListener('androidback', this.eventListeners.closeHandler);
+        }
+      }
+
+      this.emit('close');
+    }
+  }]);
+
+  return PrivatePopup;
+}(_events.EventEmitter);
+
+/**
+ * @private
+ */
+
+
+var Popup = function () {
+  function Popup(url) {
+    _classCallCheck(this, Popup);
+
+    this[privatePopupSymbol] = new PrivatePopup(url);
+  }
+
+  _createClass(Popup, [{
+    key: 'listenerCount',
+    value: function listenerCount(type) {
+      return this[privatePopupSymbol].listenerCount(type);
+    }
+  }, {
+    key: 'listeners',
+    value: function listeners(event) {
+      return this[privatePopupSymbol].listeners(event);
+    }
+  }, {
+    key: 'getMaxListeners',
+    value: function getMaxListeners() {
+      return this[privatePopupSymbol].getMaxListeners();
+    }
+  }, {
+    key: 'setMaxListeners',
+    value: function setMaxListeners(n) {
+      return this[privatePopupSymbol].setMaxListeners(n);
+    }
+  }, {
+    key: 'addListener',
+    value: function addListener(event, listener) {
+      return this[privatePopupSymbol].addListener(event, listener);
+    }
+  }, {
+    key: 'on',
+    value: function on(event, listener) {
+      return this[privatePopupSymbol].on(event, listener);
+    }
+  }, {
+    key: 'once',
+    value: function once(event, listener) {
+      return this[privatePopupSymbol].once(event, listener);
+    }
+  }, {
+    key: 'emit',
+    value: function emit(event) {
+      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+
+      return this[privatePopupSymbol].emit(event, args);
+    }
+  }, {
+    key: 'removeAllListeners',
+    value: function removeAllListeners(event) {
+      return this[privatePopupSymbol].removeAllListeners(event);
+    }
+  }, {
+    key: 'removeListener',
+    value: function removeListener(event, listener) {
+      return this[privatePopupSymbol].removeListener(event, listener);
+    }
+  }, {
+    key: 'open',
+    value: function open() {
+      var _this4 = this;
+
+      return this[privatePopupSymbol].open().then(function () {
+        return _this4;
+      });
+    }
+  }, {
+    key: 'close',
+    value: function close() {
+      var _this5 = this;
+
+      return this[privatePopupSymbol].close().then(function () {
+        return _this5;
+      });
+    }
+  }, {
+    key: 'url',
+    get: function get() {
+      return this[privatePopupSymbol].url;
+    },
+    set: function set(url) {
+      this[privatePopupSymbol].url = url;
+    }
+  }]);
+
+  return Popup;
+}();
+
+exports.default = Popup;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"../device":171,"events":102,"lodash/bind":346}],208:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.byteCount = byteCount;
+/**
+ * @private
+ */
+function byteCount(str) {
+  var count = 0;
+  var stringLength = str.length;
+  str = String(str || '');
+
+  for (var i = 0; i < stringLength; i++) {
+    var partCount = encodeURI(str[i]).split('%').length;
+    count += partCount === 1 ? 1 : partCount - 1;
+  }
+
+  return count;
+}
+
+},{}],209:[function(require,module,exports){
 var nativeCreate = require('./_nativeCreate');
 
 /** Used for built-in method references. */
@@ -46965,6 +47191,7 @@ var objectProto = Object.prototype;
  * Creates an hash object.
  *
  * @private
+ * @constructor
  * @returns {Object} Returns the new hash object.
  */
 function Hash() {}
@@ -46974,7 +47201,7 @@ Hash.prototype = nativeCreate ? nativeCreate(null) : objectProto;
 
 module.exports = Hash;
 
-},{"./_nativeCreate":328}],211:[function(require,module,exports){
+},{"./_nativeCreate":330}],210:[function(require,module,exports){
 var baseCreate = require('./_baseCreate'),
     baseLodash = require('./_baseLodash');
 
@@ -46985,6 +47212,7 @@ var MAX_ARRAY_LENGTH = 4294967295;
  * Creates a lazy wrapper object which wraps `value` to enable lazy evaluation.
  *
  * @private
+ * @constructor
  * @param {*} value The value to wrap.
  */
 function LazyWrapper(value) {
@@ -47002,7 +47230,7 @@ LazyWrapper.prototype.constructor = LazyWrapper;
 
 module.exports = LazyWrapper;
 
-},{"./_baseCreate":239,"./_baseLodash":252}],212:[function(require,module,exports){
+},{"./_baseCreate":240,"./_baseLodash":253}],211:[function(require,module,exports){
 var baseCreate = require('./_baseCreate'),
     baseLodash = require('./_baseLodash');
 
@@ -47026,7 +47254,7 @@ LodashWrapper.prototype.constructor = LodashWrapper;
 
 module.exports = LodashWrapper;
 
-},{"./_baseCreate":239,"./_baseLodash":252}],213:[function(require,module,exports){
+},{"./_baseCreate":240,"./_baseLodash":253}],212:[function(require,module,exports){
 var getNative = require('./_getNative'),
     root = require('./_root');
 
@@ -47035,7 +47263,7 @@ var Map = getNative(root, 'Map');
 
 module.exports = Map;
 
-},{"./_getNative":299,"./_root":333}],214:[function(require,module,exports){
+},{"./_getNative":300,"./_root":335}],213:[function(require,module,exports){
 var mapClear = require('./_mapClear'),
     mapDelete = require('./_mapDelete'),
     mapGet = require('./_mapGet'),
@@ -47046,6 +47274,7 @@ var mapClear = require('./_mapClear'),
  * Creates a map cache object to store key-value pairs.
  *
  * @private
+ * @constructor
  * @param {Array} [values] The values to cache.
  */
 function MapCache(values) {
@@ -47068,7 +47297,7 @@ MapCache.prototype.set = mapSet;
 
 module.exports = MapCache;
 
-},{"./_mapClear":320,"./_mapDelete":321,"./_mapGet":322,"./_mapHas":323,"./_mapSet":324}],215:[function(require,module,exports){
+},{"./_mapClear":322,"./_mapDelete":323,"./_mapGet":324,"./_mapHas":325,"./_mapSet":326}],214:[function(require,module,exports){
 var root = require('./_root');
 
 /** Built-in value references. */
@@ -47076,7 +47305,7 @@ var Reflect = root.Reflect;
 
 module.exports = Reflect;
 
-},{"./_root":333}],216:[function(require,module,exports){
+},{"./_root":335}],215:[function(require,module,exports){
 var getNative = require('./_getNative'),
     root = require('./_root');
 
@@ -47085,7 +47314,7 @@ var Set = getNative(root, 'Set');
 
 module.exports = Set;
 
-},{"./_getNative":299,"./_root":333}],217:[function(require,module,exports){
+},{"./_getNative":300,"./_root":335}],216:[function(require,module,exports){
 var stackClear = require('./_stackClear'),
     stackDelete = require('./_stackDelete'),
     stackGet = require('./_stackGet'),
@@ -47096,6 +47325,7 @@ var stackClear = require('./_stackClear'),
  * Creates a stack cache object to store key-value pairs.
  *
  * @private
+ * @constructor
  * @param {Array} [values] The values to cache.
  */
 function Stack(values) {
@@ -47118,7 +47348,7 @@ Stack.prototype.set = stackSet;
 
 module.exports = Stack;
 
-},{"./_stackClear":336,"./_stackDelete":337,"./_stackGet":338,"./_stackHas":339,"./_stackSet":340}],218:[function(require,module,exports){
+},{"./_stackClear":338,"./_stackDelete":339,"./_stackGet":340,"./_stackHas":341,"./_stackSet":342}],217:[function(require,module,exports){
 var root = require('./_root');
 
 /** Built-in value references. */
@@ -47126,7 +47356,7 @@ var Symbol = root.Symbol;
 
 module.exports = Symbol;
 
-},{"./_root":333}],219:[function(require,module,exports){
+},{"./_root":335}],218:[function(require,module,exports){
 var root = require('./_root');
 
 /** Built-in value references. */
@@ -47134,7 +47364,7 @@ var Uint8Array = root.Uint8Array;
 
 module.exports = Uint8Array;
 
-},{"./_root":333}],220:[function(require,module,exports){
+},{"./_root":335}],219:[function(require,module,exports){
 var getNative = require('./_getNative'),
     root = require('./_root');
 
@@ -47143,7 +47373,7 @@ var WeakMap = getNative(root, 'WeakMap');
 
 module.exports = WeakMap;
 
-},{"./_getNative":299,"./_root":333}],221:[function(require,module,exports){
+},{"./_getNative":300,"./_root":335}],220:[function(require,module,exports){
 /**
  * Adds the key-value `pair` to `map`.
  *
@@ -47159,7 +47389,7 @@ function addMapEntry(map, pair) {
 
 module.exports = addMapEntry;
 
-},{}],222:[function(require,module,exports){
+},{}],221:[function(require,module,exports){
 /**
  * Adds `value` to `set`.
  *
@@ -47175,7 +47405,7 @@ function addSetEntry(set, value) {
 
 module.exports = addSetEntry;
 
-},{}],223:[function(require,module,exports){
+},{}],222:[function(require,module,exports){
 /**
  * A faster alternative to `Function#apply`, this function invokes `func`
  * with the `this` binding of `thisArg` and the arguments of `args`.
@@ -47199,7 +47429,7 @@ function apply(func, thisArg, args) {
 
 module.exports = apply;
 
-},{}],224:[function(require,module,exports){
+},{}],223:[function(require,module,exports){
 /**
  * A specialized version of `baseAggregator` for arrays.
  *
@@ -47223,7 +47453,7 @@ function arrayAggregator(array, setter, iteratee, accumulator) {
 
 module.exports = arrayAggregator;
 
-},{}],225:[function(require,module,exports){
+},{}],224:[function(require,module,exports){
 /**
  * A specialized version of `_.forEach` for arrays without support for
  * iteratee shorthands.
@@ -47247,7 +47477,7 @@ function arrayEach(array, iteratee) {
 
 module.exports = arrayEach;
 
-},{}],226:[function(require,module,exports){
+},{}],225:[function(require,module,exports){
 /**
  * A specialized version of `_.map` for arrays without support for iteratee
  * shorthands.
@@ -47270,7 +47500,7 @@ function arrayMap(array, iteratee) {
 
 module.exports = arrayMap;
 
-},{}],227:[function(require,module,exports){
+},{}],226:[function(require,module,exports){
 /**
  * A specialized version of `_.reduce` for arrays without support for
  * iteratee shorthands.
@@ -47297,7 +47527,7 @@ function arrayReduce(array, iteratee, accumulator, initAccum) {
 
 module.exports = arrayReduce;
 
-},{}],228:[function(require,module,exports){
+},{}],227:[function(require,module,exports){
 /**
  * A specialized version of `_.some` for arrays without support for iteratee
  * shorthands.
@@ -47321,7 +47551,7 @@ function arraySome(array, predicate) {
 
 module.exports = arraySome;
 
-},{}],229:[function(require,module,exports){
+},{}],228:[function(require,module,exports){
 var eq = require('./eq');
 
 /**
@@ -47341,7 +47571,7 @@ function assignMergeValue(object, key, value) {
 
 module.exports = assignMergeValue;
 
-},{"./eq":348}],230:[function(require,module,exports){
+},{"./eq":349}],229:[function(require,module,exports){
 var eq = require('./eq');
 
 /** Used for built-in method references. */
@@ -47362,8 +47592,7 @@ var hasOwnProperty = objectProto.hasOwnProperty;
  */
 function assignValue(object, key, value) {
   var objValue = object[key];
-  if ((!eq(objValue, value) ||
-        (eq(objValue, objectProto[key]) && !hasOwnProperty.call(object, key))) ||
+  if (!(hasOwnProperty.call(object, key) && eq(objValue, value)) ||
       (value === undefined && !(key in object))) {
     object[key] = value;
   }
@@ -47371,7 +47600,7 @@ function assignValue(object, key, value) {
 
 module.exports = assignValue;
 
-},{"./eq":348}],231:[function(require,module,exports){
+},{"./eq":349}],230:[function(require,module,exports){
 var assocIndexOf = require('./_assocIndexOf');
 
 /** Used for built-in method references. */
@@ -47404,7 +47633,7 @@ function assocDelete(array, key) {
 
 module.exports = assocDelete;
 
-},{"./_assocIndexOf":234}],232:[function(require,module,exports){
+},{"./_assocIndexOf":233}],231:[function(require,module,exports){
 var assocIndexOf = require('./_assocIndexOf');
 
 /**
@@ -47422,7 +47651,7 @@ function assocGet(array, key) {
 
 module.exports = assocGet;
 
-},{"./_assocIndexOf":234}],233:[function(require,module,exports){
+},{"./_assocIndexOf":233}],232:[function(require,module,exports){
 var assocIndexOf = require('./_assocIndexOf');
 
 /**
@@ -47439,7 +47668,7 @@ function assocHas(array, key) {
 
 module.exports = assocHas;
 
-},{"./_assocIndexOf":234}],234:[function(require,module,exports){
+},{"./_assocIndexOf":233}],233:[function(require,module,exports){
 var eq = require('./eq');
 
 /**
@@ -47463,7 +47692,7 @@ function assocIndexOf(array, key) {
 
 module.exports = assocIndexOf;
 
-},{"./eq":348}],235:[function(require,module,exports){
+},{"./eq":349}],234:[function(require,module,exports){
 var assocIndexOf = require('./_assocIndexOf');
 
 /**
@@ -47485,7 +47714,7 @@ function assocSet(array, key, value) {
 
 module.exports = assocSet;
 
-},{"./_assocIndexOf":234}],236:[function(require,module,exports){
+},{"./_assocIndexOf":233}],235:[function(require,module,exports){
 var baseEach = require('./_baseEach');
 
 /**
@@ -47508,7 +47737,7 @@ function baseAggregator(collection, setter, iteratee, accumulator) {
 
 module.exports = baseAggregator;
 
-},{"./_baseEach":240}],237:[function(require,module,exports){
+},{"./_baseEach":241}],236:[function(require,module,exports){
 var copyObject = require('./_copyObject'),
     keys = require('./keys');
 
@@ -47527,7 +47756,40 @@ function baseAssign(object, source) {
 
 module.exports = baseAssign;
 
-},{"./_copyObject":278,"./keys":371}],238:[function(require,module,exports){
+},{"./_copyObject":278,"./keys":372}],237:[function(require,module,exports){
+var identity = require('./identity');
+
+/**
+ * Casts `value` to `identity` if it's not a function.
+ *
+ * @private
+ * @param {*} value The value to inspect.
+ * @returns {Array} Returns the array-like object.
+ */
+function baseCastFunction(value) {
+  return typeof value == 'function' ? value : identity;
+}
+
+module.exports = baseCastFunction;
+
+},{"./identity":353}],238:[function(require,module,exports){
+var isArray = require('./isArray'),
+    stringToPath = require('./_stringToPath');
+
+/**
+ * Casts `value` to a path array if it's not one.
+ *
+ * @private
+ * @param {*} value The value to inspect.
+ * @returns {Array} Returns the cast property path array.
+ */
+function baseCastPath(value) {
+  return isArray(value) ? value : stringToPath(value);
+}
+
+module.exports = baseCastPath;
+
+},{"./_stringToPath":343,"./isArray":355}],239:[function(require,module,exports){
 var Stack = require('./_Stack'),
     arrayEach = require('./_arrayEach'),
     assignValue = require('./_assignValue'),
@@ -47635,9 +47897,10 @@ function baseClone(value, isDeep, customizer, key, object, stack) {
         return copySymbols(value, baseAssign(result, value));
       }
     } else {
-      return cloneableTags[tag]
-        ? initCloneByTag(value, tag, isDeep)
-        : (object ? value : {});
+      if (!cloneableTags[tag]) {
+        return object ? value : {};
+      }
+      result = initCloneByTag(value, tag, isDeep);
     }
   }
   // Check for circular references and return its corresponding clone.
@@ -47657,8 +47920,11 @@ function baseClone(value, isDeep, customizer, key, object, stack) {
 
 module.exports = baseClone;
 
-},{"./_Stack":217,"./_arrayEach":225,"./_assignValue":230,"./_baseAssign":237,"./_baseForOwn":242,"./_cloneBuffer":269,"./_copyArray":277,"./_copySymbols":280,"./_getTag":301,"./_initCloneArray":308,"./_initCloneByTag":309,"./_initCloneObject":310,"./_isHostObject":311,"./isArray":354,"./isBuffer":357,"./isObject":363}],239:[function(require,module,exports){
+},{"./_Stack":216,"./_arrayEach":224,"./_assignValue":229,"./_baseAssign":236,"./_baseForOwn":243,"./_cloneBuffer":269,"./_copyArray":277,"./_copySymbols":280,"./_getTag":303,"./_initCloneArray":310,"./_initCloneByTag":311,"./_initCloneObject":312,"./_isHostObject":313,"./isArray":355,"./isBuffer":358,"./isObject":364}],240:[function(require,module,exports){
 var isObject = require('./isObject');
+
+/** Built-in value references. */
+var objectCreate = Object.create;
 
 /**
  * The base implementation of `_.create` without support for assigning
@@ -47668,21 +47934,13 @@ var isObject = require('./isObject');
  * @param {Object} prototype The object to inherit from.
  * @returns {Object} Returns the new object.
  */
-var baseCreate = (function() {
-  function object() {}
-  return function(prototype) {
-    if (isObject(prototype)) {
-      object.prototype = prototype;
-      var result = new object;
-      object.prototype = undefined;
-    }
-    return result || {};
-  };
-}());
+function baseCreate(proto) {
+  return isObject(proto) ? objectCreate(proto) : {};
+}
 
 module.exports = baseCreate;
 
-},{"./isObject":363}],240:[function(require,module,exports){
+},{"./isObject":364}],241:[function(require,module,exports){
 var baseForOwn = require('./_baseForOwn'),
     createBaseEach = require('./_createBaseEach');
 
@@ -47698,7 +47956,7 @@ var baseEach = createBaseEach(baseForOwn);
 
 module.exports = baseEach;
 
-},{"./_baseForOwn":242,"./_createBaseEach":283}],241:[function(require,module,exports){
+},{"./_baseForOwn":243,"./_createBaseEach":284}],242:[function(require,module,exports){
 var createBaseFor = require('./_createBaseFor');
 
 /**
@@ -47717,7 +47975,7 @@ var baseFor = createBaseFor();
 
 module.exports = baseFor;
 
-},{"./_createBaseFor":284}],242:[function(require,module,exports){
+},{"./_createBaseFor":285}],243:[function(require,module,exports){
 var baseFor = require('./_baseFor'),
     keys = require('./keys');
 
@@ -47735,8 +47993,8 @@ function baseForOwn(object, iteratee) {
 
 module.exports = baseForOwn;
 
-},{"./_baseFor":241,"./keys":371}],243:[function(require,module,exports){
-var baseToPath = require('./_baseToPath'),
+},{"./_baseFor":242,"./keys":372}],244:[function(require,module,exports){
+var baseCastPath = require('./_baseCastPath'),
     isKey = require('./_isKey');
 
 /**
@@ -47748,7 +48006,7 @@ var baseToPath = require('./_baseToPath'),
  * @returns {*} Returns the resolved value.
  */
 function baseGet(object, path) {
-  path = isKey(path, object) ? [path + ''] : baseToPath(path);
+  path = isKey(path, object) ? [path + ''] : baseCastPath(path);
 
   var index = 0,
       length = path.length;
@@ -47761,7 +48019,7 @@ function baseGet(object, path) {
 
 module.exports = baseGet;
 
-},{"./_baseToPath":265,"./_isKey":314}],244:[function(require,module,exports){
+},{"./_baseCastPath":238,"./_isKey":316}],245:[function(require,module,exports){
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
 
@@ -47789,7 +48047,7 @@ function baseHas(object, key) {
 
 module.exports = baseHas;
 
-},{}],245:[function(require,module,exports){
+},{}],246:[function(require,module,exports){
 /**
  * The base implementation of `_.hasIn` without support for deep paths.
  *
@@ -47804,7 +48062,7 @@ function baseHasIn(object, key) {
 
 module.exports = baseHasIn;
 
-},{}],246:[function(require,module,exports){
+},{}],247:[function(require,module,exports){
 var baseIsEqualDeep = require('./_baseIsEqualDeep'),
     isObject = require('./isObject'),
     isObjectLike = require('./isObjectLike');
@@ -47836,7 +48094,7 @@ function baseIsEqual(value, other, customizer, bitmask, stack) {
 
 module.exports = baseIsEqual;
 
-},{"./_baseIsEqualDeep":247,"./isObject":363,"./isObjectLike":364}],247:[function(require,module,exports){
+},{"./_baseIsEqualDeep":248,"./isObject":364,"./isObjectLike":365}],248:[function(require,module,exports){
 var Stack = require('./_Stack'),
     equalArrays = require('./_equalArrays'),
     equalByTag = require('./_equalByTag'),
@@ -47921,7 +48179,7 @@ function baseIsEqualDeep(object, other, equalFunc, customizer, bitmask, stack) {
 
 module.exports = baseIsEqualDeep;
 
-},{"./_Stack":217,"./_equalArrays":292,"./_equalByTag":293,"./_equalObjects":294,"./_getTag":301,"./_isHostObject":311,"./isArray":354,"./isTypedArray":369}],248:[function(require,module,exports){
+},{"./_Stack":216,"./_equalArrays":293,"./_equalByTag":294,"./_equalObjects":295,"./_getTag":303,"./_isHostObject":313,"./isArray":355,"./isTypedArray":370}],249:[function(require,module,exports){
 var Stack = require('./_Stack'),
     baseIsEqual = require('./_baseIsEqual');
 
@@ -47984,7 +48242,7 @@ function baseIsMatch(object, source, matchData, customizer) {
 
 module.exports = baseIsMatch;
 
-},{"./_Stack":217,"./_baseIsEqual":246}],249:[function(require,module,exports){
+},{"./_Stack":216,"./_baseIsEqual":247}],250:[function(require,module,exports){
 var baseMatches = require('./_baseMatches'),
     baseMatchesProperty = require('./_baseMatchesProperty'),
     identity = require('./identity'),
@@ -48016,7 +48274,7 @@ function baseIteratee(value) {
 
 module.exports = baseIteratee;
 
-},{"./_baseMatches":254,"./_baseMatchesProperty":255,"./identity":352,"./isArray":354,"./property":378}],250:[function(require,module,exports){
+},{"./_baseMatches":255,"./_baseMatchesProperty":256,"./identity":353,"./isArray":355,"./property":379}],251:[function(require,module,exports){
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeKeys = Object.keys;
 
@@ -48025,7 +48283,6 @@ var nativeKeys = Object.keys;
  * property of prototypes or treat sparse arrays as dense.
  *
  * @private
- * @type Function
  * @param {Object} object The object to query.
  * @returns {Array} Returns the array of property names.
  */
@@ -48035,7 +48292,7 @@ function baseKeys(object) {
 
 module.exports = baseKeys;
 
-},{}],251:[function(require,module,exports){
+},{}],252:[function(require,module,exports){
 var Reflect = require('./_Reflect'),
     iteratorToArray = require('./_iteratorToArray');
 
@@ -48073,7 +48330,7 @@ if (enumerate && !propertyIsEnumerable.call({ 'valueOf': 1 }, 'valueOf')) {
 
 module.exports = baseKeysIn;
 
-},{"./_Reflect":215,"./_iteratorToArray":319}],252:[function(require,module,exports){
+},{"./_Reflect":214,"./_iteratorToArray":321}],253:[function(require,module,exports){
 /**
  * The function whose prototype all chaining wrappers inherit from.
  *
@@ -48085,7 +48342,7 @@ function baseLodash() {
 
 module.exports = baseLodash;
 
-},{}],253:[function(require,module,exports){
+},{}],254:[function(require,module,exports){
 var baseEach = require('./_baseEach'),
     isArrayLike = require('./isArrayLike');
 
@@ -48109,7 +48366,7 @@ function baseMap(collection, iteratee) {
 
 module.exports = baseMap;
 
-},{"./_baseEach":240,"./isArrayLike":355}],254:[function(require,module,exports){
+},{"./_baseEach":241,"./isArrayLike":356}],255:[function(require,module,exports){
 var baseIsMatch = require('./_baseIsMatch'),
     getMatchData = require('./_getMatchData');
 
@@ -48141,7 +48398,7 @@ function baseMatches(source) {
 
 module.exports = baseMatches;
 
-},{"./_baseIsMatch":248,"./_getMatchData":298}],255:[function(require,module,exports){
+},{"./_baseIsMatch":249,"./_getMatchData":299}],256:[function(require,module,exports){
 var baseIsEqual = require('./_baseIsEqual'),
     get = require('./get'),
     hasIn = require('./hasIn');
@@ -48169,7 +48426,7 @@ function baseMatchesProperty(path, srcValue) {
 
 module.exports = baseMatchesProperty;
 
-},{"./_baseIsEqual":246,"./get":350,"./hasIn":351}],256:[function(require,module,exports){
+},{"./_baseIsEqual":247,"./get":351,"./hasIn":352}],257:[function(require,module,exports){
 var Stack = require('./_Stack'),
     arrayEach = require('./_arrayEach'),
     assignMergeValue = require('./_assignMergeValue'),
@@ -48193,7 +48450,10 @@ function baseMerge(object, source, srcIndex, customizer, stack) {
   if (object === source) {
     return;
   }
-  var props = (isArray(source) || isTypedArray(source)) ? undefined : keysIn(source);
+  var props = (isArray(source) || isTypedArray(source))
+    ? undefined
+    : keysIn(source);
+
   arrayEach(props || source, function(srcValue, key) {
     if (props) {
       key = srcValue;
@@ -48204,7 +48464,10 @@ function baseMerge(object, source, srcIndex, customizer, stack) {
       baseMergeDeep(object, source, key, srcIndex, baseMerge, customizer, stack);
     }
     else {
-      var newValue = customizer ? customizer(object[key], srcValue, (key + ''), object, source, stack) : undefined;
+      var newValue = customizer
+        ? customizer(object[key], srcValue, (key + ''), object, source, stack)
+        : undefined;
+
       if (newValue === undefined) {
         newValue = srcValue;
       }
@@ -48215,7 +48478,7 @@ function baseMerge(object, source, srcIndex, customizer, stack) {
 
 module.exports = baseMerge;
 
-},{"./_Stack":217,"./_arrayEach":225,"./_assignMergeValue":229,"./_baseMergeDeep":257,"./isArray":354,"./isObject":363,"./isTypedArray":369,"./keysIn":372}],257:[function(require,module,exports){
+},{"./_Stack":216,"./_arrayEach":224,"./_assignMergeValue":228,"./_baseMergeDeep":258,"./isArray":355,"./isObject":364,"./isTypedArray":370,"./keysIn":373}],258:[function(require,module,exports){
 var assignMergeValue = require('./_assignMergeValue'),
     baseClone = require('./_baseClone'),
     copyArray = require('./_copyArray'),
@@ -48251,21 +48514,24 @@ function baseMergeDeep(object, source, key, srcIndex, mergeFunc, customizer, sta
     assignMergeValue(object, key, stacked);
     return;
   }
-  var newValue = customizer ? customizer(objValue, srcValue, (key + ''), object, source, stack) : undefined,
-      isCommon = newValue === undefined;
+  var newValue = customizer
+    ? customizer(objValue, srcValue, (key + ''), object, source, stack)
+    : undefined;
+
+  var isCommon = newValue === undefined;
 
   if (isCommon) {
     newValue = srcValue;
     if (isArray(srcValue) || isTypedArray(srcValue)) {
       if (isArray(objValue)) {
-        newValue = srcIndex ? copyArray(objValue) : objValue;
+        newValue = objValue;
       }
       else if (isArrayLikeObject(objValue)) {
         newValue = copyArray(objValue);
       }
       else {
         isCommon = false;
-        newValue = baseClone(srcValue);
+        newValue = baseClone(srcValue, true);
       }
     }
     else if (isPlainObject(srcValue) || isArguments(srcValue)) {
@@ -48274,10 +48540,10 @@ function baseMergeDeep(object, source, key, srcIndex, mergeFunc, customizer, sta
       }
       else if (!isObject(objValue) || (srcIndex && isFunction(objValue))) {
         isCommon = false;
-        newValue = baseClone(srcValue);
+        newValue = baseClone(srcValue, true);
       }
       else {
-        newValue = srcIndex ? baseClone(objValue) : objValue;
+        newValue = objValue;
       }
     }
     else {
@@ -48295,7 +48561,7 @@ function baseMergeDeep(object, source, key, srcIndex, mergeFunc, customizer, sta
 
 module.exports = baseMergeDeep;
 
-},{"./_assignMergeValue":229,"./_baseClone":238,"./_copyArray":277,"./isArguments":353,"./isArray":354,"./isArrayLikeObject":356,"./isFunction":359,"./isObject":363,"./isPlainObject":365,"./isTypedArray":369,"./toPlainObject":385}],258:[function(require,module,exports){
+},{"./_assignMergeValue":228,"./_baseClone":239,"./_copyArray":277,"./isArguments":354,"./isArray":355,"./isArrayLikeObject":357,"./isFunction":360,"./isObject":364,"./isPlainObject":366,"./isTypedArray":370,"./toPlainObject":386}],259:[function(require,module,exports){
 /**
  * The base implementation of `_.property` without support for deep paths.
  *
@@ -48311,7 +48577,7 @@ function baseProperty(key) {
 
 module.exports = baseProperty;
 
-},{}],259:[function(require,module,exports){
+},{}],260:[function(require,module,exports){
 var baseGet = require('./_baseGet');
 
 /**
@@ -48329,7 +48595,7 @@ function basePropertyDeep(path) {
 
 module.exports = basePropertyDeep;
 
-},{"./_baseGet":243}],260:[function(require,module,exports){
+},{"./_baseGet":244}],261:[function(require,module,exports){
 /**
  * The base implementation of `_.reduce` and `_.reduceRight`, without support
  * for iteratee shorthands, which iterates over `collection` using `eachFunc`.
@@ -48353,7 +48619,7 @@ function baseReduce(collection, iteratee, accumulator, initAccum, eachFunc) {
 
 module.exports = baseReduce;
 
-},{}],261:[function(require,module,exports){
+},{}],262:[function(require,module,exports){
 var identity = require('./identity'),
     metaMap = require('./_metaMap');
 
@@ -48372,7 +48638,7 @@ var baseSetData = !metaMap ? identity : function(func, data) {
 
 module.exports = baseSetData;
 
-},{"./_metaMap":327,"./identity":352}],262:[function(require,module,exports){
+},{"./_metaMap":329,"./identity":353}],263:[function(require,module,exports){
 /**
  * The base implementation of `_.slice` without an iteratee call guard.
  *
@@ -48405,7 +48671,7 @@ function baseSlice(array, start, end) {
 
 module.exports = baseSlice;
 
-},{}],263:[function(require,module,exports){
+},{}],264:[function(require,module,exports){
 /**
  * The base implementation of `_.times` without support for iteratee shorthands
  * or max array length checks.
@@ -48427,7 +48693,7 @@ function baseTimes(n, iteratee) {
 
 module.exports = baseTimes;
 
-},{}],264:[function(require,module,exports){
+},{}],265:[function(require,module,exports){
 var arrayMap = require('./_arrayMap');
 
 /**
@@ -48447,25 +48713,7 @@ function baseToPairs(object, props) {
 
 module.exports = baseToPairs;
 
-},{"./_arrayMap":226}],265:[function(require,module,exports){
-var isArray = require('./isArray'),
-    stringToPath = require('./_stringToPath');
-
-/**
- * The base implementation of `_.toPath` which only converts `value` to a
- * path if it's not one.
- *
- * @private
- * @param {*} value The value to process.
- * @returns {Array} Returns the property path array.
- */
-function baseToPath(value) {
-  return isArray(value) ? value : stringToPath(value);
-}
-
-module.exports = baseToPath;
-
-},{"./_stringToPath":341,"./isArray":354}],266:[function(require,module,exports){
+},{"./_arrayMap":225}],266:[function(require,module,exports){
 var arrayMap = require('./_arrayMap');
 
 /**
@@ -48486,7 +48734,7 @@ function baseValues(object, props) {
 
 module.exports = baseValues;
 
-},{"./_arrayMap":226}],267:[function(require,module,exports){
+},{"./_arrayMap":225}],267:[function(require,module,exports){
 /**
  * Checks if `value` is a global object.
  *
@@ -48521,7 +48769,7 @@ function cloneArrayBuffer(arrayBuffer) {
 
 module.exports = cloneArrayBuffer;
 
-},{"./_Uint8Array":219}],269:[function(require,module,exports){
+},{"./_Uint8Array":218}],269:[function(require,module,exports){
 /**
  * Creates a clone of  `buffer`.
  *
@@ -48562,7 +48810,7 @@ function cloneMap(map) {
 
 module.exports = cloneMap;
 
-},{"./_addMapEntry":221,"./_arrayReduce":227,"./_mapToArray":325}],271:[function(require,module,exports){
+},{"./_addMapEntry":220,"./_arrayReduce":226,"./_mapToArray":327}],271:[function(require,module,exports){
 /** Used to match `RegExp` flags from their coerced string values. */
 var reFlags = /\w*$/;
 
@@ -48602,7 +48850,7 @@ function cloneSet(set) {
 
 module.exports = cloneSet;
 
-},{"./_addSetEntry":222,"./_arrayReduce":227,"./_setToArray":335}],273:[function(require,module,exports){
+},{"./_addSetEntry":221,"./_arrayReduce":226,"./_setToArray":337}],273:[function(require,module,exports){
 var Symbol = require('./_Symbol');
 
 /** Used to convert symbols to primitives and strings. */
@@ -48622,7 +48870,7 @@ function cloneSymbol(symbol) {
 
 module.exports = cloneSymbol;
 
-},{"./_Symbol":218}],274:[function(require,module,exports){
+},{"./_Symbol":217}],274:[function(require,module,exports){
 var cloneArrayBuffer = require('./_cloneArrayBuffer');
 
 /**
@@ -48634,10 +48882,11 @@ var cloneArrayBuffer = require('./_cloneArrayBuffer');
  * @returns {Object} Returns the cloned typed array.
  */
 function cloneTypedArray(typedArray, isDeep) {
-  var buffer = typedArray.buffer,
+  var arrayBuffer = typedArray.buffer,
+      buffer = isDeep ? cloneArrayBuffer(arrayBuffer) : arrayBuffer,
       Ctor = typedArray.constructor;
 
-  return new Ctor(isDeep ? cloneArrayBuffer(buffer) : buffer, typedArray.byteOffset, typedArray.length);
+  return new Ctor(buffer, typedArray.byteOffset, typedArray.length);
 }
 
 module.exports = cloneTypedArray;
@@ -48654,23 +48903,28 @@ var nativeMax = Math.max;
  * @param {Array|Object} args The provided arguments.
  * @param {Array} partials The arguments to prepend to those provided.
  * @param {Array} holders The `partials` placeholder indexes.
+ * @params {boolean} [isCurried] Specify composing for a curried function.
  * @returns {Array} Returns the new array of composed arguments.
  */
-function composeArgs(args, partials, holders) {
-  var holdersLength = holders.length,
-      argsIndex = -1,
-      argsLength = nativeMax(args.length - holdersLength, 0),
+function composeArgs(args, partials, holders, isCurried) {
+  var argsIndex = -1,
+      argsLength = args.length,
+      holdersLength = holders.length,
       leftIndex = -1,
       leftLength = partials.length,
-      result = Array(leftLength + argsLength);
+      rangeLength = nativeMax(argsLength - holdersLength, 0),
+      result = Array(leftLength + rangeLength),
+      isUncurried = !isCurried;
 
   while (++leftIndex < leftLength) {
     result[leftIndex] = partials[leftIndex];
   }
   while (++argsIndex < holdersLength) {
-    result[holders[argsIndex]] = args[argsIndex];
+    if (isUncurried || argsIndex < argsLength) {
+      result[holders[argsIndex]] = args[argsIndex];
+    }
   }
-  while (argsLength--) {
+  while (rangeLength--) {
     result[leftIndex++] = args[argsIndex++];
   }
   return result;
@@ -48690,18 +48944,21 @@ var nativeMax = Math.max;
  * @param {Array|Object} args The provided arguments.
  * @param {Array} partials The arguments to append to those provided.
  * @param {Array} holders The `partials` placeholder indexes.
+ * @params {boolean} [isCurried] Specify composing for a curried function.
  * @returns {Array} Returns the new array of composed arguments.
  */
-function composeArgsRight(args, partials, holders) {
-  var holdersIndex = -1,
+function composeArgsRight(args, partials, holders, isCurried) {
+  var argsIndex = -1,
+      argsLength = args.length,
+      holdersIndex = -1,
       holdersLength = holders.length,
-      argsIndex = -1,
-      argsLength = nativeMax(args.length - holdersLength, 0),
       rightIndex = -1,
       rightLength = partials.length,
-      result = Array(argsLength + rightLength);
+      rangeLength = nativeMax(argsLength - holdersLength, 0),
+      result = Array(rangeLength + rightLength),
+      isUncurried = !isCurried;
 
-  while (++argsIndex < argsLength) {
+  while (++argsIndex < rangeLength) {
     result[argsIndex] = args[argsIndex];
   }
   var offset = argsIndex;
@@ -48709,7 +48966,9 @@ function composeArgsRight(args, partials, holders) {
     result[offset + rightIndex] = partials[rightIndex];
   }
   while (++holdersIndex < holdersLength) {
-    result[offset + holders[holdersIndex]] = args[argsIndex++];
+    if (isUncurried || argsIndex < argsLength) {
+      result[offset + holders[holdersIndex]] = args[argsIndex++];
+    }
   }
   return result;
 }
@@ -48777,8 +49036,11 @@ function copyObjectWith(source, props, object, customizer) {
       length = props.length;
 
   while (++index < length) {
-    var key = props[index],
-        newValue = customizer ? customizer(object[key], source[key], key, object, source) : source[key];
+    var key = props[index];
+
+    var newValue = customizer
+      ? customizer(object[key], source[key], key, object, source)
+      : source[key];
 
     assignValue(object, key, newValue);
   }
@@ -48787,7 +49049,7 @@ function copyObjectWith(source, props, object, customizer) {
 
 module.exports = copyObjectWith;
 
-},{"./_assignValue":230}],280:[function(require,module,exports){
+},{"./_assignValue":229}],280:[function(require,module,exports){
 var copyObject = require('./_copyObject'),
     getSymbols = require('./_getSymbols');
 
@@ -48805,7 +49067,30 @@ function copySymbols(source, object) {
 
 module.exports = copySymbols;
 
-},{"./_copyObject":278,"./_getSymbols":300}],281:[function(require,module,exports){
+},{"./_copyObject":278,"./_getSymbols":302}],281:[function(require,module,exports){
+/**
+ * Gets the number of `placeholder` occurrences in `array`.
+ *
+ * @private
+ * @param {Array} array The array to inspect.
+ * @param {*} placeholder The placeholder to search for.
+ * @returns {number} Returns the placeholder count.
+ */
+function countHolders(array, placeholder) {
+  var length = array.length,
+      result = 0;
+
+  while (length--) {
+    if (array[length] === placeholder) {
+      result++;
+    }
+  }
+  return result;
+}
+
+module.exports = countHolders;
+
+},{}],282:[function(require,module,exports){
 var arrayAggregator = require('./_arrayAggregator'),
     baseAggregator = require('./_baseAggregator'),
     baseIteratee = require('./_baseIteratee'),
@@ -48830,7 +49115,7 @@ function createAggregator(setter, initializer) {
 
 module.exports = createAggregator;
 
-},{"./_arrayAggregator":224,"./_baseAggregator":236,"./_baseIteratee":249,"./isArray":354}],282:[function(require,module,exports){
+},{"./_arrayAggregator":223,"./_baseAggregator":235,"./_baseIteratee":250,"./isArray":355}],283:[function(require,module,exports){
 var isIterateeCall = require('./_isIterateeCall'),
     rest = require('./rest');
 
@@ -48848,7 +49133,10 @@ function createAssigner(assigner) {
         customizer = length > 1 ? sources[length - 1] : undefined,
         guard = length > 2 ? sources[2] : undefined;
 
-    customizer = typeof customizer == 'function' ? (length--, customizer) : undefined;
+    customizer = typeof customizer == 'function'
+      ? (length--, customizer)
+      : undefined;
+
     if (guard && isIterateeCall(sources[0], sources[1], guard)) {
       customizer = length < 3 ? undefined : customizer;
       length = 1;
@@ -48866,7 +49154,7 @@ function createAssigner(assigner) {
 
 module.exports = createAssigner;
 
-},{"./_isIterateeCall":313,"./rest":380}],283:[function(require,module,exports){
+},{"./_isIterateeCall":315,"./rest":381}],284:[function(require,module,exports){
 var isArrayLike = require('./isArrayLike');
 
 /**
@@ -48900,7 +49188,7 @@ function createBaseEach(eachFunc, fromRight) {
 
 module.exports = createBaseEach;
 
-},{"./isArrayLike":355}],284:[function(require,module,exports){
+},{"./isArrayLike":356}],285:[function(require,module,exports){
 /**
  * Creates a base function for methods like `_.forIn`.
  *
@@ -48927,7 +49215,7 @@ function createBaseFor(fromRight) {
 
 module.exports = createBaseFor;
 
-},{}],285:[function(require,module,exports){
+},{}],286:[function(require,module,exports){
 var createCtorWrapper = require('./_createCtorWrapper'),
     root = require('./_root');
 
@@ -48957,7 +49245,7 @@ function createBaseWrapper(func, bitmask, thisArg) {
 
 module.exports = createBaseWrapper;
 
-},{"./_createCtorWrapper":286,"./_root":333}],286:[function(require,module,exports){
+},{"./_createCtorWrapper":287,"./_root":335}],287:[function(require,module,exports){
 var baseCreate = require('./_baseCreate'),
     isObject = require('./isObject');
 
@@ -48996,11 +49284,12 @@ function createCtorWrapper(Ctor) {
 
 module.exports = createCtorWrapper;
 
-},{"./_baseCreate":239,"./isObject":363}],287:[function(require,module,exports){
+},{"./_baseCreate":240,"./isObject":364}],288:[function(require,module,exports){
 var apply = require('./_apply'),
     createCtorWrapper = require('./_createCtorWrapper'),
     createHybridWrapper = require('./_createHybridWrapper'),
     createRecurryWrapper = require('./_createRecurryWrapper'),
+    getPlaceholder = require('./_getPlaceholder'),
     replaceHolders = require('./_replaceHolders'),
     root = require('./_root');
 
@@ -49018,10 +49307,9 @@ function createCurryWrapper(func, bitmask, arity) {
 
   function wrapper() {
     var length = arguments.length,
-        index = length,
         args = Array(length),
-        fn = (this && this !== root && this instanceof wrapper) ? Ctor : func,
-        placeholder = wrapper.placeholder;
+        index = length,
+        placeholder = getPlaceholder(wrapper);
 
     while (index--) {
       args[index] = arguments[index];
@@ -49031,20 +49319,26 @@ function createCurryWrapper(func, bitmask, arity) {
       : replaceHolders(args, placeholder);
 
     length -= holders.length;
-    return length < arity
-      ? createRecurryWrapper(func, bitmask, createHybridWrapper, placeholder, undefined, args, holders, undefined, undefined, arity - length)
-      : apply(fn, this, args);
+    if (length < arity) {
+      return createRecurryWrapper(
+        func, bitmask, createHybridWrapper, wrapper.placeholder, undefined,
+        args, holders, undefined, undefined, arity - length);
+    }
+    var fn = (this && this !== root && this instanceof wrapper) ? Ctor : func;
+    return apply(fn, this, args);
   }
   return wrapper;
 }
 
 module.exports = createCurryWrapper;
 
-},{"./_apply":223,"./_createCtorWrapper":286,"./_createHybridWrapper":288,"./_createRecurryWrapper":290,"./_replaceHolders":332,"./_root":333}],288:[function(require,module,exports){
+},{"./_apply":222,"./_createCtorWrapper":287,"./_createHybridWrapper":289,"./_createRecurryWrapper":291,"./_getPlaceholder":301,"./_replaceHolders":334,"./_root":335}],289:[function(require,module,exports){
 var composeArgs = require('./_composeArgs'),
     composeArgsRight = require('./_composeArgsRight'),
+    countHolders = require('./_countHolders'),
     createCtorWrapper = require('./_createCtorWrapper'),
     createRecurryWrapper = require('./_createRecurryWrapper'),
+    getPlaceholder = require('./_getPlaceholder'),
     reorder = require('./_reorder'),
     replaceHolders = require('./_replaceHolders'),
     root = require('./_root');
@@ -49078,8 +49372,7 @@ function createHybridWrapper(func, bitmask, thisArg, partials, holders, partials
   var isAry = bitmask & ARY_FLAG,
       isBind = bitmask & BIND_FLAG,
       isBindKey = bitmask & BIND_KEY_FLAG,
-      isCurry = bitmask & CURRY_FLAG,
-      isCurryRight = bitmask & CURRY_RIGHT_FLAG,
+      isCurried = bitmask & (CURRY_FLAG | CURRY_RIGHT_FLAG),
       isFlip = bitmask & FLIP_FLAG,
       Ctor = isBindKey ? undefined : createCtorWrapper(func);
 
@@ -49091,30 +49384,34 @@ function createHybridWrapper(func, bitmask, thisArg, partials, holders, partials
     while (index--) {
       args[index] = arguments[index];
     }
+    if (isCurried) {
+      var placeholder = getPlaceholder(wrapper),
+          holdersCount = countHolders(args, placeholder);
+    }
     if (partials) {
-      args = composeArgs(args, partials, holders);
+      args = composeArgs(args, partials, holders, isCurried);
     }
     if (partialsRight) {
-      args = composeArgsRight(args, partialsRight, holdersRight);
+      args = composeArgsRight(args, partialsRight, holdersRight, isCurried);
     }
-    if (isCurry || isCurryRight) {
-      var placeholder = wrapper.placeholder,
-          argsHolders = replaceHolders(args, placeholder);
-
-      length -= argsHolders.length;
-      if (length < arity) {
-        return createRecurryWrapper(func, bitmask, createHybridWrapper, placeholder, thisArg, args, argsHolders, argPos, ary, arity - length);
-      }
+    length -= holdersCount;
+    if (isCurried && length < arity) {
+      var newHolders = replaceHolders(args, placeholder);
+      return createRecurryWrapper(
+        func, bitmask, createHybridWrapper, wrapper.placeholder, thisArg,
+        args, newHolders, argPos, ary, arity - length
+      );
     }
     var thisBinding = isBind ? thisArg : this,
         fn = isBindKey ? thisBinding[func] : func;
 
+    length = args.length;
     if (argPos) {
       args = reorder(args, argPos);
-    } else if (isFlip && args.length > 1) {
+    } else if (isFlip && length > 1) {
       args.reverse();
     }
-    if (isAry && ary < args.length) {
+    if (isAry && ary < length) {
       args.length = ary;
     }
     if (this && this !== root && this instanceof wrapper) {
@@ -49127,7 +49424,7 @@ function createHybridWrapper(func, bitmask, thisArg, partials, holders, partials
 
 module.exports = createHybridWrapper;
 
-},{"./_composeArgs":275,"./_composeArgsRight":276,"./_createCtorWrapper":286,"./_createRecurryWrapper":290,"./_reorder":331,"./_replaceHolders":332,"./_root":333}],289:[function(require,module,exports){
+},{"./_composeArgs":275,"./_composeArgsRight":276,"./_countHolders":281,"./_createCtorWrapper":287,"./_createRecurryWrapper":291,"./_getPlaceholder":301,"./_reorder":333,"./_replaceHolders":334,"./_root":335}],290:[function(require,module,exports){
 var apply = require('./_apply'),
     createCtorWrapper = require('./_createCtorWrapper'),
     root = require('./_root');
@@ -49172,7 +49469,7 @@ function createPartialWrapper(func, bitmask, thisArg, partials) {
 
 module.exports = createPartialWrapper;
 
-},{"./_apply":223,"./_createCtorWrapper":286,"./_root":333}],290:[function(require,module,exports){
+},{"./_apply":222,"./_createCtorWrapper":287,"./_root":335}],291:[function(require,module,exports){
 var copyArray = require('./_copyArray'),
     isLaziable = require('./_isLaziable'),
     setData = require('./_setData');
@@ -49192,7 +49489,7 @@ var BIND_FLAG = 1,
  * @param {Function} func The function to wrap.
  * @param {number} bitmask The bitmask of wrapper flags. See `createWrapper` for more details.
  * @param {Function} wrapFunc The function to create the `func` wrapper.
- * @param {*} placeholder The placeholder to replace.
+ * @param {*} placeholder The placeholder value.
  * @param {*} [thisArg] The `this` binding of `func`.
  * @param {Array} [partials] The arguments to prepend to those provided to the new function.
  * @param {Array} [holders] The `partials` placeholder indexes.
@@ -49204,7 +49501,7 @@ var BIND_FLAG = 1,
 function createRecurryWrapper(func, bitmask, wrapFunc, placeholder, thisArg, partials, holders, argPos, ary, arity) {
   var isCurry = bitmask & CURRY_FLAG,
       newArgPos = argPos ? copyArray(argPos) : undefined,
-      newsHolders = isCurry ? holders : undefined,
+      newHolders = isCurry ? holders : undefined,
       newHoldersRight = isCurry ? undefined : holders,
       newPartials = isCurry ? partials : undefined,
       newPartialsRight = isCurry ? undefined : partials;
@@ -49215,9 +49512,12 @@ function createRecurryWrapper(func, bitmask, wrapFunc, placeholder, thisArg, par
   if (!(bitmask & CURRY_BOUND_FLAG)) {
     bitmask &= ~(BIND_FLAG | BIND_KEY_FLAG);
   }
-  var newData = [func, bitmask, thisArg, newPartials, newsHolders, newPartialsRight, newHoldersRight, newArgPos, ary, arity],
-      result = wrapFunc.apply(undefined, newData);
+  var newData = [
+    func, bitmask, thisArg, newPartials, newHolders, newPartialsRight,
+    newHoldersRight, newArgPos, ary, arity
+  ];
 
+  var result = wrapFunc.apply(undefined, newData);
   if (isLaziable(func)) {
     setData(result, newData);
   }
@@ -49227,7 +49527,7 @@ function createRecurryWrapper(func, bitmask, wrapFunc, placeholder, thisArg, par
 
 module.exports = createRecurryWrapper;
 
-},{"./_copyArray":277,"./_isLaziable":316,"./_setData":334}],291:[function(require,module,exports){
+},{"./_copyArray":277,"./_isLaziable":318,"./_setData":336}],292:[function(require,module,exports){
 var baseSetData = require('./_baseSetData'),
     createBaseWrapper = require('./_createBaseWrapper'),
     createCurryWrapper = require('./_createCurryWrapper'),
@@ -49297,8 +49597,12 @@ function createWrapper(func, bitmask, thisArg, partials, holders, argPos, ary, a
 
     partials = holders = undefined;
   }
-  var data = isBindKey ? undefined : getData(func),
-      newData = [func, bitmask, thisArg, partials, holders, partialsRight, holdersRight, argPos, ary, arity];
+  var data = isBindKey ? undefined : getData(func);
+
+  var newData = [
+    func, bitmask, thisArg, partials, holders, partialsRight, holdersRight,
+    argPos, ary, arity
+  ];
 
   if (data) {
     mergeData(newData, data);
@@ -49330,7 +49634,7 @@ function createWrapper(func, bitmask, thisArg, partials, holders, argPos, ary, a
 
 module.exports = createWrapper;
 
-},{"./_baseSetData":261,"./_createBaseWrapper":285,"./_createCurryWrapper":287,"./_createHybridWrapper":288,"./_createPartialWrapper":289,"./_getData":295,"./_mergeData":326,"./_setData":334,"./toInteger":382}],292:[function(require,module,exports){
+},{"./_baseSetData":262,"./_createBaseWrapper":286,"./_createCurryWrapper":288,"./_createHybridWrapper":289,"./_createPartialWrapper":290,"./_getData":296,"./_mergeData":328,"./_setData":336,"./toInteger":383}],293:[function(require,module,exports){
 var arraySome = require('./_arraySome');
 
 /** Used to compose bitmasks for comparison styles. */
@@ -49404,7 +49708,7 @@ function equalArrays(array, other, equalFunc, customizer, bitmask, stack) {
 
 module.exports = equalArrays;
 
-},{"./_arraySome":228}],293:[function(require,module,exports){
+},{"./_arraySome":227}],294:[function(require,module,exports){
 var Symbol = require('./_Symbol'),
     Uint8Array = require('./_Uint8Array'),
     mapToArray = require('./_mapToArray'),
@@ -49494,7 +49798,7 @@ function equalByTag(object, other, tag, equalFunc, customizer, bitmask) {
 
 module.exports = equalByTag;
 
-},{"./_Symbol":218,"./_Uint8Array":219,"./_mapToArray":325,"./_setToArray":335}],294:[function(require,module,exports){
+},{"./_Symbol":217,"./_Uint8Array":218,"./_mapToArray":327,"./_setToArray":337}],295:[function(require,module,exports){
 var baseHas = require('./_baseHas'),
     keys = require('./keys');
 
@@ -49578,7 +49882,7 @@ function equalObjects(object, other, equalFunc, customizer, bitmask, stack) {
 
 module.exports = equalObjects;
 
-},{"./_baseHas":244,"./keys":371}],295:[function(require,module,exports){
+},{"./_baseHas":245,"./keys":372}],296:[function(require,module,exports){
 var metaMap = require('./_metaMap'),
     noop = require('./noop');
 
@@ -49595,7 +49899,7 @@ var getData = !metaMap ? noop : function(func) {
 
 module.exports = getData;
 
-},{"./_metaMap":327,"./noop":376}],296:[function(require,module,exports){
+},{"./_metaMap":329,"./noop":377}],297:[function(require,module,exports){
 var realNames = require('./_realNames');
 
 /** Used for built-in method references. */
@@ -49628,7 +49932,7 @@ function getFuncName(func) {
 
 module.exports = getFuncName;
 
-},{"./_realNames":330}],297:[function(require,module,exports){
+},{"./_realNames":332}],298:[function(require,module,exports){
 var baseProperty = require('./_baseProperty');
 
 /**
@@ -49645,7 +49949,7 @@ var getLength = baseProperty('length');
 
 module.exports = getLength;
 
-},{"./_baseProperty":258}],298:[function(require,module,exports){
+},{"./_baseProperty":259}],299:[function(require,module,exports){
 var isStrictComparable = require('./_isStrictComparable'),
     toPairs = require('./toPairs');
 
@@ -49668,7 +49972,7 @@ function getMatchData(object) {
 
 module.exports = getMatchData;
 
-},{"./_isStrictComparable":318,"./toPairs":384}],299:[function(require,module,exports){
+},{"./_isStrictComparable":320,"./toPairs":385}],300:[function(require,module,exports){
 var isNative = require('./isNative');
 
 /**
@@ -49686,7 +49990,22 @@ function getNative(object, key) {
 
 module.exports = getNative;
 
-},{"./isNative":361}],300:[function(require,module,exports){
+},{"./isNative":362}],301:[function(require,module,exports){
+/**
+ * Gets the argument placeholder value for `func`.
+ *
+ * @private
+ * @param {Function} func The function to inspect.
+ * @returns {*} Returns the placeholder value.
+ */
+function getPlaceholder(func) {
+  var object = func;
+  return object.placeholder;
+}
+
+module.exports = getPlaceholder;
+
+},{}],302:[function(require,module,exports){
 /** Built-in value references. */
 var getOwnPropertySymbols = Object.getOwnPropertySymbols;
 
@@ -49703,7 +50022,7 @@ var getSymbols = getOwnPropertySymbols || function() {
 
 module.exports = getSymbols;
 
-},{}],301:[function(require,module,exports){
+},{}],303:[function(require,module,exports){
 var Map = require('./_Map'),
     Set = require('./_Set'),
     WeakMap = require('./_WeakMap');
@@ -49764,8 +50083,8 @@ if ((Map && getTag(new Map) != mapTag) ||
 
 module.exports = getTag;
 
-},{"./_Map":213,"./_Set":216,"./_WeakMap":220}],302:[function(require,module,exports){
-var baseToPath = require('./_baseToPath'),
+},{"./_Map":212,"./_Set":215,"./_WeakMap":219}],304:[function(require,module,exports){
+var baseCastPath = require('./_baseCastPath'),
     isArguments = require('./isArguments'),
     isArray = require('./isArray'),
     isIndex = require('./_isIndex'),
@@ -49790,7 +50109,7 @@ function hasPath(object, path, hasFunc) {
   }
   var result = hasFunc(object, path);
   if (!result && !isKey(path)) {
-    path = baseToPath(path);
+    path = baseCastPath(path);
     object = parent(object, path);
     if (object != null) {
       path = last(path);
@@ -49806,7 +50125,7 @@ function hasPath(object, path, hasFunc) {
 
 module.exports = hasPath;
 
-},{"./_baseToPath":265,"./_isIndex":312,"./_isKey":314,"./_parent":329,"./isArguments":353,"./isArray":354,"./isLength":360,"./isString":367,"./last":373}],303:[function(require,module,exports){
+},{"./_baseCastPath":238,"./_isIndex":314,"./_isKey":316,"./_parent":331,"./isArguments":354,"./isArray":355,"./isLength":361,"./isString":368,"./last":374}],305:[function(require,module,exports){
 var hashHas = require('./_hashHas');
 
 /**
@@ -49823,7 +50142,7 @@ function hashDelete(hash, key) {
 
 module.exports = hashDelete;
 
-},{"./_hashHas":305}],304:[function(require,module,exports){
+},{"./_hashHas":307}],306:[function(require,module,exports){
 var nativeCreate = require('./_nativeCreate');
 
 /** Used to stand-in for `undefined` hash values. */
@@ -49853,7 +50172,7 @@ function hashGet(hash, key) {
 
 module.exports = hashGet;
 
-},{"./_nativeCreate":328}],305:[function(require,module,exports){
+},{"./_nativeCreate":330}],307:[function(require,module,exports){
 var nativeCreate = require('./_nativeCreate');
 
 /** Used for built-in method references. */
@@ -49876,7 +50195,7 @@ function hashHas(hash, key) {
 
 module.exports = hashHas;
 
-},{"./_nativeCreate":328}],306:[function(require,module,exports){
+},{"./_nativeCreate":330}],308:[function(require,module,exports){
 var nativeCreate = require('./_nativeCreate');
 
 /** Used to stand-in for `undefined` hash values. */
@@ -49896,7 +50215,7 @@ function hashSet(hash, key, value) {
 
 module.exports = hashSet;
 
-},{"./_nativeCreate":328}],307:[function(require,module,exports){
+},{"./_nativeCreate":330}],309:[function(require,module,exports){
 var baseTimes = require('./_baseTimes'),
     isArguments = require('./isArguments'),
     isArray = require('./isArray'),
@@ -49922,7 +50241,7 @@ function indexKeys(object) {
 
 module.exports = indexKeys;
 
-},{"./_baseTimes":263,"./isArguments":353,"./isArray":354,"./isLength":360,"./isString":367}],308:[function(require,module,exports){
+},{"./_baseTimes":264,"./isArguments":354,"./isArray":355,"./isLength":361,"./isString":368}],310:[function(require,module,exports){
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
 
@@ -49950,7 +50269,7 @@ function initCloneArray(array) {
 
 module.exports = initCloneArray;
 
-},{}],309:[function(require,module,exports){
+},{}],311:[function(require,module,exports){
 var cloneArrayBuffer = require('./_cloneArrayBuffer'),
     cloneMap = require('./_cloneMap'),
     cloneRegExp = require('./_cloneRegExp'),
@@ -50026,10 +50345,13 @@ function initCloneByTag(object, tag, isDeep) {
 
 module.exports = initCloneByTag;
 
-},{"./_cloneArrayBuffer":268,"./_cloneMap":270,"./_cloneRegExp":271,"./_cloneSet":272,"./_cloneSymbol":273,"./_cloneTypedArray":274}],310:[function(require,module,exports){
+},{"./_cloneArrayBuffer":268,"./_cloneMap":270,"./_cloneRegExp":271,"./_cloneSet":272,"./_cloneSymbol":273,"./_cloneTypedArray":274}],312:[function(require,module,exports){
 var baseCreate = require('./_baseCreate'),
     isFunction = require('./isFunction'),
     isPrototype = require('./_isPrototype');
+
+/** Built-in value references. */
+var getPrototypeOf = Object.getPrototypeOf;
 
 /**
  * Initializes an object clone.
@@ -50039,16 +50361,14 @@ var baseCreate = require('./_baseCreate'),
  * @returns {Object} Returns the initialized clone.
  */
 function initCloneObject(object) {
-  if (isPrototype(object)) {
-    return {};
-  }
-  var Ctor = object.constructor;
-  return baseCreate(isFunction(Ctor) ? Ctor.prototype : undefined);
+  return (isFunction(object.constructor) && !isPrototype(object))
+    ? baseCreate(getPrototypeOf(object))
+    : {};
 }
 
 module.exports = initCloneObject;
 
-},{"./_baseCreate":239,"./_isPrototype":317,"./isFunction":359}],311:[function(require,module,exports){
+},{"./_baseCreate":240,"./_isPrototype":319,"./isFunction":360}],313:[function(require,module,exports){
 /**
  * Checks if `value` is a host object in IE < 9.
  *
@@ -50070,7 +50390,7 @@ function isHostObject(value) {
 
 module.exports = isHostObject;
 
-},{}],312:[function(require,module,exports){
+},{}],314:[function(require,module,exports){
 /** Used as references for various `Number` constants. */
 var MAX_SAFE_INTEGER = 9007199254740991;
 
@@ -50093,7 +50413,7 @@ function isIndex(value, length) {
 
 module.exports = isIndex;
 
-},{}],313:[function(require,module,exports){
+},{}],315:[function(require,module,exports){
 var eq = require('./eq'),
     isArrayLike = require('./isArrayLike'),
     isIndex = require('./_isIndex'),
@@ -50123,7 +50443,7 @@ function isIterateeCall(value, index, object) {
 
 module.exports = isIterateeCall;
 
-},{"./_isIndex":312,"./eq":348,"./isArrayLike":355,"./isObject":363}],314:[function(require,module,exports){
+},{"./_isIndex":314,"./eq":349,"./isArrayLike":356,"./isObject":364}],316:[function(require,module,exports){
 var isArray = require('./isArray');
 
 /** Used to match property names within property paths. */
@@ -50149,7 +50469,7 @@ function isKey(value, object) {
 
 module.exports = isKey;
 
-},{"./isArray":354}],315:[function(require,module,exports){
+},{"./isArray":355}],317:[function(require,module,exports){
 /**
  * Checks if `value` is suitable for use as unique object key.
  *
@@ -50160,12 +50480,12 @@ module.exports = isKey;
 function isKeyable(value) {
   var type = typeof value;
   return type == 'number' || type == 'boolean' ||
-    (type == 'string' && value !== '__proto__') || value == null;
+    (type == 'string' && value != '__proto__') || value == null;
 }
 
 module.exports = isKeyable;
 
-},{}],316:[function(require,module,exports){
+},{}],318:[function(require,module,exports){
 var LazyWrapper = require('./_LazyWrapper'),
     getData = require('./_getData'),
     getFuncName = require('./_getFuncName'),
@@ -50194,7 +50514,9 @@ function isLaziable(func) {
 
 module.exports = isLaziable;
 
-},{"./_LazyWrapper":211,"./_getData":295,"./_getFuncName":296,"./wrapperLodash":388}],317:[function(require,module,exports){
+},{"./_LazyWrapper":210,"./_getData":296,"./_getFuncName":297,"./wrapperLodash":389}],319:[function(require,module,exports){
+var isFunction = require('./isFunction');
+
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
 
@@ -50207,14 +50529,14 @@ var objectProto = Object.prototype;
  */
 function isPrototype(value) {
   var Ctor = value && value.constructor,
-      proto = (typeof Ctor == 'function' && Ctor.prototype) || objectProto;
+      proto = (isFunction(Ctor) && Ctor.prototype) || objectProto;
 
   return value === proto;
 }
 
 module.exports = isPrototype;
 
-},{}],318:[function(require,module,exports){
+},{"./isFunction":360}],320:[function(require,module,exports){
 var isObject = require('./isObject');
 
 /**
@@ -50231,7 +50553,7 @@ function isStrictComparable(value) {
 
 module.exports = isStrictComparable;
 
-},{"./isObject":363}],319:[function(require,module,exports){
+},{"./isObject":364}],321:[function(require,module,exports){
 /**
  * Converts `iterator` to an array.
  *
@@ -50251,7 +50573,7 @@ function iteratorToArray(iterator) {
 
 module.exports = iteratorToArray;
 
-},{}],320:[function(require,module,exports){
+},{}],322:[function(require,module,exports){
 var Hash = require('./_Hash'),
     Map = require('./_Map');
 
@@ -50263,12 +50585,16 @@ var Hash = require('./_Hash'),
  * @memberOf MapCache
  */
 function mapClear() {
-  this.__data__ = { 'hash': new Hash, 'map': Map ? new Map : [], 'string': new Hash };
+  this.__data__ = {
+    'hash': new Hash,
+    'map': Map ? new Map : [],
+    'string': new Hash
+  };
 }
 
 module.exports = mapClear;
 
-},{"./_Hash":210,"./_Map":213}],321:[function(require,module,exports){
+},{"./_Hash":209,"./_Map":212}],323:[function(require,module,exports){
 var Map = require('./_Map'),
     assocDelete = require('./_assocDelete'),
     hashDelete = require('./_hashDelete'),
@@ -50293,7 +50619,7 @@ function mapDelete(key) {
 
 module.exports = mapDelete;
 
-},{"./_Map":213,"./_assocDelete":231,"./_hashDelete":303,"./_isKeyable":315}],322:[function(require,module,exports){
+},{"./_Map":212,"./_assocDelete":230,"./_hashDelete":305,"./_isKeyable":317}],324:[function(require,module,exports){
 var Map = require('./_Map'),
     assocGet = require('./_assocGet'),
     hashGet = require('./_hashGet'),
@@ -50318,7 +50644,7 @@ function mapGet(key) {
 
 module.exports = mapGet;
 
-},{"./_Map":213,"./_assocGet":232,"./_hashGet":304,"./_isKeyable":315}],323:[function(require,module,exports){
+},{"./_Map":212,"./_assocGet":231,"./_hashGet":306,"./_isKeyable":317}],325:[function(require,module,exports){
 var Map = require('./_Map'),
     assocHas = require('./_assocHas'),
     hashHas = require('./_hashHas'),
@@ -50343,7 +50669,7 @@ function mapHas(key) {
 
 module.exports = mapHas;
 
-},{"./_Map":213,"./_assocHas":233,"./_hashHas":305,"./_isKeyable":315}],324:[function(require,module,exports){
+},{"./_Map":212,"./_assocHas":232,"./_hashHas":307,"./_isKeyable":317}],326:[function(require,module,exports){
 var Map = require('./_Map'),
     assocSet = require('./_assocSet'),
     hashSet = require('./_hashSet'),
@@ -50373,7 +50699,7 @@ function mapSet(key, value) {
 
 module.exports = mapSet;
 
-},{"./_Map":213,"./_assocSet":235,"./_hashSet":306,"./_isKeyable":315}],325:[function(require,module,exports){
+},{"./_Map":212,"./_assocSet":234,"./_hashSet":308,"./_isKeyable":317}],327:[function(require,module,exports){
 /**
  * Converts `map` to an array.
  *
@@ -50393,7 +50719,7 @@ function mapToArray(map) {
 
 module.exports = mapToArray;
 
-},{}],326:[function(require,module,exports){
+},{}],328:[function(require,module,exports){
 var composeArgs = require('./_composeArgs'),
     composeArgsRight = require('./_composeArgsRight'),
     copyArray = require('./_copyArray'),
@@ -50435,9 +50761,9 @@ function mergeData(data, source) {
       isCommon = newBitmask < (BIND_FLAG | BIND_KEY_FLAG | ARY_FLAG);
 
   var isCombo =
-    (srcBitmask == ARY_FLAG && (bitmask == CURRY_FLAG)) ||
-    (srcBitmask == ARY_FLAG && (bitmask == REARG_FLAG) && (data[7].length <= source[8])) ||
-    (srcBitmask == (ARY_FLAG | REARG_FLAG) && (source[7].length <= source[8]) && (bitmask == CURRY_FLAG));
+    ((srcBitmask == ARY_FLAG) && (bitmask == CURRY_FLAG)) ||
+    ((srcBitmask == ARY_FLAG) && (bitmask == REARG_FLAG) && (data[7].length <= source[8])) ||
+    ((srcBitmask == (ARY_FLAG | REARG_FLAG)) && (source[7].length <= source[8]) && (bitmask == CURRY_FLAG));
 
   // Exit early if metadata can't be merged.
   if (!(isCommon || isCombo)) {
@@ -50447,7 +50773,7 @@ function mergeData(data, source) {
   if (srcBitmask & BIND_FLAG) {
     data[2] = source[2];
     // Set when currying a bound function.
-    newBitmask |= (bitmask & BIND_FLAG) ? 0 : CURRY_BOUND_FLAG;
+    newBitmask |= bitmask & BIND_FLAG ? 0 : CURRY_BOUND_FLAG;
   }
   // Compose partial arguments.
   var value = source[3];
@@ -50485,7 +50811,7 @@ function mergeData(data, source) {
 
 module.exports = mergeData;
 
-},{"./_composeArgs":275,"./_composeArgsRight":276,"./_copyArray":277,"./_replaceHolders":332}],327:[function(require,module,exports){
+},{"./_composeArgs":275,"./_composeArgsRight":276,"./_copyArray":277,"./_replaceHolders":334}],329:[function(require,module,exports){
 var WeakMap = require('./_WeakMap');
 
 /** Used to store function metadata. */
@@ -50493,7 +50819,7 @@ var metaMap = WeakMap && new WeakMap;
 
 module.exports = metaMap;
 
-},{"./_WeakMap":220}],328:[function(require,module,exports){
+},{"./_WeakMap":219}],330:[function(require,module,exports){
 var getNative = require('./_getNative');
 
 /* Built-in method references that are verified to be native. */
@@ -50501,7 +50827,7 @@ var nativeCreate = getNative(Object, 'create');
 
 module.exports = nativeCreate;
 
-},{"./_getNative":299}],329:[function(require,module,exports){
+},{"./_getNative":300}],331:[function(require,module,exports){
 var baseSlice = require('./_baseSlice'),
     get = require('./get');
 
@@ -50519,13 +50845,13 @@ function parent(object, path) {
 
 module.exports = parent;
 
-},{"./_baseSlice":262,"./get":350}],330:[function(require,module,exports){
+},{"./_baseSlice":263,"./get":351}],332:[function(require,module,exports){
 /** Used to lookup unminified function names. */
 var realNames = {};
 
 module.exports = realNames;
 
-},{}],331:[function(require,module,exports){
+},{}],333:[function(require,module,exports){
 var copyArray = require('./_copyArray'),
     isIndex = require('./_isIndex');
 
@@ -50556,7 +50882,7 @@ function reorder(array, indexes) {
 
 module.exports = reorder;
 
-},{"./_copyArray":277,"./_isIndex":312}],332:[function(require,module,exports){
+},{"./_copyArray":277,"./_isIndex":314}],334:[function(require,module,exports){
 /** Used as the internal argument placeholder. */
 var PLACEHOLDER = '__lodash_placeholder__';
 
@@ -50576,7 +50902,8 @@ function replaceHolders(array, placeholder) {
       result = [];
 
   while (++index < length) {
-    if (array[index] === placeholder) {
+    var value = array[index];
+    if (value === placeholder || value === PLACEHOLDER) {
       array[index] = PLACEHOLDER;
       result[++resIndex] = index;
     }
@@ -50586,7 +50913,7 @@ function replaceHolders(array, placeholder) {
 
 module.exports = replaceHolders;
 
-},{}],333:[function(require,module,exports){
+},{}],335:[function(require,module,exports){
 (function (global){
 var checkGlobal = require('./_checkGlobal');
 
@@ -50597,10 +50924,14 @@ var objectTypes = {
 };
 
 /** Detect free variable `exports`. */
-var freeExports = (objectTypes[typeof exports] && exports && !exports.nodeType) ? exports : null;
+var freeExports = (objectTypes[typeof exports] && exports && !exports.nodeType)
+  ? exports
+  : undefined;
 
 /** Detect free variable `module`. */
-var freeModule = (objectTypes[typeof module] && module && !module.nodeType) ? module : null;
+var freeModule = (objectTypes[typeof module] && module && !module.nodeType)
+  ? module
+  : undefined;
 
 /** Detect free variable `global` from Node.js. */
 var freeGlobal = checkGlobal(freeExports && freeModule && typeof global == 'object' && global);
@@ -50620,13 +50951,15 @@ var thisGlobal = checkGlobal(objectTypes[typeof this] && this);
  * The `this` value is used if it's the global object to avoid Greasemonkey's
  * restricted `window` object, otherwise the `window` object is used.
  */
-var root = freeGlobal || ((freeWindow !== (thisGlobal && thisGlobal.window)) && freeWindow) || freeSelf || thisGlobal || Function('return this')();
+var root = freeGlobal ||
+  ((freeWindow !== (thisGlobal && thisGlobal.window)) && freeWindow) ||
+    freeSelf || thisGlobal || Function('return this')();
 
 module.exports = root;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./_checkGlobal":267}],334:[function(require,module,exports){
+},{"./_checkGlobal":267}],336:[function(require,module,exports){
 var baseSetData = require('./_baseSetData'),
     now = require('./now');
 
@@ -50669,7 +51002,7 @@ var setData = (function() {
 
 module.exports = setData;
 
-},{"./_baseSetData":261,"./now":377}],335:[function(require,module,exports){
+},{"./_baseSetData":262,"./now":378}],337:[function(require,module,exports){
 /**
  * Converts `set` to an array.
  *
@@ -50689,7 +51022,7 @@ function setToArray(set) {
 
 module.exports = setToArray;
 
-},{}],336:[function(require,module,exports){
+},{}],338:[function(require,module,exports){
 /**
  * Removes all key-value entries from the stack.
  *
@@ -50703,7 +51036,7 @@ function stackClear() {
 
 module.exports = stackClear;
 
-},{}],337:[function(require,module,exports){
+},{}],339:[function(require,module,exports){
 var assocDelete = require('./_assocDelete');
 
 /**
@@ -50724,7 +51057,7 @@ function stackDelete(key) {
 
 module.exports = stackDelete;
 
-},{"./_assocDelete":231}],338:[function(require,module,exports){
+},{"./_assocDelete":230}],340:[function(require,module,exports){
 var assocGet = require('./_assocGet');
 
 /**
@@ -50745,7 +51078,7 @@ function stackGet(key) {
 
 module.exports = stackGet;
 
-},{"./_assocGet":232}],339:[function(require,module,exports){
+},{"./_assocGet":231}],341:[function(require,module,exports){
 var assocHas = require('./_assocHas');
 
 /**
@@ -50766,7 +51099,7 @@ function stackHas(key) {
 
 module.exports = stackHas;
 
-},{"./_assocHas":233}],340:[function(require,module,exports){
+},{"./_assocHas":232}],342:[function(require,module,exports){
 var MapCache = require('./_MapCache'),
     assocSet = require('./_assocSet');
 
@@ -50804,7 +51137,7 @@ function stackSet(key, value) {
 
 module.exports = stackSet;
 
-},{"./_MapCache":214,"./_assocSet":235}],341:[function(require,module,exports){
+},{"./_MapCache":213,"./_assocSet":234}],343:[function(require,module,exports){
 var toString = require('./toString');
 
 /** Used to match property names within property paths. */
@@ -50830,23 +51163,7 @@ function stringToPath(string) {
 
 module.exports = stringToPath;
 
-},{"./toString":386}],342:[function(require,module,exports){
-var identity = require('./identity');
-
-/**
- * Converts `value` to a function if it's not one.
- *
- * @private
- * @param {*} value The value to process.
- * @returns {Function} Returns the function.
- */
-function toFunction(value) {
-  return typeof value == 'function' ? value : identity;
-}
-
-module.exports = toFunction;
-
-},{"./identity":352}],343:[function(require,module,exports){
+},{"./toString":387}],344:[function(require,module,exports){
 var LazyWrapper = require('./_LazyWrapper'),
     LodashWrapper = require('./_LodashWrapper'),
     copyArray = require('./_copyArray');
@@ -50871,7 +51188,7 @@ function wrapperClone(wrapper) {
 
 module.exports = wrapperClone;
 
-},{"./_LazyWrapper":211,"./_LodashWrapper":212,"./_copyArray":277}],344:[function(require,module,exports){
+},{"./_LazyWrapper":210,"./_LodashWrapper":211,"./_copyArray":277}],345:[function(require,module,exports){
 var copyObject = require('./_copyObject'),
     createAssigner = require('./_createAssigner'),
     keys = require('./keys');
@@ -50912,8 +51229,9 @@ var assign = createAssigner(function(object, source) {
 
 module.exports = assign;
 
-},{"./_copyObject":278,"./_createAssigner":282,"./keys":371}],345:[function(require,module,exports){
+},{"./_copyObject":278,"./_createAssigner":283,"./keys":372}],346:[function(require,module,exports){
 var createWrapper = require('./_createWrapper'),
+    getPlaceholder = require('./_getPlaceholder'),
     replaceHolders = require('./_replaceHolders'),
     rest = require('./rest');
 
@@ -50959,9 +51277,7 @@ var BIND_FLAG = 1,
 var bind = rest(function(func, thisArg, partials) {
   var bitmask = BIND_FLAG;
   if (partials.length) {
-    var placeholder = bind.placeholder,
-        holders = replaceHolders(partials, placeholder);
-
+    var holders = replaceHolders(partials, getPlaceholder(bind));
     bitmask |= PARTIAL_FLAG;
   }
   return createWrapper(func, bitmask, thisArg, partials, holders);
@@ -50972,7 +51288,7 @@ bind.placeholder = {};
 
 module.exports = bind;
 
-},{"./_createWrapper":291,"./_replaceHolders":332,"./rest":380}],346:[function(require,module,exports){
+},{"./_createWrapper":292,"./_getPlaceholder":301,"./_replaceHolders":334,"./rest":381}],347:[function(require,module,exports){
 var baseClone = require('./_baseClone');
 
 /**
@@ -51005,7 +51321,7 @@ function clone(value) {
 
 module.exports = clone;
 
-},{"./_baseClone":238}],347:[function(require,module,exports){
+},{"./_baseClone":239}],348:[function(require,module,exports){
 /**
  * Creates a function that returns `value`.
  *
@@ -51030,7 +51346,7 @@ function constant(value) {
 
 module.exports = constant;
 
-},{}],348:[function(require,module,exports){
+},{}],349:[function(require,module,exports){
 /**
  * Performs a [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
  * comparison between two values to determine if they are equivalent.
@@ -51067,11 +51383,11 @@ function eq(value, other) {
 
 module.exports = eq;
 
-},{}],349:[function(require,module,exports){
+},{}],350:[function(require,module,exports){
 var arrayEach = require('./_arrayEach'),
+    baseCastFunction = require('./_baseCastFunction'),
     baseEach = require('./_baseEach'),
-    isArray = require('./isArray'),
-    toFunction = require('./_toFunction');
+    isArray = require('./isArray');
 
 /**
  * Iterates over elements of `collection` invoking `iteratee` for each element.
@@ -51104,12 +51420,12 @@ var arrayEach = require('./_arrayEach'),
 function forEach(collection, iteratee) {
   return (typeof iteratee == 'function' && isArray(collection))
     ? arrayEach(collection, iteratee)
-    : baseEach(collection, toFunction(iteratee));
+    : baseEach(collection, baseCastFunction(iteratee));
 }
 
 module.exports = forEach;
 
-},{"./_arrayEach":225,"./_baseEach":240,"./_toFunction":342,"./isArray":354}],350:[function(require,module,exports){
+},{"./_arrayEach":224,"./_baseCastFunction":237,"./_baseEach":241,"./isArray":355}],351:[function(require,module,exports){
 var baseGet = require('./_baseGet');
 
 /**
@@ -51143,7 +51459,7 @@ function get(object, path, defaultValue) {
 
 module.exports = get;
 
-},{"./_baseGet":243}],351:[function(require,module,exports){
+},{"./_baseGet":244}],352:[function(require,module,exports){
 var baseHasIn = require('./_baseHasIn'),
     hasPath = require('./_hasPath');
 
@@ -51178,7 +51494,7 @@ function hasIn(object, path) {
 
 module.exports = hasIn;
 
-},{"./_baseHasIn":245,"./_hasPath":302}],352:[function(require,module,exports){
+},{"./_baseHasIn":246,"./_hasPath":304}],353:[function(require,module,exports){
 /**
  * This method returns the first argument given to it.
  *
@@ -51200,7 +51516,7 @@ function identity(value) {
 
 module.exports = identity;
 
-},{}],353:[function(require,module,exports){
+},{}],354:[function(require,module,exports){
 var isArrayLikeObject = require('./isArrayLikeObject');
 
 /** `Object#toString` result references. */
@@ -51245,13 +51561,13 @@ function isArguments(value) {
 
 module.exports = isArguments;
 
-},{"./isArrayLikeObject":356}],354:[function(require,module,exports){
+},{"./isArrayLikeObject":357}],355:[function(require,module,exports){
 /**
  * Checks if `value` is classified as an `Array` object.
  *
  * @static
  * @memberOf _
- * @type Function
+ * @type {Function}
  * @category Lang
  * @param {*} value The value to check.
  * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
@@ -51273,7 +51589,7 @@ var isArray = Array.isArray;
 
 module.exports = isArray;
 
-},{}],355:[function(require,module,exports){
+},{}],356:[function(require,module,exports){
 var getLength = require('./_getLength'),
     isFunction = require('./isFunction'),
     isLength = require('./isLength');
@@ -51285,7 +51601,6 @@ var getLength = require('./_getLength'),
  *
  * @static
  * @memberOf _
- * @type Function
  * @category Lang
  * @param {*} value The value to check.
  * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
@@ -51310,7 +51625,7 @@ function isArrayLike(value) {
 
 module.exports = isArrayLike;
 
-},{"./_getLength":297,"./isFunction":359,"./isLength":360}],356:[function(require,module,exports){
+},{"./_getLength":298,"./isFunction":360,"./isLength":361}],357:[function(require,module,exports){
 var isArrayLike = require('./isArrayLike'),
     isObjectLike = require('./isObjectLike');
 
@@ -51320,7 +51635,6 @@ var isArrayLike = require('./isArrayLike'),
  *
  * @static
  * @memberOf _
- * @type Function
  * @category Lang
  * @param {*} value The value to check.
  * @returns {boolean} Returns `true` if `value` is an array-like object, else `false`.
@@ -51344,7 +51658,7 @@ function isArrayLikeObject(value) {
 
 module.exports = isArrayLikeObject;
 
-},{"./isArrayLike":355,"./isObjectLike":364}],357:[function(require,module,exports){
+},{"./isArrayLike":356,"./isObjectLike":365}],358:[function(require,module,exports){
 var constant = require('./constant'),
     root = require('./_root');
 
@@ -51355,13 +51669,19 @@ var objectTypes = {
 };
 
 /** Detect free variable `exports`. */
-var freeExports = (objectTypes[typeof exports] && exports && !exports.nodeType) ? exports : null;
+var freeExports = (objectTypes[typeof exports] && exports && !exports.nodeType)
+  ? exports
+  : undefined;
 
 /** Detect free variable `module`. */
-var freeModule = (objectTypes[typeof module] && module && !module.nodeType) ? module : null;
+var freeModule = (objectTypes[typeof module] && module && !module.nodeType)
+  ? module
+  : undefined;
 
 /** Detect the popular CommonJS extension `module.exports`. */
-var moduleExports = (freeModule && freeModule.exports === freeExports) ? freeExports : null;
+var moduleExports = (freeModule && freeModule.exports === freeExports)
+  ? freeExports
+  : undefined;
 
 /** Built-in value references. */
 var Buffer = moduleExports ? root.Buffer : undefined;
@@ -51388,7 +51708,7 @@ var isBuffer = !Buffer ? constant(false) : function(value) {
 
 module.exports = isBuffer;
 
-},{"./_root":333,"./constant":347}],358:[function(require,module,exports){
+},{"./_root":335,"./constant":348}],359:[function(require,module,exports){
 var isArguments = require('./isArguments'),
     isArray = require('./isArray'),
     isArrayLike = require('./isArrayLike'),
@@ -51430,7 +51750,8 @@ var hasOwnProperty = objectProto.hasOwnProperty;
  */
 function isEmpty(value) {
   if (isArrayLike(value) &&
-      (isArray(value) || isString(value) || isFunction(value.splice) || isArguments(value))) {
+      (isArray(value) || isString(value) ||
+        isFunction(value.splice) || isArguments(value))) {
     return !value.length;
   }
   for (var key in value) {
@@ -51443,7 +51764,7 @@ function isEmpty(value) {
 
 module.exports = isEmpty;
 
-},{"./isArguments":353,"./isArray":354,"./isArrayLike":355,"./isFunction":359,"./isString":367}],359:[function(require,module,exports){
+},{"./isArguments":354,"./isArray":355,"./isArrayLike":356,"./isFunction":360,"./isString":368}],360:[function(require,module,exports){
 var isObject = require('./isObject');
 
 /** `Object#toString` result references. */
@@ -51485,7 +51806,7 @@ function isFunction(value) {
 
 module.exports = isFunction;
 
-},{"./isObject":363}],360:[function(require,module,exports){
+},{"./isObject":364}],361:[function(require,module,exports){
 /** Used as references for various `Number` constants. */
 var MAX_SAFE_INTEGER = 9007199254740991;
 
@@ -51514,12 +51835,13 @@ var MAX_SAFE_INTEGER = 9007199254740991;
  * // => false
  */
 function isLength(value) {
-  return typeof value == 'number' && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+  return typeof value == 'number' &&
+    value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
 }
 
 module.exports = isLength;
 
-},{}],361:[function(require,module,exports){
+},{}],362:[function(require,module,exports){
 var isFunction = require('./isFunction'),
     isHostObject = require('./_isHostObject'),
     isObjectLike = require('./isObjectLike');
@@ -51574,7 +51896,7 @@ function isNative(value) {
 
 module.exports = isNative;
 
-},{"./_isHostObject":311,"./isFunction":359,"./isObjectLike":364}],362:[function(require,module,exports){
+},{"./_isHostObject":313,"./isFunction":360,"./isObjectLike":365}],363:[function(require,module,exports){
 var isObjectLike = require('./isObjectLike');
 
 /** `Object#toString` result references. */
@@ -51621,7 +51943,7 @@ function isNumber(value) {
 
 module.exports = isNumber;
 
-},{"./isObjectLike":364}],363:[function(require,module,exports){
+},{"./isObjectLike":365}],364:[function(require,module,exports){
 /**
  * Checks if `value` is the [language type](https://es5.github.io/#x8) of `Object`.
  * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
@@ -51652,7 +51974,7 @@ function isObject(value) {
 
 module.exports = isObject;
 
-},{}],364:[function(require,module,exports){
+},{}],365:[function(require,module,exports){
 /**
  * Checks if `value` is object-like. A value is object-like if it's not `null`
  * and has a `typeof` result of "object".
@@ -51682,7 +52004,7 @@ function isObjectLike(value) {
 
 module.exports = isObjectLike;
 
-},{}],365:[function(require,module,exports){
+},{}],366:[function(require,module,exports){
 var isHostObject = require('./_isHostObject'),
     isObjectLike = require('./isObjectLike');
 
@@ -51735,13 +52057,11 @@ var getPrototypeOf = Object.getPrototypeOf;
  * // => true
  */
 function isPlainObject(value) {
-  if (!isObjectLike(value) || objectToString.call(value) != objectTag || isHostObject(value)) {
+  if (!isObjectLike(value) ||
+      objectToString.call(value) != objectTag || isHostObject(value)) {
     return false;
   }
-  var proto = objectProto;
-  if (typeof value.constructor == 'function') {
-    proto = getPrototypeOf(value);
-  }
+  var proto = getPrototypeOf(value);
   if (proto === null) {
     return true;
   }
@@ -51752,7 +52072,7 @@ function isPlainObject(value) {
 
 module.exports = isPlainObject;
 
-},{"./_isHostObject":311,"./isObjectLike":364}],366:[function(require,module,exports){
+},{"./_isHostObject":313,"./isObjectLike":365}],367:[function(require,module,exports){
 var isObject = require('./isObject');
 
 /** `Object#toString` result references. */
@@ -51789,7 +52109,7 @@ function isRegExp(value) {
 
 module.exports = isRegExp;
 
-},{"./isObject":363}],367:[function(require,module,exports){
+},{"./isObject":364}],368:[function(require,module,exports){
 var isArray = require('./isArray'),
     isObjectLike = require('./isObjectLike');
 
@@ -51828,7 +52148,7 @@ function isString(value) {
 
 module.exports = isString;
 
-},{"./isArray":354,"./isObjectLike":364}],368:[function(require,module,exports){
+},{"./isArray":355,"./isObjectLike":365}],369:[function(require,module,exports){
 var isObjectLike = require('./isObjectLike');
 
 /** `Object#toString` result references. */
@@ -51866,7 +52186,7 @@ function isSymbol(value) {
 
 module.exports = isSymbol;
 
-},{"./isObjectLike":364}],369:[function(require,module,exports){
+},{"./isObjectLike":365}],370:[function(require,module,exports){
 var isLength = require('./isLength'),
     isObjectLike = require('./isObjectLike');
 
@@ -51937,12 +52257,13 @@ var objectToString = objectProto.toString;
  * // => false
  */
 function isTypedArray(value) {
-  return isObjectLike(value) && isLength(value.length) && !!typedArrayTags[objectToString.call(value)];
+  return isObjectLike(value) &&
+    isLength(value.length) && !!typedArrayTags[objectToString.call(value)];
 }
 
 module.exports = isTypedArray;
 
-},{"./isLength":360,"./isObjectLike":364}],370:[function(require,module,exports){
+},{"./isLength":361,"./isObjectLike":365}],371:[function(require,module,exports){
 var createAggregator = require('./_createAggregator');
 
 /**
@@ -51978,7 +52299,7 @@ var keyBy = createAggregator(function(result, value, key) {
 
 module.exports = keyBy;
 
-},{"./_createAggregator":281}],371:[function(require,module,exports){
+},{"./_createAggregator":282}],372:[function(require,module,exports){
 var baseHas = require('./_baseHas'),
     baseKeys = require('./_baseKeys'),
     indexKeys = require('./_indexKeys'),
@@ -52035,7 +52356,7 @@ function keys(object) {
 
 module.exports = keys;
 
-},{"./_baseHas":244,"./_baseKeys":250,"./_indexKeys":307,"./_isIndex":312,"./_isPrototype":317,"./isArrayLike":355}],372:[function(require,module,exports){
+},{"./_baseHas":245,"./_baseKeys":251,"./_indexKeys":309,"./_isIndex":314,"./_isPrototype":319,"./isArrayLike":356}],373:[function(require,module,exports){
 var baseKeysIn = require('./_baseKeysIn'),
     indexKeys = require('./_indexKeys'),
     isIndex = require('./_isIndex'),
@@ -52091,7 +52412,7 @@ function keysIn(object) {
 
 module.exports = keysIn;
 
-},{"./_baseKeysIn":251,"./_indexKeys":307,"./_isIndex":312,"./_isPrototype":317}],373:[function(require,module,exports){
+},{"./_baseKeysIn":252,"./_indexKeys":309,"./_isIndex":314,"./_isPrototype":319}],374:[function(require,module,exports){
 /**
  * Gets the last element of `array`.
  *
@@ -52112,7 +52433,7 @@ function last(array) {
 
 module.exports = last;
 
-},{}],374:[function(require,module,exports){
+},{}],375:[function(require,module,exports){
 var arrayMap = require('./_arrayMap'),
     baseIteratee = require('./_baseIteratee'),
     baseMap = require('./_baseMap'),
@@ -52166,17 +52487,17 @@ function map(collection, iteratee) {
 
 module.exports = map;
 
-},{"./_arrayMap":226,"./_baseIteratee":249,"./_baseMap":253,"./isArray":354}],375:[function(require,module,exports){
+},{"./_arrayMap":225,"./_baseIteratee":250,"./_baseMap":254,"./isArray":355}],376:[function(require,module,exports){
 var baseMerge = require('./_baseMerge'),
     createAssigner = require('./_createAssigner');
 
 /**
- * Recursively merges own and inherited enumerable properties of source
- * objects into the destination object, skipping source properties that resolve
- * to `undefined`. Array and plain object properties are merged recursively.
- * Other objects and value types are overridden by assignment. Source objects
- * are applied from left to right. Subsequent sources overwrite property
- * assignments of previous sources.
+ * Recursively merges own and inherited enumerable properties of source objects
+ * into the destination object. Source properties that resolve to `undefined`
+ * are skipped if a destination value exists. Array and plain object properties
+ * are merged recursively. Other objects and value types are overridden by
+ * assignment. Source objects are applied from left to right. Subsequent
+ * sources overwrite property assignments of previous sources.
  *
  * **Note:** This method mutates `object`.
  *
@@ -52205,7 +52526,7 @@ var merge = createAssigner(function(object, source, srcIndex) {
 
 module.exports = merge;
 
-},{"./_baseMerge":256,"./_createAssigner":282}],376:[function(require,module,exports){
+},{"./_baseMerge":257,"./_createAssigner":283}],377:[function(require,module,exports){
 /**
  * A no-operation function that returns `undefined` regardless of the
  * arguments it receives.
@@ -52226,14 +52547,14 @@ function noop() {
 
 module.exports = noop;
 
-},{}],377:[function(require,module,exports){
+},{}],378:[function(require,module,exports){
 /**
  * Gets the timestamp of the number of milliseconds that have elapsed since
  * the Unix epoch (1 January 1970 00:00:00 UTC).
  *
  * @static
  * @memberOf _
- * @type Function
+ * @type {Function}
  * @category Date
  * @returns {number} Returns the timestamp.
  * @example
@@ -52247,7 +52568,7 @@ var now = Date.now;
 
 module.exports = now;
 
-},{}],378:[function(require,module,exports){
+},{}],379:[function(require,module,exports){
 var baseProperty = require('./_baseProperty'),
     basePropertyDeep = require('./_basePropertyDeep'),
     isKey = require('./_isKey');
@@ -52279,7 +52600,7 @@ function property(path) {
 
 module.exports = property;
 
-},{"./_baseProperty":258,"./_basePropertyDeep":259,"./_isKey":314}],379:[function(require,module,exports){
+},{"./_baseProperty":259,"./_basePropertyDeep":260,"./_isKey":316}],380:[function(require,module,exports){
 var arrayReduce = require('./_arrayReduce'),
     baseEach = require('./_baseEach'),
     baseIteratee = require('./_baseIteratee'),
@@ -52330,7 +52651,7 @@ function reduce(collection, iteratee, accumulator) {
 
 module.exports = reduce;
 
-},{"./_arrayReduce":227,"./_baseEach":240,"./_baseIteratee":249,"./_baseReduce":260,"./isArray":354}],380:[function(require,module,exports){
+},{"./_arrayReduce":226,"./_baseEach":241,"./_baseIteratee":250,"./_baseReduce":261,"./isArray":355}],381:[function(require,module,exports){
 var apply = require('./_apply'),
     toInteger = require('./toInteger');
 
@@ -52393,8 +52714,8 @@ function rest(func, start) {
 
 module.exports = rest;
 
-},{"./_apply":223,"./toInteger":382}],381:[function(require,module,exports){
-var baseToPath = require('./_baseToPath'),
+},{"./_apply":222,"./toInteger":383}],382:[function(require,module,exports){
+var baseCastPath = require('./_baseCastPath'),
     get = require('./get'),
     isFunction = require('./isFunction'),
     isKey = require('./_isKey'),
@@ -52430,7 +52751,7 @@ var baseToPath = require('./_baseToPath'),
  */
 function result(object, path, defaultValue) {
   if (!isKey(path, object)) {
-    path = baseToPath(path);
+    path = baseCastPath(path);
     var result = get(object, path);
     object = parent(object, path);
   } else {
@@ -52444,7 +52765,7 @@ function result(object, path, defaultValue) {
 
 module.exports = result;
 
-},{"./_baseToPath":265,"./_isKey":314,"./_parent":329,"./get":350,"./isFunction":359}],382:[function(require,module,exports){
+},{"./_baseCastPath":238,"./_isKey":316,"./_parent":331,"./get":351,"./isFunction":360}],383:[function(require,module,exports){
 var toNumber = require('./toNumber');
 
 /** Used as references for various `Number` constants. */
@@ -52490,7 +52811,7 @@ function toInteger(value) {
 
 module.exports = toInteger;
 
-},{"./toNumber":383}],383:[function(require,module,exports){
+},{"./toNumber":384}],384:[function(require,module,exports){
 var isFunction = require('./isFunction'),
     isObject = require('./isObject');
 
@@ -52551,12 +52872,13 @@ function toNumber(value) {
 
 module.exports = toNumber;
 
-},{"./isFunction":359,"./isObject":363}],384:[function(require,module,exports){
+},{"./isFunction":360,"./isObject":364}],385:[function(require,module,exports){
 var baseToPairs = require('./_baseToPairs'),
     keys = require('./keys');
 
 /**
- * Creates an array of own enumerable key-value pairs for `object`.
+ * Creates an array of own enumerable key-value pairs for `object` which
+ * can be consumed by `_.fromPairs`.
  *
  * @static
  * @memberOf _
@@ -52581,7 +52903,7 @@ function toPairs(object) {
 
 module.exports = toPairs;
 
-},{"./_baseToPairs":264,"./keys":371}],385:[function(require,module,exports){
+},{"./_baseToPairs":265,"./keys":372}],386:[function(require,module,exports){
 var copyObject = require('./_copyObject'),
     keysIn = require('./keysIn');
 
@@ -52614,7 +52936,7 @@ function toPlainObject(value) {
 
 module.exports = toPlainObject;
 
-},{"./_copyObject":278,"./keysIn":372}],386:[function(require,module,exports){
+},{"./_copyObject":278,"./keysIn":373}],387:[function(require,module,exports){
 var Symbol = require('./_Symbol'),
     isSymbol = require('./isSymbol');
 
@@ -52662,7 +52984,7 @@ function toString(value) {
 
 module.exports = toString;
 
-},{"./_Symbol":218,"./isSymbol":368}],387:[function(require,module,exports){
+},{"./_Symbol":217,"./isSymbol":369}],388:[function(require,module,exports){
 var baseValues = require('./_baseValues'),
     keys = require('./keys');
 
@@ -52697,7 +53019,7 @@ function values(object) {
 
 module.exports = values;
 
-},{"./_baseValues":266,"./keys":371}],388:[function(require,module,exports){
+},{"./_baseValues":266,"./keys":372}],389:[function(require,module,exports){
 var LazyWrapper = require('./_LazyWrapper'),
     LodashWrapper = require('./_LodashWrapper'),
     baseLodash = require('./_baseLodash'),
@@ -52750,51 +53072,52 @@ var hasOwnProperty = objectProto.hasOwnProperty;
  * `tail`, `take`, `takeRight`, `takeRightWhile`, `takeWhile`, and `toArray`
  *
  * The chainable wrapper methods are:
- * `after`, `ary`, `assign`, `assignIn`, `assignInWith`, `assignWith`,
- * `at`, `before`, `bind`, `bindAll`, `bindKey`, `chain`, `chunk`, `commit`,
- * `compact`, `concat`, `conforms`, `constant`, `countBy`, `create`, `curry`,
- * `debounce`, `defaults`, `defaultsDeep`, `defer`, `delay`, `difference`,
+ * `after`, `ary`, `assign`, `assignIn`, `assignInWith`, `assignWith`, `at`,
+ * `before`, `bind`, `bindAll`, `bindKey`, `castArray`, `chain`, `chunk`,
+ * `commit`, `compact`, `concat`, `conforms`, `constant`, `countBy`, `create`,
+ * `curry`, `debounce`, `defaults`, `defaultsDeep`, `defer`, `delay`, `difference`,
  * `differenceBy`, `differenceWith`, `drop`, `dropRight`, `dropRightWhile`,
- * `dropWhile`, `fill`, `filter`, `flatten`, `flattenDeep`, `flip`, `flow`,
- * `flowRight`, `fromPairs`, `functions`, `functionsIn`, `groupBy`, `initial`,
- * `intersection`, `intersectionBy`, `intersectionWith`, `invert`, `invertBy`,
- * `invokeMap`, `iteratee`, `keyBy`, `keys`, `keysIn`, `map`, `mapKeys`,
- * `mapValues`, `matches`, `matchesProperty`, `memoize`, `merge`, `mergeWith`,
- * `method`, `methodOf`, `mixin`, `negate`, `nthArg`, `omit`, `omitBy`, `once`,
- * `orderBy`, `over`, `overArgs`, `overEvery`, `overSome`, `partial`,
- * `partialRight`, `partition`, `pick`, `pickBy`, `plant`, `property`,
- * `propertyOf`, `pull`, `pullAll`, `pullAllBy`, `pullAt`, `push`, `range`,
- * `rangeRight`, `rearg`, `reject`, `remove`, `rest`, `reverse`, `sampleSize`,
- * `set`, `setWith`, `shuffle`, `slice`, `sort`, `sortBy`, `splice`, `spread`,
- * `tail`, `take`, `takeRight`, `takeRightWhile`, `takeWhile`, `tap`, `throttle`,
- * `thru`, `toArray`, `toPairs`, `toPairsIn`, `toPath`, `toPlainObject`,
- * `transform`, `unary`, `union`, `unionBy`, `unionWith`, `uniq`, `uniqBy`,
- * `uniqWith`, `unset`, `unshift`, `unzip`, `unzipWith`, `values`, `valuesIn`,
- * `without`, `wrap`, `xor`, `xorBy`, `xorWith`, `zip`, `zipObject`,
- * `zipObjectDeep`, and `zipWith`
+ * `dropWhile`, `fill`, `filter`, `flatten`, `flattenDeep`, `flattenDepth`,
+ * `flip`, `flow`, `flowRight`, `fromPairs`, `functions`, `functionsIn`,
+ * `groupBy`, `initial`, `intersection`, `intersectionBy`, `intersectionWith`,
+ * `invert`, `invertBy`, `invokeMap`, `iteratee`, `keyBy`, `keys`, `keysIn`,
+ * `map`, `mapKeys`, `mapValues`, `matches`, `matchesProperty`, `memoize`,
+ * `merge`, `mergeWith`, `method`, `methodOf`, `mixin`, `negate`, `nthArg`,
+ * `omit`, `omitBy`, `once`, `orderBy`, `over`, `overArgs`, `overEvery`,
+ * `overSome`, `partial`, `partialRight`, `partition`, `pick`, `pickBy`, `plant`,
+ * `property`, `propertyOf`, `pull`, `pullAll`, `pullAllBy`, `pullAt`, `push`,
+ * `range`, `rangeRight`, `rearg`, `reject`, `remove`, `rest`, `reverse`,
+ * `sampleSize`, `set`, `setWith`, `shuffle`, `slice`, `sort`, `sortBy`,
+ * `splice`, `spread`, `tail`, `take`, `takeRight`, `takeRightWhile`,
+ * `takeWhile`, `tap`, `throttle`, `thru`, `toArray`, `toPairs`, `toPairsIn`,
+ * `toPath`, `toPlainObject`, `transform`, `unary`, `union`, `unionBy`,
+ * `unionWith`, `uniq`, `uniqBy`, `uniqWith`, `unset`, `unshift`, `unzip`,
+ * `unzipWith`, `values`, `valuesIn`, `without`, `wrap`, `xor`, `xorBy`,
+ * `xorWith`, `zip`, `zipObject`, `zipObjectDeep`, and `zipWith`
  *
  * The wrapper methods that are **not** chainable by default are:
  * `add`, `attempt`, `camelCase`, `capitalize`, `ceil`, `clamp`, `clone`,
  * `cloneDeep`, `cloneDeepWith`, `cloneWith`, `deburr`, `endsWith`, `eq`,
- * `escape`, `escapeRegExp`, `every`, `find`, `findIndex`, `findKey`,
- * `findLast`, `findLastIndex`, `findLastKey`, `floor`, `forEach`, `forEachRight`,
- * `forIn`, `forInRight`, `forOwn`, `forOwnRight`, `get`, `gt`, `gte`, `has`,
- * `hasIn`, `head`, `identity`, `includes`, `indexOf`, `inRange`, `invoke`,
- * `isArguments`, `isArray`, `isArrayLike`, `isArrayLikeObject`, `isBoolean`,
- * `isDate`, `isElement`, `isEmpty`, `isEqual`, `isEqualWith`, `isError`,
- * `isFinite`, `isFunction`, `isInteger`, `isLength`, `isMatch`, `isMatchWith`,
- * `isNaN`, `isNative`, `isNil`, `isNull`, `isNumber`, `isObject`, `isObjectLike`,
- * `isPlainObject`, `isRegExp`, `isSafeInteger`, `isString`, `isUndefined`,
- * `isTypedArray`, `join`, `kebabCase`, `last`, `lastIndexOf`, `lowerCase`,
- * `lowerFirst`, `lt`, `lte`, `max`, `maxBy`, `mean`, `min`, `minBy`,
- * `noConflict`, `noop`, `now`, `pad`, `padEnd`, `padStart`, `parseInt`,
- * `pop`, `random`, `reduce`, `reduceRight`, `repeat`, `result`, `round`,
- * `runInContext`, `sample`, `shift`, `size`, `snakeCase`, `some`, `sortedIndex`,
- * `sortedIndexBy`, `sortedLastIndex`, `sortedLastIndexBy`, `startCase`,
- * `startsWith`, `subtract`, `sum`, `sumBy`, `template`, `times`, `toLower`,
- * `toInteger`, `toLength`, `toNumber`, `toSafeInteger`, `toString`, `toUpper`,
- * `trim`, `trimEnd`, `trimStart`, `truncate`, `unescape`, `uniqueId`,
- * `upperCase`, `upperFirst`, `value`, and `words`
+ * `escape`, `escapeRegExp`, `every`, `find`, `findIndex`, `findKey`, `findLast`,
+ * `findLastIndex`, `findLastKey`, `floor`, `forEach`, `forEachRight`, `forIn`,
+ * `forInRight`, `forOwn`, `forOwnRight`, `get`, `gt`, `gte`, `has`, `hasIn`,
+ * `head`, `identity`, `includes`, `indexOf`, `inRange`, `invoke`, `isArguments`,
+ * `isArray`, `isArrayBuffer`, `isArrayLike`, `isArrayLikeObject`, `isBoolean`,
+ * `isBuffer`, `isDate`, `isElement`, `isEmpty`, `isEqual`, `isEqualWith`,
+ * `isError`, `isFinite`, `isFunction`, `isInteger`, `isLength`, `isMap`,
+ * `isMatch`, `isMatchWith`, `isNaN`, `isNative`, `isNil`, `isNull`, `isNumber`,
+ * `isObject`, `isObjectLike`, `isPlainObject`, `isRegExp`, `isSafeInteger`,
+ * `isSet`, `isString`, `isUndefined`, `isTypedArray`, `isWeakMap`, `isWeakSet`,
+ * `join`, `kebabCase`, `last`, `lastIndexOf`, `lowerCase`, `lowerFirst`,
+ * `lt`, `lte`, `max`, `maxBy`, `mean`, `min`, `minBy`, `noConflict`, `noop`,
+ * `now`, `pad`, `padEnd`, `padStart`, `parseInt`, `pop`, `random`, `reduce`,
+ * `reduceRight`, `repeat`, `result`, `round`, `runInContext`, `sample`,
+ * `shift`, `size`, `snakeCase`, `some`, `sortedIndex`, `sortedIndexBy`,
+ * `sortedLastIndex`, `sortedLastIndexBy`, `startCase`, `startsWith`, `subtract`,
+ * `sum`, `sumBy`, `template`, `times`, `toLower`, `toInteger`, `toLength`,
+ * `toNumber`, `toSafeInteger`, `toString`, `toUpper`, `trim`, `trimEnd`,
+ * `trimStart`, `truncate`, `unescape`, `uniqueId`, `upperCase`, `upperFirst`,
+ * `value`, and `words`
  *
  * @name _
  * @constructor
@@ -52839,7 +53162,7 @@ lodash.prototype = baseLodash.prototype;
 
 module.exports = lodash;
 
-},{"./_LazyWrapper":211,"./_LodashWrapper":212,"./_baseLodash":252,"./_wrapperClone":343,"./isArray":354,"./isObjectLike":364}],389:[function(require,module,exports){
+},{"./_LazyWrapper":210,"./_LodashWrapper":211,"./_baseLodash":253,"./_wrapperClone":344,"./isArray":355,"./isObjectLike":365}],390:[function(require,module,exports){
 /*
 * loglevel - https://github.com/pimterry/loglevel
 *
@@ -53064,7 +53387,7 @@ module.exports = lodash;
     return defaultLogger;
 }));
 
-},{}],390:[function(require,module,exports){
+},{}],391:[function(require,module,exports){
 ;(function () { // closure for web browsers
 
 if (typeof module === 'object' && module.exports) {
@@ -53400,7 +53723,7 @@ function Entry (key, value, lu, length, now, maxAge) {
 
 })()
 
-},{}],391:[function(require,module,exports){
+},{}],392:[function(require,module,exports){
 var bn = require('bn.js');
 var brorand = require('brorand');
 
@@ -53515,7 +53838,7 @@ MillerRabin.prototype.getDivisor = function getDivisor(n, k) {
   return false;
 };
 
-},{"bn.js":71,"brorand":72}],392:[function(require,module,exports){
+},{"bn.js":27,"brorand":28}],393:[function(require,module,exports){
 module.exports={
   "application/1d-interleaved-parityfec": {
     "source": "iana"
@@ -53735,7 +54058,7 @@ module.exports={
   },
   "application/dash+xml": {
     "source": "iana",
-    "extensions": ["mdp"]
+    "extensions": ["mpd"]
   },
   "application/dashdelta": {
     "source": "iana"
@@ -54354,6 +54677,17 @@ module.exports={
     "source": "iana",
     "compressible": true,
     "extensions": ["ai","eps","ps"]
+  },
+  "application/ppsp-tracker+json": {
+    "source": "iana",
+    "compressible": true
+  },
+  "application/problem+json": {
+    "source": "iana",
+    "compressible": true
+  },
+  "application/problem+xml": {
+    "source": "iana"
   },
   "application/provenance+xml": {
     "source": "iana"
@@ -55611,6 +55945,9 @@ module.exports={
   "application/vnd.hcl-bireports": {
     "source": "iana"
   },
+  "application/vnd.hdt": {
+    "source": "iana"
+  },
   "application/vnd.heroku+json": {
     "source": "iana",
     "compressible": true
@@ -56204,6 +56541,9 @@ module.exports={
   },
   "application/vnd.ms-printing.printticket+xml": {
     "source": "apache"
+  },
+  "application/vnd.ms-printschematicket+xml": {
+    "source": "iana"
   },
   "application/vnd.ms-project": {
     "source": "iana",
@@ -58267,7 +58607,7 @@ module.exports={
   "application/xml": {
     "source": "iana",
     "compressible": true,
-    "extensions": ["xml","xsl","xsd"]
+    "extensions": ["xml","xsl","xsd","rng"]
   },
   "application/xml-dtd": {
     "source": "iana",
@@ -58541,7 +58881,7 @@ module.exports={
   "audio/mp4": {
     "source": "iana",
     "compressible": false,
-    "extensions": ["mp4a","m4a"]
+    "extensions": ["m4a","mp4a"]
   },
   "audio/mp4a-latm": {
     "source": "iana"
@@ -59292,6 +59632,9 @@ module.exports={
   "model/vnd.parasolid.transmit.text": {
     "source": "iana"
   },
+  "model/vnd.rosette.annotated-data-model": {
+    "source": "iana"
+  },
   "model/vnd.valve.source.compiled-map": {
     "source": "iana"
   },
@@ -59520,6 +59863,9 @@ module.exports={
   "text/sgml": {
     "source": "iana",
     "extensions": ["sgml","sgm"]
+  },
+  "text/slim": {
+    "extensions": ["slim","slm"]
   },
   "text/stylus": {
     "extensions": ["stylus","styl"]
@@ -60069,7 +60415,7 @@ module.exports={
   }
 }
 
-},{}],393:[function(require,module,exports){
+},{}],394:[function(require,module,exports){
 /*!
  * mime-db
  * Copyright(c) 2014 Jonathan Ong
@@ -60082,7 +60428,7 @@ module.exports={
 
 module.exports = require('./db.json')
 
-},{"./db.json":392}],394:[function(require,module,exports){
+},{"./db.json":393}],395:[function(require,module,exports){
 /*!
  * mime-types
  * Copyright(c) 2014 Jonathan Ong
@@ -60272,7 +60618,7 @@ function populateMaps(extensions, types) {
   })
 }
 
-},{"mime-db":393,"path":413}],395:[function(require,module,exports){
+},{"mime-db":394,"path":414}],396:[function(require,module,exports){
 module.exports = assert;
 
 function assert(val, msg) {
@@ -60285,7 +60631,7 @@ assert.equal = function assertEqual(l, r, msg) {
     throw new Error(msg || ('Assertion failed: ' + l + ' != ' + r));
 };
 
-},{}],396:[function(require,module,exports){
+},{}],397:[function(require,module,exports){
 (function (Buffer){
 //     uuid.js
 //
@@ -60562,7 +60908,7 @@ assert.equal = function assertEqual(l, r, msg) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102,"crypto":114}],397:[function(require,module,exports){
+},{"buffer":58,"crypto":70}],398:[function(require,module,exports){
 var crypto = require('crypto')
   , qs = require('querystring')
   ;
@@ -60700,7 +61046,7 @@ exports.rfc3986 = rfc3986
 exports.generateBase = generateBase
 
 
-},{"crypto":114,"querystring":432}],398:[function(require,module,exports){
+},{"crypto":70,"querystring":433}],399:[function(require,module,exports){
 'use strict';
 
 
@@ -60804,7 +61150,7 @@ exports.setTyped = function (on) {
 
 exports.setTyped(TYPED_OK);
 
-},{}],399:[function(require,module,exports){
+},{}],400:[function(require,module,exports){
 'use strict';
 
 // Note: adler32 takes 12% for level 0 and 2% for level 6.
@@ -60838,7 +61184,7 @@ function adler32(adler, buf, len, pos) {
 
 module.exports = adler32;
 
-},{}],400:[function(require,module,exports){
+},{}],401:[function(require,module,exports){
 module.exports = {
 
   /* Allowed flush values; see deflate() and inflate() below for details */
@@ -60887,7 +61233,7 @@ module.exports = {
   //Z_NULL:                 null // Use -1 or null inline, depending on var type
 };
 
-},{}],401:[function(require,module,exports){
+},{}],402:[function(require,module,exports){
 'use strict';
 
 // Note: we can't get significant speed boost here.
@@ -60930,7 +61276,7 @@ function crc32(crc, buf, len, pos) {
 
 module.exports = crc32;
 
-},{}],402:[function(require,module,exports){
+},{}],403:[function(require,module,exports){
 'use strict';
 
 var utils   = require('../utils/common');
@@ -62697,7 +63043,7 @@ exports.deflatePrime = deflatePrime;
 exports.deflateTune = deflateTune;
 */
 
-},{"../utils/common":398,"./adler32":399,"./crc32":401,"./messages":406,"./trees":407}],403:[function(require,module,exports){
+},{"../utils/common":399,"./adler32":400,"./crc32":402,"./messages":407,"./trees":408}],404:[function(require,module,exports){
 'use strict';
 
 // See state defs from inflate.js
@@ -63025,7 +63371,7 @@ module.exports = function inflate_fast(strm, start) {
   return;
 };
 
-},{}],404:[function(require,module,exports){
+},{}],405:[function(require,module,exports){
 'use strict';
 
 
@@ -64530,7 +64876,7 @@ exports.inflateSyncPoint = inflateSyncPoint;
 exports.inflateUndermine = inflateUndermine;
 */
 
-},{"../utils/common":398,"./adler32":399,"./crc32":401,"./inffast":403,"./inftrees":405}],405:[function(require,module,exports){
+},{"../utils/common":399,"./adler32":400,"./crc32":402,"./inffast":404,"./inftrees":406}],406:[function(require,module,exports){
 'use strict';
 
 
@@ -64859,7 +65205,7 @@ module.exports = function inflate_table(type, lens, lens_index, codes, table, ta
   return 0;
 };
 
-},{"../utils/common":398}],406:[function(require,module,exports){
+},{"../utils/common":399}],407:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -64874,7 +65220,7 @@ module.exports = {
   '-6':   'incompatible version' /* Z_VERSION_ERROR (-6) */
 };
 
-},{}],407:[function(require,module,exports){
+},{}],408:[function(require,module,exports){
 'use strict';
 
 
@@ -66075,7 +66421,7 @@ exports._tr_flush_block  = _tr_flush_block;
 exports._tr_tally = _tr_tally;
 exports._tr_align = _tr_align;
 
-},{"../utils/common":398}],408:[function(require,module,exports){
+},{"../utils/common":399}],409:[function(require,module,exports){
 'use strict';
 
 
@@ -66106,7 +66452,7 @@ function ZStream() {
 
 module.exports = ZStream;
 
-},{}],409:[function(require,module,exports){
+},{}],410:[function(require,module,exports){
 module.exports={"2.16.840.1.101.3.4.1.1": "aes-128-ecb",
 "2.16.840.1.101.3.4.1.2": "aes-128-cbc",
 "2.16.840.1.101.3.4.1.3": "aes-128-ofb",
@@ -66120,7 +66466,7 @@ module.exports={"2.16.840.1.101.3.4.1.1": "aes-128-ecb",
 "2.16.840.1.101.3.4.1.43": "aes-256-ofb",
 "2.16.840.1.101.3.4.1.44": "aes-256-cfb"
 }
-},{}],410:[function(require,module,exports){
+},{}],411:[function(require,module,exports){
 // from https://github.com/indutny/self-signed/blob/gh-pages/lib/asn1.js
 // Fedor, you are amazing.
 
@@ -66239,7 +66585,7 @@ exports.signature = asn1.define('signature', function () {
   )
 })
 
-},{"asn1.js":45}],411:[function(require,module,exports){
+},{"asn1.js":1}],412:[function(require,module,exports){
 (function (Buffer){
 // adapted from https://github.com/apatil/pemstrip
 var findProc = /Proc-Type: 4,ENCRYPTED\r?\nDEK-Info: AES-((?:128)|(?:192)|(?:256))-CBC,([0-9A-H]+)\r?\n\r?\n([0-9A-z\n\r\+\/\=]+)\r?\n/m
@@ -66274,7 +66620,7 @@ module.exports = function (okey, password) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"browserify-aes":76,"buffer":102,"evp_bytestokey":147}],412:[function(require,module,exports){
+},{"browserify-aes":32,"buffer":58,"evp_bytestokey":103}],413:[function(require,module,exports){
 (function (Buffer){
 var asn1 = require('./asn1')
 var aesid = require('./aesid.json')
@@ -66380,7 +66726,7 @@ function decrypt (data, password) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"./aesid.json":409,"./asn1":410,"./fixProc":411,"browserify-aes":76,"buffer":102,"pbkdf2":414}],413:[function(require,module,exports){
+},{"./aesid.json":410,"./asn1":411,"./fixProc":412,"browserify-aes":32,"buffer":58,"pbkdf2":415}],414:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -66609,7 +66955,7 @@ var substr = 'ab'.substr(-1) === 'b'
 
 }).call(this,require('_process'))
 
-},{"_process":418}],414:[function(require,module,exports){
+},{"_process":419}],415:[function(require,module,exports){
 (function (Buffer){
 var createHmac = require('create-hmac')
 var MAX_ALLOC = Math.pow(2, 30) - 1 // default in iojs
@@ -66694,7 +67040,7 @@ function pbkdf2Sync (password, salt, iterations, keylen, digest) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102,"create-hmac":113}],415:[function(require,module,exports){
+},{"buffer":58,"create-hmac":69}],416:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -66702,7 +67048,7 @@ module.exports = global.Promise || require('pinkie');
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"pinkie":416}],416:[function(require,module,exports){
+},{"pinkie":417}],417:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -66999,7 +67345,7 @@ module.exports = Promise;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],417:[function(require,module,exports){
+},{}],418:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -67024,7 +67370,7 @@ function nextTick(fn) {
 
 }).call(this,require('_process'))
 
-},{"_process":418}],418:[function(require,module,exports){
+},{"_process":419}],419:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -67117,7 +67463,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],419:[function(require,module,exports){
+},{}],420:[function(require,module,exports){
 exports.publicEncrypt = require('./publicEncrypt');
 exports.privateDecrypt = require('./privateDecrypt');
 
@@ -67128,7 +67474,7 @@ exports.privateEncrypt = function privateEncrypt(key, buf) {
 exports.publicDecrypt = function publicDecrypt(key, buf) {
   return exports.privateDecrypt(key, buf, true);
 };
-},{"./privateDecrypt":421,"./publicEncrypt":422}],420:[function(require,module,exports){
+},{"./privateDecrypt":422,"./publicEncrypt":423}],421:[function(require,module,exports){
 (function (Buffer){
 var createHash = require('create-hash');
 module.exports = function (seed, len) {
@@ -67148,7 +67494,7 @@ function i2ops(c) {
 }
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102,"create-hash":110}],421:[function(require,module,exports){
+},{"buffer":58,"create-hash":66}],422:[function(require,module,exports){
 (function (Buffer){
 var parseKeys = require('parse-asn1');
 var mgf = require('./mgf');
@@ -67260,7 +67606,7 @@ function compare(a, b){
 }
 }).call(this,require("buffer").Buffer)
 
-},{"./mgf":420,"./withPublic":423,"./xor":424,"bn.js":71,"browserify-rsa":92,"buffer":102,"create-hash":110,"parse-asn1":412}],422:[function(require,module,exports){
+},{"./mgf":421,"./withPublic":424,"./xor":425,"bn.js":27,"browserify-rsa":48,"buffer":58,"create-hash":66,"parse-asn1":413}],423:[function(require,module,exports){
 (function (Buffer){
 var parseKeys = require('parse-asn1');
 var randomBytes = require('randombytes');
@@ -67359,7 +67705,7 @@ function nonZero(len, crypto) {
 }
 }).call(this,require("buffer").Buffer)
 
-},{"./mgf":420,"./withPublic":423,"./xor":424,"bn.js":71,"browserify-rsa":92,"buffer":102,"create-hash":110,"parse-asn1":412,"randombytes":433}],423:[function(require,module,exports){
+},{"./mgf":421,"./withPublic":424,"./xor":425,"bn.js":27,"browserify-rsa":48,"buffer":58,"create-hash":66,"parse-asn1":413,"randombytes":434}],424:[function(require,module,exports){
 (function (Buffer){
 var bn = require('bn.js');
 function withPublic(paddedMsg, key) {
@@ -67373,7 +67719,7 @@ function withPublic(paddedMsg, key) {
 module.exports = withPublic;
 }).call(this,require("buffer").Buffer)
 
-},{"bn.js":71,"buffer":102}],424:[function(require,module,exports){
+},{"bn.js":27,"buffer":58}],425:[function(require,module,exports){
 module.exports = function xor(a, b) {
   var len = a.length;
   var i = -1;
@@ -67382,7 +67728,7 @@ module.exports = function xor(a, b) {
   }
   return a
 };
-},{}],425:[function(require,module,exports){
+},{}],426:[function(require,module,exports){
 (function (global){
 /*! https://mths.be/punycode v1.4.0 by @mathias */
 ;(function(root) {
@@ -67920,7 +68266,7 @@ module.exports = function xor(a, b) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],426:[function(require,module,exports){
+},{}],427:[function(require,module,exports){
 'use strict';
 
 var Stringify = require('./stringify');
@@ -67931,7 +68277,7 @@ module.exports = {
     parse: Parse
 };
 
-},{"./parse":427,"./stringify":428}],427:[function(require,module,exports){
+},{"./parse":428,"./stringify":429}],428:[function(require,module,exports){
 'use strict';
 
 var Utils = require('./utils');
@@ -68097,7 +68443,7 @@ module.exports = function (str, opts) {
     return Utils.compact(obj);
 };
 
-},{"./utils":429}],428:[function(require,module,exports){
+},{"./utils":430}],429:[function(require,module,exports){
 'use strict';
 
 var Utils = require('./utils');
@@ -68230,7 +68576,7 @@ module.exports = function (object, opts) {
     return keys.join(delimiter);
 };
 
-},{"./utils":429}],429:[function(require,module,exports){
+},{"./utils":430}],430:[function(require,module,exports){
 'use strict';
 
 var hexTable = (function () {
@@ -68394,7 +68740,7 @@ exports.isBuffer = function (obj) {
     return !!(obj.constructor && obj.constructor.isBuffer && obj.constructor.isBuffer(obj));
 };
 
-},{}],430:[function(require,module,exports){
+},{}],431:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -68480,7 +68826,7 @@ var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],431:[function(require,module,exports){
+},{}],432:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -68567,13 +68913,13 @@ var objectKeys = Object.keys || function (obj) {
   return res;
 };
 
-},{}],432:[function(require,module,exports){
+},{}],433:[function(require,module,exports){
 'use strict';
 
 exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
 
-},{"./decode":430,"./encode":431}],433:[function(require,module,exports){
+},{"./decode":431,"./encode":432}],434:[function(require,module,exports){
 (function (process,global,Buffer){
 'use strict'
 
@@ -68613,10 +68959,10 @@ function randomBytes (size, cb) {
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
 
-},{"_process":418,"buffer":102}],434:[function(require,module,exports){
+},{"_process":419,"buffer":58}],435:[function(require,module,exports){
 module.exports = require("./lib/_stream_duplex.js")
 
-},{"./lib/_stream_duplex.js":435}],435:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":436}],436:[function(require,module,exports){
 // a duplex stream is just a stream that is both readable and writable.
 // Since JS doesn't have multiple prototypal inheritance, this class
 // prototypally inherits from Readable, and then parasitically from
@@ -68700,7 +69046,7 @@ function forEach (xs, f) {
   }
 }
 
-},{"./_stream_readable":437,"./_stream_writable":439,"core-util-is":108,"inherits":191,"process-nextick-args":417}],436:[function(require,module,exports){
+},{"./_stream_readable":438,"./_stream_writable":440,"core-util-is":64,"inherits":147,"process-nextick-args":418}],437:[function(require,module,exports){
 // a passthrough stream.
 // basically just the most minimal sort of Transform stream.
 // Every written chunk gets output as-is.
@@ -68729,7 +69075,7 @@ PassThrough.prototype._transform = function(chunk, encoding, cb) {
   cb(null, chunk);
 };
 
-},{"./_stream_transform":438,"core-util-is":108,"inherits":191}],437:[function(require,module,exports){
+},{"./_stream_transform":439,"core-util-is":64,"inherits":147}],438:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -69709,7 +70055,7 @@ function indexOf (xs, x) {
 
 }).call(this,require('_process'))
 
-},{"./_stream_duplex":435,"_process":418,"buffer":102,"core-util-is":108,"events":146,"inherits":191,"isarray":197,"process-nextick-args":417,"string_decoder/":493,"util":73}],438:[function(require,module,exports){
+},{"./_stream_duplex":436,"_process":419,"buffer":58,"core-util-is":64,"events":102,"inherits":147,"isarray":153,"process-nextick-args":418,"string_decoder/":494,"util":29}],439:[function(require,module,exports){
 // a transform stream is a readable/writable stream where you do
 // something with the data.  Sometimes it's called a "filter",
 // but that's not a great name for it, since that implies a thing where
@@ -69908,7 +70254,7 @@ function done(stream, er) {
   return stream.push(null);
 }
 
-},{"./_stream_duplex":435,"core-util-is":108,"inherits":191}],439:[function(require,module,exports){
+},{"./_stream_duplex":436,"core-util-is":64,"inherits":147}],440:[function(require,module,exports){
 // A bit simpler than readable streams.
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
 // the drain event emission and buffering.
@@ -70439,10 +70785,10 @@ function endWritable(stream, state, cb) {
   state.ended = true;
 }
 
-},{"./_stream_duplex":435,"buffer":102,"core-util-is":108,"events":146,"inherits":191,"process-nextick-args":417,"util-deprecate":508}],440:[function(require,module,exports){
+},{"./_stream_duplex":436,"buffer":58,"core-util-is":64,"events":102,"inherits":147,"process-nextick-args":418,"util-deprecate":509}],441:[function(require,module,exports){
 module.exports = require("./lib/_stream_passthrough.js")
 
-},{"./lib/_stream_passthrough.js":436}],441:[function(require,module,exports){
+},{"./lib/_stream_passthrough.js":437}],442:[function(require,module,exports){
 var Stream = (function (){
   try {
     return require('st' + 'ream'); // hack to fix a circular dependency issue when used with browserify
@@ -70456,13 +70802,13 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":435,"./lib/_stream_passthrough.js":436,"./lib/_stream_readable.js":437,"./lib/_stream_transform.js":438,"./lib/_stream_writable.js":439}],442:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":436,"./lib/_stream_passthrough.js":437,"./lib/_stream_readable.js":438,"./lib/_stream_transform.js":439,"./lib/_stream_writable.js":440}],443:[function(require,module,exports){
 module.exports = require("./lib/_stream_transform.js")
 
-},{"./lib/_stream_transform.js":438}],443:[function(require,module,exports){
+},{"./lib/_stream_transform.js":439}],444:[function(require,module,exports){
 module.exports = require("./lib/_stream_writable.js")
 
-},{"./lib/_stream_writable.js":439}],444:[function(require,module,exports){
+},{"./lib/_stream_writable.js":440}],445:[function(require,module,exports){
 // Copyright 2010-2012 Mikeal Rogers
 //
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -70620,7 +70966,7 @@ Object.defineProperty(request, 'debug', {
   }
 })
 
-},{"./lib/cookies":446,"./lib/helpers":449,"./request":459,"extend":148}],445:[function(require,module,exports){
+},{"./lib/cookies":447,"./lib/helpers":450,"./request":460,"extend":104}],446:[function(require,module,exports){
 'use strict'
 
 var caseless = require('caseless')
@@ -70790,7 +71136,7 @@ Auth.prototype.onResponse = function (response) {
 
 exports.Auth = Auth
 
-},{"./helpers":449,"caseless":105,"node-uuid":396}],446:[function(require,module,exports){
+},{"./helpers":450,"caseless":61,"node-uuid":397}],447:[function(require,module,exports){
 'use strict'
 
 var tough = require('tough-cookie')
@@ -70831,7 +71177,7 @@ exports.jar = function(store) {
   return new RequestJar(store)
 }
 
-},{"tough-cookie":496}],447:[function(require,module,exports){
+},{"tough-cookie":497}],448:[function(require,module,exports){
 (function (process){
 'use strict'
 
@@ -70915,7 +71261,7 @@ module.exports = getProxyFromURI
 
 }).call(this,require('_process'))
 
-},{"_process":418}],448:[function(require,module,exports){
+},{"_process":419}],449:[function(require,module,exports){
 'use strict'
 
 var fs = require('fs')
@@ -71132,7 +71478,7 @@ Har.prototype.options = function (options) {
 
 exports.Har = Har
 
-},{"extend":148,"fs":100,"har-validator":156,"querystring":432}],449:[function(require,module,exports){
+},{"extend":104,"fs":56,"har-validator":112,"querystring":433}],450:[function(require,module,exports){
 (function (process,Buffer){
 'use strict'
 
@@ -71211,7 +71557,7 @@ exports.defer                 = deferMethod()
 
 }).call(this,require('_process'),require("buffer").Buffer)
 
-},{"_process":418,"buffer":102,"crypto":114,"json-stringify-safe":207}],450:[function(require,module,exports){
+},{"_process":419,"buffer":58,"crypto":70,"json-stringify-safe":163}],451:[function(require,module,exports){
 (function (Buffer){
 'use strict'
 
@@ -71328,7 +71674,7 @@ exports.Multipart = Multipart
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102,"combined-stream":107,"isstream":198,"node-uuid":396}],451:[function(require,module,exports){
+},{"buffer":58,"combined-stream":63,"isstream":154,"node-uuid":397}],452:[function(require,module,exports){
 (function (Buffer){
 'use strict'
 
@@ -71480,7 +71826,7 @@ exports.OAuth = OAuth
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102,"caseless":105,"crypto":114,"node-uuid":396,"oauth-sign":397,"qs":455,"url":506}],452:[function(require,module,exports){
+},{"buffer":58,"caseless":61,"crypto":70,"node-uuid":397,"oauth-sign":398,"qs":456,"url":507}],453:[function(require,module,exports){
 'use strict'
 
 var qs = require('qs')
@@ -71533,7 +71879,7 @@ Querystring.prototype.unescape = querystring.unescape
 
 exports.Querystring = Querystring
 
-},{"qs":455,"querystring":432}],453:[function(require,module,exports){
+},{"qs":456,"querystring":433}],454:[function(require,module,exports){
 'use strict'
 
 var url = require('url')
@@ -71688,7 +72034,7 @@ Redirect.prototype.onResponse = function (response) {
 
 exports.Redirect = Redirect
 
-},{"url":506}],454:[function(require,module,exports){
+},{"url":507}],455:[function(require,module,exports){
 'use strict'
 
 var url = require('url')
@@ -71866,11 +72212,11 @@ Tunnel.defaultProxyHeaderWhiteList = defaultProxyHeaderWhiteList
 Tunnel.defaultProxyHeaderExclusiveList = defaultProxyHeaderExclusiveList
 exports.Tunnel = Tunnel
 
-},{"tunnel-agent":503,"url":506}],455:[function(require,module,exports){
-arguments[4][426][0].apply(exports,arguments)
-},{"./parse":456,"./stringify":457,"dup":426}],456:[function(require,module,exports){
+},{"tunnel-agent":504,"url":507}],456:[function(require,module,exports){
 arguments[4][427][0].apply(exports,arguments)
-},{"./utils":458,"dup":427}],457:[function(require,module,exports){
+},{"./parse":457,"./stringify":458,"dup":427}],457:[function(require,module,exports){
+arguments[4][428][0].apply(exports,arguments)
+},{"./utils":459,"dup":428}],458:[function(require,module,exports){
 'use strict';
 
 var Utils = require('./utils');
@@ -72002,9 +72348,9 @@ module.exports = function (object, opts) {
     return keys.join(delimiter);
 };
 
-},{"./utils":458}],458:[function(require,module,exports){
-arguments[4][429][0].apply(exports,arguments)
-},{"dup":429}],459:[function(require,module,exports){
+},{"./utils":459}],459:[function(require,module,exports){
+arguments[4][430][0].apply(exports,arguments)
+},{"dup":430}],460:[function(require,module,exports){
 (function (process,Buffer){
 'use strict'
 
@@ -73428,7 +73774,7 @@ module.exports = Request
 
 }).call(this,require('_process'),require("buffer").Buffer)
 
-},{"./lib/auth":445,"./lib/cookies":446,"./lib/getProxyFromURI":447,"./lib/har":448,"./lib/helpers":449,"./lib/multipart":450,"./lib/oauth":451,"./lib/querystring":452,"./lib/redirect":453,"./lib/tunnel":454,"_process":418,"aws-sign2":67,"aws4":68,"bl":70,"buffer":102,"caseless":105,"extend":148,"forever-agent":151,"form-data":152,"hawk":180,"http":489,"http-signature":182,"https":187,"is-typedarray":196,"mime-types":394,"stream":488,"stringstream":494,"url":506,"util":510,"zlib":99}],460:[function(require,module,exports){
+},{"./lib/auth":446,"./lib/cookies":447,"./lib/getProxyFromURI":448,"./lib/har":449,"./lib/helpers":450,"./lib/multipart":451,"./lib/oauth":452,"./lib/querystring":453,"./lib/redirect":454,"./lib/tunnel":455,"_process":419,"aws-sign2":23,"aws4":24,"bl":26,"buffer":58,"caseless":61,"extend":104,"forever-agent":107,"form-data":108,"hawk":136,"http":490,"http-signature":138,"https":143,"is-typedarray":152,"mime-types":395,"stream":489,"stringstream":495,"url":507,"util":511,"zlib":55}],461:[function(require,module,exports){
 (function (Buffer){
 /*
 CryptoJS v3.1.2
@@ -73643,7 +73989,7 @@ module.exports = ripemd160
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102}],461:[function(require,module,exports){
+},{"buffer":58}],462:[function(require,module,exports){
 (function (Buffer){
 // prototype class for hash functions
 function Hash (blockSize, finalSize) {
@@ -73717,7 +74063,7 @@ module.exports = Hash
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102}],462:[function(require,module,exports){
+},{"buffer":58}],463:[function(require,module,exports){
 var exports = module.exports = function SHA (algorithm) {
   algorithm = algorithm.toLowerCase()
 
@@ -73734,7 +74080,7 @@ exports.sha256 = require('./sha256')
 exports.sha384 = require('./sha384')
 exports.sha512 = require('./sha512')
 
-},{"./sha":463,"./sha1":464,"./sha224":465,"./sha256":466,"./sha384":467,"./sha512":468}],463:[function(require,module,exports){
+},{"./sha":464,"./sha1":465,"./sha224":466,"./sha256":467,"./sha384":468,"./sha512":469}],464:[function(require,module,exports){
 (function (Buffer){
 /*
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-0, as defined
@@ -73746,6 +74092,10 @@ exports.sha512 = require('./sha512')
 
 var inherits = require('inherits')
 var Hash = require('./hash')
+
+var K = [
+  0x5a827999, 0x6ed9eba1, 0x8f1bbcdc | 0, 0xca62c1d6 | 0
+]
 
 var W = new Array(80)
 
@@ -73759,61 +74109,51 @@ function Sha () {
 inherits(Sha, Hash)
 
 Sha.prototype.init = function () {
-  this._a = 0x67452301 | 0
-  this._b = 0xefcdab89 | 0
-  this._c = 0x98badcfe | 0
-  this._d = 0x10325476 | 0
-  this._e = 0xc3d2e1f0 | 0
+  this._a = 0x67452301
+  this._b = 0xefcdab89
+  this._c = 0x98badcfe
+  this._d = 0x10325476
+  this._e = 0xc3d2e1f0
 
   return this
 }
 
-/*
- * Bitwise rotate a 32-bit number to the left.
- */
-function rol (num, cnt) {
-  return (num << cnt) | (num >>> (32 - cnt))
+function rotl5 (num) {
+  return (num << 5) | (num >>> 27)
+}
+
+function rotl30 (num) {
+  return (num << 30) | (num >>> 2)
+}
+
+function ft (s, b, c, d) {
+  if (s === 0) return (b & c) | ((~b) & d)
+  if (s === 2) return (b & c) | (b & d) | (c & d)
+  return b ^ c ^ d
 }
 
 Sha.prototype._update = function (M) {
   var W = this._w
 
-  var a = this._a
-  var b = this._b
-  var c = this._c
-  var d = this._d
-  var e = this._e
+  var a = this._a | 0
+  var b = this._b | 0
+  var c = this._c | 0
+  var d = this._d | 0
+  var e = this._e | 0
 
-  var j = 0
-  var k
+  for (var i = 0; i < 16; ++i) W[i] = M.readInt32BE(i * 4)
+  for (; i < 80; ++i) W[i] = W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16]
 
-  /*
-   * SHA-1 has a bitwise rotate left operation. But, SHA is not
-   * function calcW() { return rol(W[j - 3] ^ W[j -  8] ^ W[j - 14] ^ W[j - 16], 1) }
-   */
-  function calcW () { return W[j - 3] ^ W[j - 8] ^ W[j - 14] ^ W[j - 16] }
-  function loop (w, f) {
-    W[j] = w
-
-    var t = rol(a, 5) + f + e + w + k
+  for (var j = 0; j < 80; ++j) {
+    var s = ~~(j / 20)
+    var t = (rotl5(a) + ft(s, b, c, d) + e + W[j] + K[s]) | 0
 
     e = d
     d = c
-    c = rol(b, 30)
+    c = rotl30(b)
     b = a
     a = t
-    j++
   }
-
-  k = 1518500249
-  while (j < 16) loop(M.readInt32BE(j * 4), (b & c) | ((~b) & d))
-  while (j < 20) loop(calcW(), (b & c) | ((~b) & d))
-  k = 1859775393
-  while (j < 40) loop(calcW(), b ^ c ^ d)
-  k = -1894007588
-  while (j < 60) loop(calcW(), (b & c) | (b & d) | (c & d))
-  k = -899497514
-  while (j < 80) loop(calcW(), b ^ c ^ d)
 
   this._a = (a + this._a) | 0
   this._b = (b + this._b) | 0
@@ -73836,10 +74176,9 @@ Sha.prototype._hash = function () {
 
 module.exports = Sha
 
-
 }).call(this,require("buffer").Buffer)
 
-},{"./hash":461,"buffer":102,"inherits":191}],464:[function(require,module,exports){
+},{"./hash":462,"buffer":58,"inherits":147}],465:[function(require,module,exports){
 (function (Buffer){
 /*
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
@@ -73853,6 +74192,10 @@ module.exports = Sha
 var inherits = require('inherits')
 var Hash = require('./hash')
 
+var K = [
+  0x5a827999, 0x6ed9eba1, 0x8f1bbcdc | 0, 0xca62c1d6 | 0
+]
+
 var W = new Array(80)
 
 function Sha1 () {
@@ -73865,57 +74208,55 @@ function Sha1 () {
 inherits(Sha1, Hash)
 
 Sha1.prototype.init = function () {
-  this._a = 0x67452301 | 0
-  this._b = 0xefcdab89 | 0
-  this._c = 0x98badcfe | 0
-  this._d = 0x10325476 | 0
-  this._e = 0xc3d2e1f0 | 0
+  this._a = 0x67452301
+  this._b = 0xefcdab89
+  this._c = 0x98badcfe
+  this._d = 0x10325476
+  this._e = 0xc3d2e1f0
 
   return this
 }
 
-/*
- * Bitwise rotate a 32-bit number to the left.
- */
-function rol (num, cnt) {
-  return (num << cnt) | (num >>> (32 - cnt))
+function rotl1 (num) {
+  return (num << 1) | (num >>> 31)
+}
+
+function rotl5 (num) {
+  return (num << 5) | (num >>> 27)
+}
+
+function rotl30 (num) {
+  return (num << 30) | (num >>> 2)
+}
+
+function ft (s, b, c, d) {
+  if (s === 0) return (b & c) | ((~b) & d)
+  if (s === 2) return (b & c) | (b & d) | (c & d)
+  return b ^ c ^ d
 }
 
 Sha1.prototype._update = function (M) {
   var W = this._w
 
-  var a = this._a
-  var b = this._b
-  var c = this._c
-  var d = this._d
-  var e = this._e
+  var a = this._a | 0
+  var b = this._b | 0
+  var c = this._c | 0
+  var d = this._d | 0
+  var e = this._e | 0
 
-  var j = 0
-  var k
+  for (var i = 0; i < 16; ++i) W[i] = M.readInt32BE(i * 4)
+  for (; i < 80; ++i) W[i] = rotl1(W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16])
 
-  function calcW () { return rol(W[j - 3] ^ W[j - 8] ^ W[j - 14] ^ W[j - 16], 1) }
-  function loop (w, f) {
-    W[j] = w
-
-    var t = rol(a, 5) + f + e + w + k
+  for (var j = 0; j < 80; ++j) {
+    var s = ~~(j / 20)
+    var t = (rotl5(a) + ft(s, b, c, d) + e + W[j] + K[s]) | 0
 
     e = d
     d = c
-    c = rol(b, 30)
+    c = rotl30(b)
     b = a
     a = t
-    j++
   }
-
-  k = 1518500249
-  while (j < 16) loop(M.readInt32BE(j * 4), (b & c) | ((~b) & d))
-  while (j < 20) loop(calcW(), (b & c) | ((~b) & d))
-  k = 1859775393
-  while (j < 40) loop(calcW(), b ^ c ^ d)
-  k = -1894007588
-  while (j < 60) loop(calcW(), (b & c) | (b & d) | (c & d))
-  k = -899497514
-  while (j < 80) loop(calcW(), b ^ c ^ d)
 
   this._a = (a + this._a) | 0
   this._b = (b + this._b) | 0
@@ -73940,7 +74281,7 @@ module.exports = Sha1
 
 }).call(this,require("buffer").Buffer)
 
-},{"./hash":461,"buffer":102,"inherits":191}],465:[function(require,module,exports){
+},{"./hash":462,"buffer":58,"inherits":147}],466:[function(require,module,exports){
 (function (Buffer){
 /**
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-256, as defined
@@ -73967,14 +74308,14 @@ function Sha224 () {
 inherits(Sha224, Sha256)
 
 Sha224.prototype.init = function () {
-  this._a = 0xc1059ed8 | 0
-  this._b = 0x367cd507 | 0
-  this._c = 0x3070dd17 | 0
-  this._d = 0xf70e5939 | 0
-  this._e = 0xffc00b31 | 0
-  this._f = 0x68581511 | 0
-  this._g = 0x64f98fa7 | 0
-  this._h = 0xbefa4fa4 | 0
+  this._a = 0xc1059ed8
+  this._b = 0x367cd507
+  this._c = 0x3070dd17
+  this._d = 0xf70e5939
+  this._e = 0xffc00b31
+  this._f = 0x68581511
+  this._g = 0x64f98fa7
+  this._h = 0xbefa4fa4
 
   return this
 }
@@ -73997,7 +74338,7 @@ module.exports = Sha224
 
 }).call(this,require("buffer").Buffer)
 
-},{"./hash":461,"./sha256":466,"buffer":102,"inherits":191}],466:[function(require,module,exports){
+},{"./hash":462,"./sha256":467,"buffer":58,"inherits":147}],467:[function(require,module,exports){
 (function (Buffer){
 /**
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-256, as defined
@@ -74042,39 +74383,39 @@ function Sha256 () {
 inherits(Sha256, Hash)
 
 Sha256.prototype.init = function () {
-  this._a = 0x6a09e667 | 0
-  this._b = 0xbb67ae85 | 0
-  this._c = 0x3c6ef372 | 0
-  this._d = 0xa54ff53a | 0
-  this._e = 0x510e527f | 0
-  this._f = 0x9b05688c | 0
-  this._g = 0x1f83d9ab | 0
-  this._h = 0x5be0cd19 | 0
+  this._a = 0x6a09e667
+  this._b = 0xbb67ae85
+  this._c = 0x3c6ef372
+  this._d = 0xa54ff53a
+  this._e = 0x510e527f
+  this._f = 0x9b05688c
+  this._g = 0x1f83d9ab
+  this._h = 0x5be0cd19
 
   return this
 }
 
-function Ch (x, y, z) {
+function ch (x, y, z) {
   return z ^ (x & (y ^ z))
 }
 
-function Maj (x, y, z) {
+function maj (x, y, z) {
   return (x & y) | (z & (x | y))
 }
 
-function Sigma0 (x) {
+function sigma0 (x) {
   return (x >>> 2 | x << 30) ^ (x >>> 13 | x << 19) ^ (x >>> 22 | x << 10)
 }
 
-function Sigma1 (x) {
+function sigma1 (x) {
   return (x >>> 6 | x << 26) ^ (x >>> 11 | x << 21) ^ (x >>> 25 | x << 7)
 }
 
-function Gamma0 (x) {
+function gamma0 (x) {
   return (x >>> 7 | x << 25) ^ (x >>> 18 | x << 14) ^ (x >>> 3)
 }
 
-function Gamma1 (x) {
+function gamma1 (x) {
   return (x >>> 17 | x << 15) ^ (x >>> 19 | x << 13) ^ (x >>> 10)
 }
 
@@ -74090,29 +74431,22 @@ Sha256.prototype._update = function (M) {
   var g = this._g | 0
   var h = this._h | 0
 
-  var j = 0
+  for (var i = 0; i < 16; ++i) W[i] = M.readInt32BE(i * 4)
+  for (; i < 64; ++i) W[i] = (gamma1(W[i - 2]) + W[i - 7] + gamma0(W[i - 15]) + W[i - 16]) | 0
 
-  function calcW () { return Gamma1(W[j - 2]) + W[j - 7] + Gamma0(W[j - 15]) + W[j - 16] }
-  function loop (w) {
-    W[j] = w
-
-    var T1 = h + Sigma1(e) + Ch(e, f, g) + K[j] + w
-    var T2 = Sigma0(a) + Maj(a, b, c)
+  for (var j = 0; j < 64; ++j) {
+    var T1 = (h + sigma1(e) + ch(e, f, g) + K[j] + W[j]) | 0
+    var T2 = (sigma0(a) + maj(a, b, c)) | 0
 
     h = g
     g = f
     f = e
-    e = d + T1
+    e = (d + T1) | 0
     d = c
     c = b
     b = a
-    a = T1 + T2
-
-    j++
+    a = (T1 + T2) | 0
   }
-
-  while (j < 16) loop(M.readInt32BE(j * 4))
-  while (j < 64) loop(calcW())
 
   this._a = (a + this._a) | 0
   this._b = (b + this._b) | 0
@@ -74143,7 +74477,7 @@ module.exports = Sha256
 
 }).call(this,require("buffer").Buffer)
 
-},{"./hash":461,"buffer":102,"inherits":191}],467:[function(require,module,exports){
+},{"./hash":462,"buffer":58,"inherits":147}],468:[function(require,module,exports){
 (function (Buffer){
 var inherits = require('inherits')
 var SHA512 = require('./sha512')
@@ -74161,23 +74495,23 @@ function Sha384 () {
 inherits(Sha384, SHA512)
 
 Sha384.prototype.init = function () {
-  this._a = 0xcbbb9d5d | 0
-  this._b = 0x629a292a | 0
-  this._c = 0x9159015a | 0
-  this._d = 0x152fecd8 | 0
-  this._e = 0x67332667 | 0
-  this._f = 0x8eb44a87 | 0
-  this._g = 0xdb0c2e0d | 0
-  this._h = 0x47b5481d | 0
+  this._ah = 0xcbbb9d5d
+  this._bh = 0x629a292a
+  this._ch = 0x9159015a
+  this._dh = 0x152fecd8
+  this._eh = 0x67332667
+  this._fh = 0x8eb44a87
+  this._gh = 0xdb0c2e0d
+  this._hh = 0x47b5481d
 
-  this._al = 0xc1059ed8 | 0
-  this._bl = 0x367cd507 | 0
-  this._cl = 0x3070dd17 | 0
-  this._dl = 0xf70e5939 | 0
-  this._el = 0xffc00b31 | 0
-  this._fl = 0x68581511 | 0
-  this._gl = 0x64f98fa7 | 0
-  this._hl = 0xbefa4fa4 | 0
+  this._al = 0xc1059ed8
+  this._bl = 0x367cd507
+  this._cl = 0x3070dd17
+  this._dl = 0xf70e5939
+  this._el = 0xffc00b31
+  this._fl = 0x68581511
+  this._gl = 0x64f98fa7
+  this._hl = 0xbefa4fa4
 
   return this
 }
@@ -74190,12 +74524,12 @@ Sha384.prototype._hash = function () {
     H.writeInt32BE(l, offset + 4)
   }
 
-  writeInt64BE(this._a, this._al, 0)
-  writeInt64BE(this._b, this._bl, 8)
-  writeInt64BE(this._c, this._cl, 16)
-  writeInt64BE(this._d, this._dl, 24)
-  writeInt64BE(this._e, this._el, 32)
-  writeInt64BE(this._f, this._fl, 40)
+  writeInt64BE(this._ah, this._al, 0)
+  writeInt64BE(this._bh, this._bl, 8)
+  writeInt64BE(this._ch, this._cl, 16)
+  writeInt64BE(this._dh, this._dl, 24)
+  writeInt64BE(this._eh, this._el, 32)
+  writeInt64BE(this._fh, this._fl, 40)
 
   return H
 }
@@ -74204,7 +74538,7 @@ module.exports = Sha384
 
 }).call(this,require("buffer").Buffer)
 
-},{"./hash":461,"./sha512":468,"buffer":102,"inherits":191}],468:[function(require,module,exports){
+},{"./hash":462,"./sha512":469,"buffer":58,"inherits":147}],469:[function(require,module,exports){
 (function (Buffer){
 var inherits = require('inherits')
 var Hash = require('./hash')
@@ -74264,23 +74598,23 @@ function Sha512 () {
 inherits(Sha512, Hash)
 
 Sha512.prototype.init = function () {
-  this._a = 0x6a09e667 | 0
-  this._b = 0xbb67ae85 | 0
-  this._c = 0x3c6ef372 | 0
-  this._d = 0xa54ff53a | 0
-  this._e = 0x510e527f | 0
-  this._f = 0x9b05688c | 0
-  this._g = 0x1f83d9ab | 0
-  this._h = 0x5be0cd19 | 0
+  this._ah = 0x6a09e667
+  this._bh = 0xbb67ae85
+  this._ch = 0x3c6ef372
+  this._dh = 0xa54ff53a
+  this._eh = 0x510e527f
+  this._fh = 0x9b05688c
+  this._gh = 0x1f83d9ab
+  this._hh = 0x5be0cd19
 
-  this._al = 0xf3bcc908 | 0
-  this._bl = 0x84caa73b | 0
-  this._cl = 0xfe94f82b | 0
-  this._dl = 0x5f1d36f1 | 0
-  this._el = 0xade682d1 | 0
-  this._fl = 0x2b3e6c1f | 0
-  this._gl = 0xfb41bd6b | 0
-  this._hl = 0x137e2179 | 0
+  this._al = 0xf3bcc908
+  this._bl = 0x84caa73b
+  this._cl = 0xfe94f82b
+  this._dl = 0x5f1d36f1
+  this._el = 0xade682d1
+  this._fl = 0x2b3e6c1f
+  this._gl = 0xfb41bd6b
+  this._hl = 0x137e2179
 
   return this
 }
@@ -74289,15 +74623,15 @@ function Ch (x, y, z) {
   return z ^ (x & (y ^ z))
 }
 
-function Maj (x, y, z) {
+function maj (x, y, z) {
   return (x & y) | (z & (x | y))
 }
 
-function Sigma0 (x, xl) {
+function sigma0 (x, xl) {
   return (x >>> 28 | xl << 4) ^ (xl >>> 2 | x << 30) ^ (xl >>> 7 | x << 25)
 }
 
-function Sigma1 (x, xl) {
+function sigma1 (x, xl) {
   return (x >>> 14 | xl << 18) ^ (x >>> 18 | xl << 14) ^ (xl >>> 9 | x << 23)
 }
 
@@ -74317,17 +74651,21 @@ function Gamma1l (x, xl) {
   return (x >>> 19 | xl << 13) ^ (xl >>> 29 | x << 3) ^ (x >>> 6 | xl << 26)
 }
 
+function getCarry (a, b) {
+  return (a >>> 0) < (b >>> 0) ? 1 : 0
+}
+
 Sha512.prototype._update = function (M) {
   var W = this._w
 
-  var a = this._a | 0
-  var b = this._b | 0
-  var c = this._c | 0
-  var d = this._d | 0
-  var e = this._e | 0
-  var f = this._f | 0
-  var g = this._g | 0
-  var h = this._h | 0
+  var ah = this._ah | 0
+  var bh = this._bh | 0
+  var ch = this._ch | 0
+  var dh = this._dh | 0
+  var eh = this._eh | 0
+  var fh = this._fh | 0
+  var gh = this._gh | 0
+  var hh = this._hh | 0
 
   var al = this._al | 0
   var bl = this._bl | 0
@@ -74338,98 +74676,87 @@ Sha512.prototype._update = function (M) {
   var gl = this._gl | 0
   var hl = this._hl | 0
 
-  var i = 0
-  var j = 0
-  var Wi, Wil
-  function calcW () {
-    var x = W[j - 15 * 2]
-    var xl = W[j - 15 * 2 + 1]
-    var gamma0 = Gamma0(x, xl)
-    var gamma0l = Gamma0l(xl, x)
+  for (var i = 0; i < 32; i += 2) {
+    W[i] = M.readInt32BE(i * 4)
+    W[i + 1] = M.readInt32BE(i * 4 + 4)
+  }
+  for (; i < 160; i += 2) {
+    var xh = W[i - 15 * 2]
+    var xl = W[i - 15 * 2 + 1]
+    var gamma0 = Gamma0(xh, xl)
+    var gamma0l = Gamma0l(xl, xh)
 
-    x = W[j - 2 * 2]
-    xl = W[j - 2 * 2 + 1]
-    var gamma1 = Gamma1(x, xl)
-    var gamma1l = Gamma1l(xl, x)
+    xh = W[i - 2 * 2]
+    xl = W[i - 2 * 2 + 1]
+    var gamma1 = Gamma1(xh, xl)
+    var gamma1l = Gamma1l(xl, xh)
 
     // W[i] = gamma0 + W[i - 7] + gamma1 + W[i - 16]
-    var Wi7 = W[j - 7 * 2]
-    var Wi7l = W[j - 7 * 2 + 1]
+    var Wi7h = W[i - 7 * 2]
+    var Wi7l = W[i - 7 * 2 + 1]
 
-    var Wi16 = W[j - 16 * 2]
-    var Wi16l = W[j - 16 * 2 + 1]
+    var Wi16h = W[i - 16 * 2]
+    var Wi16l = W[i - 16 * 2 + 1]
 
-    Wil = gamma0l + Wi7l
-    Wi = gamma0 + Wi7 + ((Wil >>> 0) < (gamma0l >>> 0) ? 1 : 0)
-    Wil = Wil + gamma1l
-    Wi = Wi + gamma1 + ((Wil >>> 0) < (gamma1l >>> 0) ? 1 : 0)
-    Wil = Wil + Wi16l
-    Wi = Wi + Wi16 + ((Wil >>> 0) < (Wi16l >>> 0) ? 1 : 0)
+    var Wil = (gamma0l + Wi7l) | 0
+    var Wih = (gamma0 + Wi7h + getCarry(Wil, gamma0l)) | 0
+    Wil = (Wil + gamma1l) | 0
+    Wih = (Wih + gamma1 + getCarry(Wil, gamma1l)) | 0
+    Wil = (Wil + Wi16l) | 0
+    Wih = (Wih + Wi16h + getCarry(Wil, Wi16l)) | 0
+
+    W[i] = Wih
+    W[i + 1] = Wil
   }
 
-  function loop () {
-    W[j] = Wi
-    W[j + 1] = Wil
+  for (var j = 0; j < 160; j += 2) {
+    Wih = W[j]
+    Wil = W[j + 1]
 
-    var maj = Maj(a, b, c)
-    var majl = Maj(al, bl, cl)
+    var majh = maj(ah, bh, ch)
+    var majl = maj(al, bl, cl)
 
-    var sigma0h = Sigma0(a, al)
-    var sigma0l = Sigma0(al, a)
-    var sigma1h = Sigma1(e, el)
-    var sigma1l = Sigma1(el, e)
+    var sigma0h = sigma0(ah, al)
+    var sigma0l = sigma0(al, ah)
+    var sigma1h = sigma1(eh, el)
+    var sigma1l = sigma1(el, eh)
 
-    // t1 = h + sigma1 + ch + K[i] + W[i]
-    var Ki = K[j]
+    // t1 = h + sigma1 + ch + K[j] + W[j]
+    var Kih = K[j]
     var Kil = K[j + 1]
 
-    var ch = Ch(e, f, g)
+    var chh = Ch(eh, fh, gh)
     var chl = Ch(el, fl, gl)
 
-    var t1l = hl + sigma1l
-    var t1 = h + sigma1h + ((t1l >>> 0) < (hl >>> 0) ? 1 : 0)
-    t1l = t1l + chl
-    t1 = t1 + ch + ((t1l >>> 0) < (chl >>> 0) ? 1 : 0)
-    t1l = t1l + Kil
-    t1 = t1 + Ki + ((t1l >>> 0) < (Kil >>> 0) ? 1 : 0)
-    t1l = t1l + Wil
-    t1 = t1 + Wi + ((t1l >>> 0) < (Wil >>> 0) ? 1 : 0)
+    var t1l = (hl + sigma1l) | 0
+    var t1h = (hh + sigma1h + getCarry(t1l, hl)) | 0
+    t1l = (t1l + chl) | 0
+    t1h = (t1h + chh + getCarry(t1l, chl)) | 0
+    t1l = (t1l + Kil) | 0
+    t1h = (t1h + Kih + getCarry(t1l, Kil)) | 0
+    t1l = (t1l + Wil) | 0
+    t1h = (t1h + Wih + getCarry(t1l, Wil)) | 0
 
     // t2 = sigma0 + maj
-    var t2l = sigma0l + majl
-    var t2 = sigma0h + maj + ((t2l >>> 0) < (sigma0l >>> 0) ? 1 : 0)
+    var t2l = (sigma0l + majl) | 0
+    var t2h = (sigma0h + majh + getCarry(t2l, sigma0l)) | 0
 
-    h = g
+    hh = gh
     hl = gl
-    g = f
+    gh = fh
     gl = fl
-    f = e
+    fh = eh
     fl = el
     el = (dl + t1l) | 0
-    e = (d + t1 + ((el >>> 0) < (dl >>> 0) ? 1 : 0)) | 0
-    d = c
+    eh = (dh + t1h + getCarry(el, dl)) | 0
+    dh = ch
     dl = cl
-    c = b
+    ch = bh
     cl = bl
-    b = a
+    bh = ah
     bl = al
     al = (t1l + t2l) | 0
-    a = (t1 + t2 + ((al >>> 0) < (t1l >>> 0) ? 1 : 0)) | 0
-
-    i++
-    j += 2
-  }
-
-  while (i < 16) {
-    Wi = M.readInt32BE(j * 4)
-    Wil = M.readInt32BE(j * 4 + 4)
-
-    loop()
-  }
-
-  while (i < 80) {
-    calcW()
-    loop()
+    ah = (t1h + t2h + getCarry(al, t1l)) | 0
   }
 
   this._al = (this._al + al) | 0
@@ -74441,14 +74768,14 @@ Sha512.prototype._update = function (M) {
   this._gl = (this._gl + gl) | 0
   this._hl = (this._hl + hl) | 0
 
-  this._a = (this._a + a + ((this._al >>> 0) < (al >>> 0) ? 1 : 0)) | 0
-  this._b = (this._b + b + ((this._bl >>> 0) < (bl >>> 0) ? 1 : 0)) | 0
-  this._c = (this._c + c + ((this._cl >>> 0) < (cl >>> 0) ? 1 : 0)) | 0
-  this._d = (this._d + d + ((this._dl >>> 0) < (dl >>> 0) ? 1 : 0)) | 0
-  this._e = (this._e + e + ((this._el >>> 0) < (el >>> 0) ? 1 : 0)) | 0
-  this._f = (this._f + f + ((this._fl >>> 0) < (fl >>> 0) ? 1 : 0)) | 0
-  this._g = (this._g + g + ((this._gl >>> 0) < (gl >>> 0) ? 1 : 0)) | 0
-  this._h = (this._h + h + ((this._hl >>> 0) < (hl >>> 0) ? 1 : 0)) | 0
+  this._ah = (this._ah + ah + getCarry(this._al, al)) | 0
+  this._bh = (this._bh + bh + getCarry(this._bl, bl)) | 0
+  this._ch = (this._ch + ch + getCarry(this._cl, cl)) | 0
+  this._dh = (this._dh + dh + getCarry(this._dl, dl)) | 0
+  this._eh = (this._eh + eh + getCarry(this._el, el)) | 0
+  this._fh = (this._fh + fh + getCarry(this._fl, fl)) | 0
+  this._gh = (this._gh + gh + getCarry(this._gl, gl)) | 0
+  this._hh = (this._hh + hh + getCarry(this._hl, hl)) | 0
 }
 
 Sha512.prototype._hash = function () {
@@ -74459,14 +74786,14 @@ Sha512.prototype._hash = function () {
     H.writeInt32BE(l, offset + 4)
   }
 
-  writeInt64BE(this._a, this._al, 0)
-  writeInt64BE(this._b, this._bl, 8)
-  writeInt64BE(this._c, this._cl, 16)
-  writeInt64BE(this._d, this._dl, 24)
-  writeInt64BE(this._e, this._el, 32)
-  writeInt64BE(this._f, this._fl, 40)
-  writeInt64BE(this._g, this._gl, 48)
-  writeInt64BE(this._h, this._hl, 56)
+  writeInt64BE(this._ah, this._al, 0)
+  writeInt64BE(this._bh, this._bl, 8)
+  writeInt64BE(this._ch, this._cl, 16)
+  writeInt64BE(this._dh, this._dl, 24)
+  writeInt64BE(this._eh, this._el, 32)
+  writeInt64BE(this._fh, this._fl, 40)
+  writeInt64BE(this._gh, this._gl, 48)
+  writeInt64BE(this._hh, this._hl, 56)
 
   return H
 }
@@ -74475,7 +74802,7 @@ module.exports = Sha512
 
 }).call(this,require("buffer").Buffer)
 
-},{"./hash":461,"buffer":102,"inherits":191}],469:[function(require,module,exports){
+},{"./hash":462,"buffer":58,"inherits":147}],470:[function(require,module,exports){
 /*
  * Sift 3.x
  *
@@ -74984,7 +75311,7 @@ module.exports = Sha512
   }
 })();
 
-},{}],470:[function(require,module,exports){
+},{}],471:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -75157,7 +75484,7 @@ module.exports = {
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102}],471:[function(require,module,exports){
+},{"buffer":58}],472:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -75473,7 +75800,7 @@ ECPrivate.prototype.deriveSharedSecret = function (pubKey) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"./algs":470,"./key":483,"./private-key":484,"./utils":487,"assert-plus":65,"buffer":102,"crypto":114,"ecc-jsbn":126,"ecc-jsbn/lib/ec":127,"jodid25519":199,"jsbn":205}],472:[function(require,module,exports){
+},{"./algs":471,"./key":484,"./private-key":485,"./utils":488,"assert-plus":21,"buffer":58,"crypto":70,"ecc-jsbn":82,"ecc-jsbn/lib/ec":83,"jodid25519":155,"jsbn":161}],473:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -75574,7 +75901,7 @@ Signer.prototype.sign = function () {
 
 }).call(this,require("buffer").Buffer)
 
-},{"./signature":485,"assert-plus":65,"buffer":102,"stream":488,"tweetnacl":504,"util":510}],473:[function(require,module,exports){
+},{"./signature":486,"assert-plus":21,"buffer":58,"stream":489,"tweetnacl":505,"util":511}],474:[function(require,module,exports){
 // Copyright 2015 Joyent, Inc.
 
 var assert = require('assert-plus');
@@ -75634,7 +75961,7 @@ module.exports = {
 	SignatureParseError: SignatureParseError
 };
 
-},{"assert-plus":65,"util":510}],474:[function(require,module,exports){
+},{"assert-plus":21,"util":511}],475:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -75779,7 +76106,7 @@ Fingerprint._oldVersionDetect = function (obj) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"./algs":470,"./errors":473,"./key":483,"./utils":487,"assert-plus":65,"buffer":102,"crypto":114}],475:[function(require,module,exports){
+},{"./algs":471,"./errors":474,"./key":484,"./utils":488,"assert-plus":21,"buffer":58,"crypto":70}],476:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -75857,7 +76184,7 @@ function write(key) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"../key":483,"../private-key":484,"../utils":487,"./pem":476,"./rfc4253":479,"./ssh":481,"assert-plus":65,"buffer":102}],476:[function(require,module,exports){
+},{"../key":484,"../private-key":485,"../utils":488,"./pem":477,"./rfc4253":480,"./ssh":482,"assert-plus":21,"buffer":58}],477:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -76014,7 +76341,7 @@ function write(key, type) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"../algs":470,"../key":483,"../private-key":484,"../utils":487,"./pkcs1":477,"./pkcs8":478,"./rfc4253":479,"./ssh-private":480,"asn1":64,"assert-plus":65,"buffer":102}],477:[function(require,module,exports){
+},{"../algs":471,"../key":484,"../private-key":485,"../utils":488,"./pkcs1":478,"./pkcs8":479,"./rfc4253":480,"./ssh-private":481,"asn1":20,"assert-plus":21,"buffer":58}],478:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -76339,7 +76666,7 @@ function writePkcs1ECDSAPrivate(der, key) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"../algs":470,"../key":483,"../private-key":484,"../utils":487,"./pem":476,"./pkcs8":478,"asn1":64,"assert-plus":65,"buffer":102}],478:[function(require,module,exports){
+},{"../algs":471,"../key":484,"../private-key":485,"../utils":488,"./pem":477,"./pkcs8":479,"asn1":20,"assert-plus":21,"buffer":58}],479:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -76854,7 +77181,7 @@ function writePkcs8ECDSAPrivate(key, der) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"../algs":470,"../key":483,"../private-key":484,"../utils":487,"./pem":476,"asn1":64,"assert-plus":65,"buffer":102}],479:[function(require,module,exports){
+},{"../algs":471,"../key":484,"../private-key":485,"../utils":488,"./pem":477,"asn1":20,"assert-plus":21,"buffer":58}],480:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -76995,7 +77322,8 @@ function write(key) {
 
 	for (i = 0; i < parts.length; ++i) {
 		var data = key.part[parts[i]].data;
-		data = utils.mpNormalize(data);
+		if (algInfo.normalize !== false)
+			data = utils.mpNormalize(data);
 		buf.writeBuffer(data);
 	}
 
@@ -77004,7 +77332,7 @@ function write(key) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"../algs":470,"../key":483,"../private-key":484,"../ssh-buffer":486,"../utils":487,"assert-plus":65,"buffer":102}],480:[function(require,module,exports){
+},{"../algs":471,"../key":484,"../private-key":485,"../ssh-buffer":487,"../utils":488,"assert-plus":21,"buffer":58}],481:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -77147,7 +77475,7 @@ function write(key) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"../algs":470,"../key":483,"../private-key":484,"../ssh-buffer":486,"../utils":487,"./pem":476,"./rfc4253":479,"asn1":64,"assert-plus":65,"buffer":102,"crypto":114}],481:[function(require,module,exports){
+},{"../algs":471,"../key":484,"../private-key":485,"../ssh-buffer":487,"../utils":488,"./pem":477,"./rfc4253":480,"asn1":20,"assert-plus":21,"buffer":58,"crypto":70}],482:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -77266,7 +77594,7 @@ function write(key) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"../key":483,"../private-key":484,"../utils":487,"./rfc4253":479,"./ssh-private":480,"assert-plus":65,"buffer":102}],482:[function(require,module,exports){
+},{"../key":484,"../private-key":485,"../utils":488,"./rfc4253":480,"./ssh-private":481,"assert-plus":21,"buffer":58}],483:[function(require,module,exports){
 // Copyright 2015 Joyent, Inc.
 
 var Key = require('./key');
@@ -77293,7 +77621,7 @@ module.exports = {
 	SignatureParseError: errs.SignatureParseError
 };
 
-},{"./errors":473,"./fingerprint":474,"./key":483,"./private-key":484,"./signature":485}],483:[function(require,module,exports){
+},{"./errors":474,"./fingerprint":475,"./key":484,"./private-key":485,"./signature":486}],484:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -77564,7 +77892,7 @@ Key._oldVersionDetect = function (obj) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"./algs":470,"./dhe":471,"./ed-compat":472,"./errors":473,"./fingerprint":474,"./formats/auto":475,"./formats/pem":476,"./formats/pkcs1":477,"./formats/pkcs8":478,"./formats/rfc4253":479,"./formats/ssh":481,"./formats/ssh-private":480,"./private-key":484,"./signature":485,"./utils":487,"assert-plus":65,"buffer":102,"crypto":114}],484:[function(require,module,exports){
+},{"./algs":471,"./dhe":472,"./ed-compat":473,"./errors":474,"./fingerprint":475,"./formats/auto":476,"./formats/pem":477,"./formats/pkcs1":478,"./formats/pkcs8":479,"./formats/rfc4253":480,"./formats/ssh":482,"./formats/ssh-private":481,"./private-key":485,"./signature":486,"./utils":488,"assert-plus":21,"buffer":58,"crypto":70}],485:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -77793,7 +78121,7 @@ PrivateKey._oldVersionDetect = function (obj) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"./algs":470,"./ed-compat":472,"./errors":473,"./fingerprint":474,"./formats/auto":475,"./formats/pem":476,"./formats/pkcs1":477,"./formats/pkcs8":478,"./formats/rfc4253":479,"./formats/ssh-private":480,"./key":483,"./signature":485,"./utils":487,"assert-plus":65,"buffer":102,"crypto":114,"jodid25519":199,"util":510}],485:[function(require,module,exports){
+},{"./algs":471,"./ed-compat":473,"./errors":474,"./fingerprint":475,"./formats/auto":476,"./formats/pem":477,"./formats/pkcs1":478,"./formats/pkcs8":479,"./formats/rfc4253":480,"./formats/ssh-private":481,"./key":484,"./signature":486,"./utils":488,"assert-plus":21,"buffer":58,"crypto":70,"jodid25519":155,"util":511}],486:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -78035,7 +78363,7 @@ Signature._oldVersionDetect = function (obj) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"./algs":470,"./errors":473,"./ssh-buffer":486,"./utils":487,"asn1":64,"assert-plus":65,"buffer":102,"crypto":114}],486:[function(require,module,exports){
+},{"./algs":471,"./errors":474,"./ssh-buffer":487,"./utils":488,"asn1":20,"assert-plus":21,"buffer":58,"crypto":70}],487:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -78164,7 +78492,7 @@ SSHBuffer.prototype.write = function (buf) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"assert-plus":65,"buffer":102}],487:[function(require,module,exports){
+},{"assert-plus":21,"buffer":58}],488:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -78376,7 +78704,7 @@ function addRSAMissing(key) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"./private-key":484,"assert-plus":65,"buffer":102,"jsbn":205}],488:[function(require,module,exports){
+},{"./private-key":485,"assert-plus":21,"buffer":58,"jsbn":161}],489:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -78505,7 +78833,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":146,"inherits":191,"readable-stream/duplex.js":434,"readable-stream/passthrough.js":440,"readable-stream/readable.js":441,"readable-stream/transform.js":442,"readable-stream/writable.js":443}],489:[function(require,module,exports){
+},{"events":102,"inherits":147,"readable-stream/duplex.js":435,"readable-stream/passthrough.js":441,"readable-stream/readable.js":442,"readable-stream/transform.js":443,"readable-stream/writable.js":444}],490:[function(require,module,exports){
 (function (global){
 var ClientRequest = require('./lib/request')
 var extend = require('xtend')
@@ -78588,7 +78916,7 @@ http.METHODS = [
 ]
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./lib/request":491,"builtin-status-codes":104,"url":506,"xtend":513}],490:[function(require,module,exports){
+},{"./lib/request":492,"builtin-status-codes":60,"url":507,"xtend":514}],491:[function(require,module,exports){
 (function (global){
 exports.fetch = isFunction(global.fetch) && isFunction(global.ReadableByteStream)
 
@@ -78633,7 +78961,7 @@ xhr = null // Help gc
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],491:[function(require,module,exports){
+},{}],492:[function(require,module,exports){
 (function (process,global,Buffer){
 // var Base64 = require('Base64')
 var capability = require('./capability')
@@ -78916,7 +79244,7 @@ var unsafeHeaders = [
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
 
-},{"./capability":490,"./response":492,"_process":418,"buffer":102,"inherits":191,"stream":488,"to-arraybuffer":495}],492:[function(require,module,exports){
+},{"./capability":491,"./response":493,"_process":419,"buffer":58,"inherits":147,"stream":489,"to-arraybuffer":496}],493:[function(require,module,exports){
 (function (process,global,Buffer){
 var capability = require('./capability')
 var inherits = require('inherits')
@@ -79093,7 +79421,7 @@ IncomingMessage.prototype._onXHRProgress = function () {
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
 
-},{"./capability":490,"_process":418,"buffer":102,"inherits":191,"stream":488}],493:[function(require,module,exports){
+},{"./capability":491,"_process":419,"buffer":58,"inherits":147,"stream":489}],494:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -79316,7 +79644,7 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":102}],494:[function(require,module,exports){
+},{"buffer":58}],495:[function(require,module,exports){
 (function (Buffer){
 var util = require('util')
 var Stream = require('stream')
@@ -79423,7 +79751,7 @@ function alignedWrite(buffer) {
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":102,"stream":488,"string_decoder":493,"util":510}],495:[function(require,module,exports){
+},{"buffer":58,"stream":489,"string_decoder":494,"util":511}],496:[function(require,module,exports){
 var Buffer = require('buffer').Buffer
 
 module.exports = function (buf) {
@@ -79452,7 +79780,7 @@ module.exports = function (buf) {
 	}
 }
 
-},{"buffer":102}],496:[function(require,module,exports){
+},{"buffer":58}],497:[function(require,module,exports){
 /*!
  * Copyright (c) 2015, Salesforce.com, Inc.
  * All rights reserved.
@@ -80796,7 +81124,7 @@ module.exports = {
   canonicalDomain: canonicalDomain
 };
 
-},{"../package.json":502,"./memstore":497,"./pathMatch":498,"./permuteDomain":499,"./pubsuffix":500,"./store":501,"net":100,"punycode":425,"url":506}],497:[function(require,module,exports){
+},{"../package.json":503,"./memstore":498,"./pathMatch":499,"./permuteDomain":500,"./pubsuffix":501,"./store":502,"net":56,"punycode":426,"url":507}],498:[function(require,module,exports){
 /*!
  * Copyright (c) 2015, Salesforce.com, Inc.
  * All rights reserved.
@@ -80968,7 +81296,7 @@ MemoryCookieStore.prototype.getAllCookies = function(cb) {
   cb(null, cookies);
 };
 
-},{"./pathMatch":498,"./permuteDomain":499,"./store":501,"util":510}],498:[function(require,module,exports){
+},{"./pathMatch":499,"./permuteDomain":500,"./store":502,"util":511}],499:[function(require,module,exports){
 /*!
  * Copyright (c) 2015, Salesforce.com, Inc.
  * All rights reserved.
@@ -81031,7 +81359,7 @@ function pathMatch (reqPath, cookiePath) {
 
 exports.pathMatch = pathMatch;
 
-},{}],499:[function(require,module,exports){
+},{}],500:[function(require,module,exports){
 /*!
  * Copyright (c) 2015, Salesforce.com, Inc.
  * All rights reserved.
@@ -81089,7 +81417,7 @@ function permuteDomain (domain) {
 
 exports.permuteDomain = permuteDomain;
 
-},{"./pubsuffix":500}],500:[function(require,module,exports){
+},{"./pubsuffix":501}],501:[function(require,module,exports){
 /****************************************************
  * AUTOMATICALLY GENERATED by generate-pubsuffix.js *
  *                  DO NOT EDIT!                    *
@@ -81189,7 +81517,7 @@ var index = module.exports.index = Object.freeze(
 
 // END of automatically generated file
 
-},{"punycode":425}],501:[function(require,module,exports){
+},{"punycode":426}],502:[function(require,module,exports){
 /*!
  * Copyright (c) 2015, Salesforce.com, Inc.
  * All rights reserved.
@@ -81262,12 +81590,12 @@ Store.prototype.getAllCookies = function(cb) {
   throw new Error('getAllCookies is not implemented (therefore jar cannot be serialized)');
 };
 
-},{}],502:[function(require,module,exports){
+},{}],503:[function(require,module,exports){
 module.exports={
   "_args": [
     [
       "tough-cookie@~2.2.0",
-      "/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/SDK/node_modules/request"
+      "/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/HTML5/SDK/node_modules/request"
     ]
   ],
   "_from": "tough-cookie@>=2.2.0 <2.3.0",
@@ -81291,17 +81619,13 @@ module.exports={
     "type": "range"
   },
   "_requiredBy": [
-    "/jsdom",
-    "/mocha-phantomjs/request",
-    "/phantomjs/request",
-    "/request",
-    "/wd/request"
+    "/request"
   ],
   "_resolved": "https://registry.npmjs.org/tough-cookie/-/tough-cookie-2.2.1.tgz",
   "_shasum": "3b0516b799e70e8164436a1446e7e5877fda118e",
   "_shrinkwrap": null,
   "_spec": "tough-cookie@~2.2.0",
-  "_where": "/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/SDK/node_modules/request",
+  "_where": "/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/HTML5/SDK/node_modules/request",
   "author": {
     "email": "jstashewsky@salesforce.com",
     "name": "Jeremy Stashewsky"
@@ -81384,7 +81708,7 @@ module.exports={
   "version": "2.2.1"
 }
 
-},{}],503:[function(require,module,exports){
+},{}],504:[function(require,module,exports){
 (function (process,Buffer){
 'use strict'
 
@@ -81632,8 +81956,7 @@ exports.debug = debug // for test
 
 }).call(this,require('_process'),require("buffer").Buffer)
 
-},{"_process":418,"assert":66,"buffer":102,"events":146,"http":489,"https":187,"net":100,"tls":100,"util":510}],504:[function(require,module,exports){
-(function (Buffer){
+},{"_process":419,"assert":22,"buffer":58,"events":102,"http":490,"https":143,"net":56,"tls":56,"util":511}],505:[function(require,module,exports){
 (function(nacl) {
 'use strict';
 
@@ -83793,39 +84116,13 @@ function cleanup(arr) {
   for (var i = 0; i < arr.length; i++) arr[i] = 0;
 }
 
-nacl.util = {};
-
-nacl.util.decodeUTF8 = function(s) {
-  var i, d = unescape(encodeURIComponent(s)), b = new Uint8Array(d.length);
-  for (i = 0; i < d.length; i++) b[i] = d.charCodeAt(i);
-  return b;
-};
-
-nacl.util.encodeUTF8 = function(arr) {
-  var i, s = [];
-  for (i = 0; i < arr.length; i++) s.push(String.fromCharCode(arr[i]));
-  return decodeURIComponent(escape(s.join('')));
-};
-
-nacl.util.encodeBase64 = function(arr) {
-  if (typeof btoa === 'undefined') {
-    return (new Buffer(arr)).toString('base64');
-  } else {
-    var i, s = [], len = arr.length;
-    for (i = 0; i < len; i++) s.push(String.fromCharCode(arr[i]));
-    return btoa(s.join(''));
-  }
-};
-
-nacl.util.decodeBase64 = function(s) {
-  if (typeof atob === 'undefined') {
-    return new Uint8Array(Array.prototype.slice.call(new Buffer(s, 'base64'), 0));
-  } else {
-    var i, d = atob(s), b = new Uint8Array(d.length);
-    for (i = 0; i < d.length; i++) b[i] = d.charCodeAt(i);
-    return b;
-  }
-};
+// TODO: Completely remove this in v0.15.
+if (!nacl.util) {
+  nacl.util = {};
+  nacl.util.decodeUTF8 = nacl.util.encodeUTF8 = nacl.util.encodeBase64 = nacl.util.decodeBase64 = function() {
+    throw new Error('nacl.util moved into separate package: https://github.com/dchest/tweetnacl-util-js');
+  };
+}
 
 nacl.randomBytes = function(n) {
   var b = new Uint8Array(n);
@@ -84022,26 +84319,22 @@ nacl.setPRNG = function(fn) {
 (function() {
   // Initialize PRNG if environment provides CSPRNG.
   // If not, methods calling randombytes will throw.
-  var crypto;
-  if (typeof window !== 'undefined') {
-    // Browser.
-    if (window.crypto && window.crypto.getRandomValues) {
-      crypto = window.crypto; // Standard
-    } else if (window.msCrypto && window.msCrypto.getRandomValues) {
-      crypto = window.msCrypto; // Internet Explorer 11+
-    }
-    if (crypto) {
-      nacl.setPRNG(function(x, n) {
-        var i, v = new Uint8Array(n);
-        crypto.getRandomValues(v);
-        for (i = 0; i < n; i++) x[i] = v[i];
-        cleanup(v);
-      });
-    }
+  var crypto = typeof self !== 'undefined' ? (self.crypto || self.msCrypto) : null;
+  if (crypto && crypto.getRandomValues) {
+    // Browsers.
+    var QUOTA = 65536;
+    nacl.setPRNG(function(x, n) {
+      var i, v = new Uint8Array(n);
+      for (i = 0; i < n; i += QUOTA) {
+        crypto.getRandomValues(v.subarray(i, i + Math.min(n - i, QUOTA)));
+      }
+      for (i = 0; i < n; i++) x[i] = v[i];
+      cleanup(v);
+    });
   } else if (typeof require !== 'undefined') {
     // Node.js.
     crypto = require('crypto');
-    if (crypto) {
+    if (crypto && crypto.randomBytes) {
       nacl.setPRNG(function(x, n) {
         var i, v = crypto.randomBytes(n);
         for (i = 0; i < n; i++) x[i] = v[i];
@@ -84051,11 +84344,9 @@ nacl.setPRNG = function(fn) {
   }
 })();
 
-})(typeof module !== 'undefined' && module.exports ? module.exports : (window.nacl = window.nacl || {}));
+})(typeof module !== 'undefined' && module.exports ? module.exports : (self.nacl = self.nacl || {}));
 
-}).call(this,require("buffer").Buffer)
-
-},{"buffer":73,"crypto":73}],505:[function(require,module,exports){
+},{"crypto":29}],506:[function(require,module,exports){
 // Generated by CoffeeScript 1.10.0
 var slice = [].slice;
 
@@ -84493,7 +84784,7 @@ var slice = [].slice;
   return UrlPattern;
 });
 
-},{}],506:[function(require,module,exports){
+},{}],507:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -85227,7 +85518,7 @@ Url.prototype.parseHost = function() {
   if (host) this.hostname = host;
 };
 
-},{"./util":507,"punycode":425,"querystring":432}],507:[function(require,module,exports){
+},{"./util":508,"punycode":426,"querystring":433}],508:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -85245,7 +85536,7 @@ module.exports = {
   }
 };
 
-},{}],508:[function(require,module,exports){
+},{}],509:[function(require,module,exports){
 (function (global){
 
 /**
@@ -85317,14 +85608,14 @@ function config (name) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],509:[function(require,module,exports){
+},{}],510:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],510:[function(require,module,exports){
+},{}],511:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -85915,7 +86206,7 @@ function hasOwnProperty(obj, prop) {
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./support/isBuffer":509,"_process":418,"inherits":191}],511:[function(require,module,exports){
+},{"./support/isBuffer":510,"_process":419,"inherits":147}],512:[function(require,module,exports){
 /*
  * verror.js: richer JavaScript errors
  */
@@ -86074,7 +86365,7 @@ WError.prototype.cause = function we_cause(c)
 	return (this.we_cause);
 };
 
-},{"assert":66,"extsprintf":149,"util":510}],512:[function(require,module,exports){
+},{"assert":22,"extsprintf":105,"util":511}],513:[function(require,module,exports){
 var indexOf = require('indexof');
 
 var Object_keys = function (obj) {
@@ -86214,7 +86505,7 @@ exports.createContext = Script.createContext = function (context) {
     return copy;
 };
 
-},{"indexof":190}],513:[function(require,module,exports){
+},{"indexof":146}],514:[function(require,module,exports){
 module.exports = extend
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -86235,6 +86526,13 @@ function extend() {
     return target
 }
 
-},{}]},{},[43])(43)
+},{}],515:[function(require,module,exports){
+'use strict';
+
+var _kinveySdkCore = require('kinvey-sdk-core');
+
+module.exports = _kinveySdkCore.Kinvey;
+
+},{"kinvey-sdk-core":174}]},{},[515])(515)
 });
 //# sourceMappingURL=kinvey.js.map
