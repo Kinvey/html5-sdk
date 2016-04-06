@@ -1,9 +1,8 @@
-/* eslint-disable */
+ /* eslint-disable */
 var gulp = require('gulp');
 var eslint = require('gulp-eslint');
 var util = require('gulp-util');
 var plumber = require('gulp-plumber');
-var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 var git = require('gulp-git');
@@ -11,11 +10,10 @@ var gulpif = require('gulp-if');
 var prompt = require('gulp-prompt');
 var bump = require('gulp-bump');
 var browserify = require('browserify');
+var babel = require('gulp-babel');
 var buffer = require('vinyl-buffer');
 var del = require('del');
-var exorcist = require('exorcist');
 var source = require('vinyl-source-stream');
-var transform = require('vinyl-transform');
 var runSequence = require('run-sequence');
 var semverRegex = require('semver-regex');
 var spawn = require('child_process').spawn;
@@ -33,31 +31,28 @@ gulp.task('lint', function() {
 });
 
 gulp.task('clean', function(done) {
-  return del(['dist'], done);
+  return del(['build', 'dist'], done);
 });
 
 gulp.task('build', ['clean', 'lint'], function() {
+  return gulp.src('src/**/*.js')
+    .pipe(babel())
+    .pipe(gulp.dest('./build'))
+});
+
+gulp.task('bundle', ['build'], function() {
   return browserify({
-    debug: true, // turns on/off source mapping
-    entries: './src/index.js',
+    debug: false, // turns on/off source mapping
+    entries: './build/index.js',
     standalone: 'Kinvey'
   })
-    .transform('babelify', {
-      comments: false,
-      presets: ['es2015', 'stage-2']
-    })
     .bundle()
     .pipe(plumber())
     .pipe(source('kinvey.js'))
-    .pipe(transform(function() {
-      return exorcist('./dist/kinvey.js.map');
-    }))
     .pipe(gulp.dest('./dist'))
     .pipe(rename('kinvey.min.js'))
     .pipe(buffer())
-    .pipe(sourcemaps.init({ loadMaps: true }))
     .pipe(uglify())
-    .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('./dist'))
     .on('error', errorHandler);
 });
@@ -68,15 +63,11 @@ gulp.task('uploadS3', ['build'], function () {
 
   gulp.src([
     'dist/kinvey.js',
-    'dist/kinvey.js.map',
-    'dist/kinvey.min.js',
-    'dist/kinvey.min.js.map'
+    'dist/kinvey.min.js'
   ])
     .pipe(plumber())
     .pipe(gulpif('kinvey.js', rename({ basename: `kinvey-html5-${version}` })))
-    .pipe(gulpif('kinvey.js.map', rename({ basename: `kinvey-html5-${version}.js` })))
     .pipe(gulpif('kinvey.min.js', rename({ basename: `kinvey-html5-${version}.min` })))
-    .pipe(gulpif('kinvey.min.js.map', rename({ basename: `kinvey-html5-${version}.min.js` })))
     .pipe(gulp.dest('./sample'));
 });
 
@@ -151,5 +142,5 @@ gulp.task('release', function() {
 });
 
 gulp.task('default', function() {
-  runSequence('build');
+  runSequence('bundle');
 });

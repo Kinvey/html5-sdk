@@ -2,19 +2,28 @@
  * @private
  */
 export class PopupAdapter {
+  isOpen() {
+    return !!this._open;
+  }
+
   open() {
     const promise = new Promise((resolve, reject) => {
+      if (this.isOpen()) {
+        return reject(new Error('Popup is already open.'));
+      }
+
       this.popup = global.open(this.url, '_blank', 'toolbar=no,location=no');
 
       if (this.popup) {
-        this.interval = setInterval(() => {
+        this._open = true;
+        const interval = setInterval(() => {
           if (this.popup.closed) {
-            this.closeHandler();
+            this._open = false;
+            clearTimeout(interval);
+            this.emit('closed');
           } else {
             try {
-              this.loadHandler({
-                url: this.popup.location.href
-              });
+              this.emit('loaded', this.popup.location.href);
             } catch (e) {
               // catch any errors due to cross domain issues
             }
@@ -24,7 +33,7 @@ export class PopupAdapter {
         return reject(new Error('The popup was blocked.'));
       }
 
-      return resolve();
+      return resolve(this);
     });
 
     return promise;
@@ -32,22 +41,12 @@ export class PopupAdapter {
 
   close() {
     const promise = new Promise(resolve => {
-      this.popup.close();
+      if (this.popup) {
+        this.popup.close();
+      }
+
       resolve();
     });
     return promise;
-  }
-
-  loadHandler(event) {
-    this.emit('loaded', event.url);
-  }
-
-  clickHandler() {
-    this.close();
-  }
-
-  closeHandler() {
-    clearTimeout(this.interval);
-    this.emit('closed');
   }
 }
