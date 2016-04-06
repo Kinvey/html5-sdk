@@ -32879,7 +32879,7 @@ function hasOwnProperty(obj, prop) {
 },{"./support/isBuffer":259,"_process":241,"inherits":19}],261:[function(require,module,exports){
 module.exports={
   "name": "kinvey-html5-sdk",
-  "version": "3.0.0-beta.12",
+  "version": "3.0.0-beta.14",
   "description": "Kinvey JavaScript SDK for HTML5.",
   "homepage": "http://www.kinvey.com",
   "bugs": {
