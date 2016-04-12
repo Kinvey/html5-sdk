@@ -13192,8 +13192,6 @@ var Acl = exports.Acl = function () {
 
   return Acl;
 }();
-
-
 }).call(this,require('_process'))
 },{"./errors":27,"_process":241,"lodash/isPlainObject":216}],23:[function(require,module,exports){
 'use strict';
@@ -13427,8 +13425,6 @@ var Aggregation = function () {
 }();
 
 exports.Aggregation = Aggregation;
-
-
 },{"./errors":27,"./query":32,"lodash/assign":194,"lodash/forEach":200,"lodash/isFunction":210,"lodash/isObject":214,"lodash/isString":218,"lodash/result":231}],24:[function(require,module,exports){
 (function (process){
 'use strict';
@@ -13441,6 +13437,8 @@ exports.Client = undefined;
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _errors = require('./errors');
+
+var _sync = require('./sync');
 
 var _localStorage = require('local-storage');
 
@@ -13547,6 +13545,11 @@ var Client = exports.Client = function () {
      * @type {string|undefined}
      */
     this.encryptionKey = options.encryptionKey;
+
+    /**
+     * @type {SyncManager}
+     */
+    this.syncManager = new _sync.SyncManager();
   }
 
   _createClass(Client, [{
@@ -13670,10 +13673,8 @@ var Client = exports.Client = function () {
 
   return Client;
 }();
-
-
 }).call(this,require('_process'))
-},{"./errors":27,"_process":241,"local-storage":62,"lodash/assign":194,"lodash/isString":218,"url":257}],25:[function(require,module,exports){
+},{"./errors":27,"./sync":56,"_process":241,"local-storage":62,"lodash/assign":194,"lodash/isString":218,"url":257}],25:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -13759,8 +13760,6 @@ var Command = exports.Command = function () {
 
   return Command;
 }();
-
-
 }).call(this,require('_process'))
 },{"./client":24,"./enums":26,"./errors":27,"_process":241,"lodash/isString":218}],26:[function(require,module,exports){
 'use strict';
@@ -13847,8 +13846,6 @@ var StatusCode = {
 };
 Object.freeze(StatusCode);
 exports.StatusCode = StatusCode;
-
-
 },{}],27:[function(require,module,exports){
 'use strict';
 
@@ -13903,8 +13900,6 @@ var KinveyError = exports.KinveyError = Error.extend('KinveyError');
 var NetworkConnectionError = exports.NetworkConnectionError = Error.extend('NetworkConnectionError');
 var NotFoundError = exports.NotFoundError = Error.extend('NotFoundError');
 var NoResponseError = exports.NoResponseError = Error.extend('NoResponseError');
-
-
 },{"lodash/isFunction":210,"util":260}],28:[function(require,module,exports){
 (function (process){
 'use strict';
@@ -14030,8 +14025,6 @@ Kinvey.SocialIdentity = _enums.SocialIdentity;
 Kinvey.Sync = _sync.Sync;
 Kinvey.User = _user.User;
 exports.Kinvey = Kinvey;
-
-
 }).call(this,require('_process'))
 },{"./aggregation":23,"./client":24,"./command":25,"./enums":26,"./log":29,"./metadata":30,"./query":32,"./requests/network":46,"./stores/datastore":51,"./sync":56,"./user":57,"_process":241,"babybird":8,"url":257}],29:[function(require,module,exports){
 'use strict';
@@ -14059,8 +14052,6 @@ _loglevel2.default.methodFactory = function methodFactory(methodName, logLevel, 
 
 _loglevel2.default.setLevel(_loglevel2.default.levels.ERROR);
 exports.Log = _loglevel2.default;
-
-
 },{"loglevel":238}],30:[function(require,module,exports){
 (function (process){
 'use strict';
@@ -14116,6 +14107,11 @@ var Metadata = exports.Metadata = function () {
   }
 
   _createClass(Metadata, [{
+    key: 'isLocal',
+    value: function isLocal() {
+      return !!this.kmd.local;
+    }
+  }, {
     key: 'toJSON',
     value: function toJSON() {
       return this.kmd;
@@ -14160,8 +14156,6 @@ var Metadata = exports.Metadata = function () {
 
   return Metadata;
 }();
-
-
 }).call(this,require('_process'))
 },{"./errors":27,"_process":241,"lodash/isPlainObject":216}],31:[function(require,module,exports){
 (function (process){
@@ -14463,8 +14457,6 @@ var MobileIdentityConnect = exports.MobileIdentityConnect = function () {
 
   return MobileIdentityConnect;
 }();
-
-
 }).call(this,require('_process'))
 },{"./client":24,"./enums":26,"./errors":27,"./requests/network":46,"./utils/popup":60,"_process":241,"babybird":8,"lodash/isString":218,"path":240,"url":257}],32:[function(require,module,exports){
 'use strict';
@@ -15152,8 +15144,6 @@ var Query = function () {
 }();
 
 exports.Query = Query;
-
-
 },{"./utils/object":59,"lodash/assign":194,"lodash/forEach":200,"lodash/isArray":205,"lodash/isNumber":213,"lodash/isObject":214,"lodash/isRegExp":217,"lodash/isString":218,"sift":253}],33:[function(require,module,exports){
 'use strict';
 
@@ -15207,8 +15197,6 @@ var AsciiTree = exports.AsciiTree = {
     return result;
   }
 };
-
-
 },{}],34:[function(require,module,exports){
 'use strict';
 
@@ -15307,8 +15295,6 @@ var KinveyMiddleware = exports.KinveyMiddleware = function (_Middleware) {
 
   return KinveyMiddleware;
 }(Middleware);
-
-
 },{"./asciiTree":33,"babybird":8}],35:[function(require,module,exports){
 'use strict';
 
@@ -15326,16 +15312,6 @@ var _middleware = require('../middleware');
 var _db = require('../persistence/db');
 
 var _enums = require('../../enums');
-
-var _urlPattern = require('url-pattern');
-
-var _urlPattern2 = _interopRequireDefault(_urlPattern);
-
-var _url = require('url');
-
-var _url2 = _interopRequireDefault(_url);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -15367,40 +15343,31 @@ var CacheMiddleware = exports.CacheMiddleware = function (_KinveyMiddleware) {
       var _this2 = this;
 
       return _get(Object.getPrototypeOf(CacheMiddleware.prototype), 'handle', this).call(this, request).then(function () {
-        var pathname = _url2.default.parse(request.url).pathname;
-        var pattern = new _urlPattern2.default('(/:namespace)(/)(:appKey)(/)(:collection)(/)(:id)(/)');
-
-        var _ref = pattern.match(pathname) || {};
-
-        var appKey = _ref.appKey;
-        var collection = _ref.collection;
-        var id = _ref.id;
-
         var method = request.method;
         var query = request.query;
         var data = request.data;
-        var db = new _db.DB(appKey, _this2.adapters);
+        var db = new _db.DB(request.appKey, _this2.adapters);
         var promise = void 0;
 
         if (method === _enums.HttpMethod.GET) {
-          if (id) {
-            if (id === '_count') {
-              promise = db.count(collection, query);
-            } else if (id === '_group') {
-              promise = db.group(collection, data);
+          if (request.entityId) {
+            if (request.entityId === '_count') {
+              promise = db.count(request.collectionName, query);
+            } else if (request.entityId === '_group') {
+              promise = db.group(request.collectionName, data);
             } else {
-              promise = db.findById(collection, id);
+              promise = db.findById(request.collectionName, request.entityId);
             }
           } else {
-            promise = db.find(collection, query);
+            promise = db.find(request.collectionName, query);
           }
         } else if (method === _enums.HttpMethod.POST || method === _enums.HttpMethod.PUT) {
-          promise = db.save(collection, data);
+          promise = db.save(request.collectionName, data);
         } else if (method === _enums.HttpMethod.DELETE) {
-          if (id) {
-            promise = db.removeById(collection, id);
+          if (request.entityId) {
+            promise = db.removeById(request.collectionName, request.entityId);
           } else {
-            promise = db.remove(collection, query);
+            promise = db.remove(request.collectionName, query);
           }
         }
 
@@ -15425,9 +15392,7 @@ var CacheMiddleware = exports.CacheMiddleware = function (_KinveyMiddleware) {
 
   return CacheMiddleware;
 }(_middleware.KinveyMiddleware);
-
-
-},{"../../enums":26,"../middleware":34,"../persistence/db":42,"url":257,"url-pattern":256}],36:[function(require,module,exports){
+},{"../../enums":26,"../middleware":34,"../persistence/db":42}],36:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -15489,8 +15454,6 @@ var ParseMiddleware = exports.ParseMiddleware = function (_KinveyMiddleware) {
 
   return ParseMiddleware;
 }(_middleware.KinveyMiddleware);
-
-
 },{"../middleware":34}],37:[function(require,module,exports){
 (function (global){
 'use strict';
@@ -15564,8 +15527,6 @@ var SerializeMiddleware = exports.SerializeMiddleware = function (_KinveyMiddlew
 
   return SerializeMiddleware;
 }(_middleware.KinveyMiddleware);
-
-
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../middleware":34,"lodash/forEach":200}],38:[function(require,module,exports){
 (function (global){
@@ -15898,14 +15859,12 @@ var IndexedDB = exports.IndexedDB = function () {
   }], [{
     key: 'isSupported',
     value: function isSupported() {
-      return indexedDB !== undefined;
+      return !!indexedDB;
     }
   }]);
 
   return IndexedDB;
 }();
-
-
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../../../errors":27,"babybird":8,"indexeddbshim":18,"lodash/forEach":200,"lodash/isArray":205,"lodash/isFunction":210,"lodash/isString":218}],39:[function(require,module,exports){
 (function (process,global){
@@ -16063,8 +16022,6 @@ var LocalStorage = exports.LocalStorage = function () {
 
   return LocalStorage;
 }();
-
-
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../../../errors":27,"_process":241,"babybird":8,"lodash/forEach":200,"lodash/keyBy":221,"lodash/merge":227,"lodash/values":237}],40:[function(require,module,exports){
 (function (process){
@@ -16256,8 +16213,6 @@ var Memory = exports.Memory = function () {
 
   return Memory;
 }();
-
-
 }).call(this,require('_process'))
 },{"../../../errors":27,"_process":241,"babybird":8,"fast-memory-cache":14,"lodash/find":198,"lodash/forEach":200,"lodash/isArray":205,"lodash/isString":218,"lodash/keyBy":221,"lodash/values":237,"promise-queue":242}],41:[function(require,module,exports){
 (function (process,global){
@@ -16479,14 +16434,12 @@ var WebSQL = exports.WebSQL = function () {
   }], [{
     key: 'isSupported',
     value: function isSupported() {
-      return webSQL !== undefined;
+      return !!webSQL;
     }
   }]);
 
   return WebSQL;
 }();
-
-
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../../../errors":27,"_process":241,"babybird":8,"lodash/forEach":200,"lodash/isArray":205,"lodash/isFunction":210,"lodash/isString":218,"lodash/map":225}],42:[function(require,module,exports){
 (function (process){
@@ -16727,7 +16680,6 @@ var DB = exports.DB = function () {
           kmd.local = true;
         }
 
-        delete kmd.lmt;
         entity[idAttribute] = id;
         entity[kmdAttribute] = kmd;
         return entity;
@@ -16800,8 +16752,6 @@ var DB = exports.DB = function () {
 
   return DB;
 }();
-
-
 }).call(this,require('_process'))
 },{"../../aggregation":23,"../../errors":27,"../../log":29,"../../query":32,"./adapters/indexeddb":38,"./adapters/localstorage":39,"./adapters/memory":40,"./adapters/websql":41,"_process":241,"babybird":8,"lodash/forEach":200,"lodash/isArray":205,"lodash/isString":218,"lodash/map":225,"lodash/reduce":229,"lodash/result":231}],43:[function(require,module,exports){
 'use strict';
@@ -17113,8 +17063,6 @@ var NetworkRack = exports.NetworkRack = function (_KinveyRack2) {
 
   return NetworkRack;
 }(KinveyRack);
-
-
 },{"./middleware":34,"./middleware/cache":35,"./middleware/parse":36,"./middleware/serialize":37,"babybird":8,"lodash/findIndex":199,"lodash/reduce":229}],44:[function(require,module,exports){
 (function (process){
 'use strict';
@@ -17331,8 +17279,6 @@ var DeltaFetchRequest = exports.DeltaFetchRequest = function (_KinveyRequest) {
 
   return DeltaFetchRequest;
 }(_request.KinveyRequest);
-
-
 }).call(this,require('_process'))
 },{"../enums":26,"../errors":27,"../query":32,"./local":45,"./network":46,"./request":48,"./response":49,"_process":241,"babybird":8,"lodash/forEach":200,"lodash/keyBy":221,"lodash/reduce":229,"lodash/result":231,"lodash/values":237}],45:[function(require,module,exports){
 'use strict';
@@ -17421,8 +17367,6 @@ var LocalRequest = exports.LocalRequest = function (_KinveyRequest) {
 
   return LocalRequest;
 }(_request.KinveyRequest);
-
-
 },{"../errors":27,"../rack/rack":43,"./request":48,"./response":49}],46:[function(require,module,exports){
 (function (process){
 'use strict';
@@ -17612,8 +17556,6 @@ var NetworkRequest = exports.NetworkRequest = function (_KinveyRequest) {
 
   return NetworkRequest;
 }(_request.KinveyRequest);
-
-
 }).call(this,require('_process'))
 },{"../enums":26,"../errors":27,"../rack/rack":43,"./request":48,"./response":49,"_process":241,"url":257}],47:[function(require,module,exports){
 'use strict';
@@ -17796,8 +17738,6 @@ var RequestProperties = exports.RequestProperties = function () {
 
   return RequestProperties;
 }();
-
-
 },{"../errors":27,"lodash/isPlainObject":216}],48:[function(require,module,exports){
 (function (process,Buffer){
 'use strict';
@@ -17829,9 +17769,17 @@ var _client = require('../client');
 
 var _string = require('../utils/string');
 
+var _urlPattern = require('url-pattern');
+
+var _urlPattern2 = _interopRequireDefault(_urlPattern);
+
 var _qs = require('qs');
 
 var _qs2 = _interopRequireDefault(_qs);
+
+var _url = require('url');
+
+var _url2 = _interopRequireDefault(_url);
 
 var _appendQuery = require('append-query');
 
@@ -18154,8 +18102,8 @@ var Request = exports.Request = function () {
         _: Math.random().toString(36).substr(2)
       }));
     },
-    set: function set(url) {
-      this._url = url;
+    set: function set(urlString) {
+      this._url = urlString;
     }
   }, {
     key: 'body',
@@ -18295,7 +18243,7 @@ var KinveyRequest = exports.KinveyRequest = function (_Request) {
   }, {
     key: 'url',
     get: function get() {
-      var url = _get(Object.getPrototypeOf(KinveyRequest.prototype), 'url', this);
+      var urlString = _get(Object.getPrototypeOf(KinveyRequest.prototype), 'url', this);
       var queryString = {};
 
       if (this.query) {
@@ -18324,13 +18272,26 @@ var KinveyRequest = exports.KinveyRequest = function (_Request) {
       });
 
       if ((0, _isEmpty2.default)(queryString)) {
-        return url;
+        return urlString;
       }
 
-      return (0, _appendQuery2.default)(url, _qs2.default.stringify(queryString));
+      return (0, _appendQuery2.default)(urlString, _qs2.default.stringify(queryString));
     },
-    set: function set(url) {
-      _set(Object.getPrototypeOf(KinveyRequest.prototype), 'url', url, this);
+    set: function set(urlString) {
+      _set(Object.getPrototypeOf(KinveyRequest.prototype), 'url', urlString, this);
+
+      var pathname = _url2.default.parse(urlString).pathname;
+      var pattern = new _urlPattern2.default('(/:namespace)(/)(:appKey)(/)(:collectionName)(/)(:entityId)(/)');
+
+      var _ref = pattern.match(pathname) || {};
+
+      var appKey = _ref.appKey;
+      var collectionName = _ref.collectionName;
+      var entityId = _ref.entityId;
+
+      this.appKey = appKey;
+      this.collectionName = collectionName;
+      this.entityId = entityId;
     }
   }, {
     key: 'authorizationHeader',
@@ -18387,10 +18348,8 @@ var KinveyRequest = exports.KinveyRequest = function (_Request) {
 
   return KinveyRequest;
 }(Request);
-
-
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"../client":24,"../enums":26,"../rack/rack":43,"../utils/device":58,"../utils/string":61,"./properties":47,"_process":241,"append-query":5,"babybird":8,"buffer":10,"lodash/assign":194,"lodash/forEach":200,"lodash/isEmpty":209,"lodash/isPlainObject":216,"lodash/isString":218,"lodash/result":231,"qs":246}],49:[function(require,module,exports){
+},{"../client":24,"../enums":26,"../rack/rack":43,"../utils/device":58,"../utils/string":61,"./properties":47,"_process":241,"append-query":5,"babybird":8,"buffer":10,"lodash/assign":194,"lodash/forEach":200,"lodash/isEmpty":209,"lodash/isPlainObject":216,"lodash/isString":218,"lodash/result":231,"qs":246,"url":257,"url-pattern":256}],49:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -18572,8 +18531,6 @@ var Response = exports.Response = function () {
 
   return Response;
 }();
-
-
 },{"../enums":26,"../errors":27,"lodash/assign":194,"lodash/forEach":200,"lodash/isPlainObject":216,"lodash/isString":218}],50:[function(require,module,exports){
 (function (process){
 'use strict';
@@ -18582,8 +18539,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.CacheStore = undefined;
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -18595,15 +18550,11 @@ var _babybird2 = _interopRequireDefault(_babybird);
 
 var _networkstore = require('./networkstore');
 
-var _response = require('../requests/response');
-
 var _enums = require('../enums');
 
 var _errors = require('../errors');
 
 var _local = require('../requests/local');
-
-var _network = require('../requests/network');
 
 var _deltafetch = require('../requests/deltafetch');
 
@@ -18613,8 +18564,6 @@ var _aggregation = require('../aggregation');
 
 var _log = require('../log');
 
-var _object = require('../utils/object');
-
 var _url = require('url');
 
 var _url2 = _interopRequireDefault(_url);
@@ -18623,13 +18572,9 @@ var _assign = require('lodash/assign');
 
 var _assign2 = _interopRequireDefault(_assign);
 
-var _forEach = require('lodash/forEach');
+var _result = require('lodash/result');
 
-var _forEach2 = _interopRequireDefault(_forEach);
-
-var _map = require('lodash/map');
-
-var _map2 = _interopRequireDefault(_map);
+var _result2 = _interopRequireDefault(_result);
 
 var _isArray = require('lodash/isArray');
 
@@ -18652,9 +18597,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
-var appdataNamespace = process.env.KINVEY_DATASTORE_NAMESPACE || 'appdata';
-var syncCollectionName = process.env.KINVEY_SYNC_COLLECTION_NAME || 'sync';
-var kmdAttribute = process.env.KINVEY_KMD_ATTRIBUTE || '_kmd';
 
 /**
  * The CacheStore class is used to find, save, update, remove, count and group enitities
@@ -18682,20 +18624,27 @@ var CacheStore = function (_NetworkStore) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(CacheStore).call(this, name));
 
     _this.ttl = undefined;
+
+    // Enable sync
+    _this.enableSync();
     return _this;
   }
 
-  /**
-   * The sync pathname for the store.
-   *
-   * @param   {Client}   [client]     Client
-   * @return  {string}                Sync pathname
-   */
-
-
   _createClass(CacheStore, [{
-    key: 'find',
-
+    key: 'disableSync',
+    value: function disableSync() {
+      this._syncEnabled = false;
+    }
+  }, {
+    key: 'enableSync',
+    value: function enableSync() {
+      this._syncEnabled = true;
+    }
+  }, {
+    key: 'isSyncEnabled',
+    value: function isSyncEnabled() {
+      return !!this._syncEnabled;
+    }
 
     /**
      * Finds all entities in a collection. A query can be optionally provided to return
@@ -18714,6 +18663,9 @@ var CacheStore = function (_NetworkStore) {
      *                                                                            from the cache.
      * @return  {Promise}                                                         Promise
      */
+
+  }, {
+    key: 'find',
     value: function find(query) {
       var _this2 = this;
 
@@ -19310,291 +19262,18 @@ var CacheStore = function (_NetworkStore) {
   }, {
     key: 'push',
     value: function push(query) {
-      var _this9 = this;
-
       var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-      if (query && !(query instanceof _query.Query)) {
-        return _babybird2.default.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
+      if (!this.isSyncEnabled()) {
+        return _babybird2.default.reject(new _errors.KinveyError('Sync is disabled.'));
       }
 
-      var promise = _babybird2.default.resolve().then(function () {
-        var request = new _local.LocalRequest({
-          method: _enums.HttpMethod.GET,
-          url: _url2.default.format({
-            protocol: _this9.client.protocol,
-            host: _this9.client.host,
-            pathname: _this9._syncPathname
-          }),
-          properties: options.properties,
-          query: query,
-          timeout: options.timeout,
-          client: _this9.client
-        });
-        return request.execute();
-      }).then(function (response) {
-        var save = [];
-        var remove = [];
-        var entities = response.data.entities;
-        var ids = Object.keys(entities);
-        var size = response.data.size;
+      if (!(query instanceof _query.Query)) {
+        query = new _query.Query((0, _result2.default)(query, 'toJSON', query));
+      }
 
-        var promises = (0, _map2.default)(ids, function (id) {
-          var metadata = entities[id];
-          var request = new _local.LocalRequest({
-            method: _enums.HttpMethod.GET,
-            url: _url2.default.format({
-              protocol: _this9.client.protocol,
-              host: _this9.client.host,
-              pathname: _this9._pathname + '/' + id
-            }),
-            properties: metadata.properties,
-            timeout: options.timeout,
-            client: _this9.client
-          });
-          return request.execute().then(function (response) {
-            save.push(response.data);
-            return response.data;
-          }).catch(function (err) {
-            if (err instanceof _errors.NotFoundError) {
-              remove.push(id);
-              return null;
-            }
-
-            throw err;
-          });
-        });
-
-        return _babybird2.default.all(promises).then(function () {
-          var saved = (0, _map2.default)(save, function (entity) {
-            var metadata = entities[entity[idAttribute]];
-            var isLocalEntity = (0, _object.nested)(entity, kmdAttribute + '.local');
-
-            if (isLocalEntity) {
-              var _ret = function () {
-                var originalId = entity[idAttribute];
-                delete entity[idAttribute];
-                delete entity[kmdAttribute];
-
-                var request = new _network.NetworkRequest({
-                  method: _enums.HttpMethod.POST,
-                  authType: _enums.AuthType.Default,
-                  url: _url2.default.format({
-                    protocol: _this9.client.protocol,
-                    host: _this9.client.host,
-                    pathname: _this9._pathname
-                  }),
-                  properties: metadata.properties,
-                  data: entity,
-                  timeout: options.timeout,
-                  client: _this9.client
-                });
-
-                return {
-                  v: request.execute().then(function (response) {
-                    var request = new _local.LocalRequest({
-                      method: _enums.HttpMethod.PUT,
-                      url: _url2.default.format({
-                        protocol: _this9.client.protocol,
-                        host: _this9.client.host,
-                        pathname: _this9._pathname
-                      }),
-                      properties: metadata.properties,
-                      data: response.data,
-                      timeout: options.timeout,
-                      client: _this9.client
-                    });
-                    return request.execute();
-                  }).then(function () {
-                    var request = new _local.LocalRequest({
-                      method: _enums.HttpMethod.DELETE,
-                      url: _url2.default.format({
-                        protocol: _this9.client.protocol,
-                        host: _this9.client.host,
-                        pathname: _this9._pathname + '/' + originalId
-                      }),
-                      properties: metadata.properties,
-                      timeout: options.timeout,
-                      client: _this9.client
-                    });
-
-                    return request.execute().then(function (response) {
-                      var result = response.data;
-                      if (result.count === 1) {
-                        size = size - 1;
-                        delete entities[originalId];
-                        return {
-                          _id: originalId,
-                          entity: entity
-                        };
-                      }
-
-                      return {
-                        _id: originalId,
-                        error: new _errors.KinveyError('Expected count to be 1 but instead it was ' + result.count + ' ' + ('when trying to remove entity with _id ' + originalId + '.'))
-                      };
-                    });
-                  }).catch(function (error) {
-                    var result = { _id: originalId, error: error };
-                    return result;
-                  })
-                };
-              }();
-
-              if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-            }
-
-            var request = new _network.NetworkRequest({
-              method: _enums.HttpMethod.PUT,
-              authType: _enums.AuthType.Default,
-              url: _url2.default.format({
-                protocol: _this9.client.protocol,
-                host: _this9.client.host,
-                pathname: _this9._pathname + '/' + entity[idAttribute]
-              }),
-              properties: metadata.properties,
-              data: entity,
-              timeout: options.timeout,
-              client: _this9.client
-            });
-
-            return request.execute().then(function (response) {
-              size = size - 1;
-              delete entities[response.data[idAttribute]];
-              return {
-                _id: response.data[idAttribute],
-                entity: response.data
-              };
-            }).catch(function (err) {
-              // If the credentials used to authenticate this request are
-              // not authorized to run the operation then just remove the entity
-              // from the sync table
-              if (err instanceof _errors.InsufficientCredentialsError) {
-                size = size - 1;
-                delete entities[entity[idAttribute]];
-                return {
-                  _id: entity[idAttribute],
-                  error: err
-                };
-              }
-
-              return {
-                _id: entity[idAttribute],
-                error: err
-              };
-            });
-          });
-
-          var removed = (0, _map2.default)(remove, function (id) {
-            var metadata = entities[id];
-            var request = new _network.NetworkRequest({
-              method: _enums.HttpMethod.DELETE,
-              authType: _enums.AuthType.Default,
-              url: _url2.default.format({
-                protocol: _this9.client.protocol,
-                host: _this9.client.host,
-                pathname: _this9._pathname + '/' + id
-              }),
-              properties: metadata.properties,
-              timeout: options.timeout,
-              client: _this9.client
-            });
-
-            return request.execute().then(function (response) {
-              var result = response.data;
-
-              if (result.count === 1) {
-                size = size - 1;
-                delete entities[id];
-                return {
-                  _id: id
-                };
-              }
-
-              return {
-                _id: id,
-                error: new _errors.KinveyError('Expected count to be 1 but instead it was ' + result.count + ' ' + ('when trying to remove entity with _id ' + id + '.'))
-              };
-            }).catch(function (err) {
-              // If the credentials used to authenticate this request are
-              // not authorized to run the operation or the entity was
-              // not found then just remove the entity from the sync table
-              if (err instanceof _errors.NotFoundError || err instanceof _errors.InsufficientCredentialsError) {
-                size = size - 1;
-                delete entities[id];
-                return {
-                  _id: id,
-                  error: err
-                };
-              }
-
-              return {
-                _id: id,
-                error: err
-              };
-            });
-          });
-
-          return _babybird2.default.all([_babybird2.default.all(saved), _babybird2.default.all(removed)]);
-        }).then(function (results) {
-          var savedResults = results[0];
-          var removedResults = results[1];
-          var result = {
-            collection: _this9.name,
-            success: [],
-            error: []
-          };
-
-          (0, _forEach2.default)(savedResults, function (savedResult) {
-            if (savedResult.error) {
-              result.error.push(savedResult);
-            } else {
-              result.success.push(savedResult);
-            }
-          });
-
-          (0, _forEach2.default)(removedResults, function (removedResult) {
-            if (removedResult.error) {
-              result.error.push(removedResult);
-            } else {
-              result.success.push(removedResult);
-            }
-          });
-
-          return result;
-        }).then(function (result) {
-          response.data.size = size;
-          response.data.entities = entities;
-
-          var request = new _local.LocalRequest({
-            method: _enums.HttpMethod.PUT,
-            url: _url2.default.format({
-              protocol: _this9.client.protocol,
-              host: _this9.client.host,
-              pathname: _this9._syncPathname
-            }),
-            properties: options.properties,
-            data: response.data,
-            timeout: options.timeout,
-            client: _this9.client
-          });
-          return request.execute().then(function () {
-            return result;
-          });
-        });
-      }).catch(function (err) {
-        if (err instanceof _errors.NotFoundError) {
-          return {
-            collection: _this9.name,
-            success: [],
-            error: []
-          };
-        }
-
-        throw err;
-      });
-
-      return promise;
+      query.contains(idAttribute, [this.name]);
+      return this.client.syncManager.execute(query, options);
     }
 
     /**
@@ -19620,7 +19299,7 @@ var CacheStore = function (_NetworkStore) {
   }, {
     key: 'pull',
     value: function pull(query) {
-      var _this10 = this;
+      var _this9 = this;
 
       var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -19629,7 +19308,7 @@ var CacheStore = function (_NetworkStore) {
           throw new _errors.KinveyError('Unable to pull data. You must push the pending sync items first.', 'Call store.push() to push the pending sync items before you pull new data.');
         }
 
-        return _this10.find(query, options);
+        return _this9.find(query, options);
       }).then(function (result) {
         return result.network;
       });
@@ -19660,12 +19339,12 @@ var CacheStore = function (_NetworkStore) {
   }, {
     key: 'sync',
     value: function sync(query) {
-      var _this11 = this;
+      var _this10 = this;
 
       var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
       var promise = this.push(null, options).then(function (pushResponse) {
-        var promise = _this11.pull(query, options).then(function (pullResponse) {
+        var promise = _this10.pull(query, options).then(function (pullResponse) {
           var result = {
             push: pushResponse,
             pull: pullResponse
@@ -19704,34 +19383,12 @@ var CacheStore = function (_NetworkStore) {
     value: function syncCount(query) {
       var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-      if (query && !(query instanceof _query.Query)) {
-        return _babybird2.default.reject(new _errors.KinveyError('Invalid query. It must be an instance of the Kinvey.Query class.'));
+      if (!(query instanceof _query.Query)) {
+        query = new _query.Query((0, _result2.default)(query, 'toJSON', query));
       }
 
-      var request = new _local.LocalRequest({
-        method: _enums.HttpMethod.GET,
-        url: _url2.default.format({
-          protocol: this.client.protocol,
-          host: this.client.host,
-          pathname: this._syncPathname
-        }),
-        properties: options.properties,
-        query: query,
-        timeout: options.timeout,
-        client: this.client
-      });
-
-      var promise = request.execute().then(function (response) {
-        return response.data.size || 0;
-      }).catch(function (err) {
-        if (err instanceof _errors.NotFoundError) {
-          return 0;
-        }
-
-        throw err;
-      });
-
-      return promise;
+      query.contains(idAttribute, [this.name]);
+      return this.client.syncManager.count(query, options);
     }
 
     /**
@@ -19784,93 +19441,13 @@ var CacheStore = function (_NetworkStore) {
   }, {
     key: '_sync',
     value: function _sync(entities) {
-      var _this12 = this;
-
       var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-      if (!this.name) {
-        return _babybird2.default.reject(new _errors.KinveyError('Unable to add entities to the sync table for a store with no name.'));
-      }
-
-      if (!entities) {
+      if (!this.isSyncEnabled()) {
         return _babybird2.default.resolve(null);
       }
 
-      var request = new _local.LocalRequest({
-        method: _enums.HttpMethod.GET,
-        url: _url2.default.format({
-          protocol: this.client.protocol,
-          host: this.client.host,
-          pathname: this._syncPathname
-        }),
-        properties: options.properties,
-        timeout: options.timeout,
-        client: this.client
-      });
-
-      var promise = request.execute().catch(function (error) {
-        if (error instanceof _errors.NotFoundError) {
-          return new _response.Response({
-            statusCode: _enums.StatusCode.Ok,
-            data: {
-              _id: _this12.name,
-              entities: {},
-              size: 0
-            }
-          });
-        }
-
-        throw error;
-      }).then(function (response) {
-        var syncData = response.data || {
-          _id: _this12.name,
-          entities: {},
-          size: 0
-        };
-
-        if (!(0, _isArray2.default)(entities)) {
-          entities = [entities];
-        }
-
-        (0, _forEach2.default)(entities, function (entity) {
-          if (entity[idAttribute]) {
-            if (!syncData.entities.hasOwnProperty(entity[idAttribute])) {
-              syncData.size = syncData.size + 1;
-            }
-
-            syncData.entities[entity[idAttribute]] = {
-              lmt: entity[kmdAttribute] ? entity[kmdAttribute].lmt : null
-            };
-          }
-        });
-
-        var request = new _local.LocalRequest({
-          method: _enums.HttpMethod.PUT,
-          url: _url2.default.format({
-            protocol: _this12.client.protocol,
-            host: _this12.client.host,
-            pathname: _this12._syncPathname
-          }),
-          properties: options.properties,
-          data: syncData,
-          timeout: options.timeout,
-          client: _this12.client
-        });
-        return request.execute();
-      }).then(function () {
-        return null;
-      });
-
-      return promise;
-    }
-  }, {
-    key: '_syncPathname',
-    get: function get() {
-      if (!this.name) {
-        throw new Error('Unable to get a sync pathname for a collection with no name.');
-      }
-
-      return '/' + appdataNamespace + '/' + this.client.appKey + '/' + syncCollectionName + '/' + this.name;
+      return this.client.syncManager.notify(this.name, entities, options);
     }
   }]);
 
@@ -19878,10 +19455,8 @@ var CacheStore = function (_NetworkStore) {
 }(_networkstore.NetworkStore);
 
 exports.CacheStore = CacheStore;
-
-
 }).call(this,require('_process'))
-},{"../aggregation":23,"../enums":26,"../errors":27,"../log":29,"../query":32,"../requests/deltafetch":44,"../requests/local":45,"../requests/network":46,"../requests/response":49,"../utils/object":59,"./networkstore":53,"_process":241,"babybird":8,"lodash/assign":194,"lodash/differenceBy":196,"lodash/forEach":200,"lodash/isArray":205,"lodash/keyBy":221,"lodash/map":225,"url":257}],51:[function(require,module,exports){
+},{"../aggregation":23,"../enums":26,"../errors":27,"../log":29,"../query":32,"../requests/deltafetch":44,"../requests/local":45,"./networkstore":53,"_process":241,"babybird":8,"lodash/assign":194,"lodash/differenceBy":196,"lodash/isArray":205,"lodash/keyBy":221,"lodash/result":231,"url":257}],51:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -19960,8 +19535,6 @@ var DataStore = exports.DataStore = function () {
 
   return DataStore;
 }();
-
-
 },{"./cachestore":50,"./filestore":52,"./networkstore":53,"./syncstore":54,"./userstore":55}],52:[function(require,module,exports){
 (function (process){
 'use strict';
@@ -20303,8 +19876,6 @@ var FileStore = exports.FileStore = function (_NetworkStore) {
 
   return FileStore;
 }(_networkstore.NetworkStore);
-
-
 }).call(this,require('_process'))
 },{"../enums":26,"../errors":27,"../requests/network":46,"./networkstore":53,"_process":241,"babybird":8,"lodash/assign":194,"lodash/map":225,"url":257}],53:[function(require,module,exports){
 (function (process){
@@ -20837,8 +20408,6 @@ var NetworkStore = exports.NetworkStore = function () {
 
   return NetworkStore;
 }();
-
-
 }).call(this,require('_process'))
 },{"../aggregation":23,"../client":24,"../enums":26,"../errors":27,"../log":29,"../query":32,"../requests/network":46,"_process":241,"babybird":8,"lodash/assign":194,"lodash/isString":218,"qs":246,"url":257}],54:[function(require,module,exports){
 (function (process){
@@ -20896,7 +20465,6 @@ var SyncStore = exports.SyncStore = function (_CacheStore) {
 
   _createClass(SyncStore, [{
     key: 'find',
-
 
     /**
      * Finds all entities in a collection. A query can be optionally provided to return
@@ -21172,8 +20740,8 @@ var SyncStore = exports.SyncStore = function (_CacheStore) {
 
       promise.then(function (response) {
         _log.Log.info('Saved the entity(s) to the ' + _this6.name + ' collection.', response);
-      }).catch(function (err) {
-        _log.Log.error('Failed to save the entity(s) to the ' + _this6.name + ' collection.', err);
+      }).catch(function (error) {
+        _log.Log.error('Failed to save the entity(s) to the ' + _this6.name + ' collection.', error);
       });
 
       return promise;
@@ -21321,8 +20889,6 @@ var SyncStore = exports.SyncStore = function (_CacheStore) {
 
   return SyncStore;
 }(_cachestore.CacheStore);
-
-
 }).call(this,require('_process'))
 },{"../aggregation":23,"../enums":26,"../errors":27,"../log":29,"../query":32,"../requests/local":45,"./cachestore":50,"_process":241,"babybird":8,"url":257}],55:[function(require,module,exports){
 (function (process){
@@ -21477,8 +21043,6 @@ var UserStore = exports.UserStore = function (_NetworkStore) {
 
   return UserStore;
 }(_networkstore.NetworkStore);
-
-
 }).call(this,require('_process'))
 },{"../enums":26,"../errors":27,"../requests/network":46,"./networkstore":53,"_process":241,"babybird":8,"lodash/isArray":205,"url":257}],56:[function(require,module,exports){
 (function (process){
@@ -21487,7 +21051,9 @@ var UserStore = exports.UserStore = function (_NetworkStore) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Sync = undefined;
+exports.SyncManager = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _babybird = require('babybird');
 
@@ -21495,72 +21061,285 @@ var _babybird2 = _interopRequireDefault(_babybird);
 
 var _datastore = require('./stores/datastore');
 
-var _query = require('./query');
+var _errors = require('./errors');
 
-var _enums = require('./enums');
+var _metadata = require('./metadata');
+
+var _map = require('lodash/map');
+
+var _map2 = _interopRequireDefault(_map);
 
 var _reduce = require('lodash/reduce');
 
 var _reduce2 = _interopRequireDefault(_reduce);
 
+var _forEach = require('lodash/forEach');
+
+var _forEach2 = _interopRequireDefault(_forEach);
+
+var _isArray = require('lodash/isArray');
+
+var _isArray2 = _interopRequireDefault(_isArray);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var syncCollectionName = process.env.KINVEY_SYNC_COLLECTION_NAME || 'sync';
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var syncCollectionName = process.env.KINVEY_SYNC_COLLECTION_NAME || 'kinvey_sync';
 var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
-var enabled = process.env.KINVEY_SYNC_DEFAULT_STATE || true;
+var kmdAttribute = process.env.KINVEY_KMD_ATTRIBUTE || '_kmd';
 
-var Sync = {
-  isEnabled: function isEnabled() {
-    return enabled;
-  },
-  enable: function enable() {
-    enabled = true;
-  },
-  disable: function disable() {
-    enabled = false;
-  },
-  count: function count(query, options) {
-    var syncStore = _datastore.DataStore.getInstance(syncCollectionName, _enums.DataStoreType.Sync);
-    var promise = syncStore.find(query, options).then(function (syncData) {
-      return (0, _reduce2.default)(syncData, function (result, data) {
-        return result + data.size;
-      }, 0);
-    });
-    return promise;
-  },
-  push: function push(options) {
-    var syncStore = _datastore.DataStore.getInstance(syncCollectionName, _enums.DataStoreType.Sync);
-    var query = new _query.Query();
-    query.greaterThan('size', 0);
-    var promise = syncStore.find(query, options).then(function (syncData) {
-      var promises = syncData.map(function (data) {
-        var store = _datastore.DataStore.getInstance(data[idAttribute], _enums.DataStoreType.Sync);
-        return store.push();
-      });
-      return _babybird2.default.all(promises);
-    });
-    return promise;
-  },
-  sync: function sync() {
-    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-    var syncStore = _datastore.DataStore.getInstance(syncCollectionName, _enums.DataStoreType.Sync);
-    var promise = syncStore.find(null, options).then(function (syncData) {
-      var promises = syncData.map(function (data) {
-        var store = _datastore.DataStore.getInstance(data[idAttribute], _enums.DataStoreType.Sync);
-        return store.sync();
-      });
-      return _babybird2.default.all(promises);
-    });
-    return promise;
+var SyncManager = exports.SyncManager = function () {
+  function SyncManager() {
+    _classCallCheck(this, SyncManager);
   }
-};
 
-exports.Sync = Sync;
+  _createClass(SyncManager, [{
+    key: 'count',
+    value: function count(query) {
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
+      var promise = this.syncStore.find(query, options).then(function (syncEntities) {
+        var size = (0, _reduce2.default)(syncEntities, function (sum, entity) {
+          return sum + entity.size;
+        }, 0);
+        return size;
+      });
+      return promise;
+    }
+  }, {
+    key: 'notify',
+    value: function notify(name, entities) {
+      var _this = this;
 
+      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+      if (!name) {
+        return _babybird2.default.reject(new _errors.KinveyError('Unable to add entities to the sync table for a store with no name.'));
+      }
+
+      if (!entities) {
+        return _babybird2.default.resolve(null);
+      }
+
+      var promise = this.syncStore.findById(name, options).catch(function (error) {
+        if (error instanceof _errors.NotFoundError) {
+          return {
+            _id: name,
+            entities: {},
+            size: 0
+          };
+        }
+
+        throw error;
+      }).then(function (syncEntity) {
+        if (!(0, _isArray2.default)(entities)) {
+          entities = [entities];
+        }
+
+        (0, _forEach2.default)(entities, function (entity) {
+          var id = entity[idAttribute];
+
+          if (id) {
+            if (!syncEntity.entities.hasOwnProperty(id)) {
+              syncEntity.size = syncEntity.size + 1;
+            }
+
+            syncEntity.entities[id] = {};
+          }
+        });
+
+        return _this.syncStore.save(syncEntity);
+      }).then(function () {
+        return null;
+      });
+
+      return promise;
+    }
+  }, {
+    key: 'execute',
+    value: function execute(query) {
+      var _this2 = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      var promise = this.syncStore.find(query, options).then(function (syncEntities) {
+        var promises = (0, _map2.default)(syncEntities, function (syncEntity) {
+          var collectionName = syncEntity._id;
+          var entities = syncEntity.entities;
+          var syncSize = syncEntity.size;
+          var ids = Object.keys(entities);
+          var syncResult = { collection: collectionName, success: [], error: [] };
+          var batchSize = 100;
+          var i = 0;
+
+          var collectionNetworkStore = _datastore.DataStore.getInstance(collectionName, _datastore.DataStoreType.Network);
+          var collectionSyncStore = _datastore.DataStore.getInstance(collectionName, _datastore.DataStoreType.Sync);
+          collectionSyncStore.disableSync();
+
+          var batchSync = function batchSync() {
+            var batchIds = ids.slice(i, i + batchSize);
+            i += batchSize;
+
+            var save = [];
+            var remove = [];
+            var promises = (0, _map2.default)(batchIds, function (id) {
+              var promise = collectionSyncStore.findById(id).then(function (entity) {
+                save.push(entity);
+                return entity;
+              }).catch(function (error) {
+                if (error instanceof _errors.NotFoundError) {
+                  remove.push(id);
+                  return null;
+                }
+
+                throw error;
+              });
+              return promise;
+            });
+
+            var promise = _babybird2.default.all(promises).then(function () {
+              var saved = (0, _map2.default)(save, function (entity) {
+                var metadata = new _metadata.Metadata(entity);
+                var originalId = entity[idAttribute];
+                delete entity[kmdAttribute];
+
+                if (metadata.isLocal()) {
+                  delete entity[idAttribute];
+                }
+
+                return collectionNetworkStore.save(entity, options).then(function (entity) {
+                  return collectionSyncStore.save(entity, options);
+                }).then(function (entity) {
+                  if (metadata.isLocal()) {
+                    return collectionSyncStore.removeById(originalId, options).then(function () {
+                      return entity;
+                    });
+                  }
+
+                  return entity;
+                }).then(function (entity) {
+                  syncSize = syncSize - 1;
+                  delete entities[originalId];
+                  return {
+                    _id: originalId,
+                    entity: entity
+                  };
+                }).catch(function (error) {
+                  // If the credentials used to authenticate this request are
+                  // not authorized to run the operation then just remove the entity
+                  // from the sync table
+                  if (error instanceof _errors.InsufficientCredentialsError) {
+                    syncSize = syncSize - 1;
+                    delete entities[originalId];
+                    return {
+                      _id: originalId,
+                      error: error
+                    };
+                  }
+
+                  return {
+                    _id: originalId,
+                    error: error
+                  };
+                });
+              });
+
+              var removed = (0, _map2.default)(remove, function (id) {
+                var promise = collectionNetworkStore.removeById(id, options).then(function () {
+                  syncSize = syncSize - 1;
+                  delete entities[id];
+                  return {
+                    _id: id
+                  };
+                }).catch(function (error) {
+                  // If the credentials used to authenticate this request are
+                  // not authorized to run the operation or the entity was
+                  // not found then just remove the entity from the sync table
+                  if (error instanceof _errors.NotFoundError || error instanceof _errors.InsufficientCredentialsError) {
+                    syncSize = syncSize - 1;
+                    delete entities[id];
+                    return {
+                      _id: id,
+                      error: error
+                    };
+                  }
+
+                  return {
+                    _id: id,
+                    error: error
+                  };
+                });
+                return promise;
+              });
+
+              return _babybird2.default.all([_babybird2.default.all(saved), _babybird2.default.all(removed)]);
+            }).then(function (results) {
+              var savedResults = results[0];
+              var removedResults = results[1];
+              var result = {
+                collection: collectionName,
+                success: [],
+                error: []
+              };
+
+              (0, _forEach2.default)(savedResults, function (savedResult) {
+                if (savedResult.error) {
+                  result.error.push(savedResult);
+                } else {
+                  result.success.push(savedResult);
+                }
+              });
+
+              (0, _forEach2.default)(removedResults, function (removedResult) {
+                if (removedResult.error) {
+                  result.error.push(removedResult);
+                } else {
+                  result.success.push(removedResult);
+                }
+              });
+
+              return result;
+            }).then(function (result) {
+              syncResult.success = syncResult.success.concat(result.success);
+              syncResult.error = syncResult.error.concat(result.error);
+              return syncResult;
+            }).then(function (result) {
+              if (i < ids.length) {
+                return batchSync();
+              }
+
+              return result;
+            }).then(function (result) {
+              syncEntity.size = syncSize;
+              syncEntity.entities = entities;
+              return _this2.syncStore.save(syncEntity, options).then(function () {
+                return result;
+              });
+            });
+
+            return promise;
+          };
+
+          return batchSync();
+        });
+        return _babybird2.default.all(promises);
+      });
+      return promise;
+    }
+  }, {
+    key: 'syncStore',
+    get: function get() {
+      var syncStore = _datastore.DataStore.getInstance(syncCollectionName, _datastore.DataStoreType.Sync);
+      syncStore.disableSync();
+      return syncStore;
+    }
+  }]);
+
+  return SyncManager;
+}();
 }).call(this,require('_process'))
-},{"./enums":26,"./query":32,"./stores/datastore":51,"_process":241,"babybird":8,"lodash/reduce":229}],57:[function(require,module,exports){
+},{"./errors":27,"./metadata":30,"./stores/datastore":51,"_process":241,"babybird":8,"lodash/forEach":200,"lodash/isArray":205,"lodash/map":225,"lodash/reduce":229}],57:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -22600,8 +22379,6 @@ var User = exports.User = function () {
 
   return User;
 }();
-
-
 }).call(this,require('_process'))
 },{"./acl":22,"./client":24,"./enums":26,"./errors":27,"./metadata":30,"./mic":31,"./query":32,"./requests/network":46,"./stores/datastore":51,"_process":241,"babybird":8,"hellojs":16,"lodash/assign":194,"lodash/isObject":214,"lodash/result":231,"url":257}],58:[function(require,module,exports){
 'use strict';
@@ -22637,8 +22414,6 @@ var Device = exports.Device = function () {
 }();
 
 Device.use = (0, _object.use)(['toJSON']);
-
-
 },{"./object":59}],59:[function(require,module,exports){
 'use strict';
 
@@ -22707,8 +22482,6 @@ function use(nsInterface) {
     });
   };
 }
-
-
 },{"lodash/forEach":200,"lodash/isFunction":210}],60:[function(require,module,exports){
 'use strict';
 
@@ -22778,8 +22551,6 @@ var Popup = exports.Popup = function (_EventEmitter) {
 }(_events.EventEmitter);
 
 Popup.use = (0, _object.use)(['open', 'close', 'loadHandler', 'clickHandler', 'closeHandler']);
-
-
 },{"./object":59,"events":12}],61:[function(require,module,exports){
 'use strict';
 
@@ -22816,8 +22587,6 @@ function randomString(size) {
 
   return '' + prefix + (0, _uid2.default)(size);
 }
-
-
 },{"uid":255}],62:[function(require,module,exports){
 (function (global){
 'use strict';
