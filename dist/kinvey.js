@@ -107,7 +107,7 @@ var HttpMiddleware = exports.HttpMiddleware = function (_KinveyMiddleware) {
           // Append request headers
           for (var name in request.headers) {
             if (request.headers.hasOwnProperty(name)) {
-              request.setRequestHeader(name, request.headers[name]);
+              xhr.setRequestHeader(name, request.headers[name]);
             }
           }
 
@@ -136,6 +136,9 @@ var HttpMiddleware = exports.HttpMiddleware = function (_KinveyMiddleware) {
             // Error
             return reject(request);
           };
+
+          // Send xhr
+          xhr.send(request.data);
         });
         return promise;
       });
@@ -32903,7 +32906,7 @@ module.exports={
   },
   "scripts": {},
   "dependencies": {
-    "kinvey-javascript-sdk-core": "3.0.0-beta.14",
+    "kinvey-javascript-sdk-core": "git://github.com/Kinvey/javascript-sdk-core.git#develop",
     "lodash": "^4.8.2",
     "parse-headers": "^2.0.1"
   },
