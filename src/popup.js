@@ -2,9 +2,9 @@
  * @private
  */
 export class Popup {
-  open() {
+  open(url = '/') {
     const promise = new Promise((resolve, reject) => {
-      this.popup = global.open(this.url, '_blank', 'toolbar=no,location=no');
+      this.popup = global.open(url, '_blank', 'toolbar=no,location=no');
 
       if (this.popup) {
         this.interval = setInterval(() => {
