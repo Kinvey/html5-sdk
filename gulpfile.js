@@ -9,7 +9,6 @@ var git = require('gulp-git');
 var gulpif = require('gulp-if');
 var prompt = require('gulp-prompt');
 var bump = require('gulp-bump');
-var browserify = require('browserify');
 var babel = require('gulp-babel');
 var buffer = require('vinyl-buffer');
 var del = require('del');
@@ -17,6 +16,9 @@ var source = require('vinyl-source-stream');
 var runSequence = require('run-sequence');
 var semverRegex = require('semver-regex');
 var spawn = require('child_process').spawn;
+var webpack = require('webpack');
+var gulpWebpack = require('webpack-stream');
+var path = require('path');
 
 function errorHandler(err) {
   util.log(err.toString());
@@ -41,16 +43,25 @@ gulp.task('build', ['clean', 'lint'], function() {
 });
 
 gulp.task('bundle', ['build'], function() {
-  return browserify({
-    debug: false, // turns on/off source mapping
-    entries: './build/index.js',
-    standalone: 'Kinvey'
-  })
-    .bundle()
-    .pipe(plumber())
-    .pipe(source('kinvey.js'))
+  return gulp.src('./build/index.js')
+    .pipe(gulpWebpack({
+      context: __dirname + '/build',
+      entry: './index.js',
+      output: {
+        path: __dirname + '/dist',
+        filename: 'kinvey-html5-sdk.js',
+        library: 'Kinvey',
+        libraryTarget: 'umd'
+      },
+      resolve: {
+        alias: {
+          device$: path.resolve(__dirname, 'build/device.js'),
+          popup$: path.resolve(__dirname, 'build/popup.js')
+        }
+      }
+    }, webpack))
     .pipe(gulp.dest('./dist'))
-    .pipe(rename('kinvey.min.js'))
+    .pipe(rename('kinvey-html5-sdk.min.js'))
     .pipe(buffer())
     .pipe(uglify())
     .pipe(gulp.dest('./dist'))
@@ -62,12 +73,12 @@ gulp.task('uploadS3', ['build'], function () {
   var version = packageJSON.version;
 
   gulp.src([
-    'dist/kinvey.js',
-    'dist/kinvey.min.js'
+    'dist/kinvey-html5-sdk.js',
+    'dist/kinvey-html5-sdk.min.js'
   ])
     .pipe(plumber())
-    .pipe(gulpif('kinvey.js', rename({ basename: `kinvey-html5-${version}` })))
-    .pipe(gulpif('kinvey.min.js', rename({ basename: `kinvey-html5-${version}.min` })))
+    .pipe(gulpif('kinvey.js', rename({ basename: `kinvey-html5-sdk-${version}` })))
+    .pipe(gulpif('kinvey.min.js', rename({ basename: `kinvey-html5-sdk-${version}.min` })))
     .pipe(gulp.dest('./sample'));
 });
 
