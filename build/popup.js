@@ -22,8 +22,10 @@ var Popup = exports.Popup = function () {
     value: function open() {
       var _this = this;
 
+      var url = arguments.length <= 0 || arguments[0] === undefined ? '/' : arguments[0];
+
       var promise = new Promise(function (resolve, reject) {
-        _this.popup = global.open(_this.url, '_blank', 'toolbar=no,location=no');
+        _this.popup = global.open(url, '_blank', 'toolbar=no,location=no');
 
         if (_this.popup) {
           _this.interval = setInterval(function () {
