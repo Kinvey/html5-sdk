@@ -1,29 +1,20 @@
 /**
  * @private
  */
-export class PopupAdapter {
-  isOpen() {
-    return !!this._open;
-  }
-
+export class Popup {
   open() {
     const promise = new Promise((resolve, reject) => {
-      if (this.isOpen()) {
-        return reject(new Error('Popup is already open.'));
-      }
-
       this.popup = global.open(this.url, '_blank', 'toolbar=no,location=no');
 
       if (this.popup) {
-        this._open = true;
-        const interval = setInterval(() => {
+        this.interval = setInterval(() => {
           if (this.popup.closed) {
-            this._open = false;
-            clearTimeout(interval);
-            this.emit('closed');
+            this.closeHandler();
           } else {
             try {
-              this.emit('loaded', this.popup.location.href);
+              this.loadHandler({
+                url: this.popup.location.href
+              });
             } catch (e) {
               // catch any errors due to cross domain issues
             }
@@ -44,9 +35,21 @@ export class PopupAdapter {
       if (this.popup) {
         this.popup.close();
       }
-
       resolve();
     });
     return promise;
+  }
+
+  loadHandler(event) {
+    this.emit('loaded', event.url);
+  }
+
+  clickHandler() {
+    this.close();
+  }
+
+  closeHandler() {
+    clearTimeout(this.interval);
+    this.emit('closed');
   }
 }

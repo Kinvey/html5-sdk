@@ -12,45 +12,33 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * @private
  */
 
-var PopupAdapter = exports.PopupAdapter = function () {
-  function PopupAdapter() {
-    _classCallCheck(this, PopupAdapter);
+var Popup = exports.Popup = function () {
+  function Popup() {
+    _classCallCheck(this, Popup);
   }
 
-  _createClass(PopupAdapter, [{
-    key: 'isOpen',
-    value: function isOpen() {
-      return !!this._open;
-    }
-  }, {
+  _createClass(Popup, [{
     key: 'open',
     value: function open() {
       var _this = this;
 
       var promise = new Promise(function (resolve, reject) {
-        if (_this.isOpen()) {
-          return reject(new Error('Popup is already open.'));
-        }
-
         _this.popup = global.open(_this.url, '_blank', 'toolbar=no,location=no');
 
         if (_this.popup) {
-          (function () {
-            _this._open = true;
-            var interval = setInterval(function () {
-              if (_this.popup.closed) {
-                _this._open = false;
-                clearTimeout(interval);
-                _this.emit('closed');
-              } else {
-                try {
-                  _this.emit('loaded', _this.popup.location.href);
-                } catch (e) {
-                  // catch any errors due to cross domain issues
-                }
+          _this.interval = setInterval(function () {
+            if (_this.popup.closed) {
+              _this.closeHandler();
+            } else {
+              try {
+                _this.loadHandler({
+                  url: _this.popup.location.href
+                });
+              } catch (e) {
+                // catch any errors due to cross domain issues
               }
-            }, 100);
-          })();
+            }
+          }, 100);
         } else {
           return reject(new Error('The popup was blocked.'));
         }
@@ -69,12 +57,27 @@ var PopupAdapter = exports.PopupAdapter = function () {
         if (_this2.popup) {
           _this2.popup.close();
         }
-
         resolve();
       });
       return promise;
     }
+  }, {
+    key: 'loadHandler',
+    value: function loadHandler(event) {
+      this.emit('loaded', event.url);
+    }
+  }, {
+    key: 'clickHandler',
+    value: function clickHandler() {
+      this.close();
+    }
+  }, {
+    key: 'closeHandler',
+    value: function closeHandler() {
+      clearTimeout(this.interval);
+      this.emit('closed');
+    }
   }]);
 
-  return PopupAdapter;
+  return Popup;
 }();
