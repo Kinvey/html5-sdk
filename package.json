@@ -1,6 +1,6 @@
 {
   "name": "kinvey-html5-sdk",
-  "version": "3.0.0-beta.16",
+  "version": "3.0.0-beta.17",
   "description": "Kinvey JavaScript SDK for HTML5.",
   "homepage": "http://www.kinvey.com",
   "bugs": {
@@ -24,7 +24,7 @@
   },
   "scripts": {},
   "dependencies": {
-    "kinvey-javascript-sdk-core": "3.0.0-beta.16",
+    "kinvey-javascript-sdk-core": "3.0.0-beta.17",
     "lodash": "^4.0.0",
     "parse-headers": "^2.0.0"
   },

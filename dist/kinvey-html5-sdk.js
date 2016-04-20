@@ -7808,7 +7808,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -7841,9 +7841,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var activeUserCollectionName = process.env.KINVEY_ACTIVE_USER_COLLECTION_NAME || 'kinvey_activeUser';
-	var activeSocialIdentityTokenCollectionName = process.env.KINVEY_ACTIVE_SOCIAL_IDENTITY_TOKEN_COLLECTION_NAME || 'kinvey_activeSocialIdentityToken';
-	global.Kinvey = global.Kinvey || {};
+	var userCollectionName = process.env.KINVEY_USER_COLLECTION_NAME || 'kinvey_user';
+	var socialIdentityCollectionName = process.env.KINVEY_SOCIAL_IDENTITY_COLLECTION_NAME || 'kinvey_socialIdentity';
+	var pushCollectionName = process.env.KINVEY_PUSH_COLLECTION_NAME || 'kinvey_push';
+	var _sharedInstance = null;
 
 	/**
 	 * The Client class stores information regarding your application. You can create mutiple clients
@@ -7927,50 +7928,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  _createClass(Client, [{
-	    key: 'getActiveUserData',
-	    value: function getActiveUserData() {
-	      return _localStorage2.default.get('' + this.appKey + activeUserCollectionName);
-	    }
-	  }, {
-	    key: 'setActiveUserData',
-	    value: function setActiveUserData(data) {
-	      if (data) {
-	        try {
-	          return _localStorage2.default.set('' + this.appKey + activeUserCollectionName, data);
-	        } catch (error) {
-	          return false;
-	        }
-	      }
+	    key: 'toJSON',
 
-	      return _localStorage2.default.remove('' + this.appKey + activeUserCollectionName);
-	    }
-	  }, {
-	    key: 'getActiveSocialIdentity',
-	    value: function getActiveSocialIdentity() {
-	      return _localStorage2.default.get('' + this.appKey + activeSocialIdentityTokenCollectionName);
-	    }
-	  }, {
-	    key: 'setActiveSocialIdentity',
-	    value: function setActiveSocialIdentity(socialIdentity) {
-	      if (socialIdentity) {
-	        try {
-	          return _localStorage2.default.set('' + this.appKey + activeSocialIdentityTokenCollectionName, socialIdentity);
-	        } catch (error) {
-	          return false;
-	        }
-	      }
-
-	      return _localStorage2.default.remove('' + this.appKey + activeSocialIdentityTokenCollectionName);
-	    }
 
 	    /**
 	     * Returns an object containing all the information for this Client.
 	     *
 	     * @return {Object} JSON
 	     */
-
-	  }, {
-	    key: 'toJSON',
 	    value: function toJSON() {
 	      var json = {
 	        protocol: this.protocol,
@@ -8016,11 +7981,59 @@ return /******/ (function(modules) { // webpackBootstrap
 	        host: this.host
 	      });
 	    }
+	  }, {
+	    key: 'user',
+	    get: function get() {
+	      return _localStorage2.default.get('' + this.appKey + userCollectionName);
+	    },
+	    set: function set(data) {
+	      if (data) {
+	        try {
+	          return _localStorage2.default.set('' + this.appKey + userCollectionName, data);
+	        } catch (error) {
+	          return false;
+	        }
+	      }
+
+	      return _localStorage2.default.remove('' + this.appKey + userCollectionName);
+	    }
+	  }, {
+	    key: 'socialIdentity',
+	    get: function get() {
+	      return _localStorage2.default.get('' + this.appKey + socialIdentityCollectionName);
+	    },
+	    set: function set(socialIdentity) {
+	      if (socialIdentity) {
+	        try {
+	          return _localStorage2.default.set('' + this.appKey + socialIdentityCollectionName, socialIdentity);
+	        } catch (error) {
+	          return false;
+	        }
+	      }
+
+	      return _localStorage2.default.remove('' + this.appKey + socialIdentityCollectionName);
+	    }
+	  }, {
+	    key: 'push',
+	    get: function get() {
+	      return _localStorage2.default.get('' + this.appKey + pushCollectionName);
+	    },
+	    set: function set(data) {
+	      if (data) {
+	        try {
+	          return _localStorage2.default.set('' + this.appKey + pushCollectionName, data);
+	        } catch (error) {
+	          return false;
+	        }
+	      }
+
+	      return _localStorage2.default.remove('' + this.appKey + pushCollectionName);
+	    }
 	  }], [{
 	    key: 'init',
 	    value: function init(options) {
 	      var client = new Client(options);
-	      global.Kinvey.sharedClientInstance = client;
+	      _sharedInstance = client;
 	      return client;
 	    }
 
@@ -8035,17 +8048,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'sharedInstance',
 	    value: function sharedInstance() {
-	      if (!global.Kinvey.sharedClientInstance) {
+	      if (!_sharedInstance) {
 	        throw new _errors.KinveyError('You have not initialized the library. ' + 'Please call Kinvey.init() to initialize the library.');
 	      }
 
-	      return global.Kinvey.sharedClientInstance;
+	      return _sharedInstance;
 	    }
 	  }]);
 
 	  return Client;
 	}();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
 /* 127 */
@@ -8180,6 +8193,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }).then(function (response) {
 	        return response.data;
 	      }).then(function (syncEntity) {
+	        if (!syncEntity) {
+	          syncEntity = {
+	            _id: name,
+	            entities: {},
+	            size: 0
+	          };
+	        }
+
 	        if (!(0, _isArray2.default)(entities)) {
 	          entities = [entities];
 	        }
@@ -8230,6 +8251,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          pathname: this._pathname
 	        }),
 	        properties: options.properties,
+	        query: query,
 	        timeout: options.timeout,
 	        client: this.client
 	      });
@@ -8288,6 +8310,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                  var request = new _network.NetworkRequest({
 	                    method: _enums.HttpMethod.PUT,
+	                    authType: _enums.AuthType.Session,
 	                    url: _url2.default.format({
 	                      protocol: _this2.client.protocol,
 	                      host: _this2.client.host,
@@ -8377,6 +8400,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                var removed = (0, _map2.default)(remove, function (id) {
 	                  var request = new _network.NetworkRequest({
 	                    method: _enums.HttpMethod.DELETE,
+	                    authType: _enums.AuthType.Session,
 	                    url: _url2.default.format({
 	                      protocol: _this2.client.protocol,
 	                      host: _this2.client.host,
@@ -9033,15 +9057,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * @returns {Object}
 	   */
 	  session: function session(client) {
-	    var activeUserData = client.getActiveUserData();
+	    var activeUser = client.user;
 
-	    if (!activeUserData) {
+	    if (!activeUser) {
 	      throw new Error('There is not an active user.');
 	    }
 
 	    return {
 	      scheme: 'Kinvey',
-	      credentials: activeUserData[kmdAttribute].authtoken
+	      credentials: activeUser[kmdAttribute].authtoken
 	    };
 	  }
 	};
@@ -9420,9 +9444,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var collectionName = _ref.collectionName;
 	      var entityId = _ref.entityId;
 
-	      this.appKey = appKey;
-	      this.collectionName = collectionName;
-	      this.entityId = entityId;
+	      this.appKey = !!appKey ? global.unescape(appKey) : appKey;
+	      this.collectionName = !!collectionName ? global.unescape(collectionName) : collectionName;
+	      this.entityId = !!entityId ? global.unescape(entityId) : entityId;
 	    }
 	  }, {
 	    key: 'authorizationHeader',
@@ -11335,7 +11359,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 		"name": "kinvey-html5-sdk",
-		"version": "3.0.0-beta.16",
+		"version": "3.0.0-beta.17",
 		"description": "Kinvey JavaScript SDK for HTML5.",
 		"homepage": "http://www.kinvey.com",
 		"bugs": {
@@ -11359,7 +11383,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		},
 		"scripts": {},
 		"dependencies": {
-			"kinvey-javascript-sdk-core": "3.0.0-beta.16",
+			"kinvey-javascript-sdk-core": "3.0.0-beta.17",
 			"lodash": "^4.0.0",
 			"parse-headers": "^2.0.0"
 		},
@@ -18676,7 +18700,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 
-	_loglevel2.default.setLevel(_loglevel2.default.levels.ERROR);
+	_loglevel2.default.setDefaultLevel(_loglevel2.default.levels.SILENT);
 	exports.Log = _loglevel2.default;
 
 /***/ },
@@ -22290,12 +22314,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (error instanceof _errors.InvalidCredentialsError && _this2.automaticallyRefreshAuthToken) {
 	          var _ret = function () {
 	            _this2.automaticallyRefreshAuthToken = false;
-	            var activeSocialIdentity = _this2.client.getActiveSocialIdentity();
+	            var socialIdentity = _this2.client.socialIdentity;
 
 	            // Refresh MIC Auth Token
-	            if (activeSocialIdentity && activeSocialIdentity.identity === micIdentity) {
+	            if (socialIdentity && socialIdentity.identity === micIdentity) {
 	              // Refresh the token
-	              var token = activeSocialIdentity.token;
+	              var token = socialIdentity.token;
 	              var request = new NetworkRequest({
 	                method: _enums.HttpMethod.POST,
 	                headers: {
@@ -22303,15 +22327,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	                },
 	                authType: _enums.AuthType.App,
 	                url: _url2.default.format({
-	                  protocol: activeSocialIdentity.client.protocol,
-	                  host: activeSocialIdentity.client.host,
+	                  protocol: socialIdentity.client.protocol,
+	                  host: socialIdentity.client.host,
 	                  pathname: tokenPathname
 	                }),
 	                properties: _this2.properties,
 	                data: {
 	                  grant_type: 'refresh_token',
 	                  client_id: token.audience,
-	                  redirect_uri: activeSocialIdentity.redirectUri,
+	                  redirect_uri: socialIdentity.redirectUri,
 	                  refresh_token: token.refresh_token
 	                }
 	              });
@@ -22322,10 +22346,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  return response.data;
 	                }).then(function (token) {
 	                  // Login the user with the new token
-	                  var activeUserData = _this2.client.getActiveUserData();
-	                  var socialIdentity = activeUserData[socialIdentityAttribute];
-	                  socialIdentity[activeSocialIdentity.identity] = token;
-	                  activeUserData[socialIdentityAttribute] = socialIdentity;
+	                  var activeUser = _this2.client.user;
+	                  var socialIdentity = activeUser[socialIdentityAttribute];
+	                  socialIdentity[socialIdentity.identity] = token;
+	                  activeUser[socialIdentityAttribute] = socialIdentity;
 
 	                  var request = new NetworkRequest({
 	                    method: _enums.HttpMethod.POST,
@@ -22336,7 +22360,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                      pathname: '/' + usersNamespace + '/' + _this2.client.appKey + '/login'
 	                    }),
 	                    properties: _this2.properties,
-	                    data: activeUserData,
+	                    data: activeUser,
 	                    timeout: _this2.timeout,
 	                    client: _this2.client
 	                  });
@@ -22344,13 +22368,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  return request.execute();
 	                }).then(function (response) {
 	                  // Store the new data
-	                  _this2.client.setActiveUserData(response.data);
-	                  _this2.client.setActiveSocialIdentity({
-	                    identity: activeSocialIdentity.identity,
-	                    redirectUri: activeSocialIdentity.redirectUri,
-	                    token: response.data[socialIdentityAttribute][activeSocialIdentity.identity],
-	                    client: activeSocialIdentity.client
-	                  });
+	                  _this2.client.user = response.data;
+	                  _this2.client.socialIdentity = {
+	                    identity: socialIdentity.identity,
+	                    redirectUri: socialIdentity.redirectUri,
+	                    token: response.data[socialIdentityAttribute][socialIdentity.identity],
+	                    client: socialIdentity.client
+	                  };
 
 	                  // Execute the original request
 	                  return _this2.execute();
@@ -23591,6 +23615,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _keyBy2 = _interopRequireDefault(_keyBy);
 
+	var _map = __webpack_require__(197);
+
+	var _map2 = _interopRequireDefault(_map);
+
 	var _differenceBy = __webpack_require__(247);
 
 	var _differenceBy2 = _interopRequireDefault(_differenceBy);
@@ -24112,8 +24140,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var ids = Object.keys((0, _keyBy2.default)(data, idAttribute));
 	          var query = new _query.Query().contains(idAttribute, ids);
 	          return _this6.push(query, options);
-	        }).then(function () {
-	          return response.data;
+	        }).then(function (pushResult) {
+	          var success = pushResult.success;
+	          var entities = (0, _map2.default)(success, function (successItem) {
+	            return successItem.entity;
+	          });
+	          return !(0, _isArray2.default)(entity) && entities.length === 1 ? entities[0] : entities;
 	        });
 	        return promise;
 	      });
@@ -26637,12 +26669,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        throw err;
 	      }).then(function () {
-	        _this5.client.setActiveSocialIdentity({
+	        _this5.client.socialIdentity = {
 	          identity: identity,
 	          token: _this5._socialIdentity[identity],
 	          redirectUri: options.redirectUri,
 	          client: options.micClient
-	        });
+	        };
 	        return _this5;
 	      });
 
@@ -26668,10 +26700,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        return _this6.update(data, options);
 	      }).then(function () {
-	        var activeSocialIdentity = _this6.client.getActiveSocialIdentity();
+	        var socialIdentity = _this6.client.socialIdentity;
 
-	        if (activeSocialIdentity.identity === identity) {
-	          _this6.client.setActiveSocialIdentity(null);
+	        if (socialIdentity.identity === identity) {
+	          _this6.client.socialIdentity = null;
 	        }
 
 	        return _this6;
@@ -27048,7 +27080,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function getActiveUser() {
 	      var client = arguments.length <= 0 || arguments[0] === undefined ? _client.Client.sharedInstance() : arguments[0];
 
-	      var data = client.getActiveUserData();
+	      var data = client.user;
 	      var user = null;
 
 	      if (data) {
@@ -27085,7 +27117,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var client = arguments.length <= 1 || arguments[1] === undefined ? _client.Client.sharedInstance() : arguments[1];
 
 	      var data = (0, _result2.default)(user, 'toJSON', user);
-	      client.setActiveUserData(data);
+	      client.user = data;
 	      return User.getActiveUser(client);
 	    }
 	  }, {
