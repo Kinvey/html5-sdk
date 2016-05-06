@@ -24,7 +24,8 @@
   },
   "scripts": {},
   "dependencies": {
-    "kinvey-javascript-sdk-core": "3.0.0-beta.17",
+    "babel-polyfill": "^6.8.0",
+    "kinvey-javascript-sdk-core": "git://github.com/Kinvey/javascript-sdk-core.git#feature/kls",
     "lodash": "^4.0.0",
     "parse-headers": "^2.0.0"
   },

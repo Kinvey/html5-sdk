@@ -46,18 +46,17 @@ gulp.task('bundle', ['build'], function() {
   return gulp.src('./build/index.js')
     .pipe(gulpWebpack({
       context: __dirname + '/build',
-      entry: './index.js',
+      entry: ['babel-regenerator-runtime/runtime.js', './index.js'],
       output: {
         path: __dirname + '/dist',
         filename: 'kinvey-html5-sdk.js',
         library: 'Kinvey',
         libraryTarget: 'umd'
       },
-      resolve: {
-        alias: {
-          device$: path.resolve(__dirname, 'build/device.js'),
-          popup$: path.resolve(__dirname, 'build/popup.js')
-        }
+      module: {
+        loaders: [
+          { test: /\.json$/, loader: 'json' }
+        ]
       }
     }, webpack))
     .pipe(gulp.dest('./dist'))

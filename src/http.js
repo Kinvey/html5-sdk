@@ -12,7 +12,7 @@ export class HttpMiddleware extends KinveyMiddleware {
         // Create request
         const xhr = new XMLHttpRequest();
         xhr.open(request.method, request.url);
-        xhr.responseType = request.responseType;
+        xhr.responseType = request.responseType || '';
 
         // Append request headers
         for (const name in request.headers) {

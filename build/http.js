@@ -42,7 +42,7 @@ var HttpMiddleware = exports.HttpMiddleware = function (_KinveyMiddleware) {
           // Create request
           var xhr = new XMLHttpRequest();
           xhr.open(request.method, request.url);
-          xhr.responseType = request.responseType;
+          xhr.responseType = request.responseType || '';
 
           // Append request headers
           for (var name in request.headers) {
