@@ -4,58 +4,71 @@
   "description": "Kinvey JavaScript SDK for HTML5.",
   "homepage": "http://www.kinvey.com",
   "bugs": {
-    "url": "http://support.kinvey.com",
-    "email": "support@kinvey.com"
+    "url": "https://github.com/Kinvey/html5-sdk/issues"
   },
-  "licenses": [
-    {
-      "type": "Apache-2.0",
-      "url": "https://raw.github.com/Kinvey/kinvey-html5-sdk/master/LICENSE.txt"
-    }
-  ],
-  "author": "Kinvey, Inc.",
+  "license": "Apache-2.0",
+  "author": "Kinvey",
   "contributors": [
     "Thomas Conner <thomas@kinvey.com>"
   ],
-  "main": "./build/index.js",
+  "main": "./es5/index.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:Kinvey/kinvey-html5-sdk"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test",
+    "test:watch": "./node_modules/mocha/bin/mocha -w --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test",
+    "test:jenkins": "istanbul cover _mocha -- --reporter tap --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test > test.tap && istanbul report clover",
+    "postpublish": "PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git tag $PACKAGE_VERSION && git push --tags"
+  },
   "dependencies": {
-    "babel-polyfill": "^6.8.0",
-    "kinvey-javascript-sdk-core": "git://github.com/Kinvey/javascript-sdk-core.git#feature/kls",
-    "lodash": "^4.0.0",
-    "parse-headers": "^2.0.0"
+    "babel-regenerator-runtime": "^6.5.0",
+    "kinvey-javascript-sdk-core": "3.0.0-beta.23",
+    "lodash": "^4.8.2",
+    "parse-headers": "^2.0.1"
   },
   "devDependencies": {
+    "babel-core": "^6.9.0",
     "babel-eslint": "^6.0.0",
-    "babel-preset-es2015": "^6.0.0",
+    "babel-polyfill": "^6.9.0",
+    "babel-preset-es2015": "^6.9.0",
     "babel-preset-stage-2": "^6.0.15",
+    "browserify": "^13.0.0",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^5.3.0",
     "del": "^2.0.2",
-    "eslint-config-airbnb": "^7.0.0",
-    "eslint-plugin-react": "^4.3.0",
+    "eslint-config-airbnb": "^9.0.1",
+    "eslint-plugin-import": "^1.8.0",
+    "eslint-plugin-jsx-a11y": "^1.2.2",
+    "eslint-plugin-react": "^5.1.1",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.2",
+    "gulp-banner": "^0.1.3",
+    "gulp-buffer": "0.0.2",
     "gulp-bump": "^2.1.0",
     "gulp-eslint": "^2.0.0",
-    "gulp-git": "^1.7.1",
+    "gulp-file": "^0.3.0",
+    "gulp-git": "^1.7.0",
     "gulp-if": "^2.0.0",
     "gulp-plumber": "^1.0.1",
     "gulp-prompt": "^0.2.0",
     "gulp-rename": "^1.2.2",
+    "gulp-s3-upload": "^1.6.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-uglify": "^1.5.1",
     "gulp-util": "^3.0.6",
+    "istanbul": "^0.4.3",
     "json-loader": "^0.5.4",
-    "run-sequence": "^1.1.5",
-    "semver-regex": "^1.0.0",
+    "mocha": "^2.5.3",
+    "nock": "^8.0.0",
+    "sinon": "^1.17.4",
+    "sinon-chai": "^2.8.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
-    "vinyl-transform": "^1.0.0",
     "webpack": "^1.13.0",
-    "webpack-stream": "^3.1.0"
+    "webpack-stream": "^3.1.0",
+    "yargs": "^4.7.1"
   },
   "engines": {
     "node": ">=4.0"
