@@ -13,7 +13,6 @@ import s3Upload from 'gulp-s3-upload';
 import banner from 'gulp-banner';
 import pkg from './package.json';
 import bump from 'gulp-bump';
-import file from 'gulp-file';
 import { argv as args } from 'yargs';
 
 function errorHandler(err) {
@@ -79,7 +78,7 @@ gulp.task('bundle', ['build'], () => {
   return stream;
 });
 
-gulp.task('bumpVersion', () => {
+gulp.task('bump', () => {
   if (!args.type && !args.version) {
     args.type = 'patch';
   }
@@ -91,13 +90,6 @@ gulp.task('bumpVersion', () => {
       version: args.version
     }))
     .pipe(gulp.dest(`${__dirname}/`))
-    .on('error', errorHandler);
-  return stream;
-});
-
-gulp.task('bump', ['bumpVersion'], () => {
-  const stream = file('bump.txt', '', { src: true })
-    .pipe(gulp.dest(`${__dirname}/tmp`))
     .on('error', errorHandler);
   return stream;
 });
