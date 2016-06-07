@@ -84,7 +84,7 @@ gulp.task('bumpVersion', () => {
     args.type = 'patch';
   }
 
-  const stream = gulp.src('./package.json')
+  const stream = gulp.src(['./package.json', './bower.json'])
     .pipe(bump({
       preid: 'beta',
       type: args.type,
