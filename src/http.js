@@ -1,7 +1,7 @@
-import { KinveyMiddleware } from 'kinvey-javascript-sdk-core/build/rack/middleware';
+import { KinveyMiddleware } from 'kinvey-javascript-sdk-core/es5/rack/middleware';
 import parseHeaders from 'parse-headers';
 
-export class HttpMiddleware extends KinveyMiddleware {
+export class Html5HttpMiddleware extends KinveyMiddleware {
   constructor(name = 'Kinvey HTML5 Http Middleware') {
     super(name);
   }
@@ -9,16 +9,17 @@ export class HttpMiddleware extends KinveyMiddleware {
   handle(request) {
     return super.handle(request).then(() => {
       const promise = new Promise((resolve, reject) => {
+        const { url, method, headers, body } = request;
+
         // Create request
         const xhr = new XMLHttpRequest();
-        xhr.open(request.method, request.url);
-        xhr.responseType = request.responseType || '';
+        xhr.open(method, url);
+        // xhr.responseType = request.responseType;
 
         // Append request headers
-        for (const name in request.headers) {
-          if (request.headers.hasOwnProperty(name)) {
-            xhr.setRequestHeader(name, request.headers[name]);
-          }
+        const names = Object.keys(headers.toJSON());
+        for (const name of names) {
+          xhr.setRequestHeader(name, headers.get(name));
         }
 
         xhr.onload = xhr.ontimeout = xhr.onabort = xhr.onerror = () => {
@@ -48,7 +49,7 @@ export class HttpMiddleware extends KinveyMiddleware {
         };
 
         // Send xhr
-        xhr.send(request.data);
+        xhr.send(body);
       });
       return promise;
     });
