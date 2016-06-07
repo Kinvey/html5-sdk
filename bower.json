@@ -7,7 +7,7 @@
   "authors": [
     "Kinvey, Inc."
   ],
-  "main": "./dist/kinvey-html5-sdk.min.js",
+  "main": "./dist/kinvey-html5-sdk-3.0.0-beta.18.min.js",
   "keywords": [
     "Kinvey",
     "JavaScript",
