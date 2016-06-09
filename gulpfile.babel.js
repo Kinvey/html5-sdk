@@ -59,7 +59,7 @@ gulp.task('bundle', ['build'], () => {
         './index.js'
       ],
       output: {
-        filename: `kinvey-html5-sdk-${pkg.version}.js`,
+        filename: 'kinvey-html5-sdk.js',
         libraryTarget: 'var',
         library: 'Kinvey'
       },
@@ -71,10 +71,14 @@ gulp.task('bundle', ['build'], () => {
     }, webpack))
     .pipe(banner(header, { pkg: pkg }))
     .pipe(gulp.dest(`${__dirname}/dist`))
-    .pipe(rename(`kinvey-html5-sdk-${pkg.version}.min.js`))
+    .pipe(rename(`kinvey-html5-sdk-${pkg.version}.js`))
+    .pipe(gulp.dest(`${__dirname}/dist`))
+    .pipe(rename('kinvey-html5-sdk.min.js'))
     .pipe(buffer())
     .pipe(uglify())
     .pipe(banner(header, { pkg: pkg }))
+    .pipe(gulp.dest(`${__dirname}/dist`))
+    .pipe(rename(`kinvey-html5-sdk-${pkg.version}.min.js`))
     .pipe(gulp.dest(`${__dirname}/dist`))
     .on('error', errorHandler);
   return stream;
