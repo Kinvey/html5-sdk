@@ -36,7 +36,7 @@ export class Html5Popup extends EventEmitter {
   }
 
   loadStopCallback(event) {
-    this.emit('loaded', event.url);
+    this.emit('loadstop', event.url);
   }
 
   loadErrorCallback(event) {
