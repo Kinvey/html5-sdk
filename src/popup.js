@@ -16,7 +16,10 @@ export class Html5Popup extends EventEmitter {
               url: this.popup.location.href
             });
           } catch (error) {
-            // Just catch the error
+            this.loadErrorCallback({
+              message: error.message,
+              url: undefined
+            });
           }
         }
       }, 100);
@@ -36,11 +39,11 @@ export class Html5Popup extends EventEmitter {
   }
 
   loadStopCallback(event) {
-    this.emit('loadstop', event.url);
+    this.emit('loadstop', event);
   }
 
   loadErrorCallback(event) {
-    this.emit('error', event.message);
+    this.emit('error', event);
   }
 
   exitCallback() {
