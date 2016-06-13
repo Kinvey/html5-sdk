@@ -113,12 +113,12 @@ var Html5Popup = exports.Html5Popup = function (_EventEmitter) {
   }, {
     key: 'loadStopCallback',
     value: function loadStopCallback(event) {
-      this.emit('loaded', event.url);
+      this.emit('loadstop', event);
     }
   }, {
     key: 'loadErrorCallback',
     value: function loadErrorCallback(event) {
-      this.emit('error', event.message);
+      this.emit('error', event);
     }
   }, {
     key: 'exitCallback',

@@ -36,7 +36,7 @@ var Html5Device = exports.Html5Device = function () {
           model: global.navigator.userAgent
         },
         platform: {
-          name: 'phonegap'
+          name: 'html5'
         },
         os: {
           name: browser[1],
