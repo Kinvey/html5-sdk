@@ -13,11 +13,10 @@ build: ;@echo "Building ${PROJECT}..."; \
 	./node_modules/.bin/gulp default
 
 upload: ;@echo "Uploading ${PROJECT} to S3..."; \
-	./node_modules/.bin/gulp uploadS3
+	./node_modules/.bin/gulp upload
 
 publish: ;@echo "Publishing ${PROJECT}..."; \
-	npm install ci-npm-publish
-	npm publish --npmuser ${NPMUSER} --npmemail ${NPMEMAIL} --npmpassword ${NPMPASSWORD}
+	npm publish .
 
 audit: clean install test
 release: audit build upload publish
