@@ -96,6 +96,8 @@ gulp.task('bump', () => {
       version: args.version
     }))
     .pipe(gulp.dest(`${__dirname}/`))
+    .pipe(filter('package.json'))
+    .pipe(tag())
     .on('error', errorHandler);
   return stream;
 });
