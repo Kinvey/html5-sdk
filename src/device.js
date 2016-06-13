@@ -21,7 +21,7 @@ export class Html5Device {
         model: global.navigator.userAgent
       },
       platform: {
-        name: 'phonegap'
+        name: 'html5'
       },
       os: {
         name: browser[1],
