@@ -14,7 +14,6 @@ import banner from 'gulp-banner';
 import pkg from './package.json';
 import bump from 'gulp-bump';
 import tag from 'gulp-tag-version';
-import filter from 'gulp-filter';
 import { argv as args } from 'yargs';
 
 function errorHandler(err) {
@@ -98,13 +97,18 @@ gulp.task('bump', () => {
       version: args.version
     }))
     .pipe(gulp.dest(`${__dirname}/`))
-    .pipe(filter('package.json'))
+    .on('error', errorHandler);
+  return stream;
+});
+
+gulp.task('tag', () => {
+  const stream = gulp.src('./package.json')
     .pipe(tag())
     .on('error', errorHandler);
   return stream;
 });
 
-gulp.task('uploadS3', ['build'], () => {
+gulp.task('upload', ['build'], () => {
   const s3 = s3Upload({
     accessKeyId: process.env.S3ACCESSKEY,
     secretAccessKey: process.env.S3ACCESSSECRET
@@ -130,3 +134,4 @@ gulp.task('uploadS3', ['build'], () => {
 });
 
 gulp.task('default', ['bundle']);
+gulp.task('release', ['default', 'tag']);
