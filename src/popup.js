@@ -16,10 +16,7 @@ export class Html5Popup extends EventEmitter {
               url: this.popup.location.href
             });
           } catch (error) {
-            this.loadErrorCallback({
-              message: error.message,
-              url: undefined
-            });
+            // Just catch the error
           }
         }
       }, 100);
