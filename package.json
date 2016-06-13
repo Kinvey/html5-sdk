@@ -22,10 +22,13 @@
     "test:jenkins": "istanbul cover _mocha -- --reporter tap --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test > test.tap && istanbul report clover"
   },
   "dependencies": {
-    "babel-regenerator-runtime": "^6.5.0",
     "kinvey-javascript-sdk-core": "*",
     "lodash": "^4.8.2",
-    "parse-headers": "^2.0.1"
+    "parse-headers": "^2.0.1",
+    "regenerator-runtime": "^0.9.5"
+  },
+  "peerDependencies": {
+    "kinvey-javascript-sdk-core": "*"
   },
   "devDependencies": {
     "babel-core": "^6.9.0",
