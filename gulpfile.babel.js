@@ -14,6 +14,7 @@ import banner from 'gulp-banner';
 import pkg from './package.json';
 import bump from 'gulp-bump';
 import tag from 'gulp-tag-version';
+import env from 'gulp-env';
 import { argv as args } from 'yargs';
 
 function errorHandler(err) {
@@ -32,8 +33,14 @@ gulp.task('lint', () => {
 gulp.task('clean', (done) => del(['es5', 'dist'], done));
 
 gulp.task('build', ['clean', 'lint'], () => {
+  const envs = env.set({
+    KINVEY_ID_ATTRIBUTE: '_id'
+  });
+
   const stream = gulp.src('src/**/*.js')
+    .pipe(envs)
     .pipe(babel())
+    .pipe(envs.reset)
     .pipe(gulp.dest('./es5'));
   return stream;
 });
@@ -120,8 +127,7 @@ gulp.task('upload', ['build'], () => {
   ])
     .pipe(plumber())
     .pipe(s3({
-      Bucket: 'kinvey-downloads/js',
-      uploadNewFilesOnly: true
+      Bucket: 'kinvey-downloads/js'
     }, (error, data) => {
       if (error) {
         return errorHandler(error);
