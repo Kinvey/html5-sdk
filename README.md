@@ -3,44 +3,12 @@
 
 This node and bower module makes it very easy to connect your Html5 app with Kinvey.
 
-## Building
-The simplest way to build the sdk is by running `gulp`. More advanced tasks are available.
-
-* `gulp clean`: remove files created by the build process
-* `gulp lint`: lint the src files
-* `gulp bump`: bump the pacakge version
-* `gulp build`: build the sdk
-* `gulp bundle`: bundle the sdk for dist
-* `gulp upload`: upload dist files to AWS S3
-
-### Flags
-The following flags are available when running `gulp bump`:
-
-* `--type <major|minor|patch|prerelease>`: Bumps the package version using the [Semantic Version 2.0.0](http://semver.org/) spec. Defaults to `patch`.
-* `--version <version>`: Sets the package version to the provided version.
-
-## Testing
-
-You can run the tests using `npm test`.
-
-## Releasing
-The workflow for releasing a new version of the sdk is as follows:
-
-1. Commit all changes on the develop branch.
-2. Checkout the master branch and merge the develop branch.
-3. Update the [Changelog](CHANGELOG.md).
-4. Run `gulp bump --type <type>` replacing `<type>` with major, minor, patch, or prerelease. See [Flags](#Flags) above.
-5. Run `gulp release`.
-6. Make sure all changes are committed on the master branch and push.
-7. Checkout the develop branch and merge the master branch.
-8. __Optional:__ Update Dev Center and Sample apps.
-
 ## How to use
 
-### 1. Sign up for Kinvey
-To use the library, sign up for Kinvey if you have not already done so. Go to the [sign up](https://console.kinvey.com/#signup) page, and follow the steps provided.
+#### 1. Sign up for Kinvey
+To use the SDK, sign up for Kinvey if you have not already done so. Go to the [sign up](https://console.kinvey.com/#signup) page, and follow the steps provided.
 
-### 2. Install the library
+#### 2. Install the SDK
 You can install the module using npm:
 
 ```bash
@@ -53,22 +21,20 @@ or
 bower install kinvey-html5-sdk --save
 ```
 
-### 3. Configure the library
-Now, the library is available for use in your project.
-
-If you installed the library with npm, import the library in your code using `require`.
+#### 3. Configure the SDK
+If you installed the SDK with npm, import the library in your code using `require`.
 
 ```javascript
 var Kinvey = require('kinvey-html5-sdk');
 ```
 
-If you installed the library with bower, add a script tag to your main html file.
+If you installed the SDK with bower, add a script tag to your main html file.
 
 ```html
 <script src="bower_components/kinvey-html5-sdk/dist/kinvey-html5-sdk.min.js"></script>
 ```
 
-Next, use `Kinvey.init` to configure your app:
+Next, use `Kinvey.init` to configure your app. Replace `<appKey>` and `<appSecret>` with your apps app key and secret. You can find these for your app using the [Kinvey Console App](https://console.kinvey.com).
 
 ```javascript
 Kinvey.init({
@@ -77,19 +43,55 @@ Kinvey.init({
 });
 ```
 
-### 4. Verify Set Up
-You can use the following snippet to verify the app credentials were entered correctly. This function will contact the backend and verify that the library can communicate with your app.
+#### 4. Verify Set Up
+You can use the following snippet to verify the app credentials were entered correctly. This function will contact the backend and verify that the SDK can communicate with your app.
 
 ```javascript
 Kinvey.ping().then(function(response) {
   console.log('Kinvey Ping Success. Kinvey Service is alive, version: ' + response.version + ', response: ' + response.kinvey);
 }).catch(function(error) {
-  console.log('Kinvey Ping Failed. Response: ' + error.description);
+  console.log('Kinvey Ping Failed. Response: ' + error.message);
 });
 ```
 
 ## What’s next?
 You are now ready to start building your awesome apps! Next we recommend diving into the [User guide](http://devcenter.kinvey.com/html5-v3.0/guides/users) or [Data store guide](http://devcenter.kinvey.com/html5-v3.0/guides/datastore) to learn more about our service, or explore the [sample apps](http://devcenter.kinvey.com/html5-v3.0/samples) to go straight to working projects.
+
+## Build
+The simplest way to build the sdk is by running `gulp`. More advanced tasks are available.
+
+* `gulp build`: build the sdk
+* `gulp bump`: bump the pacakge version. Please see [Flags](#Flags).
+* `gulp bundle`: bundle the sdk for dist
+* `gulp clean`: remove files created by the build process
+* `gulp lint`: lint the src files
+* `gulp tag`: create a git tag for the version
+* `gulp upload`: upload dist files to AWS S3
+
+#### Flags
+The following flags are available when running `gulp bump`:
+
+* `--type <major|minor|patch|prerelease>`: Bumps the package version using the [Semantic Version 2.0.0](http://semver.org/) spec. Defaults to `patch`.
+* `--version <version>`: Sets the package version to the provided version.
+
+## Test
+
+You can run the tests using `npm test`.
+
+## Release
+The workflow for releasing a new version of the sdk is as follows:
+
+1. Commit all changes on the develop branch.
+2. Checkout the master branch and merge the develop branch.
+3. Update the [Changelog](CHANGELOG.md).
+4. Run `gulp bump --type <type>` replacing `<type>` with major, minor, patch, or prerelease. See [Flags](#Flags) above.
+5. Run `gulp bundle` and commit file changes.
+6. Run `gulp tag`.
+6. Make sure all changes are committed on the master branch and push.
+7. Checkout the develop branch and merge the master branch.
+8. __Optional:__ Update Dev Center and Sample apps.
+
+*Note: The [HTML5 Release Job](https://build.kinvey.com/jenkins/view/Libraries/job/html5-sdk-release/) will upload the build to [AWS S3](https://aws.amazon.com/s3/) and publish the [pacakge](https://www.npmjs.com/package/kinvey-html5-sdk) on NPM.*
 
 ## License
 
