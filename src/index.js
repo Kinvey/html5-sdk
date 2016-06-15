@@ -1,17 +1,23 @@
 import Kinvey from 'kinvey-javascript-sdk-core';
-import { NetworkRack } from 'kinvey-javascript-sdk-core/es5/rack/rack';
-import { HttpMiddleware } from 'kinvey-javascript-sdk-core/es5/rack/middleware/http';
-import { Html5HttpMiddleware } from './http';
-import { Html5Device } from './device';
-import { Html5Popup } from './popup';
+import { CacheRack, NetworkRack } from 'kinvey-javascript-sdk-core/es5/rack/rack';
+import { CacheMiddleware as CoreCacheMiddleware } from 'kinvey-javascript-sdk-core/es5/rack/middleware/cache';
+import { CacheMiddleware } from './cache';
+import { HttpMiddleware as CoreHttpMiddleware } from 'kinvey-javascript-sdk-core/es5/rack/middleware/http';
+import { HttpMiddleware } from './http';
+import { Device } from './device';
+import { Popup } from './popup';
 
-// Add Http middleware
+// Swap Cache Middelware
+const cacheRack = CacheRack.sharedInstance();
+cacheRack.swap(CoreCacheMiddleware, new CacheMiddleware());
+
+// Swap Http middleware
 const networkRack = NetworkRack.sharedInstance();
-networkRack.swap(HttpMiddleware, new Html5HttpMiddleware());
+networkRack.swap(CoreHttpMiddleware, new HttpMiddleware());
 
 // Expose some globals
-global.KinveyDevice = Html5Device;
-global.KinveyPopup = Html5Popup;
+global.KinveyDevice = Device;
+global.KinveyPopup = Popup;
 
 // Export
 module.exports = Kinvey;

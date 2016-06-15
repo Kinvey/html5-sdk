@@ -1,19 +1,19 @@
 import { EventEmitter } from 'events';
 
-export class Html5Popup extends EventEmitter {
+export class Popup extends EventEmitter {
   async open(url = '/') {
     // Open the popup
-    this.popup = global.open(url, '_blank', 'toolbar=no,location=no');
+    this.popupWindow = global.open(url, '_blank', 'toolbar=no,location=no');
 
-    if (this.popup) {
-      // Check if the popup is closed or redirect every 100ms
+    if (this.popupWindow) {
+      // Check if the popup is closed has closed every 100ms
       this.interval = setInterval(() => {
-        if (this.popup.closed) {
+        if (this.popupWindow.closed) {
           this.exitCallback();
         } else {
           try {
             this.loadStopCallback({
-              url: this.popup.location.href
+              url: this.popupWindow.location.href
             });
           } catch (error) {
             // Just catch the error
@@ -28,8 +28,8 @@ export class Html5Popup extends EventEmitter {
   }
 
   async close() {
-    if (this.popup) {
-      this.popup.close();
+    if (this.popupWindow) {
+      this.popupWindow.close();
     }
 
     return this;

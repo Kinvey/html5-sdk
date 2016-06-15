@@ -1,7 +1,7 @@
 import { KinveyMiddleware } from 'kinvey-javascript-sdk-core/es5/rack/middleware';
 import parseHeaders from 'parse-headers';
 
-export class Html5HttpMiddleware extends KinveyMiddleware {
+export class HttpMiddleware extends KinveyMiddleware {
   constructor(name = 'Kinvey HTML5 Http Middleware') {
     super(name);
   }

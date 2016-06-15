@@ -1,6 +1,6 @@
 import packageJSON from '../package.json';
 
-export class Html5Device {
+export class Device {
   static toJSON() {
     const userAgent = global.navigator.userAgent.toLowerCase();
     const rChrome = /(chrome)\/([\w]+)/;
