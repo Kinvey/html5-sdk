@@ -22,16 +22,6 @@ function errorHandler(err) {
   this.emit('end');
 }
 
-gulp.task('lint', () => {
-  const stream = gulp.src('src/**/*.js')
-    .pipe(eslint())
-    .pipe(eslint.format())
-    .pipe(eslint.failAfterError());
-  return stream;
-});
-
-gulp.task('clean', (done) => del(['dist'], done));
-
 gulp.task('build', ['clean', 'lint'], () => {
   const envs = env.set({
     KINVEY_ID_ATTRIBUTE: '_id'
@@ -42,6 +32,22 @@ gulp.task('build', ['clean', 'lint'], () => {
     .pipe(babel())
     .pipe(envs.reset)
     .pipe(gulp.dest('./dist'));
+  return stream;
+});
+
+gulp.task('bump', () => {
+  if (!args.type && !args.version) {
+    args.type = 'patch';
+  }
+
+  const stream = gulp.src(['./package.json', './bower.json'])
+    .pipe(bump({
+      preid: 'beta',
+      type: args.type,
+      version: args.version
+    }))
+    .pipe(gulp.dest(`${__dirname}/`))
+    .on('error', errorHandler);
   return stream;
 });
 
@@ -92,19 +98,13 @@ gulp.task('bundle', ['build'], () => {
   return stream;
 });
 
-gulp.task('bump', () => {
-  if (!args.type && !args.version) {
-    args.type = 'patch';
-  }
+gulp.task('clean', (done) => del(['dist'], done));
 
-  const stream = gulp.src(['./package.json', './bower.json'])
-    .pipe(bump({
-      preid: 'beta',
-      type: args.type,
-      version: args.version
-    }))
-    .pipe(gulp.dest(`${__dirname}/`))
-    .on('error', errorHandler);
+gulp.task('lint', () => {
+  const stream = gulp.src('src/**/*.js')
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError());
   return stream;
 });
 
