@@ -839,7 +839,7 @@ var Kinvey =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.Html5Popup = undefined;
+	exports.Popup = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -853,16 +853,16 @@ var Kinvey =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var Html5Popup = exports.Html5Popup = function (_EventEmitter) {
-	  _inherits(Html5Popup, _EventEmitter);
+	var Popup = exports.Popup = function (_EventEmitter) {
+	  _inherits(Popup, _EventEmitter);
 
-	  function Html5Popup() {
-	    _classCallCheck(this, Html5Popup);
+	  function Popup() {
+	    _classCallCheck(this, Popup);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Html5Popup).apply(this, arguments));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Popup).apply(this, arguments));
 	  }
 
-	  _createClass(Html5Popup, [{
+	  _createClass(Popup, [{
 	    key: 'open',
 	    value: function () {
 	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
@@ -874,21 +874,21 @@ var Kinvey =
 	            switch (_context.prev = _context.next) {
 	              case 0:
 	                // Open the popup
-	                this.popup = global.open(url, '_blank', 'toolbar=no,location=no');
+	                this.popupWindow = global.open(url, '_blank', 'toolbar=no,location=no');
 
-	                if (!this.popup) {
+	                if (!this.popupWindow) {
 	                  _context.next = 5;
 	                  break;
 	                }
 
-	                // Check if the popup is closed or redirect every 100ms
+	                // Check if the popup is closed has closed every 100ms
 	                this.interval = setInterval(function () {
-	                  if (_this2.popup.closed) {
+	                  if (_this2.popupWindow.closed) {
 	                    _this2.exitCallback();
 	                  } else {
 	                    try {
 	                      _this2.loadStopCallback({
-	                        url: _this2.popup.location.href
+	                        url: _this2.popupWindow.location.href
 	                      });
 	                    } catch (error) {
 	                      // Just catch the error
@@ -926,8 +926,8 @@ var Kinvey =
 	          while (1) {
 	            switch (_context2.prev = _context2.next) {
 	              case 0:
-	                if (this.popup) {
-	                  this.popup.close();
+	                if (this.popupWindow) {
+	                  this.popupWindow.close();
 	                }
 
 	                return _context2.abrupt('return', this);
@@ -947,6 +947,11 @@ var Kinvey =
 	      return close;
 	    }()
 	  }, {
+	    key: 'loadStartCallback',
+	    value: function loadStartCallback(event) {
+	      this.emit('loadstart', event);
+	    }
+	  }, {
 	    key: 'loadStopCallback',
 	    value: function loadStopCallback(event) {
 	      this.emit('loadstop', event);
@@ -964,7 +969,7 @@ var Kinvey =
 	    }
 	  }]);
 
-	  return Html5Popup;
+	  return Popup;
 	}(_events.EventEmitter);
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
@@ -1281,7 +1286,7 @@ var Kinvey =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.Html5Device = undefined;
+	exports.Device = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -1293,12 +1298,12 @@ var Kinvey =
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var Html5Device = exports.Html5Device = function () {
-	  function Html5Device() {
-	    _classCallCheck(this, Html5Device);
+	var Device = exports.Device = function () {
+	  function Device() {
+	    _classCallCheck(this, Device);
 	  }
 
-	  _createClass(Html5Device, null, [{
+	  _createClass(Device, null, [{
 	    key: 'toJSON',
 	    value: function toJSON() {
 	      var userAgent = global.navigator.userAgent.toLowerCase();
@@ -1328,7 +1333,7 @@ var Kinvey =
 	    }
 	  }]);
 
-	  return Html5Device;
+	  return Device;
 	}();
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
@@ -1360,10 +1365,14 @@ var Kinvey =
 			"test:jenkins": "istanbul cover _mocha -- --reporter tap --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test > test.tap && istanbul report clover"
 		},
 		"dependencies": {
-			"babel-regenerator-runtime": "^6.5.0",
+			"es6-promise": "^3.2.1",
 			"kinvey-javascript-sdk-core": "*",
 			"lodash": "^4.8.2",
-			"parse-headers": "^2.0.1"
+			"parse-headers": "^2.0.1",
+			"regenerator-runtime": "^0.9.5"
+		},
+		"peerDependencies": {
+			"kinvey-javascript-sdk-core": "*"
 		},
 		"devDependencies": {
 			"babel-core": "^6.9.0",
@@ -1384,8 +1393,8 @@ var Kinvey =
 			"gulp-banner": "^0.1.3",
 			"gulp-buffer": "0.0.2",
 			"gulp-bump": "^2.1.0",
+			"gulp-env": "^0.4.0",
 			"gulp-eslint": "^2.0.0",
-			"gulp-filter": "^4.0.0",
 			"gulp-git": "^1.7.0",
 			"gulp-plumber": "^1.0.1",
 			"gulp-prompt": "^0.2.0",
@@ -1429,9 +1438,13 @@ var Kinvey =
 
 	var _rack = __webpack_require__(158);
 
+	var _cache = __webpack_require__(161);
+
+	var _cache2 = __webpack_require__(308);
+
 	var _http = __webpack_require__(224);
 
-	var _http2 = __webpack_require__(308);
+	var _http2 = __webpack_require__(315);
 
 	var _device = __webpack_require__(5);
 
@@ -1439,13 +1452,17 @@ var Kinvey =
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	// Add Http middleware
+	// Swap Cache Middelware
+	var cacheRack = _rack.CacheRack.sharedInstance();
+	cacheRack.swap(_cache.CacheMiddleware, new _cache2.CacheMiddleware());
+
+	// Swap Http middleware
 	var networkRack = _rack.NetworkRack.sharedInstance();
-	networkRack.swap(_http.HttpMiddleware, new _http2.Html5HttpMiddleware());
+	networkRack.swap(_http.HttpMiddleware, new _http2.HttpMiddleware());
 
 	// Expose some globals
-	global.KinveyDevice = _device.Html5Device;
-	global.KinveyPopup = _popup.Html5Popup;
+	global.KinveyDevice = _device.Device;
+	global.KinveyPopup = _popup.Popup;
 
 	// Export
 	module.exports = _kinveyJavascriptSdkCore2.default;
@@ -34210,7 +34227,2572 @@ var Kinvey =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.Html5HttpMiddleware = undefined;
+	exports.CacheMiddleware = exports.DB = exports.DBAdapter = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _cache = __webpack_require__(161);
+
+	var _errors = __webpack_require__(9);
+
+	var _log = __webpack_require__(163);
+
+	var _webstorage = __webpack_require__(309);
+
+	var _indexeddb = __webpack_require__(310);
+
+	var _websql = __webpack_require__(314);
+
+	var _forEach = __webpack_require__(14);
+
+	var _forEach2 = _interopRequireDefault(_forEach);
+
+	var _isArray = __webpack_require__(35);
+
+	var _isArray2 = _interopRequireDefault(_isArray);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var dbCache = {};
+
+	/**
+	 * Enum for DB Adapters.
+	 */
+	var DBAdapter = {
+	  IndexedDB: 'IndexedDB',
+	  LocalStorage: 'LocalStorage',
+	  SessionStorage: 'SessionStorage',
+	  WebSQL: 'WebSQL'
+	};
+	Object.freeze(DBAdapter);
+	exports.DBAdapter = DBAdapter;
+
+	var DB = exports.DB = function (_CoreDB) {
+	  _inherits(DB, _CoreDB);
+
+	  function DB() {
+	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
+	    var adapters = arguments.length <= 1 || arguments[1] === undefined ? [DBAdapter.IndexedDB, DBAdapter.WebSQL, DBAdapter.LocalStorage, DBAdapter.SessionStorage] : arguments[1];
+
+	    _classCallCheck(this, DB);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DB).call(this, name));
+
+	    if (!(0, _isArray2.default)(adapters)) {
+	      adapters = [adapters];
+	    }
+
+	    (0, _forEach2.default)(adapters, function (adapter) {
+	      switch (adapter) {
+	        case DBAdapter.IndexedDB:
+	          if (_indexeddb.IndexedDB.isSupported()) {
+	            _this.adapter = new _indexeddb.IndexedDB(name);
+	            return false;
+	          }
+
+	          break;
+	        case DBAdapter.LocalStorage:
+	          if (_webstorage.LocalStorage.isSupported()) {
+	            _this.adapter = new _webstorage.LocalStorage(name);
+	            return false;
+	          }
+
+	          break;
+	        case DBAdapter.SessionStorage:
+	          if (_webstorage.SessionStorage.isSupported()) {
+	            _this.adapter = new _webstorage.SessionStorage(name);
+	            return false;
+	          }
+
+	          break;
+	        case DBAdapter.WebSQL:
+	          if (_websql.WebSQL.isSupported()) {
+	            _this.adapter = new _websql.WebSQL(name);
+	            return false;
+	          }
+
+	          break;
+	        default:
+	          _log.Log.warn('The ' + adapter + ' adapter is is not recognized.');
+	      }
+
+	      return true;
+	    });
+	    return _this;
+	  }
+
+	  return DB;
+	}(_cache.DB);
+
+	var CacheMiddleware = exports.CacheMiddleware = function (_CoreCacheMiddelware) {
+	  _inherits(CacheMiddleware, _CoreCacheMiddelware);
+
+	  function CacheMiddleware() {
+	    _classCallCheck(this, CacheMiddleware);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(CacheMiddleware).apply(this, arguments));
+	  }
+
+	  _createClass(CacheMiddleware, [{
+	    key: 'openDatabase',
+	    value: function openDatabase(name) {
+	      var adapters = arguments.length <= 1 || arguments[1] === undefined ? [DBAdapter.IndexedDB, DBAdapter.WebSQL, DBAdapter.LocalStorage, DBAdapter.SessionStorage] : arguments[1];
+
+	      if (!name) {
+	        throw new _errors.KinveyError('A name is required to open a database.');
+	      }
+
+	      var db = dbCache[name];
+
+	      if (!db) {
+	        db = new DB(name, adapters);
+	      }
+
+	      return db;
+	    }
+	  }]);
+
+	  return CacheMiddleware;
+	}(_cache.CacheMiddleware);
+
+/***/ },
+/* 309 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.SessionStorage = exports.LocalStorage = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _errors = __webpack_require__(9);
+
+	var _keyBy = __webpack_require__(166);
+
+	var _keyBy2 = _interopRequireDefault(_keyBy);
+
+	var _merge = __webpack_require__(170);
+
+	var _merge2 = _interopRequireDefault(_merge);
+
+	var _values = __webpack_require__(204);
+
+	var _values2 = _interopRequireDefault(_values);
+
+	var _forEach = __webpack_require__(14);
+
+	var _forEach2 = _interopRequireDefault(_forEach);
+
+	var _findIndex = __webpack_require__(207);
+
+	var _findIndex2 = _interopRequireDefault(_findIndex);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
+	var masterCollectionName = 'master';
+
+	var Storage = function () {
+	  function Storage() {
+	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
+
+	    _classCallCheck(this, Storage);
+
+	    this.name = name;
+	  }
+
+	  _createClass(Storage, [{
+	    key: 'masterCollectionName',
+	    get: function get() {
+	      return this.name + '_' + masterCollectionName;
+	    }
+	  }]);
+
+	  return Storage;
+	}();
+
+	var LocalStorage = exports.LocalStorage = function (_Storage) {
+	  _inherits(LocalStorage, _Storage);
+
+	  function LocalStorage(name) {
+	    _classCallCheck(this, LocalStorage);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(LocalStorage).call(this, name));
+
+	    global.localStorage.setItem(_this.masterCollectionName, JSON.stringify([]));
+	    return _this;
+	  }
+
+	  _createClass(LocalStorage, [{
+	    key: 'find',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(collection) {
+	        var entities;
+	        return regeneratorRuntime.wrap(function _callee$(_context) {
+	          while (1) {
+	            switch (_context.prev = _context.next) {
+	              case 0:
+	                entities = global.localStorage.getItem('' + this.name + collection);
+
+	                if (!entities) {
+	                  _context.next = 3;
+	                  break;
+	                }
+
+	                return _context.abrupt('return', JSON.parse(entities));
+
+	              case 3:
+	                return _context.abrupt('return', entities);
+
+	              case 4:
+	              case 'end':
+	                return _context.stop();
+	            }
+	          }
+	        }, _callee, this);
+	      }));
+
+	      function find(_x2) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return find;
+	    }()
+	  }, {
+	    key: 'findById',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(collection, id) {
+	        var entities, entity;
+	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+	          while (1) {
+	            switch (_context2.prev = _context2.next) {
+	              case 0:
+	                _context2.next = 2;
+	                return this.find(collection);
+
+	              case 2:
+	                entities = _context2.sent;
+	                entity = find(entities, function (entity) {
+	                  return entity[idAttribute] === id;
+	                });
+
+	                if (entity) {
+	                  _context2.next = 6;
+	                  break;
+	                }
+
+	                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + this.name + ' localstorage database.'));
+
+	              case 6:
+	                return _context2.abrupt('return', entity);
+
+	              case 7:
+	              case 'end':
+	                return _context2.stop();
+	            }
+	          }
+	        }, _callee2, this);
+	      }));
+
+	      function findById(_x3, _x4) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return findById;
+	    }()
+	  }, {
+	    key: 'save',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(collection, entities) {
+	        var collections, existingEntities, existingEntitiesById, entitiesById, existingEntityIds;
+	        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+	          while (1) {
+	            switch (_context3.prev = _context3.next) {
+	              case 0:
+	                _context3.next = 2;
+	                return this.find(this.masterCollectionName);
+
+	              case 2:
+	                collections = _context3.sent;
+
+
+	                if ((0, _findIndex2.default)(collections, collection) === -1) {
+	                  collections.push(collection);
+	                  global.localStorage.setItem(this.masterCollectionName, JSON.stringify(collections));
+	                }
+
+	                _context3.next = 6;
+	                return this.find(collection);
+
+	              case 6:
+	                existingEntities = _context3.sent;
+	                existingEntitiesById = (0, _keyBy2.default)(existingEntities, idAttribute);
+	                entitiesById = (0, _keyBy2.default)(entities, idAttribute);
+	                existingEntityIds = Object.keys(existingEntitiesById);
+
+
+	                (0, _forEach2.default)(existingEntityIds, function (id) {
+	                  var existingEntity = existingEntitiesById[id];
+	                  var entity = entitiesById[id];
+
+	                  if (entity) {
+	                    entitiesById[id] = (0, _merge2.default)(existingEntity, entity);
+	                  }
+	                });
+
+	                global.localStorage.setItem('' + this.name + collection, JSON.stringify((0, _values2.default)(entitiesById)));
+	                return _context3.abrupt('return', entities);
+
+	              case 13:
+	              case 'end':
+	                return _context3.stop();
+	            }
+	          }
+	        }, _callee3, this);
+	      }));
+
+	      function save(_x5, _x6) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return save;
+	    }()
+	  }, {
+	    key: 'removeById',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(collection, id) {
+	        var entities, entitiesById, entity;
+	        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+	          while (1) {
+	            switch (_context4.prev = _context4.next) {
+	              case 0:
+	                _context4.next = 2;
+	                return this.find(collection);
+
+	              case 2:
+	                entities = _context4.sent;
+	                entitiesById = (0, _keyBy2.default)(entities, idAttribute);
+	                entity = entitiesById[id];
+
+	                if (entity) {
+	                  _context4.next = 7;
+	                  break;
+	                }
+
+	                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + this.name + ' memory database.'));
+
+	              case 7:
+
+	                delete entitiesById[id];
+	                global.localStorage.setItem('' + this.name + collection, JSON.stringify((0, _values2.default)(entitiesById)));
+
+	                return _context4.abrupt('return', entity);
+
+	              case 10:
+	              case 'end':
+	                return _context4.stop();
+	            }
+	          }
+	        }, _callee4, this);
+	      }));
+
+	      function removeById(_x7, _x8) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return removeById;
+	    }()
+	  }, {
+	    key: 'clear',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5() {
+	        var _this2 = this;
+
+	        var collections;
+	        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+	          while (1) {
+	            switch (_context5.prev = _context5.next) {
+	              case 0:
+	                _context5.next = 2;
+	                return this.find(this.masterCollectionName);
+
+	              case 2:
+	                collections = _context5.sent;
+
+
+	                (0, _forEach2.default)(collections, function (collection) {
+	                  global.localStorage.removeItem('' + _this2.name + collection);
+	                });
+
+	                global.localStorage.setItem(this.masterCollectionName, JSON.stringify([]));
+
+	              case 5:
+	              case 'end':
+	                return _context5.stop();
+	            }
+	          }
+	        }, _callee5, this);
+	      }));
+
+	      function clear() {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return clear;
+	    }()
+	  }], [{
+	    key: 'isSupported',
+	    value: function isSupported() {
+	      if (global.localStorage) {
+	        var item = 'testLocalStorageSupport';
+	        try {
+	          global.localStorage.setItem(item, item);
+	          global.localStorage.removeItem(item);
+	          return true;
+	        } catch (e) {
+	          return false;
+	        }
+	      }
+
+	      return false;
+	    }
+	  }]);
+
+	  return LocalStorage;
+	}(Storage);
+
+	var SessionStorage = exports.SessionStorage = function (_Storage2) {
+	  _inherits(SessionStorage, _Storage2);
+
+	  function SessionStorage(name) {
+	    _classCallCheck(this, SessionStorage);
+
+	    var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(SessionStorage).call(this, name));
+
+	    global.sessionStorage.setItem(_this3.masterCollectionName, JSON.stringify([]));
+	    return _this3;
+	  }
+
+	  _createClass(SessionStorage, [{
+	    key: 'find',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee6(collection) {
+	        var entities;
+	        return regeneratorRuntime.wrap(function _callee6$(_context6) {
+	          while (1) {
+	            switch (_context6.prev = _context6.next) {
+	              case 0:
+	                entities = global.sessionStorage.getItem('' + this.name + collection);
+
+	                if (!entities) {
+	                  _context6.next = 3;
+	                  break;
+	                }
+
+	                return _context6.abrupt('return', JSON.parse(entities));
+
+	              case 3:
+	                return _context6.abrupt('return', entities);
+
+	              case 4:
+	              case 'end':
+	                return _context6.stop();
+	            }
+	          }
+	        }, _callee6, this);
+	      }));
+
+	      function find(_x9) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return find;
+	    }()
+	  }, {
+	    key: 'findById',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee7(collection, id) {
+	        var entities, entity;
+	        return regeneratorRuntime.wrap(function _callee7$(_context7) {
+	          while (1) {
+	            switch (_context7.prev = _context7.next) {
+	              case 0:
+	                _context7.next = 2;
+	                return this.find(collection);
+
+	              case 2:
+	                entities = _context7.sent;
+	                entity = find(entities, function (entity) {
+	                  return entity[idAttribute] === id;
+	                });
+
+	                if (entity) {
+	                  _context7.next = 6;
+	                  break;
+	                }
+
+	                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + this.name + ' localstorage database.'));
+
+	              case 6:
+	                return _context7.abrupt('return', entity);
+
+	              case 7:
+	              case 'end':
+	                return _context7.stop();
+	            }
+	          }
+	        }, _callee7, this);
+	      }));
+
+	      function findById(_x10, _x11) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return findById;
+	    }()
+	  }, {
+	    key: 'save',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee8(collection, entities) {
+	        var collections, existingEntities, existingEntitiesById, entitiesById, existingEntityIds;
+	        return regeneratorRuntime.wrap(function _callee8$(_context8) {
+	          while (1) {
+	            switch (_context8.prev = _context8.next) {
+	              case 0:
+	                _context8.next = 2;
+	                return this.find(this.masterCollectionName);
+
+	              case 2:
+	                collections = _context8.sent;
+
+
+	                if ((0, _findIndex2.default)(collections, collection) === -1) {
+	                  collections.push(collection);
+	                  global.sessionStorage.setItem(this.masterCollectionName, JSON.stringify(collections));
+	                }
+
+	                _context8.next = 6;
+	                return this.find(collection);
+
+	              case 6:
+	                existingEntities = _context8.sent;
+	                existingEntitiesById = (0, _keyBy2.default)(existingEntities, idAttribute);
+	                entitiesById = (0, _keyBy2.default)(entities, idAttribute);
+	                existingEntityIds = Object.keys(existingEntitiesById);
+
+
+	                (0, _forEach2.default)(existingEntityIds, function (id) {
+	                  var existingEntity = existingEntitiesById[id];
+	                  var entity = entitiesById[id];
+
+	                  if (entity) {
+	                    entitiesById[id] = (0, _merge2.default)(existingEntity, entity);
+	                  }
+	                });
+
+	                global.sessionStorage.setItem('' + this.name + collection, JSON.stringify((0, _values2.default)(entitiesById)));
+	                return _context8.abrupt('return', entities);
+
+	              case 13:
+	              case 'end':
+	                return _context8.stop();
+	            }
+	          }
+	        }, _callee8, this);
+	      }));
+
+	      function save(_x12, _x13) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return save;
+	    }()
+	  }, {
+	    key: 'removeById',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee9(collection, id) {
+	        var entities, entitiesById, entity;
+	        return regeneratorRuntime.wrap(function _callee9$(_context9) {
+	          while (1) {
+	            switch (_context9.prev = _context9.next) {
+	              case 0:
+	                _context9.next = 2;
+	                return this.find(collection);
+
+	              case 2:
+	                entities = _context9.sent;
+	                entitiesById = (0, _keyBy2.default)(entities, idAttribute);
+	                entity = entitiesById[id];
+
+	                if (entity) {
+	                  _context9.next = 7;
+	                  break;
+	                }
+
+	                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + this.name + ' memory database.'));
+
+	              case 7:
+
+	                delete entitiesById[id];
+	                global.sessionStorage.setItem('' + this.name + collection, JSON.stringify((0, _values2.default)(entitiesById)));
+
+	                return _context9.abrupt('return', entity);
+
+	              case 10:
+	              case 'end':
+	                return _context9.stop();
+	            }
+	          }
+	        }, _callee9, this);
+	      }));
+
+	      function removeById(_x14, _x15) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return removeById;
+	    }()
+	  }, {
+	    key: 'clear',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee10() {
+	        var _this4 = this;
+
+	        var collections;
+	        return regeneratorRuntime.wrap(function _callee10$(_context10) {
+	          while (1) {
+	            switch (_context10.prev = _context10.next) {
+	              case 0:
+	                _context10.next = 2;
+	                return this.find(this.masterCollectionName);
+
+	              case 2:
+	                collections = _context10.sent;
+
+
+	                (0, _forEach2.default)(collections, function (collection) {
+	                  global.sessionStorage.removeItem('' + _this4.name + collection);
+	                });
+
+	                global.sessionStorage.setItem(this.masterCollectionName, JSON.stringify([]));
+
+	              case 5:
+	              case 'end':
+	                return _context10.stop();
+	            }
+	          }
+	        }, _callee10, this);
+	      }));
+
+	      function clear() {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return clear;
+	    }()
+	  }, {
+	    key: 'masterCollectionName',
+	    get: function get() {
+	      return this.name + '_' + masterCollectionName;
+	    }
+	  }], [{
+	    key: 'isSupported',
+	    value: function isSupported() {
+	      if (global.sessionStorage) {
+	        var item = 'testSessionStorageSupport';
+	        try {
+	          global.sessionStorage.setItem(item, item);
+	          global.sessionStorage.removeItem(item);
+	          return true;
+	        } catch (e) {
+	          return false;
+	        }
+	      }
+
+	      return false;
+	    }
+	  }]);
+
+	  return SessionStorage;
+	}(Storage);
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), (function() { return this; }())))
+
+/***/ },
+/* 310 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _errors = __webpack_require__(9);
+
+	var _es6Promise = __webpack_require__(311);
+
+	var _forEach = __webpack_require__(14);
+
+	var _forEach2 = _interopRequireDefault(_forEach);
+
+	var _isString = __webpack_require__(36);
+
+	var _isString2 = _interopRequireDefault(_isString);
+
+	var _isArray = __webpack_require__(35);
+
+	var _isArray2 = _interopRequireDefault(_isArray);
+
+	var _isFunction = __webpack_require__(31);
+
+	var _isFunction2 = _interopRequireDefault(_isFunction);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _es6Promise.Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return _es6Promise.Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var dbCache = {};
+
+	var TransactionMode = {
+	  ReadWrite: 'readwrite',
+	  ReadOnly: 'readonly'
+	};
+	Object.freeze(TransactionMode);
+
+	var IndexedDB = function () {
+	  function IndexedDB(name) {
+	    _classCallCheck(this, IndexedDB);
+
+	    if (!name) {
+	      throw new _errors.KinveyError('A name is required to use the IndexedDB adapter.', name);
+	    }
+
+	    if (!(0, _isString2.default)(name)) {
+	      throw new _errors.KinveyError('The name must be a string to use the IndexedDB adapter', name);
+	    }
+
+	    this.name = name;
+	    this.inTransaction = false;
+	    this.queue = [];
+	  }
+
+	  _createClass(IndexedDB, [{
+	    key: 'openTransaction',
+	    value: function openTransaction(collection) {
+	      var write = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	      var success = arguments[2];
+
+	      var _this = this;
+
+	      var error = arguments[3];
+	      var force = arguments.length <= 4 || arguments[4] === undefined ? false : arguments[4];
+
+	      var indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
+	      var db = dbCache[this.name];
+
+	      if (db) {
+	        var containsCollection = (0, _isFunction2.default)(db.objectStoreNames.contains) ? db.objectStoreNames.contains(collection) : db.objectStoreNames.indexOf(collection) !== -1;
+
+	        if (containsCollection) {
+	          try {
+	            var mode = write ? TransactionMode.ReadWrite : TransactionMode.ReadOnly;
+	            var txn = db.transaction(collection, mode);
+
+	            if (txn) {
+	              return success(txn);
+	            }
+
+	            throw new _errors.KinveyError('Unable to open a transaction for ' + collection + (' collection on the ' + this.name + ' IndexedDB database.'));
+	          } catch (err) {
+	            return error(err);
+	          }
+	        } else if (!write) {
+	          return error(new _errors.NotFoundError('The ' + collection + ' collection was not found on' + (' the ' + this.name + ' IndexedDB database.')));
+	        }
+	      }
+
+	      if (!force && this.inTransaction) {
+	        return this.queue.push(function () {
+	          _this.openTransaction(collection, write, success, error);
+	        });
+	      }
+
+	      // Switch flag
+	      this.inTransaction = true;
+	      var request = void 0;
+
+	      if (db) {
+	        var version = db.version + 1;
+	        db.close();
+	        request = indexedDB.open(this.name, version);
+	      } else {
+	        request = indexedDB.open(this.name);
+	      }
+
+	      // If the database is opened with an higher version than its current, the
+	      // `upgradeneeded` event is fired. Save the handle to the database, and
+	      // create the collection.
+	      request.onupgradeneeded = function (e) {
+	        db = e.target.result;
+	        dbCache[_this.name] = db;
+
+	        if (write) {
+	          db.createObjectStore(collection, { keyPath: '_id' });
+	        }
+	      };
+
+	      // The `success` event is fired after `upgradeneeded` terminates.
+	      // Save the handle to the database.
+	      request.onsuccess = function (e) {
+	        db = e.target.result;
+	        dbCache[_this.name] = db;
+
+	        // If a second instance of the same IndexedDB database performs an
+	        // upgrade operation, the `versionchange` event is fired. Then, close the
+	        // database to allow the external upgrade to proceed.
+	        db.onversionchange = function () {
+	          if (db) {
+	            db.close();
+	            db = null;
+	            dbCache[_this.name] = null;
+	          }
+	        };
+
+	        // Try to obtain the collection handle by recursing. Append the handlers
+	        // to empty the queue upon success and failure. Set the `force` flag so
+	        // all but the current transaction remain queued.
+	        var wrap = function wrap(done) {
+	          var callbackFn = function callbackFn(arg) {
+	            done(arg);
+
+	            // Switch flag
+	            _this.inTransaction = false;
+
+	            // The database handle has been established, we can now safely empty
+	            // the queue. The queue must be emptied before invoking the concurrent
+	            // operations to avoid infinite recursion.
+	            if (_this.queue.length > 0) {
+	              var pending = _this.queue;
+	              _this.queue = [];
+	              (0, _forEach2.default)(pending, function (fn) {
+	                fn.call(_this);
+	              });
+	            }
+	          };
+	          return callbackFn;
+	        };
+
+	        return _this.openTransaction(collection, write, wrap(success), wrap(error), true);
+	      };
+
+	      request.onblocked = function () {
+	        error(new _errors.KinveyError('The ' + _this.name + ' IndexedDB database version can\'t be upgraded' + ' because the database is already open.'));
+	      };
+
+	      request.onerror = function (e) {
+	        error(new _errors.KinveyError('Unable to open the ' + _this.name + ' IndexedDB database.' + (' ' + e.target.error.message + '.')));
+	      };
+
+	      return request;
+	    }
+	  }, {
+	    key: 'find',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(collection) {
+	        var _this2 = this;
+
+	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+	          while (1) {
+	            switch (_context2.prev = _context2.next) {
+	              case 0:
+	                return _context2.abrupt('return', new _es6Promise.Promise(function (resolve, reject) {
+	                  _this2.openTransaction(collection, false, function () {
+	                    var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(txn) {
+	                      var store, request, entities;
+	                      return regeneratorRuntime.wrap(function _callee$(_context) {
+	                        while (1) {
+	                          switch (_context.prev = _context.next) {
+	                            case 0:
+	                              store = txn.objectStore(collection);
+	                              request = store.openCursor();
+	                              entities = [];
+
+
+	                              request.onsuccess = function (e) {
+	                                var cursor = e.target.result;
+
+	                                if (cursor) {
+	                                  entities.push(cursor.value);
+	                                  return cursor.continue();
+	                                }
+
+	                                return resolve(entities);
+	                              };
+
+	                              request.onerror = function (e) {
+	                                reject(e);
+	                              };
+
+	                            case 5:
+	                            case 'end':
+	                              return _context.stop();
+	                          }
+	                        }
+	                      }, _callee, _this2);
+	                    }));
+
+	                    return function (_x4) {
+	                      return ref.apply(this, arguments);
+	                    };
+	                  }(), reject);
+	                }));
+
+	              case 1:
+	              case 'end':
+	                return _context2.stop();
+	            }
+	          }
+	        }, _callee2, this);
+	      }));
+
+	      function find(_x3) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return find;
+	    }()
+	  }, {
+	    key: 'findById',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(collection, id) {
+	        var _this3 = this;
+
+	        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+	          while (1) {
+	            switch (_context4.prev = _context4.next) {
+	              case 0:
+	                return _context4.abrupt('return', new _es6Promise.Promise(function (resolve, reject) {
+	                  _this3.openTransaction(collection, false, function () {
+	                    var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(txn) {
+	                      var store, request;
+	                      return regeneratorRuntime.wrap(function _callee3$(_context3) {
+	                        while (1) {
+	                          switch (_context3.prev = _context3.next) {
+	                            case 0:
+	                              store = txn.objectStore(collection);
+	                              request = store.get(id);
+
+
+	                              request.onsuccess = function (e) {
+	                                var entity = e.target.result;
+
+	                                if (entity) {
+	                                  resolve(entity);
+	                                } else {
+	                                  reject(new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this3.name + ' IndexedDB database.')));
+	                                }
+	                              };
+
+	                              request.onerror = function () {
+	                                reject(new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this3.name + ' IndexedDB database.')));
+	                              };
+
+	                            case 4:
+	                            case 'end':
+	                              return _context3.stop();
+	                          }
+	                        }
+	                      }, _callee3, _this3);
+	                    }));
+
+	                    return function (_x7) {
+	                      return ref.apply(this, arguments);
+	                    };
+	                  }(), reject);
+	                }));
+
+	              case 1:
+	              case 'end':
+	                return _context4.stop();
+	            }
+	          }
+	        }, _callee4, this);
+	      }));
+
+	      function findById(_x5, _x6) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return findById;
+	    }()
+	  }, {
+	    key: 'save',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee6(collection, entities) {
+	        var _this4 = this;
+
+	        var singular;
+	        return regeneratorRuntime.wrap(function _callee6$(_context6) {
+	          while (1) {
+	            switch (_context6.prev = _context6.next) {
+	              case 0:
+	                singular = false;
+
+
+	                if (!(0, _isArray2.default)(entities)) {
+	                  singular = true;
+	                  entities = [entities];
+	                }
+
+	                if (!(entities.length === 0)) {
+	                  _context6.next = 4;
+	                  break;
+	                }
+
+	                return _context6.abrupt('return', null);
+
+	              case 4:
+	                return _context6.abrupt('return', new _es6Promise.Promise(function (resolve, reject) {
+	                  _this4.openTransaction(collection, true, function () {
+	                    var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5(txn) {
+	                      var store;
+	                      return regeneratorRuntime.wrap(function _callee5$(_context5) {
+	                        while (1) {
+	                          switch (_context5.prev = _context5.next) {
+	                            case 0:
+	                              store = txn.objectStore(collection);
+
+
+	                              (0, _forEach2.default)(entities, function (entity) {
+	                                store.put(entity);
+	                              });
+
+	                              txn.oncomplete = function () {
+	                                resolve(singular ? entities[0] : entities);
+	                              };
+
+	                              txn.onerror = function (e) {
+	                                reject(new _errors.KinveyError('An error occurred while saving the entities to the ' + collection + (' collection on the ' + _this4.name + ' IndexedDB database. ' + e.target.error.message + '.')));
+	                              };
+
+	                            case 4:
+	                            case 'end':
+	                              return _context5.stop();
+	                          }
+	                        }
+	                      }, _callee5, _this4);
+	                    }));
+
+	                    return function (_x10) {
+	                      return ref.apply(this, arguments);
+	                    };
+	                  }(), reject);
+	                }));
+
+	              case 5:
+	              case 'end':
+	                return _context6.stop();
+	            }
+	          }
+	        }, _callee6, this);
+	      }));
+
+	      function save(_x8, _x9) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return save;
+	    }()
+	  }, {
+	    key: 'removeById',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee8(collection, id) {
+	        var _this5 = this;
+
+	        return regeneratorRuntime.wrap(function _callee8$(_context8) {
+	          while (1) {
+	            switch (_context8.prev = _context8.next) {
+	              case 0:
+	                return _context8.abrupt('return', new _es6Promise.Promise(function (resolve, reject) {
+	                  _this5.openTransaction(collection, true, function () {
+	                    var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee7(txn) {
+	                      var store, request;
+	                      return regeneratorRuntime.wrap(function _callee7$(_context7) {
+	                        while (1) {
+	                          switch (_context7.prev = _context7.next) {
+	                            case 0:
+	                              store = txn.objectStore(collection);
+	                              request = store.get(id);
+
+	                              store.delete(id);
+
+	                              txn.oncomplete = function () {
+	                                var entity = request.result;
+
+	                                if (entity) {
+	                                  resolve(entity);
+	                                } else {
+	                                  reject(new _errors.NotFoundError('An entity with id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this5.name + ' IndexedDB database.')));
+	                                }
+	                              };
+
+	                              txn.onerror = function () {
+	                                reject(new _errors.NotFoundError('An entity with id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this5.name + ' IndexedDB database.')));
+	                              };
+
+	                            case 5:
+	                            case 'end':
+	                              return _context7.stop();
+	                          }
+	                        }
+	                      }, _callee7, _this5);
+	                    }));
+
+	                    return function (_x13) {
+	                      return ref.apply(this, arguments);
+	                    };
+	                  }(), reject);
+	                }));
+
+	              case 1:
+	              case 'end':
+	                return _context8.stop();
+	            }
+	          }
+	        }, _callee8, this);
+	      }));
+
+	      function removeById(_x11, _x12) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return removeById;
+	    }()
+	  }, {
+	    key: 'clear',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee9() {
+	        var _this6 = this;
+
+	        return regeneratorRuntime.wrap(function _callee9$(_context9) {
+	          while (1) {
+	            switch (_context9.prev = _context9.next) {
+	              case 0:
+	                return _context9.abrupt('return', new _es6Promise.Promise(function (resolve, reject) {
+	                  var indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
+	                  var request = indexedDB.deleteDatabase(_this6.name);
+
+	                  request.onsuccess = function () {
+	                    dbCache = {};
+	                    resolve();
+	                  };
+
+	                  request.onerror = function (e) {
+	                    reject(new _errors.KinveyError('An error occurred while clearing the ' + _this6.name + ' IndexedDB database.' + (' ' + e.target.error.message + '.')));
+	                  };
+	                }));
+
+	              case 1:
+	              case 'end':
+	                return _context9.stop();
+	            }
+	          }
+	        }, _callee9, this);
+	      }));
+
+	      function clear() {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return clear;
+	    }()
+	  }], [{
+	    key: 'isSupported',
+	    value: function isSupported() {
+	      var indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
+	      return !!indexedDB;
+	    }
+	  }]);
+
+	  return IndexedDB;
+	}();
+
+	exports.default = IndexedDB;
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 311 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	 * @overview es6-promise - a tiny implementation of Promises/A+.
+	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
+	 * @license   Licensed under MIT license
+	 *            See https://raw.githubusercontent.com/jakearchibald/es6-promise/master/LICENSE
+	 * @version   3.2.1
+	 */
+
+	(function() {
+	    "use strict";
+	    function lib$es6$promise$utils$$objectOrFunction(x) {
+	      return typeof x === 'function' || (typeof x === 'object' && x !== null);
+	    }
+
+	    function lib$es6$promise$utils$$isFunction(x) {
+	      return typeof x === 'function';
+	    }
+
+	    function lib$es6$promise$utils$$isMaybeThenable(x) {
+	      return typeof x === 'object' && x !== null;
+	    }
+
+	    var lib$es6$promise$utils$$_isArray;
+	    if (!Array.isArray) {
+	      lib$es6$promise$utils$$_isArray = function (x) {
+	        return Object.prototype.toString.call(x) === '[object Array]';
+	      };
+	    } else {
+	      lib$es6$promise$utils$$_isArray = Array.isArray;
+	    }
+
+	    var lib$es6$promise$utils$$isArray = lib$es6$promise$utils$$_isArray;
+	    var lib$es6$promise$asap$$len = 0;
+	    var lib$es6$promise$asap$$vertxNext;
+	    var lib$es6$promise$asap$$customSchedulerFn;
+
+	    var lib$es6$promise$asap$$asap = function asap(callback, arg) {
+	      lib$es6$promise$asap$$queue[lib$es6$promise$asap$$len] = callback;
+	      lib$es6$promise$asap$$queue[lib$es6$promise$asap$$len + 1] = arg;
+	      lib$es6$promise$asap$$len += 2;
+	      if (lib$es6$promise$asap$$len === 2) {
+	        // If len is 2, that means that we need to schedule an async flush.
+	        // If additional callbacks are queued before the queue is flushed, they
+	        // will be processed by this flush that we are scheduling.
+	        if (lib$es6$promise$asap$$customSchedulerFn) {
+	          lib$es6$promise$asap$$customSchedulerFn(lib$es6$promise$asap$$flush);
+	        } else {
+	          lib$es6$promise$asap$$scheduleFlush();
+	        }
+	      }
+	    }
+
+	    function lib$es6$promise$asap$$setScheduler(scheduleFn) {
+	      lib$es6$promise$asap$$customSchedulerFn = scheduleFn;
+	    }
+
+	    function lib$es6$promise$asap$$setAsap(asapFn) {
+	      lib$es6$promise$asap$$asap = asapFn;
+	    }
+
+	    var lib$es6$promise$asap$$browserWindow = (typeof window !== 'undefined') ? window : undefined;
+	    var lib$es6$promise$asap$$browserGlobal = lib$es6$promise$asap$$browserWindow || {};
+	    var lib$es6$promise$asap$$BrowserMutationObserver = lib$es6$promise$asap$$browserGlobal.MutationObserver || lib$es6$promise$asap$$browserGlobal.WebKitMutationObserver;
+	    var lib$es6$promise$asap$$isNode = typeof self === 'undefined' && typeof process !== 'undefined' && {}.toString.call(process) === '[object process]';
+
+	    // test for web worker but not in IE10
+	    var lib$es6$promise$asap$$isWorker = typeof Uint8ClampedArray !== 'undefined' &&
+	      typeof importScripts !== 'undefined' &&
+	      typeof MessageChannel !== 'undefined';
+
+	    // node
+	    function lib$es6$promise$asap$$useNextTick() {
+	      // node version 0.10.x displays a deprecation warning when nextTick is used recursively
+	      // see https://github.com/cujojs/when/issues/410 for details
+	      return function() {
+	        process.nextTick(lib$es6$promise$asap$$flush);
+	      };
+	    }
+
+	    // vertx
+	    function lib$es6$promise$asap$$useVertxTimer() {
+	      return function() {
+	        lib$es6$promise$asap$$vertxNext(lib$es6$promise$asap$$flush);
+	      };
+	    }
+
+	    function lib$es6$promise$asap$$useMutationObserver() {
+	      var iterations = 0;
+	      var observer = new lib$es6$promise$asap$$BrowserMutationObserver(lib$es6$promise$asap$$flush);
+	      var node = document.createTextNode('');
+	      observer.observe(node, { characterData: true });
+
+	      return function() {
+	        node.data = (iterations = ++iterations % 2);
+	      };
+	    }
+
+	    // web worker
+	    function lib$es6$promise$asap$$useMessageChannel() {
+	      var channel = new MessageChannel();
+	      channel.port1.onmessage = lib$es6$promise$asap$$flush;
+	      return function () {
+	        channel.port2.postMessage(0);
+	      };
+	    }
+
+	    function lib$es6$promise$asap$$useSetTimeout() {
+	      return function() {
+	        setTimeout(lib$es6$promise$asap$$flush, 1);
+	      };
+	    }
+
+	    var lib$es6$promise$asap$$queue = new Array(1000);
+	    function lib$es6$promise$asap$$flush() {
+	      for (var i = 0; i < lib$es6$promise$asap$$len; i+=2) {
+	        var callback = lib$es6$promise$asap$$queue[i];
+	        var arg = lib$es6$promise$asap$$queue[i+1];
+
+	        callback(arg);
+
+	        lib$es6$promise$asap$$queue[i] = undefined;
+	        lib$es6$promise$asap$$queue[i+1] = undefined;
+	      }
+
+	      lib$es6$promise$asap$$len = 0;
+	    }
+
+	    function lib$es6$promise$asap$$attemptVertx() {
+	      try {
+	        var r = require;
+	        var vertx = __webpack_require__(312);
+	        lib$es6$promise$asap$$vertxNext = vertx.runOnLoop || vertx.runOnContext;
+	        return lib$es6$promise$asap$$useVertxTimer();
+	      } catch(e) {
+	        return lib$es6$promise$asap$$useSetTimeout();
+	      }
+	    }
+
+	    var lib$es6$promise$asap$$scheduleFlush;
+	    // Decide what async method to use to triggering processing of queued callbacks:
+	    if (lib$es6$promise$asap$$isNode) {
+	      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useNextTick();
+	    } else if (lib$es6$promise$asap$$BrowserMutationObserver) {
+	      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useMutationObserver();
+	    } else if (lib$es6$promise$asap$$isWorker) {
+	      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useMessageChannel();
+	    } else if (lib$es6$promise$asap$$browserWindow === undefined && "function" === 'function') {
+	      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$attemptVertx();
+	    } else {
+	      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useSetTimeout();
+	    }
+	    function lib$es6$promise$then$$then(onFulfillment, onRejection) {
+	      var parent = this;
+
+	      var child = new this.constructor(lib$es6$promise$$internal$$noop);
+
+	      if (child[lib$es6$promise$$internal$$PROMISE_ID] === undefined) {
+	        lib$es6$promise$$internal$$makePromise(child);
+	      }
+
+	      var state = parent._state;
+
+	      if (state) {
+	        var callback = arguments[state - 1];
+	        lib$es6$promise$asap$$asap(function(){
+	          lib$es6$promise$$internal$$invokeCallback(state, child, callback, parent._result);
+	        });
+	      } else {
+	        lib$es6$promise$$internal$$subscribe(parent, child, onFulfillment, onRejection);
+	      }
+
+	      return child;
+	    }
+	    var lib$es6$promise$then$$default = lib$es6$promise$then$$then;
+	    function lib$es6$promise$promise$resolve$$resolve(object) {
+	      /*jshint validthis:true */
+	      var Constructor = this;
+
+	      if (object && typeof object === 'object' && object.constructor === Constructor) {
+	        return object;
+	      }
+
+	      var promise = new Constructor(lib$es6$promise$$internal$$noop);
+	      lib$es6$promise$$internal$$resolve(promise, object);
+	      return promise;
+	    }
+	    var lib$es6$promise$promise$resolve$$default = lib$es6$promise$promise$resolve$$resolve;
+	    var lib$es6$promise$$internal$$PROMISE_ID = Math.random().toString(36).substring(16);
+
+	    function lib$es6$promise$$internal$$noop() {}
+
+	    var lib$es6$promise$$internal$$PENDING   = void 0;
+	    var lib$es6$promise$$internal$$FULFILLED = 1;
+	    var lib$es6$promise$$internal$$REJECTED  = 2;
+
+	    var lib$es6$promise$$internal$$GET_THEN_ERROR = new lib$es6$promise$$internal$$ErrorObject();
+
+	    function lib$es6$promise$$internal$$selfFulfillment() {
+	      return new TypeError("You cannot resolve a promise with itself");
+	    }
+
+	    function lib$es6$promise$$internal$$cannotReturnOwn() {
+	      return new TypeError('A promises callback cannot return that same promise.');
+	    }
+
+	    function lib$es6$promise$$internal$$getThen(promise) {
+	      try {
+	        return promise.then;
+	      } catch(error) {
+	        lib$es6$promise$$internal$$GET_THEN_ERROR.error = error;
+	        return lib$es6$promise$$internal$$GET_THEN_ERROR;
+	      }
+	    }
+
+	    function lib$es6$promise$$internal$$tryThen(then, value, fulfillmentHandler, rejectionHandler) {
+	      try {
+	        then.call(value, fulfillmentHandler, rejectionHandler);
+	      } catch(e) {
+	        return e;
+	      }
+	    }
+
+	    function lib$es6$promise$$internal$$handleForeignThenable(promise, thenable, then) {
+	       lib$es6$promise$asap$$asap(function(promise) {
+	        var sealed = false;
+	        var error = lib$es6$promise$$internal$$tryThen(then, thenable, function(value) {
+	          if (sealed) { return; }
+	          sealed = true;
+	          if (thenable !== value) {
+	            lib$es6$promise$$internal$$resolve(promise, value);
+	          } else {
+	            lib$es6$promise$$internal$$fulfill(promise, value);
+	          }
+	        }, function(reason) {
+	          if (sealed) { return; }
+	          sealed = true;
+
+	          lib$es6$promise$$internal$$reject(promise, reason);
+	        }, 'Settle: ' + (promise._label || ' unknown promise'));
+
+	        if (!sealed && error) {
+	          sealed = true;
+	          lib$es6$promise$$internal$$reject(promise, error);
+	        }
+	      }, promise);
+	    }
+
+	    function lib$es6$promise$$internal$$handleOwnThenable(promise, thenable) {
+	      if (thenable._state === lib$es6$promise$$internal$$FULFILLED) {
+	        lib$es6$promise$$internal$$fulfill(promise, thenable._result);
+	      } else if (thenable._state === lib$es6$promise$$internal$$REJECTED) {
+	        lib$es6$promise$$internal$$reject(promise, thenable._result);
+	      } else {
+	        lib$es6$promise$$internal$$subscribe(thenable, undefined, function(value) {
+	          lib$es6$promise$$internal$$resolve(promise, value);
+	        }, function(reason) {
+	          lib$es6$promise$$internal$$reject(promise, reason);
+	        });
+	      }
+	    }
+
+	    function lib$es6$promise$$internal$$handleMaybeThenable(promise, maybeThenable, then) {
+	      if (maybeThenable.constructor === promise.constructor &&
+	          then === lib$es6$promise$then$$default &&
+	          constructor.resolve === lib$es6$promise$promise$resolve$$default) {
+	        lib$es6$promise$$internal$$handleOwnThenable(promise, maybeThenable);
+	      } else {
+	        if (then === lib$es6$promise$$internal$$GET_THEN_ERROR) {
+	          lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$GET_THEN_ERROR.error);
+	        } else if (then === undefined) {
+	          lib$es6$promise$$internal$$fulfill(promise, maybeThenable);
+	        } else if (lib$es6$promise$utils$$isFunction(then)) {
+	          lib$es6$promise$$internal$$handleForeignThenable(promise, maybeThenable, then);
+	        } else {
+	          lib$es6$promise$$internal$$fulfill(promise, maybeThenable);
+	        }
+	      }
+	    }
+
+	    function lib$es6$promise$$internal$$resolve(promise, value) {
+	      if (promise === value) {
+	        lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$selfFulfillment());
+	      } else if (lib$es6$promise$utils$$objectOrFunction(value)) {
+	        lib$es6$promise$$internal$$handleMaybeThenable(promise, value, lib$es6$promise$$internal$$getThen(value));
+	      } else {
+	        lib$es6$promise$$internal$$fulfill(promise, value);
+	      }
+	    }
+
+	    function lib$es6$promise$$internal$$publishRejection(promise) {
+	      if (promise._onerror) {
+	        promise._onerror(promise._result);
+	      }
+
+	      lib$es6$promise$$internal$$publish(promise);
+	    }
+
+	    function lib$es6$promise$$internal$$fulfill(promise, value) {
+	      if (promise._state !== lib$es6$promise$$internal$$PENDING) { return; }
+
+	      promise._result = value;
+	      promise._state = lib$es6$promise$$internal$$FULFILLED;
+
+	      if (promise._subscribers.length !== 0) {
+	        lib$es6$promise$asap$$asap(lib$es6$promise$$internal$$publish, promise);
+	      }
+	    }
+
+	    function lib$es6$promise$$internal$$reject(promise, reason) {
+	      if (promise._state !== lib$es6$promise$$internal$$PENDING) { return; }
+	      promise._state = lib$es6$promise$$internal$$REJECTED;
+	      promise._result = reason;
+
+	      lib$es6$promise$asap$$asap(lib$es6$promise$$internal$$publishRejection, promise);
+	    }
+
+	    function lib$es6$promise$$internal$$subscribe(parent, child, onFulfillment, onRejection) {
+	      var subscribers = parent._subscribers;
+	      var length = subscribers.length;
+
+	      parent._onerror = null;
+
+	      subscribers[length] = child;
+	      subscribers[length + lib$es6$promise$$internal$$FULFILLED] = onFulfillment;
+	      subscribers[length + lib$es6$promise$$internal$$REJECTED]  = onRejection;
+
+	      if (length === 0 && parent._state) {
+	        lib$es6$promise$asap$$asap(lib$es6$promise$$internal$$publish, parent);
+	      }
+	    }
+
+	    function lib$es6$promise$$internal$$publish(promise) {
+	      var subscribers = promise._subscribers;
+	      var settled = promise._state;
+
+	      if (subscribers.length === 0) { return; }
+
+	      var child, callback, detail = promise._result;
+
+	      for (var i = 0; i < subscribers.length; i += 3) {
+	        child = subscribers[i];
+	        callback = subscribers[i + settled];
+
+	        if (child) {
+	          lib$es6$promise$$internal$$invokeCallback(settled, child, callback, detail);
+	        } else {
+	          callback(detail);
+	        }
+	      }
+
+	      promise._subscribers.length = 0;
+	    }
+
+	    function lib$es6$promise$$internal$$ErrorObject() {
+	      this.error = null;
+	    }
+
+	    var lib$es6$promise$$internal$$TRY_CATCH_ERROR = new lib$es6$promise$$internal$$ErrorObject();
+
+	    function lib$es6$promise$$internal$$tryCatch(callback, detail) {
+	      try {
+	        return callback(detail);
+	      } catch(e) {
+	        lib$es6$promise$$internal$$TRY_CATCH_ERROR.error = e;
+	        return lib$es6$promise$$internal$$TRY_CATCH_ERROR;
+	      }
+	    }
+
+	    function lib$es6$promise$$internal$$invokeCallback(settled, promise, callback, detail) {
+	      var hasCallback = lib$es6$promise$utils$$isFunction(callback),
+	          value, error, succeeded, failed;
+
+	      if (hasCallback) {
+	        value = lib$es6$promise$$internal$$tryCatch(callback, detail);
+
+	        if (value === lib$es6$promise$$internal$$TRY_CATCH_ERROR) {
+	          failed = true;
+	          error = value.error;
+	          value = null;
+	        } else {
+	          succeeded = true;
+	        }
+
+	        if (promise === value) {
+	          lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$cannotReturnOwn());
+	          return;
+	        }
+
+	      } else {
+	        value = detail;
+	        succeeded = true;
+	      }
+
+	      if (promise._state !== lib$es6$promise$$internal$$PENDING) {
+	        // noop
+	      } else if (hasCallback && succeeded) {
+	        lib$es6$promise$$internal$$resolve(promise, value);
+	      } else if (failed) {
+	        lib$es6$promise$$internal$$reject(promise, error);
+	      } else if (settled === lib$es6$promise$$internal$$FULFILLED) {
+	        lib$es6$promise$$internal$$fulfill(promise, value);
+	      } else if (settled === lib$es6$promise$$internal$$REJECTED) {
+	        lib$es6$promise$$internal$$reject(promise, value);
+	      }
+	    }
+
+	    function lib$es6$promise$$internal$$initializePromise(promise, resolver) {
+	      try {
+	        resolver(function resolvePromise(value){
+	          lib$es6$promise$$internal$$resolve(promise, value);
+	        }, function rejectPromise(reason) {
+	          lib$es6$promise$$internal$$reject(promise, reason);
+	        });
+	      } catch(e) {
+	        lib$es6$promise$$internal$$reject(promise, e);
+	      }
+	    }
+
+	    var lib$es6$promise$$internal$$id = 0;
+	    function lib$es6$promise$$internal$$nextId() {
+	      return lib$es6$promise$$internal$$id++;
+	    }
+
+	    function lib$es6$promise$$internal$$makePromise(promise) {
+	      promise[lib$es6$promise$$internal$$PROMISE_ID] = lib$es6$promise$$internal$$id++;
+	      promise._state = undefined;
+	      promise._result = undefined;
+	      promise._subscribers = [];
+	    }
+
+	    function lib$es6$promise$promise$all$$all(entries) {
+	      return new lib$es6$promise$enumerator$$default(this, entries).promise;
+	    }
+	    var lib$es6$promise$promise$all$$default = lib$es6$promise$promise$all$$all;
+	    function lib$es6$promise$promise$race$$race(entries) {
+	      /*jshint validthis:true */
+	      var Constructor = this;
+
+	      if (!lib$es6$promise$utils$$isArray(entries)) {
+	        return new Constructor(function(resolve, reject) {
+	          reject(new TypeError('You must pass an array to race.'));
+	        });
+	      } else {
+	        return new Constructor(function(resolve, reject) {
+	          var length = entries.length;
+	          for (var i = 0; i < length; i++) {
+	            Constructor.resolve(entries[i]).then(resolve, reject);
+	          }
+	        });
+	      }
+	    }
+	    var lib$es6$promise$promise$race$$default = lib$es6$promise$promise$race$$race;
+	    function lib$es6$promise$promise$reject$$reject(reason) {
+	      /*jshint validthis:true */
+	      var Constructor = this;
+	      var promise = new Constructor(lib$es6$promise$$internal$$noop);
+	      lib$es6$promise$$internal$$reject(promise, reason);
+	      return promise;
+	    }
+	    var lib$es6$promise$promise$reject$$default = lib$es6$promise$promise$reject$$reject;
+
+
+	    function lib$es6$promise$promise$$needsResolver() {
+	      throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
+	    }
+
+	    function lib$es6$promise$promise$$needsNew() {
+	      throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
+	    }
+
+	    var lib$es6$promise$promise$$default = lib$es6$promise$promise$$Promise;
+	    /**
+	      Promise objects represent the eventual result of an asynchronous operation. The
+	      primary way of interacting with a promise is through its `then` method, which
+	      registers callbacks to receive either a promise's eventual value or the reason
+	      why the promise cannot be fulfilled.
+
+	      Terminology
+	      -----------
+
+	      - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
+	      - `thenable` is an object or function that defines a `then` method.
+	      - `value` is any legal JavaScript value (including undefined, a thenable, or a promise).
+	      - `exception` is a value that is thrown using the throw statement.
+	      - `reason` is a value that indicates why a promise was rejected.
+	      - `settled` the final resting state of a promise, fulfilled or rejected.
+
+	      A promise can be in one of three states: pending, fulfilled, or rejected.
+
+	      Promises that are fulfilled have a fulfillment value and are in the fulfilled
+	      state.  Promises that are rejected have a rejection reason and are in the
+	      rejected state.  A fulfillment value is never a thenable.
+
+	      Promises can also be said to *resolve* a value.  If this value is also a
+	      promise, then the original promise's settled state will match the value's
+	      settled state.  So a promise that *resolves* a promise that rejects will
+	      itself reject, and a promise that *resolves* a promise that fulfills will
+	      itself fulfill.
+
+
+	      Basic Usage:
+	      ------------
+
+	      ```js
+	      var promise = new Promise(function(resolve, reject) {
+	        // on success
+	        resolve(value);
+
+	        // on failure
+	        reject(reason);
+	      });
+
+	      promise.then(function(value) {
+	        // on fulfillment
+	      }, function(reason) {
+	        // on rejection
+	      });
+	      ```
+
+	      Advanced Usage:
+	      ---------------
+
+	      Promises shine when abstracting away asynchronous interactions such as
+	      `XMLHttpRequest`s.
+
+	      ```js
+	      function getJSON(url) {
+	        return new Promise(function(resolve, reject){
+	          var xhr = new XMLHttpRequest();
+
+	          xhr.open('GET', url);
+	          xhr.onreadystatechange = handler;
+	          xhr.responseType = 'json';
+	          xhr.setRequestHeader('Accept', 'application/json');
+	          xhr.send();
+
+	          function handler() {
+	            if (this.readyState === this.DONE) {
+	              if (this.status === 200) {
+	                resolve(this.response);
+	              } else {
+	                reject(new Error('getJSON: `' + url + '` failed with status: [' + this.status + ']'));
+	              }
+	            }
+	          };
+	        });
+	      }
+
+	      getJSON('/posts.json').then(function(json) {
+	        // on fulfillment
+	      }, function(reason) {
+	        // on rejection
+	      });
+	      ```
+
+	      Unlike callbacks, promises are great composable primitives.
+
+	      ```js
+	      Promise.all([
+	        getJSON('/posts'),
+	        getJSON('/comments')
+	      ]).then(function(values){
+	        values[0] // => postsJSON
+	        values[1] // => commentsJSON
+
+	        return values;
+	      });
+	      ```
+
+	      @class Promise
+	      @param {function} resolver
+	      Useful for tooling.
+	      @constructor
+	    */
+	    function lib$es6$promise$promise$$Promise(resolver) {
+	      this[lib$es6$promise$$internal$$PROMISE_ID] = lib$es6$promise$$internal$$nextId();
+	      this._result = this._state = undefined;
+	      this._subscribers = [];
+
+	      if (lib$es6$promise$$internal$$noop !== resolver) {
+	        typeof resolver !== 'function' && lib$es6$promise$promise$$needsResolver();
+	        this instanceof lib$es6$promise$promise$$Promise ? lib$es6$promise$$internal$$initializePromise(this, resolver) : lib$es6$promise$promise$$needsNew();
+	      }
+	    }
+
+	    lib$es6$promise$promise$$Promise.all = lib$es6$promise$promise$all$$default;
+	    lib$es6$promise$promise$$Promise.race = lib$es6$promise$promise$race$$default;
+	    lib$es6$promise$promise$$Promise.resolve = lib$es6$promise$promise$resolve$$default;
+	    lib$es6$promise$promise$$Promise.reject = lib$es6$promise$promise$reject$$default;
+	    lib$es6$promise$promise$$Promise._setScheduler = lib$es6$promise$asap$$setScheduler;
+	    lib$es6$promise$promise$$Promise._setAsap = lib$es6$promise$asap$$setAsap;
+	    lib$es6$promise$promise$$Promise._asap = lib$es6$promise$asap$$asap;
+
+	    lib$es6$promise$promise$$Promise.prototype = {
+	      constructor: lib$es6$promise$promise$$Promise,
+
+	    /**
+	      The primary way of interacting with a promise is through its `then` method,
+	      which registers callbacks to receive either a promise's eventual value or the
+	      reason why the promise cannot be fulfilled.
+
+	      ```js
+	      findUser().then(function(user){
+	        // user is available
+	      }, function(reason){
+	        // user is unavailable, and you are given the reason why
+	      });
+	      ```
+
+	      Chaining
+	      --------
+
+	      The return value of `then` is itself a promise.  This second, 'downstream'
+	      promise is resolved with the return value of the first promise's fulfillment
+	      or rejection handler, or rejected if the handler throws an exception.
+
+	      ```js
+	      findUser().then(function (user) {
+	        return user.name;
+	      }, function (reason) {
+	        return 'default name';
+	      }).then(function (userName) {
+	        // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
+	        // will be `'default name'`
+	      });
+
+	      findUser().then(function (user) {
+	        throw new Error('Found user, but still unhappy');
+	      }, function (reason) {
+	        throw new Error('`findUser` rejected and we're unhappy');
+	      }).then(function (value) {
+	        // never reached
+	      }, function (reason) {
+	        // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
+	        // If `findUser` rejected, `reason` will be '`findUser` rejected and we're unhappy'.
+	      });
+	      ```
+	      If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
+
+	      ```js
+	      findUser().then(function (user) {
+	        throw new PedagogicalException('Upstream error');
+	      }).then(function (value) {
+	        // never reached
+	      }).then(function (value) {
+	        // never reached
+	      }, function (reason) {
+	        // The `PedgagocialException` is propagated all the way down to here
+	      });
+	      ```
+
+	      Assimilation
+	      ------------
+
+	      Sometimes the value you want to propagate to a downstream promise can only be
+	      retrieved asynchronously. This can be achieved by returning a promise in the
+	      fulfillment or rejection handler. The downstream promise will then be pending
+	      until the returned promise is settled. This is called *assimilation*.
+
+	      ```js
+	      findUser().then(function (user) {
+	        return findCommentsByAuthor(user);
+	      }).then(function (comments) {
+	        // The user's comments are now available
+	      });
+	      ```
+
+	      If the assimliated promise rejects, then the downstream promise will also reject.
+
+	      ```js
+	      findUser().then(function (user) {
+	        return findCommentsByAuthor(user);
+	      }).then(function (comments) {
+	        // If `findCommentsByAuthor` fulfills, we'll have the value here
+	      }, function (reason) {
+	        // If `findCommentsByAuthor` rejects, we'll have the reason here
+	      });
+	      ```
+
+	      Simple Example
+	      --------------
+
+	      Synchronous Example
+
+	      ```javascript
+	      var result;
+
+	      try {
+	        result = findResult();
+	        // success
+	      } catch(reason) {
+	        // failure
+	      }
+	      ```
+
+	      Errback Example
+
+	      ```js
+	      findResult(function(result, err){
+	        if (err) {
+	          // failure
+	        } else {
+	          // success
+	        }
+	      });
+	      ```
+
+	      Promise Example;
+
+	      ```javascript
+	      findResult().then(function(result){
+	        // success
+	      }, function(reason){
+	        // failure
+	      });
+	      ```
+
+	      Advanced Example
+	      --------------
+
+	      Synchronous Example
+
+	      ```javascript
+	      var author, books;
+
+	      try {
+	        author = findAuthor();
+	        books  = findBooksByAuthor(author);
+	        // success
+	      } catch(reason) {
+	        // failure
+	      }
+	      ```
+
+	      Errback Example
+
+	      ```js
+
+	      function foundBooks(books) {
+
+	      }
+
+	      function failure(reason) {
+
+	      }
+
+	      findAuthor(function(author, err){
+	        if (err) {
+	          failure(err);
+	          // failure
+	        } else {
+	          try {
+	            findBoooksByAuthor(author, function(books, err) {
+	              if (err) {
+	                failure(err);
+	              } else {
+	                try {
+	                  foundBooks(books);
+	                } catch(reason) {
+	                  failure(reason);
+	                }
+	              }
+	            });
+	          } catch(error) {
+	            failure(err);
+	          }
+	          // success
+	        }
+	      });
+	      ```
+
+	      Promise Example;
+
+	      ```javascript
+	      findAuthor().
+	        then(findBooksByAuthor).
+	        then(function(books){
+	          // found books
+	      }).catch(function(reason){
+	        // something went wrong
+	      });
+	      ```
+
+	      @method then
+	      @param {Function} onFulfilled
+	      @param {Function} onRejected
+	      Useful for tooling.
+	      @return {Promise}
+	    */
+	      then: lib$es6$promise$then$$default,
+
+	    /**
+	      `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
+	      as the catch block of a try/catch statement.
+
+	      ```js
+	      function findAuthor(){
+	        throw new Error('couldn't find that author');
+	      }
+
+	      // synchronous
+	      try {
+	        findAuthor();
+	      } catch(reason) {
+	        // something went wrong
+	      }
+
+	      // async with promises
+	      findAuthor().catch(function(reason){
+	        // something went wrong
+	      });
+	      ```
+
+	      @method catch
+	      @param {Function} onRejection
+	      Useful for tooling.
+	      @return {Promise}
+	    */
+	      'catch': function(onRejection) {
+	        return this.then(null, onRejection);
+	      }
+	    };
+	    var lib$es6$promise$enumerator$$default = lib$es6$promise$enumerator$$Enumerator;
+	    function lib$es6$promise$enumerator$$Enumerator(Constructor, input) {
+	      this._instanceConstructor = Constructor;
+	      this.promise = new Constructor(lib$es6$promise$$internal$$noop);
+
+	      if (!this.promise[lib$es6$promise$$internal$$PROMISE_ID]) {
+	        lib$es6$promise$$internal$$makePromise(this.promise);
+	      }
+
+	      if (lib$es6$promise$utils$$isArray(input)) {
+	        this._input     = input;
+	        this.length     = input.length;
+	        this._remaining = input.length;
+
+	        this._result = new Array(this.length);
+
+	        if (this.length === 0) {
+	          lib$es6$promise$$internal$$fulfill(this.promise, this._result);
+	        } else {
+	          this.length = this.length || 0;
+	          this._enumerate();
+	          if (this._remaining === 0) {
+	            lib$es6$promise$$internal$$fulfill(this.promise, this._result);
+	          }
+	        }
+	      } else {
+	        lib$es6$promise$$internal$$reject(this.promise, lib$es6$promise$enumerator$$validationError());
+	      }
+	    }
+
+	    function lib$es6$promise$enumerator$$validationError() {
+	      return new Error('Array Methods must be provided an Array');
+	    }
+
+	    lib$es6$promise$enumerator$$Enumerator.prototype._enumerate = function() {
+	      var length  = this.length;
+	      var input   = this._input;
+
+	      for (var i = 0; this._state === lib$es6$promise$$internal$$PENDING && i < length; i++) {
+	        this._eachEntry(input[i], i);
+	      }
+	    };
+
+	    lib$es6$promise$enumerator$$Enumerator.prototype._eachEntry = function(entry, i) {
+	      var c = this._instanceConstructor;
+	      var resolve = c.resolve;
+
+	      if (resolve === lib$es6$promise$promise$resolve$$default) {
+	        var then = lib$es6$promise$$internal$$getThen(entry);
+
+	        if (then === lib$es6$promise$then$$default &&
+	            entry._state !== lib$es6$promise$$internal$$PENDING) {
+	          this._settledAt(entry._state, i, entry._result);
+	        } else if (typeof then !== 'function') {
+	          this._remaining--;
+	          this._result[i] = entry;
+	        } else if (c === lib$es6$promise$promise$$default) {
+	          var promise = new c(lib$es6$promise$$internal$$noop);
+	          lib$es6$promise$$internal$$handleMaybeThenable(promise, entry, then);
+	          this._willSettleAt(promise, i);
+	        } else {
+	          this._willSettleAt(new c(function(resolve) { resolve(entry); }), i);
+	        }
+	      } else {
+	        this._willSettleAt(resolve(entry), i);
+	      }
+	    };
+
+	    lib$es6$promise$enumerator$$Enumerator.prototype._settledAt = function(state, i, value) {
+	      var promise = this.promise;
+
+	      if (promise._state === lib$es6$promise$$internal$$PENDING) {
+	        this._remaining--;
+
+	        if (state === lib$es6$promise$$internal$$REJECTED) {
+	          lib$es6$promise$$internal$$reject(promise, value);
+	        } else {
+	          this._result[i] = value;
+	        }
+	      }
+
+	      if (this._remaining === 0) {
+	        lib$es6$promise$$internal$$fulfill(promise, this._result);
+	      }
+	    };
+
+	    lib$es6$promise$enumerator$$Enumerator.prototype._willSettleAt = function(promise, i) {
+	      var enumerator = this;
+
+	      lib$es6$promise$$internal$$subscribe(promise, undefined, function(value) {
+	        enumerator._settledAt(lib$es6$promise$$internal$$FULFILLED, i, value);
+	      }, function(reason) {
+	        enumerator._settledAt(lib$es6$promise$$internal$$REJECTED, i, reason);
+	      });
+	    };
+	    function lib$es6$promise$polyfill$$polyfill() {
+	      var local;
+
+	      if (typeof global !== 'undefined') {
+	          local = global;
+	      } else if (typeof self !== 'undefined') {
+	          local = self;
+	      } else {
+	          try {
+	              local = Function('return this')();
+	          } catch (e) {
+	              throw new Error('polyfill failed because global object is unavailable in this environment');
+	          }
+	      }
+
+	      var P = local.Promise;
+
+	      if (P && Object.prototype.toString.call(P.resolve()) === '[object Promise]' && !P.cast) {
+	        return;
+	      }
+
+	      local.Promise = lib$es6$promise$promise$$default;
+	    }
+	    var lib$es6$promise$polyfill$$default = lib$es6$promise$polyfill$$polyfill;
+
+	    var lib$es6$promise$umd$$ES6Promise = {
+	      'Promise': lib$es6$promise$promise$$default,
+	      'polyfill': lib$es6$promise$polyfill$$default
+	    };
+
+	    /* global define:true module:true window: true */
+	    if ("function" === 'function' && __webpack_require__(313)['amd']) {
+	      !(__WEBPACK_AMD_DEFINE_RESULT__ = function() { return lib$es6$promise$umd$$ES6Promise; }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	    } else if (typeof module !== 'undefined' && module['exports']) {
+	      module['exports'] = lib$es6$promise$umd$$ES6Promise;
+	    } else if (typeof this !== 'undefined') {
+	      this['ES6Promise'] = lib$es6$promise$umd$$ES6Promise;
+	    }
+
+	    lib$es6$promise$polyfill$$default();
+	}).call(this);
+
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), (function() { return this; }()), __webpack_require__(136)(module)))
+
+/***/ },
+/* 312 */
+/***/ function(module, exports) {
+
+	/* (ignored) */
+
+/***/ },
+/* 313 */
+/***/ function(module, exports) {
+
+	module.exports = function() { throw new Error("define cannot be used indirect"); };
+
+
+/***/ },
+/* 314 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.WebSQL = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _errors = __webpack_require__(9);
+
+	var _map = __webpack_require__(214);
+
+	var _map2 = _interopRequireDefault(_map);
+
+	var _forEach = __webpack_require__(14);
+
+	var _forEach2 = _interopRequireDefault(_forEach);
+
+	var _isArray = __webpack_require__(35);
+
+	var _isArray2 = _interopRequireDefault(_isArray);
+
+	var _isFunction = __webpack_require__(31);
+
+	var _isFunction2 = _interopRequireDefault(_isFunction);
+
+	var _isString = __webpack_require__(36);
+
+	var _isString2 = _interopRequireDefault(_isString);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
+	var masterCollectionName = 'sqlite_master';
+	var size = 5 * 1000 * 1000; // Database size in bytes
+	var dbCache = {};
+
+	var WebSQL = exports.WebSQL = function () {
+	  function WebSQL() {
+	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
+
+	    _classCallCheck(this, WebSQL);
+
+	    this.name = name;
+	  }
+
+	  _createClass(WebSQL, [{
+	    key: 'openDatabase',
+	    value: function openDatabase() {
+	      var db = dbCache[this.name];
+
+	      if (!db) {
+	        db = global.openDatabase(this.name, 1, '', size);
+	        dbCache[this.name] = db;
+	      }
+
+	      return db;
+	    }
+	  }, {
+	    key: 'openTransaction',
+	    value: function openTransaction(collection, query, parameters) {
+	      var _this = this;
+
+	      var write = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
+
+	      var db = this.openDatabase();
+	      var escapedCollection = '"' + collection + '"';
+	      var isMaster = collection === masterCollectionName;
+	      var isMulti = (0, _isArray2.default)(query);
+	      query = isMulti ? query : [[query, parameters]];
+
+	      var promise = new Promise(function (resolve, reject) {
+	        var writeTxn = write || !(0, _isFunction2.default)(db.readTransaction);
+	        db[writeTxn ? 'transaction' : 'readTransaction'](function (tx) {
+	          if (write && !isMaster) {
+	            tx.executeSql('CREATE TABLE IF NOT EXISTS ' + escapedCollection + ' ' + '(key BLOB PRIMARY KEY NOT NULL, value BLOB NOT NULL)');
+	          }
+
+	          var pending = query.length;
+	          var responses = [];
+
+	          (0, _forEach2.default)(query, function (parts) {
+	            var sql = parts[0].replace('#{collection}', escapedCollection);
+
+	            tx.executeSql(sql, parts[1], function (_, resultSet) {
+	              var response = {
+	                rowCount: resultSet.rowsAffected,
+	                result: []
+	              };
+
+	              if (resultSet.rows.length) {
+	                for (var i = 0, len = resultSet.rows.length; i < len; i++) {
+	                  try {
+	                    var value = resultSet.rows.item(i).value;
+	                    var entity = isMaster ? value : JSON.parse(value);
+	                    response.result.push(entity);
+	                  } catch (error) {
+	                    // Catch the error
+	                  }
+	                }
+	              }
+
+	              responses.push(response);
+	              pending = pending - 1;
+
+	              if (pending === 0) {
+	                resolve(isMulti ? responses : responses.shift());
+	              }
+	            });
+	          });
+	        }, function (error) {
+	          error = (0, _isString2.default)(error) ? error : error.message;
+
+	          if (error && error.indexOf('no such table') === -1) {
+	            return reject(new _errors.NotFoundError('The ' + collection + ' collection was not found on' + (' the ' + _this.name + ' WebSQL database.')));
+	          }
+
+	          var query = 'SELECT name AS value from #{collection} WHERE type = ? AND name = ?';
+	          var parameters = ['table', collection];
+
+	          return _this.openTransaction(masterCollectionName, query, parameters).then(function (response) {
+	            if (response.result.length === 0) {
+	              return reject(new _errors.NotFoundError('The ' + collection + ' collection was not found on' + (' the ' + _this.name + ' WebSQL database.')));
+	            }
+
+	            return reject(new _errors.KinveyError('Unable to open a transaction for the ' + collection + (' collection on the ' + _this.name + ' WebSQL database.')));
+	          }).catch(function (error) {
+	            reject(new _errors.KinveyError('Unable to open a transaction for the ' + collection + (' collection on the ' + _this.name + ' WebSQL database.'), error));
+	          });
+	        });
+	      });
+
+	      return promise;
+	    }
+	  }, {
+	    key: 'find',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(collection) {
+	        var sql, response;
+	        return regeneratorRuntime.wrap(function _callee$(_context) {
+	          while (1) {
+	            switch (_context.prev = _context.next) {
+	              case 0:
+	                sql = 'SELECT value FROM #{collection}';
+	                _context.next = 3;
+	                return this.openTransaction(collection, sql, []);
+
+	              case 3:
+	                response = _context.sent;
+	                return _context.abrupt('return', response.result);
+
+	              case 5:
+	              case 'end':
+	                return _context.stop();
+	            }
+	          }
+	        }, _callee, this);
+	      }));
+
+	      function find(_x3) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return find;
+	    }()
+	  }, {
+	    key: 'findById',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(collection, id) {
+	        var sql, response, entities;
+	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+	          while (1) {
+	            switch (_context2.prev = _context2.next) {
+	              case 0:
+	                sql = 'SELECT value FROM #{collection} WHERE key = ?';
+	                _context2.next = 3;
+	                return this.openTransaction(collection, sql, [id]);
+
+	              case 3:
+	                response = _context2.sent;
+	                entities = response.result;
+
+	                if (!(entities.length === 0)) {
+	                  _context2.next = 7;
+	                  break;
+	                }
+
+	                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + this.name + ' WebSQL database.'));
+
+	              case 7:
+	                return _context2.abrupt('return', entities[0]);
+
+	              case 8:
+	              case 'end':
+	                return _context2.stop();
+	            }
+	          }
+	        }, _callee2, this);
+	      }));
+
+	      function findById(_x4, _x5) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return findById;
+	    }()
+	  }, {
+	    key: 'save',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(collection, entities) {
+	        var queries;
+	        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+	          while (1) {
+	            switch (_context3.prev = _context3.next) {
+	              case 0:
+	                queries = [];
+
+	                entities = (0, _map2.default)(entities, function (entity) {
+	                  queries.push(['REPLACE INTO #{collection} (key, value) VALUES (?, ?)', [entity[idAttribute], JSON.stringify(entity)]]);
+
+	                  return entity;
+	                });
+
+	                _context3.next = 4;
+	                return this.openTransaction(collection, queries, null, true);
+
+	              case 4:
+	                return _context3.abrupt('return', entities);
+
+	              case 5:
+	              case 'end':
+	                return _context3.stop();
+	            }
+	          }
+	        }, _callee3, this);
+	      }));
+
+	      function save(_x6, _x7) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return save;
+	    }()
+	  }, {
+	    key: 'removeById',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(collection, id) {
+	        var queries, response, entities, count;
+	        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+	          while (1) {
+	            switch (_context4.prev = _context4.next) {
+	              case 0:
+	                queries = [['SELECT value FROM #{collection} WHERE key = ?', [id]], ['DELETE FROM #{collection} WHERE key = ?', [id]]];
+	                _context4.next = 3;
+	                return this.openTransaction(collection, queries, null, true);
+
+	              case 3:
+	                response = _context4.sent;
+	                entities = response[0].result;
+	                count = response[1].rowCount;
+
+	                count = !!count ? count : entities.length;
+
+	                if (!(count === 0)) {
+	                  _context4.next = 9;
+	                  break;
+	                }
+
+	                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + this.name + ' WebSQL database.'));
+
+	              case 9:
+	                return _context4.abrupt('return', entities[0]);
+
+	              case 10:
+	              case 'end':
+	                return _context4.stop();
+	            }
+	          }
+	        }, _callee4, this);
+	      }));
+
+	      function removeById(_x8, _x9) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return removeById;
+	    }()
+	  }, {
+	    key: 'clear',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5() {
+	        var response, tables, queries;
+	        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+	          while (1) {
+	            switch (_context5.prev = _context5.next) {
+	              case 0:
+	                _context5.next = 2;
+	                return this.openTransaction(masterCollectionName, 'SELECT name AS value FROM #{collection} WHERE type = ?', ['table'], false);
+
+	              case 2:
+	                response = _context5.sent;
+	                tables = response.result;
+
+	                // If there are no tables, return.
+
+	                if (!(tables.length === 0)) {
+	                  _context5.next = 6;
+	                  break;
+	                }
+
+	                return _context5.abrupt('return', null);
+
+	              case 6:
+
+	                // Drop all tables. Filter tables first to avoid attempting to delete
+	                // system tables (which will fail).
+	                queries = tables.filter(function (table) {
+	                  return (/^[a-zA-Z0-9\-]{1,128}/.test(table)
+	                  );
+	                }).map(function (table) {
+	                  return ['DROP TABLE IF EXISTS \'' + table + '\''];
+	                });
+	                _context5.next = 9;
+	                return this.openTransaction(masterCollectionName, queries, null, true);
+
+	              case 9:
+	                dbCache = {};
+	                return _context5.abrupt('return', null);
+
+	              case 11:
+	              case 'end':
+	                return _context5.stop();
+	            }
+	          }
+	        }, _callee5, this);
+	      }));
+
+	      function clear() {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return clear;
+	    }()
+	  }], [{
+	    key: 'isSupported',
+	    value: function isSupported() {
+	      return !!global.openDatabase;
+	    }
+	  }]);
+
+	  return WebSQL;
+	}();
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), (function() { return this; }())))
+
+/***/ },
+/* 315 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.HttpMiddleware = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -34218,7 +36800,7 @@ var Kinvey =
 
 	var _middleware = __webpack_require__(159);
 
-	var _parseHeaders = __webpack_require__(309);
+	var _parseHeaders = __webpack_require__(316);
 
 	var _parseHeaders2 = _interopRequireDefault(_parseHeaders);
 
@@ -34230,21 +36812,21 @@ var Kinvey =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var Html5HttpMiddleware = exports.Html5HttpMiddleware = function (_KinveyMiddleware) {
-	  _inherits(Html5HttpMiddleware, _KinveyMiddleware);
+	var HttpMiddleware = exports.HttpMiddleware = function (_KinveyMiddleware) {
+	  _inherits(HttpMiddleware, _KinveyMiddleware);
 
-	  function Html5HttpMiddleware() {
+	  function HttpMiddleware() {
 	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey HTML5 Http Middleware' : arguments[0];
 
-	    _classCallCheck(this, Html5HttpMiddleware);
+	    _classCallCheck(this, HttpMiddleware);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Html5HttpMiddleware).call(this, name));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(HttpMiddleware).call(this, name));
 	  }
 
-	  _createClass(Html5HttpMiddleware, [{
+	  _createClass(HttpMiddleware, [{
 	    key: 'handle',
 	    value: function handle(request) {
-	      return _get(Object.getPrototypeOf(Html5HttpMiddleware.prototype), 'handle', this).call(this, request).then(function () {
+	      return _get(Object.getPrototypeOf(HttpMiddleware.prototype), 'handle', this).call(this, request).then(function () {
 	        var promise = new Promise(function (resolve, reject) {
 	          var url = request.url;
 	          var method = request.method;
@@ -34318,15 +36900,15 @@ var Kinvey =
 	    }
 	  }]);
 
-	  return Html5HttpMiddleware;
+	  return HttpMiddleware;
 	}(_middleware.KinveyMiddleware);
 
 /***/ },
-/* 309 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var trim = __webpack_require__(310)
-	  , forEach = __webpack_require__(311)
+	var trim = __webpack_require__(317)
+	  , forEach = __webpack_require__(318)
 	  , isArray = function(arg) {
 	      return Object.prototype.toString.call(arg) === '[object Array]';
 	    }
@@ -34358,7 +36940,7 @@ var Kinvey =
 	}
 
 /***/ },
-/* 310 */
+/* 317 */
 /***/ function(module, exports) {
 
 	
@@ -34378,10 +36960,10 @@ var Kinvey =
 
 
 /***/ },
-/* 311 */
+/* 318 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isFunction = __webpack_require__(312)
+	var isFunction = __webpack_require__(319)
 
 	module.exports = forEach
 
@@ -34430,7 +37012,7 @@ var Kinvey =
 
 
 /***/ },
-/* 312 */
+/* 319 */
 /***/ function(module, exports) {
 
 	module.exports = isFunction

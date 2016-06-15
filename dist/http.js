@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Html5HttpMiddleware = undefined;
+exports.HttpMiddleware = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -23,21 +23,21 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Html5HttpMiddleware = exports.Html5HttpMiddleware = function (_KinveyMiddleware) {
-  _inherits(Html5HttpMiddleware, _KinveyMiddleware);
+var HttpMiddleware = exports.HttpMiddleware = function (_KinveyMiddleware) {
+  _inherits(HttpMiddleware, _KinveyMiddleware);
 
-  function Html5HttpMiddleware() {
+  function HttpMiddleware() {
     var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey HTML5 Http Middleware' : arguments[0];
 
-    _classCallCheck(this, Html5HttpMiddleware);
+    _classCallCheck(this, HttpMiddleware);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(Html5HttpMiddleware).call(this, name));
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(HttpMiddleware).call(this, name));
   }
 
-  _createClass(Html5HttpMiddleware, [{
+  _createClass(HttpMiddleware, [{
     key: 'handle',
     value: function handle(request) {
-      return _get(Object.getPrototypeOf(Html5HttpMiddleware.prototype), 'handle', this).call(this, request).then(function () {
+      return _get(Object.getPrototypeOf(HttpMiddleware.prototype), 'handle', this).call(this, request).then(function () {
         var promise = new Promise(function (resolve, reject) {
           var url = request.url;
           var method = request.method;
@@ -111,5 +111,5 @@ var Html5HttpMiddleware = exports.Html5HttpMiddleware = function (_KinveyMiddlew
     }
   }]);
 
-  return Html5HttpMiddleware;
+  return HttpMiddleware;
 }(_middleware.KinveyMiddleware);

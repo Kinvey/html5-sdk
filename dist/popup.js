@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Html5Popup = undefined;
+exports.Popup = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -17,16 +17,16 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Html5Popup = exports.Html5Popup = function (_EventEmitter) {
-  _inherits(Html5Popup, _EventEmitter);
+var Popup = exports.Popup = function (_EventEmitter) {
+  _inherits(Popup, _EventEmitter);
 
-  function Html5Popup() {
-    _classCallCheck(this, Html5Popup);
+  function Popup() {
+    _classCallCheck(this, Popup);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(Html5Popup).apply(this, arguments));
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(Popup).apply(this, arguments));
   }
 
-  _createClass(Html5Popup, [{
+  _createClass(Popup, [{
     key: 'open',
     value: function () {
       var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
@@ -38,21 +38,21 @@ var Html5Popup = exports.Html5Popup = function (_EventEmitter) {
             switch (_context.prev = _context.next) {
               case 0:
                 // Open the popup
-                this.popup = global.open(url, '_blank', 'toolbar=no,location=no');
+                this.popupWindow = global.open(url, '_blank', 'toolbar=no,location=no');
 
-                if (!this.popup) {
+                if (!this.popupWindow) {
                   _context.next = 5;
                   break;
                 }
 
-                // Check if the popup is closed or redirect every 100ms
+                // Check if the popup is closed has closed every 100ms
                 this.interval = setInterval(function () {
-                  if (_this2.popup.closed) {
+                  if (_this2.popupWindow.closed) {
                     _this2.exitCallback();
                   } else {
                     try {
                       _this2.loadStopCallback({
-                        url: _this2.popup.location.href
+                        url: _this2.popupWindow.location.href
                       });
                     } catch (error) {
                       // Just catch the error
@@ -90,8 +90,8 @@ var Html5Popup = exports.Html5Popup = function (_EventEmitter) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                if (this.popup) {
-                  this.popup.close();
+                if (this.popupWindow) {
+                  this.popupWindow.close();
                 }
 
                 return _context2.abrupt('return', this);
@@ -111,6 +111,11 @@ var Html5Popup = exports.Html5Popup = function (_EventEmitter) {
       return close;
     }()
   }, {
+    key: 'loadStartCallback',
+    value: function loadStartCallback(event) {
+      this.emit('loadstart', event);
+    }
+  }, {
     key: 'loadStopCallback',
     value: function loadStopCallback(event) {
       this.emit('loadstop', event);
@@ -128,5 +133,5 @@ var Html5Popup = exports.Html5Popup = function (_EventEmitter) {
     }
   }]);
 
-  return Html5Popup;
+  return Popup;
 }(_events.EventEmitter);

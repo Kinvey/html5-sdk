@@ -30,7 +30,7 @@ gulp.task('lint', () => {
   return stream;
 });
 
-gulp.task('clean', (done) => del(['es5', 'dist'], done));
+gulp.task('clean', (done) => del(['dist'], done));
 
 gulp.task('build', ['clean', 'lint'], () => {
   const envs = env.set({
@@ -41,7 +41,7 @@ gulp.task('build', ['clean', 'lint'], () => {
     .pipe(envs)
     .pipe(babel())
     .pipe(envs.reset)
-    .pipe(gulp.dest('./es5'));
+    .pipe(gulp.dest('./dist'));
   return stream;
 });
 
@@ -57,9 +57,9 @@ gulp.task('bundle', ['build'], () => {
     + ' * Released under the <%= pkg.license %> license.\n'
     + ' */\n';
 
-  const stream = gulp.src('./es5/index.js')
+  const stream = gulp.src('./dist/index.js')
     .pipe(gulpWebpack({
-      context: `${__dirname}/es5`,
+      context: `${__dirname}/dist`,
       entry: [
         'babel-regenerator-runtime/runtime.js',
         './popup',
