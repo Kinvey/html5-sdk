@@ -1,11 +1,13 @@
-import { CacheMiddleware as CoreCacheMiddelware, DB as CoreDB } from 'kinvey-javascript-sdk-core/es5/rack/middleware/cache';
+import {
+  CacheMiddleware as CoreCacheMiddelware,
+  DB as CoreDB
+} from 'kinvey-javascript-sdk-core/es5/rack/middleware/cache';
 import { KinveyError } from 'kinvey-javascript-sdk-core/es5/errors';
 import { Log } from 'kinvey-javascript-sdk-core/es5/log';
 import { LocalStorage, SessionStorage } from './webstorage';
 import { IndexedDB } from './indexeddb';
 import { WebSQL } from './websql';
 import forEach from 'lodash/forEach';
-import isString from 'lodash/isString';
 import isArray from 'lodash/isArray';
 const dbCache = {};
 
@@ -29,14 +31,6 @@ export class DB extends CoreDB {
     DBAdapter.SessionStorage
   ]) {
     super(name);
-
-    if (!name) {
-      throw new KinveyError('A name was not provided when creating a DB instance.');
-    }
-
-    if (!isString(name)) {
-      throw new KinveyError('The name provided when creating a DB instance is not a string.');
-    }
 
     if (!isArray(adapters)) {
       adapters = [adapters];
@@ -78,36 +72,24 @@ export class DB extends CoreDB {
 
       return true;
     });
-
-    // if (!this.adapter) {
-    //   Log.error('Provided adapters are unsupported on this platform.'
-    //     + ' Defaulting to the Memory adapter.', adapters);
-    //   this.adapter = new Memory(name);
-    // }
   }
 }
 
 export class CacheMiddleware extends CoreCacheMiddelware {
-  getDB(request, adapters = [
+  openDatabase(name, adapters = [
     DBAdapter.IndexedDB,
     DBAdapter.WebSQL,
     DBAdapter.LocalStorage,
     DBAdapter.SessionStorage
   ]) {
-    if (!request) {
-      throw new KinveyError('Unable to provide a DB instance since no request was provided.');
+    if (!name) {
+      throw new KinveyError('A name is required to open a database.');
     }
 
-    const { appKey } = request;
-
-    if (!appKey) {
-      throw new KinveyError('Unable to provide a DB instance since the request provided does not contain an appKey.');
-    }
-
-    let db = dbCache[appKey];
+    let db = dbCache[name];
 
     if (!db) {
-      db = new DB(appKey, adapters);
+      db = new DB(name, adapters);
     }
 
     return db;
