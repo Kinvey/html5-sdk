@@ -1,4 +1,6 @@
-import { KinveyError, NotFoundError } from 'kinvey-javascript-sdk-core/es5/errors';
+import { KinveyError, NotFoundError } from 'kinvey-javascript-sdk-core/dist/errors';
+import { Promise } from 'es6-promise';
+import regeneratorRuntime from 'regenerator-runtime'; // eslint-disable-line no-unused-vars
 import map from 'lodash/map';
 import forEach from 'lodash/forEach';
 import isArray from 'lodash/isArray';

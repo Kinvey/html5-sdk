@@ -1,9 +1,9 @@
 import {
   CacheMiddleware as CoreCacheMiddelware,
   DB as CoreDB
-} from 'kinvey-javascript-sdk-core/es5/rack/middleware/cache';
-import { KinveyError } from 'kinvey-javascript-sdk-core/es5/errors';
-import { Log } from 'kinvey-javascript-sdk-core/es5/log';
+} from 'kinvey-javascript-sdk-core/dist/rack/cache';
+import { KinveyError } from 'kinvey-javascript-sdk-core/dist/errors';
+import { Log } from 'kinvey-javascript-sdk-core/dist/log';
 import { LocalStorage, SessionStorage } from './webstorage';
 import { IndexedDB } from './indexeddb';
 import { WebSQL } from './websql';

@@ -9,7 +9,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _middleware = require('kinvey-javascript-sdk-core/es5/rack/middleware');
+var _middleware = require('kinvey-javascript-sdk-core/dist/rack/middleware');
+
+var _es6Promise = require('es6-promise');
 
 var _parseHeaders = require('parse-headers');
 
@@ -38,7 +40,7 @@ var HttpMiddleware = exports.HttpMiddleware = function (_KinveyMiddleware) {
     key: 'handle',
     value: function handle(request) {
       return _get(Object.getPrototypeOf(HttpMiddleware.prototype), 'handle', this).call(this, request).then(function () {
-        var promise = new Promise(function (resolve, reject) {
+        var promise = new _es6Promise.Promise(function (resolve, reject) {
           var url = request.url;
           var method = request.method;
           var headers = request.headers;

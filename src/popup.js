@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import regeneratorRuntime from 'regenerator-runtime'; // eslint-disable-line no-unused-vars
 
 export class Popup extends EventEmitter {
   async open(url = '/') {

@@ -66,12 +66,7 @@ gulp.task('bundle', ['build'], () => {
   const stream = gulp.src('./dist/index.js')
     .pipe(gulpWebpack({
       context: `${__dirname}/dist`,
-      entry: [
-        'babel-regenerator-runtime/runtime.js',
-        './popup',
-        './device',
-        './index.js'
-      ],
+      entry: ['./index.js'],
       output: {
         filename: 'kinvey-html5-sdk.js',
         libraryTarget: 'var',

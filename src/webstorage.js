@@ -1,4 +1,5 @@
-import { NotFoundError } from 'kinvey-javascript-sdk-core/es5/errors';
+import { NotFoundError } from 'kinvey-javascript-sdk-core/dist/errors';
+import regeneratorRuntime from 'regenerator-runtime'; // eslint-disable-line no-unused-vars
 import keyBy from 'lodash/keyBy';
 import merge from 'lodash/merge';
 import values from 'lodash/values';

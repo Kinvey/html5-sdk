@@ -7,11 +7,11 @@ exports.CacheMiddleware = exports.DB = exports.DBAdapter = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _cache = require('kinvey-javascript-sdk-core/es5/rack/middleware/cache');
+var _cache = require('kinvey-javascript-sdk-core/dist/rack/cache');
 
-var _errors = require('kinvey-javascript-sdk-core/es5/errors');
+var _errors = require('kinvey-javascript-sdk-core/dist/errors');
 
-var _log = require('kinvey-javascript-sdk-core/es5/log');
+var _log = require('kinvey-javascript-sdk-core/dist/log');
 
 var _webstorage = require('./webstorage');
 

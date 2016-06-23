@@ -1,4 +1,4 @@
-import { KinveyMiddleware } from 'kinvey-javascript-sdk-core/es5/rack/middleware';
+import { KinveyMiddleware } from 'kinvey-javascript-sdk-core/dist/rack/middleware';
 import { Promise } from 'es6-promise';
 import parseHeaders from 'parse-headers';
 

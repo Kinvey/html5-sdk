@@ -5,9 +5,16 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.WebSQL = undefined;
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
 
-var _errors = require('kinvey-javascript-sdk-core/es5/errors');
+
+var _errors = require('kinvey-javascript-sdk-core/dist/errors');
+
+var _es6Promise = require('es6-promise');
+
+var _regeneratorRuntime = require('regenerator-runtime');
+
+var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
 var _map = require('lodash/map');
 
@@ -31,7 +38,7 @@ var _isString2 = _interopRequireDefault(_isString);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _es6Promise.Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return _es6Promise.Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -74,7 +81,7 @@ var WebSQL = exports.WebSQL = function () {
       var isMulti = (0, _isArray2.default)(query);
       query = isMulti ? query : [[query, parameters]];
 
-      var promise = new Promise(function (resolve, reject) {
+      var promise = new _es6Promise.Promise(function (resolve, reject) {
         var writeTxn = write || !(0, _isFunction2.default)(db.readTransaction);
         db[writeTxn ? 'transaction' : 'readTransaction'](function (tx) {
           if (write && !isMaster) {
@@ -140,9 +147,9 @@ var WebSQL = exports.WebSQL = function () {
   }, {
     key: 'find',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(collection) {
+      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(collection) {
         var sql, response;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
+        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
@@ -171,9 +178,9 @@ var WebSQL = exports.WebSQL = function () {
   }, {
     key: 'findById',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(collection, id) {
+      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2(collection, id) {
         var sql, response, entities;
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        return _regeneratorRuntime2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
@@ -212,9 +219,9 @@ var WebSQL = exports.WebSQL = function () {
   }, {
     key: 'save',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(collection, entities) {
+      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee3(collection, entities) {
         var queries;
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        return _regeneratorRuntime2.default.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
@@ -249,9 +256,9 @@ var WebSQL = exports.WebSQL = function () {
   }, {
     key: 'removeById',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(collection, id) {
+      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee4(collection, id) {
         var queries, response, entities, count;
-        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+        return _regeneratorRuntime2.default.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
@@ -293,9 +300,9 @@ var WebSQL = exports.WebSQL = function () {
   }, {
     key: 'clear',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5() {
+      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee5() {
         var response, tables, queries;
-        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+        return _regeneratorRuntime2.default.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:

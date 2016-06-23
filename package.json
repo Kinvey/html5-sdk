@@ -23,13 +23,17 @@
   },
   "dependencies": {
     "es6-promise": "^3.2.1",
-    "kinvey-javascript-sdk-core": "*",
+    "kinvey-javascript-sdk-core": "../../Core/SDK",
     "lodash": "^4.8.2",
     "parse-headers": "^2.0.1",
     "regenerator-runtime": "^0.9.5"
   },
   "peerDependencies": {
-    "kinvey-javascript-sdk-core": "*"
+    "es6-promise": "^3.2.1",
+    "kinvey-javascript-sdk-core": "../../Core/SDK",
+    "lodash": "^4.8.2",
+    "parse-headers": "^2.0.1",
+    "regenerator-runtime": "^0.9.5"
   },
   "devDependencies": {
     "babel-core": "^6.9.0",
@@ -41,6 +45,7 @@
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
     "del": "^2.0.2",
+    "eslint": "^2.12.0",
     "eslint-config-airbnb": "^9.0.1",
     "eslint-plugin-import": "^1.8.0",
     "eslint-plugin-jsx-a11y": "^1.2.2",

@@ -1,5 +1,6 @@
-import { KinveyError, NotFoundError } from 'kinvey-javascript-sdk-core/es5/errors';
+import { KinveyError, NotFoundError } from 'kinvey-javascript-sdk-core/dist/errors';
 import { Promise } from 'es6-promise';
+import regeneratorRuntime from 'regenerator-runtime'; // eslint-disable-line no-unused-vars
 import forEach from 'lodash/forEach';
 import isString from 'lodash/isString';
 import isArray from 'lodash/isArray';
@@ -12,7 +13,7 @@ const TransactionMode = {
 };
 Object.freeze(TransactionMode);
 
-export default class IndexedDB {
+export class IndexedDB {
   constructor(name) {
     if (!name) {
       throw new KinveyError('A name is required to use the IndexedDB adapter.', name);
