@@ -23,17 +23,13 @@
   },
   "dependencies": {
     "es6-promise": "^3.2.1",
-    "kinvey-javascript-sdk-core": "../../Core/SDK",
+    "kinvey-javascript-sdk-core": "*",
     "lodash": "^4.8.2",
     "parse-headers": "^2.0.1",
     "regenerator-runtime": "^0.9.5"
   },
   "peerDependencies": {
-    "es6-promise": "^3.2.1",
-    "kinvey-javascript-sdk-core": "../../Core/SDK",
-    "lodash": "^4.8.2",
-    "parse-headers": "^2.0.1",
-    "regenerator-runtime": "^0.9.5"
+    "kinvey-javascript-sdk-core": "*"
   },
   "devDependencies": {
     "babel-core": "^6.9.0",
