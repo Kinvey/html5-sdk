@@ -1,5 +1,5 @@
 /**
- * kinvey-html5-sdk v3.0.0-beta.21
+ * kinvey-html5-sdk v3.0.0-beta.22
  * Kinvey JavaScript SDK for HTML5.
  * http://www.kinvey.com
  *
@@ -66,19 +66,19 @@ var Kinvey =
 
 	var _kinvey = __webpack_require__(2);
 
-	var _rack = __webpack_require__(153);
+	var _rack = __webpack_require__(154);
 
-	var _cache = __webpack_require__(164);
+	var _cache = __webpack_require__(165);
 
-	var _cache2 = __webpack_require__(273);
+	var _cache2 = __webpack_require__(274);
 
-	var _http = __webpack_require__(187);
+	var _http = __webpack_require__(188);
 
-	var _http2 = __webpack_require__(286);
+	var _http2 = __webpack_require__(287);
 
-	var _device = __webpack_require__(291);
+	var _device = __webpack_require__(292);
 
-	var _popup = __webpack_require__(293);
+	var _popup = __webpack_require__(294);
 
 	// Swap Cache Middelware
 	var cacheRack = _rack.KinveyRackManager.cacheRack;
@@ -100,6 +100,57 @@ var Kinvey =
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.Kinvey = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _kinveyJavascriptSdkCore = __webpack_require__(3);
+
+	var _es6Promise = __webpack_require__(168);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Kinvey = exports.Kinvey = function (_CoreKinvey) {
+	  _inherits(Kinvey, _CoreKinvey);
+
+	  function Kinvey() {
+	    _classCallCheck(this, Kinvey);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Kinvey).apply(this, arguments));
+	  }
+
+	  _createClass(Kinvey, null, [{
+	    key: 'Promise',
+
+	    /**
+	     * Returns the Promise class.
+	     *
+	     * @return {Promise} The Promise class.
+	     *
+	     * @example
+	     * var Promise = Kinvey.Promise;
+	     */
+	    get: function get() {
+	      return _es6Promise.Promise;
+	    }
+	  }]);
+
+	  return Kinvey;
+	}(_kinveyJavascriptSdkCore.Kinvey);
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -110,41 +161,41 @@ var Kinvey =
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
 
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _aggregation = __webpack_require__(6);
+	var _aggregation = __webpack_require__(7);
 
-	var _client = __webpack_require__(136);
+	var _client = __webpack_require__(137);
 
-	var _endpoint = __webpack_require__(147);
+	var _endpoint = __webpack_require__(148);
 
-	var _log = __webpack_require__(198);
+	var _log = __webpack_require__(199);
 
-	var _metadata = __webpack_require__(200);
+	var _metadata = __webpack_require__(201);
 
-	var _query = __webpack_require__(7);
+	var _query = __webpack_require__(8);
 
-	var _datastore = __webpack_require__(225);
+	var _datastore = __webpack_require__(226);
 
-	var _filestore = __webpack_require__(266);
+	var _filestore = __webpack_require__(267);
 
-	var _sync = __webpack_require__(246);
+	var _sync = __webpack_require__(247);
 
-	var _user = __webpack_require__(267);
+	var _user = __webpack_require__(268);
 
-	var _mic = __webpack_require__(269);
+	var _mic = __webpack_require__(270);
 
-	var _network = __webpack_require__(197);
+	var _network = __webpack_require__(198);
 
-	var _request = __webpack_require__(148);
+	var _request = __webpack_require__(149);
 
-	var _rack = __webpack_require__(153);
+	var _rack = __webpack_require__(154);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
-	var _url = __webpack_require__(141);
+	var _url = __webpack_require__(142);
 
 	var _url2 = _interopRequireDefault(_url);
 
@@ -358,10 +409,10 @@ var Kinvey =
 
 	  return Kinvey;
 	}();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -486,7 +537,7 @@ var Kinvey =
 
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -496,7 +547,7 @@ var Kinvey =
 	});
 	exports.SyncError = exports.ServerError = exports.QueryError = exports.ParameterValueOutOfRangeError = exports.NoResponseError = exports.NotFoundError = exports.NoActiveUserError = exports.NoNetworkConnectionError = exports.MissingRequestParameterError = exports.MissingRequestHeaderError = exports.MissingQueryError = exports.JSONParseError = exports.InvalidQuerySyntaxError = exports.InvalidIdentifierError = exports.InvalidCredentialsError = exports.InsufficientCredentialsError = exports.IncompleteRequestBodyError = exports.FeatureUnavailableError = exports.ActiveUserError = exports.KinveyError = undefined;
 
-	var _es6Error = __webpack_require__(5);
+	var _es6Error = __webpack_require__(6);
 
 	var _es6Error2 = _interopRequireDefault(_es6Error);
 
@@ -814,7 +865,7 @@ var Kinvey =
 	}(KinveyError);
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -899,7 +950,7 @@ var Kinvey =
 	module.exports = exports['default'];
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -911,31 +962,31 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _query = __webpack_require__(7);
+	var _query = __webpack_require__(8);
 
-	var _result = __webpack_require__(135);
+	var _result = __webpack_require__(136);
 
 	var _result2 = _interopRequireDefault(_result);
 
-	var _assign = __webpack_require__(117);
+	var _assign = __webpack_require__(118);
 
 	var _assign2 = _interopRequireDefault(_assign);
 
-	var _forEach = __webpack_require__(9);
+	var _forEach = __webpack_require__(10);
 
 	var _forEach2 = _interopRequireDefault(_forEach);
 
-	var _isString = __webpack_require__(31);
+	var _isString = __webpack_require__(32);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
-	var _isObject = __webpack_require__(27);
+	var _isObject = __webpack_require__(28);
 
 	var _isObject2 = _interopRequireDefault(_isObject);
 
-	var _isFunction = __webpack_require__(26);
+	var _isFunction = __webpack_require__(27);
 
 	var _isFunction2 = _interopRequireDefault(_isFunction);
 
@@ -1143,7 +1194,7 @@ var Kinvey =
 	}();
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1157,47 +1208,47 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _object = __webpack_require__(8);
+	var _object = __webpack_require__(9);
 
-	var _sift = __webpack_require__(116);
+	var _sift = __webpack_require__(117);
 
 	var _sift2 = _interopRequireDefault(_sift);
 
-	var _assign = __webpack_require__(117);
+	var _assign = __webpack_require__(118);
 
 	var _assign2 = _interopRequireDefault(_assign);
 
-	var _isArray = __webpack_require__(30);
+	var _isArray = __webpack_require__(31);
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
-	var _isNumber = __webpack_require__(127);
+	var _isNumber = __webpack_require__(128);
 
 	var _isNumber2 = _interopRequireDefault(_isNumber);
 
-	var _isString = __webpack_require__(31);
+	var _isString = __webpack_require__(32);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
-	var _isObject = __webpack_require__(27);
+	var _isObject = __webpack_require__(28);
 
 	var _isObject2 = _interopRequireDefault(_isObject);
 
-	var _isRegExp = __webpack_require__(128);
+	var _isRegExp = __webpack_require__(129);
 
 	var _isRegExp2 = _interopRequireDefault(_isRegExp);
 
-	var _isEmpty = __webpack_require__(129);
+	var _isEmpty = __webpack_require__(130);
 
 	var _isEmpty2 = _interopRequireDefault(_isEmpty);
 
-	var _forEach = __webpack_require__(9);
+	var _forEach = __webpack_require__(10);
 
 	var _forEach2 = _interopRequireDefault(_forEach);
 
-	var _findKey = __webpack_require__(133);
+	var _findKey = __webpack_require__(134);
 
 	var _findKey2 = _interopRequireDefault(_findKey);
 
@@ -2217,7 +2268,7 @@ var Kinvey =
 	exports.Query = Query;
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2229,11 +2280,11 @@ var Kinvey =
 	exports.isDefined = isDefined;
 	exports.use = use;
 
-	var _forEach = __webpack_require__(9);
+	var _forEach = __webpack_require__(10);
 
 	var _forEach2 = _interopRequireDefault(_forEach);
 
-	var _isFunction = __webpack_require__(26);
+	var _isFunction = __webpack_require__(27);
 
 	var _isFunction2 = _interopRequireDefault(_isFunction);
 
@@ -2289,13 +2340,13 @@ var Kinvey =
 	}
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayEach = __webpack_require__(10),
-	    baseEach = __webpack_require__(11),
-	    baseIteratee = __webpack_require__(35),
-	    isArray = __webpack_require__(30);
+	var arrayEach = __webpack_require__(11),
+	    baseEach = __webpack_require__(12),
+	    baseIteratee = __webpack_require__(36),
+	    isArray = __webpack_require__(31);
 
 	/**
 	 * Iterates over elements of `collection` and invokes `iteratee` for each element.
@@ -2336,7 +2387,7 @@ var Kinvey =
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	/**
@@ -2364,11 +2415,11 @@ var Kinvey =
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseForOwn = __webpack_require__(12),
-	    createBaseEach = __webpack_require__(34);
+	var baseForOwn = __webpack_require__(13),
+	    createBaseEach = __webpack_require__(35);
 
 	/**
 	 * The base implementation of `_.forEach` without support for iteratee shorthands.
@@ -2384,11 +2435,11 @@ var Kinvey =
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseFor = __webpack_require__(13),
-	    keys = __webpack_require__(15);
+	var baseFor = __webpack_require__(14),
+	    keys = __webpack_require__(16);
 
 	/**
 	 * The base implementation of `_.forOwn` without support for iteratee shorthands.
@@ -2406,10 +2457,10 @@ var Kinvey =
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createBaseFor = __webpack_require__(14);
+	var createBaseFor = __webpack_require__(15);
 
 	/**
 	 * The base implementation of `baseForOwn` which iterates over `object`
@@ -2428,7 +2479,7 @@ var Kinvey =
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	/**
@@ -2459,15 +2510,15 @@ var Kinvey =
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseHas = __webpack_require__(16),
-	    baseKeys = __webpack_require__(18),
-	    indexKeys = __webpack_require__(19),
-	    isArrayLike = __webpack_require__(23),
-	    isIndex = __webpack_require__(32),
-	    isPrototype = __webpack_require__(33);
+	var baseHas = __webpack_require__(17),
+	    baseKeys = __webpack_require__(19),
+	    indexKeys = __webpack_require__(20),
+	    isArrayLike = __webpack_require__(24),
+	    isIndex = __webpack_require__(33),
+	    isPrototype = __webpack_require__(34);
 
 	/**
 	 * Creates an array of the own enumerable property names of `object`.
@@ -2521,10 +2572,10 @@ var Kinvey =
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getPrototype = __webpack_require__(17);
+	var getPrototype = __webpack_require__(18);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -2553,7 +2604,7 @@ var Kinvey =
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports) {
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
@@ -2574,7 +2625,7 @@ var Kinvey =
 
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports) {
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
@@ -2596,14 +2647,14 @@ var Kinvey =
 
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseTimes = __webpack_require__(20),
-	    isArguments = __webpack_require__(21),
-	    isArray = __webpack_require__(30),
-	    isLength = __webpack_require__(28),
-	    isString = __webpack_require__(31);
+	var baseTimes = __webpack_require__(21),
+	    isArguments = __webpack_require__(22),
+	    isArray = __webpack_require__(31),
+	    isLength = __webpack_require__(29),
+	    isString = __webpack_require__(32);
 
 	/**
 	 * Creates an array of index keys for `object` values of arrays,
@@ -2626,7 +2677,7 @@ var Kinvey =
 
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports) {
 
 	/**
@@ -2652,10 +2703,10 @@ var Kinvey =
 
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArrayLikeObject = __webpack_require__(22);
+	var isArrayLikeObject = __webpack_require__(23);
 
 	/** `Object#toString` result references. */
 	var argsTag = '[object Arguments]';
@@ -2704,11 +2755,11 @@ var Kinvey =
 
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArrayLike = __webpack_require__(23),
-	    isObjectLike = __webpack_require__(29);
+	var isArrayLike = __webpack_require__(24),
+	    isObjectLike = __webpack_require__(30);
 
 	/**
 	 * This method is like `_.isArrayLike` except that it also checks if `value`
@@ -2743,12 +2794,12 @@ var Kinvey =
 
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getLength = __webpack_require__(24),
-	    isFunction = __webpack_require__(26),
-	    isLength = __webpack_require__(28);
+	var getLength = __webpack_require__(25),
+	    isFunction = __webpack_require__(27),
+	    isLength = __webpack_require__(29);
 
 	/**
 	 * Checks if `value` is array-like. A value is considered array-like if it's
@@ -2783,10 +2834,10 @@ var Kinvey =
 
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseProperty = __webpack_require__(25);
+	var baseProperty = __webpack_require__(26);
 
 	/**
 	 * Gets the "length" property value of `object`.
@@ -2805,7 +2856,7 @@ var Kinvey =
 
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports) {
 
 	/**
@@ -2825,10 +2876,10 @@ var Kinvey =
 
 
 /***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(27);
+	var isObject = __webpack_require__(28);
 
 	/** `Object#toString` result references. */
 	var funcTag = '[object Function]',
@@ -2874,7 +2925,7 @@ var Kinvey =
 
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports) {
 
 	/**
@@ -2911,7 +2962,7 @@ var Kinvey =
 
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports) {
 
 	/** Used as references for various `Number` constants. */
@@ -2953,7 +3004,7 @@ var Kinvey =
 
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports) {
 
 	/**
@@ -2988,7 +3039,7 @@ var Kinvey =
 
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports) {
 
 	/**
@@ -3022,11 +3073,11 @@ var Kinvey =
 
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArray = __webpack_require__(30),
-	    isObjectLike = __webpack_require__(29);
+	var isArray = __webpack_require__(31),
+	    isObjectLike = __webpack_require__(30);
 
 	/** `Object#toString` result references. */
 	var stringTag = '[object String]';
@@ -3068,7 +3119,7 @@ var Kinvey =
 
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports) {
 
 	/** Used as references for various `Number` constants. */
@@ -3096,7 +3147,7 @@ var Kinvey =
 
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports) {
 
 	/** Used for built-in method references. */
@@ -3120,10 +3171,10 @@ var Kinvey =
 
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArrayLike = __webpack_require__(23);
+	var isArrayLike = __webpack_require__(24);
 
 	/**
 	 * Creates a `baseEach` or `baseEachRight` function.
@@ -3158,14 +3209,14 @@ var Kinvey =
 
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseMatches = __webpack_require__(36),
-	    baseMatchesProperty = __webpack_require__(99),
-	    identity = __webpack_require__(113),
-	    isArray = __webpack_require__(30),
-	    property = __webpack_require__(114);
+	var baseMatches = __webpack_require__(37),
+	    baseMatchesProperty = __webpack_require__(100),
+	    identity = __webpack_require__(114),
+	    isArray = __webpack_require__(31),
+	    property = __webpack_require__(115);
 
 	/**
 	 * The base implementation of `_.iteratee`.
@@ -3195,12 +3246,12 @@ var Kinvey =
 
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIsMatch = __webpack_require__(37),
-	    getMatchData = __webpack_require__(96),
-	    matchesStrictComparable = __webpack_require__(98);
+	var baseIsMatch = __webpack_require__(38),
+	    getMatchData = __webpack_require__(97),
+	    matchesStrictComparable = __webpack_require__(99);
 
 	/**
 	 * The base implementation of `_.matches` which doesn't clone `source`.
@@ -3223,11 +3274,11 @@ var Kinvey =
 
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Stack = __webpack_require__(38),
-	    baseIsEqual = __webpack_require__(77);
+	var Stack = __webpack_require__(39),
+	    baseIsEqual = __webpack_require__(78);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var UNORDERED_COMPARE_FLAG = 1,
@@ -3291,15 +3342,15 @@ var Kinvey =
 
 
 /***/ },
-/* 38 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ListCache = __webpack_require__(39),
-	    stackClear = __webpack_require__(47),
-	    stackDelete = __webpack_require__(48),
-	    stackGet = __webpack_require__(49),
-	    stackHas = __webpack_require__(50),
-	    stackSet = __webpack_require__(51);
+	var ListCache = __webpack_require__(40),
+	    stackClear = __webpack_require__(48),
+	    stackDelete = __webpack_require__(49),
+	    stackGet = __webpack_require__(50),
+	    stackHas = __webpack_require__(51),
+	    stackSet = __webpack_require__(52);
 
 	/**
 	 * Creates a stack cache object to store key-value pairs.
@@ -3323,14 +3374,14 @@ var Kinvey =
 
 
 /***/ },
-/* 39 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var listCacheClear = __webpack_require__(40),
-	    listCacheDelete = __webpack_require__(41),
-	    listCacheGet = __webpack_require__(44),
-	    listCacheHas = __webpack_require__(45),
-	    listCacheSet = __webpack_require__(46);
+	var listCacheClear = __webpack_require__(41),
+	    listCacheDelete = __webpack_require__(42),
+	    listCacheGet = __webpack_require__(45),
+	    listCacheHas = __webpack_require__(46),
+	    listCacheSet = __webpack_require__(47);
 
 	/**
 	 * Creates an list cache object.
@@ -3361,7 +3412,7 @@ var Kinvey =
 
 
 /***/ },
-/* 40 */
+/* 41 */
 /***/ function(module, exports) {
 
 	/**
@@ -3379,10 +3430,10 @@ var Kinvey =
 
 
 /***/ },
-/* 41 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assocIndexOf = __webpack_require__(42);
+	var assocIndexOf = __webpack_require__(43);
 
 	/** Used for built-in method references. */
 	var arrayProto = Array.prototype;
@@ -3419,10 +3470,10 @@ var Kinvey =
 
 
 /***/ },
-/* 42 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var eq = __webpack_require__(43);
+	var eq = __webpack_require__(44);
 
 	/**
 	 * Gets the index at which the `key` is found in `array` of key-value pairs.
@@ -3446,7 +3497,7 @@ var Kinvey =
 
 
 /***/ },
-/* 43 */
+/* 44 */
 /***/ function(module, exports) {
 
 	/**
@@ -3489,10 +3540,10 @@ var Kinvey =
 
 
 /***/ },
-/* 44 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assocIndexOf = __webpack_require__(42);
+	var assocIndexOf = __webpack_require__(43);
 
 	/**
 	 * Gets the list cache value for `key`.
@@ -3514,10 +3565,10 @@ var Kinvey =
 
 
 /***/ },
-/* 45 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assocIndexOf = __webpack_require__(42);
+	var assocIndexOf = __webpack_require__(43);
 
 	/**
 	 * Checks if a list cache value for `key` exists.
@@ -3536,10 +3587,10 @@ var Kinvey =
 
 
 /***/ },
-/* 46 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assocIndexOf = __webpack_require__(42);
+	var assocIndexOf = __webpack_require__(43);
 
 	/**
 	 * Sets the list cache `key` to `value`.
@@ -3567,10 +3618,10 @@ var Kinvey =
 
 
 /***/ },
-/* 47 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ListCache = __webpack_require__(39);
+	var ListCache = __webpack_require__(40);
 
 	/**
 	 * Removes all key-value entries from the stack.
@@ -3587,7 +3638,7 @@ var Kinvey =
 
 
 /***/ },
-/* 48 */
+/* 49 */
 /***/ function(module, exports) {
 
 	/**
@@ -3607,7 +3658,7 @@ var Kinvey =
 
 
 /***/ },
-/* 49 */
+/* 50 */
 /***/ function(module, exports) {
 
 	/**
@@ -3627,7 +3678,7 @@ var Kinvey =
 
 
 /***/ },
-/* 50 */
+/* 51 */
 /***/ function(module, exports) {
 
 	/**
@@ -3647,11 +3698,11 @@ var Kinvey =
 
 
 /***/ },
-/* 51 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ListCache = __webpack_require__(39),
-	    MapCache = __webpack_require__(52);
+	var ListCache = __webpack_require__(40),
+	    MapCache = __webpack_require__(53);
 
 	/** Used as the size to enable large array optimizations. */
 	var LARGE_ARRAY_SIZE = 200;
@@ -3679,14 +3730,14 @@ var Kinvey =
 
 
 /***/ },
-/* 52 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var mapCacheClear = __webpack_require__(53),
-	    mapCacheDelete = __webpack_require__(71),
-	    mapCacheGet = __webpack_require__(74),
-	    mapCacheHas = __webpack_require__(75),
-	    mapCacheSet = __webpack_require__(76);
+	var mapCacheClear = __webpack_require__(54),
+	    mapCacheDelete = __webpack_require__(72),
+	    mapCacheGet = __webpack_require__(75),
+	    mapCacheHas = __webpack_require__(76),
+	    mapCacheSet = __webpack_require__(77);
 
 	/**
 	 * Creates a map cache object to store key-value pairs.
@@ -3717,12 +3768,12 @@ var Kinvey =
 
 
 /***/ },
-/* 53 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Hash = __webpack_require__(54),
-	    ListCache = __webpack_require__(39),
-	    Map = __webpack_require__(70);
+	var Hash = __webpack_require__(55),
+	    ListCache = __webpack_require__(40),
+	    Map = __webpack_require__(71);
 
 	/**
 	 * Removes all key-value entries from the map.
@@ -3743,14 +3794,14 @@ var Kinvey =
 
 
 /***/ },
-/* 54 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var hashClear = __webpack_require__(55),
-	    hashDelete = __webpack_require__(66),
-	    hashGet = __webpack_require__(67),
-	    hashHas = __webpack_require__(68),
-	    hashSet = __webpack_require__(69);
+	var hashClear = __webpack_require__(56),
+	    hashDelete = __webpack_require__(67),
+	    hashGet = __webpack_require__(68),
+	    hashHas = __webpack_require__(69),
+	    hashSet = __webpack_require__(70);
 
 	/**
 	 * Creates a hash object.
@@ -3781,10 +3832,10 @@ var Kinvey =
 
 
 /***/ },
-/* 55 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var nativeCreate = __webpack_require__(56);
+	var nativeCreate = __webpack_require__(57);
 
 	/**
 	 * Removes all key-value entries from the hash.
@@ -3801,10 +3852,10 @@ var Kinvey =
 
 
 /***/ },
-/* 56 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getNative = __webpack_require__(57);
+	var getNative = __webpack_require__(58);
 
 	/* Built-in method references that are verified to be native. */
 	var nativeCreate = getNative(Object, 'create');
@@ -3813,11 +3864,11 @@ var Kinvey =
 
 
 /***/ },
-/* 57 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIsNative = __webpack_require__(58),
-	    getValue = __webpack_require__(65);
+	var baseIsNative = __webpack_require__(59),
+	    getValue = __webpack_require__(66);
 
 	/**
 	 * Gets the native function at `key` of `object`.
@@ -3836,14 +3887,14 @@ var Kinvey =
 
 
 /***/ },
-/* 58 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isFunction = __webpack_require__(26),
-	    isHostObject = __webpack_require__(59),
-	    isMasked = __webpack_require__(60),
-	    isObject = __webpack_require__(27),
-	    toSource = __webpack_require__(64);
+	var isFunction = __webpack_require__(27),
+	    isHostObject = __webpack_require__(60),
+	    isMasked = __webpack_require__(61),
+	    isObject = __webpack_require__(28),
+	    toSource = __webpack_require__(65);
 
 	/**
 	 * Used to match `RegExp`
@@ -3889,7 +3940,7 @@ var Kinvey =
 
 
 /***/ },
-/* 59 */
+/* 60 */
 /***/ function(module, exports) {
 
 	/**
@@ -3915,10 +3966,10 @@ var Kinvey =
 
 
 /***/ },
-/* 60 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var coreJsData = __webpack_require__(61);
+	var coreJsData = __webpack_require__(62);
 
 	/** Used to detect methods masquerading as native. */
 	var maskSrcKey = (function() {
@@ -3941,10 +3992,10 @@ var Kinvey =
 
 
 /***/ },
-/* 61 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var root = __webpack_require__(62);
+	var root = __webpack_require__(63);
 
 	/** Used to detect overreaching core-js shims. */
 	var coreJsData = root['__core-js_shared__'];
@@ -3953,10 +4004,10 @@ var Kinvey =
 
 
 /***/ },
-/* 62 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var checkGlobal = __webpack_require__(63);
+	/* WEBPACK VAR INJECTION */(function(global) {var checkGlobal = __webpack_require__(64);
 
 	/** Detect free variable `global` from Node.js. */
 	var freeGlobal = checkGlobal(typeof global == 'object' && global);
@@ -3975,7 +4026,7 @@ var Kinvey =
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 63 */
+/* 64 */
 /***/ function(module, exports) {
 
 	/**
@@ -3993,7 +4044,7 @@ var Kinvey =
 
 
 /***/ },
-/* 64 */
+/* 65 */
 /***/ function(module, exports) {
 
 	/** Used to resolve the decompiled source of functions. */
@@ -4022,7 +4073,7 @@ var Kinvey =
 
 
 /***/ },
-/* 65 */
+/* 66 */
 /***/ function(module, exports) {
 
 	/**
@@ -4041,7 +4092,7 @@ var Kinvey =
 
 
 /***/ },
-/* 66 */
+/* 67 */
 /***/ function(module, exports) {
 
 	/**
@@ -4062,10 +4113,10 @@ var Kinvey =
 
 
 /***/ },
-/* 67 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var nativeCreate = __webpack_require__(56);
+	var nativeCreate = __webpack_require__(57);
 
 	/** Used to stand-in for `undefined` hash values. */
 	var HASH_UNDEFINED = '__lodash_hash_undefined__';
@@ -4098,10 +4149,10 @@ var Kinvey =
 
 
 /***/ },
-/* 68 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var nativeCreate = __webpack_require__(56);
+	var nativeCreate = __webpack_require__(57);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -4127,10 +4178,10 @@ var Kinvey =
 
 
 /***/ },
-/* 69 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var nativeCreate = __webpack_require__(56);
+	var nativeCreate = __webpack_require__(57);
 
 	/** Used to stand-in for `undefined` hash values. */
 	var HASH_UNDEFINED = '__lodash_hash_undefined__';
@@ -4155,11 +4206,11 @@ var Kinvey =
 
 
 /***/ },
-/* 70 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getNative = __webpack_require__(57),
-	    root = __webpack_require__(62);
+	var getNative = __webpack_require__(58),
+	    root = __webpack_require__(63);
 
 	/* Built-in method references that are verified to be native. */
 	var Map = getNative(root, 'Map');
@@ -4168,10 +4219,10 @@ var Kinvey =
 
 
 /***/ },
-/* 71 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getMapData = __webpack_require__(72);
+	var getMapData = __webpack_require__(73);
 
 	/**
 	 * Removes `key` and its value from the map.
@@ -4190,10 +4241,10 @@ var Kinvey =
 
 
 /***/ },
-/* 72 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isKeyable = __webpack_require__(73);
+	var isKeyable = __webpack_require__(74);
 
 	/**
 	 * Gets the data for `map`.
@@ -4214,7 +4265,7 @@ var Kinvey =
 
 
 /***/ },
-/* 73 */
+/* 74 */
 /***/ function(module, exports) {
 
 	/**
@@ -4235,10 +4286,10 @@ var Kinvey =
 
 
 /***/ },
-/* 74 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getMapData = __webpack_require__(72);
+	var getMapData = __webpack_require__(73);
 
 	/**
 	 * Gets the map value for `key`.
@@ -4257,10 +4308,10 @@ var Kinvey =
 
 
 /***/ },
-/* 75 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getMapData = __webpack_require__(72);
+	var getMapData = __webpack_require__(73);
 
 	/**
 	 * Checks if a map value for `key` exists.
@@ -4279,10 +4330,10 @@ var Kinvey =
 
 
 /***/ },
-/* 76 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getMapData = __webpack_require__(72);
+	var getMapData = __webpack_require__(73);
 
 	/**
 	 * Sets the map `key` to `value`.
@@ -4303,12 +4354,12 @@ var Kinvey =
 
 
 /***/ },
-/* 77 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIsEqualDeep = __webpack_require__(78),
-	    isObject = __webpack_require__(27),
-	    isObjectLike = __webpack_require__(29);
+	var baseIsEqualDeep = __webpack_require__(79),
+	    isObject = __webpack_require__(28),
+	    isObjectLike = __webpack_require__(30);
 
 	/**
 	 * The base implementation of `_.isEqual` which supports partial comparisons
@@ -4339,17 +4390,17 @@ var Kinvey =
 
 
 /***/ },
-/* 78 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Stack = __webpack_require__(38),
-	    equalArrays = __webpack_require__(79),
-	    equalByTag = __webpack_require__(84),
-	    equalObjects = __webpack_require__(89),
-	    getTag = __webpack_require__(90),
-	    isArray = __webpack_require__(30),
-	    isHostObject = __webpack_require__(59),
-	    isTypedArray = __webpack_require__(95);
+	var Stack = __webpack_require__(39),
+	    equalArrays = __webpack_require__(80),
+	    equalByTag = __webpack_require__(85),
+	    equalObjects = __webpack_require__(90),
+	    getTag = __webpack_require__(91),
+	    isArray = __webpack_require__(31),
+	    isHostObject = __webpack_require__(60),
+	    isTypedArray = __webpack_require__(96);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var PARTIAL_COMPARE_FLAG = 2;
@@ -4427,11 +4478,11 @@ var Kinvey =
 
 
 /***/ },
-/* 79 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var SetCache = __webpack_require__(80),
-	    arraySome = __webpack_require__(83);
+	var SetCache = __webpack_require__(81),
+	    arraySome = __webpack_require__(84);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var UNORDERED_COMPARE_FLAG = 1,
@@ -4514,12 +4565,12 @@ var Kinvey =
 
 
 /***/ },
-/* 80 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var MapCache = __webpack_require__(52),
-	    setCacheAdd = __webpack_require__(81),
-	    setCacheHas = __webpack_require__(82);
+	var MapCache = __webpack_require__(53),
+	    setCacheAdd = __webpack_require__(82),
+	    setCacheHas = __webpack_require__(83);
 
 	/**
 	 *
@@ -4547,7 +4598,7 @@ var Kinvey =
 
 
 /***/ },
-/* 81 */
+/* 82 */
 /***/ function(module, exports) {
 
 	/** Used to stand-in for `undefined` hash values. */
@@ -4572,7 +4623,7 @@ var Kinvey =
 
 
 /***/ },
-/* 82 */
+/* 83 */
 /***/ function(module, exports) {
 
 	/**
@@ -4592,7 +4643,7 @@ var Kinvey =
 
 
 /***/ },
-/* 83 */
+/* 84 */
 /***/ function(module, exports) {
 
 	/**
@@ -4621,14 +4672,14 @@ var Kinvey =
 
 
 /***/ },
-/* 84 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Symbol = __webpack_require__(85),
-	    Uint8Array = __webpack_require__(86),
-	    equalArrays = __webpack_require__(79),
-	    mapToArray = __webpack_require__(87),
-	    setToArray = __webpack_require__(88);
+	var Symbol = __webpack_require__(86),
+	    Uint8Array = __webpack_require__(87),
+	    equalArrays = __webpack_require__(80),
+	    mapToArray = __webpack_require__(88),
+	    setToArray = __webpack_require__(89);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var UNORDERED_COMPARE_FLAG = 1,
@@ -4741,10 +4792,10 @@ var Kinvey =
 
 
 /***/ },
-/* 85 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var root = __webpack_require__(62);
+	var root = __webpack_require__(63);
 
 	/** Built-in value references. */
 	var Symbol = root.Symbol;
@@ -4753,10 +4804,10 @@ var Kinvey =
 
 
 /***/ },
-/* 86 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var root = __webpack_require__(62);
+	var root = __webpack_require__(63);
 
 	/** Built-in value references. */
 	var Uint8Array = root.Uint8Array;
@@ -4765,7 +4816,7 @@ var Kinvey =
 
 
 /***/ },
-/* 87 */
+/* 88 */
 /***/ function(module, exports) {
 
 	/**
@@ -4789,7 +4840,7 @@ var Kinvey =
 
 
 /***/ },
-/* 88 */
+/* 89 */
 /***/ function(module, exports) {
 
 	/**
@@ -4813,11 +4864,11 @@ var Kinvey =
 
 
 /***/ },
-/* 89 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseHas = __webpack_require__(16),
-	    keys = __webpack_require__(15);
+	var baseHas = __webpack_require__(17),
+	    keys = __webpack_require__(16);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var PARTIAL_COMPARE_FLAG = 2;
@@ -4902,15 +4953,15 @@ var Kinvey =
 
 
 /***/ },
-/* 90 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var DataView = __webpack_require__(91),
-	    Map = __webpack_require__(70),
-	    Promise = __webpack_require__(92),
-	    Set = __webpack_require__(93),
-	    WeakMap = __webpack_require__(94),
-	    toSource = __webpack_require__(64);
+	var DataView = __webpack_require__(92),
+	    Map = __webpack_require__(71),
+	    Promise = __webpack_require__(93),
+	    Set = __webpack_require__(94),
+	    WeakMap = __webpack_require__(95),
+	    toSource = __webpack_require__(65);
 
 	/** `Object#toString` result references. */
 	var mapTag = '[object Map]',
@@ -4978,11 +5029,11 @@ var Kinvey =
 
 
 /***/ },
-/* 91 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getNative = __webpack_require__(57),
-	    root = __webpack_require__(62);
+	var getNative = __webpack_require__(58),
+	    root = __webpack_require__(63);
 
 	/* Built-in method references that are verified to be native. */
 	var DataView = getNative(root, 'DataView');
@@ -4991,11 +5042,11 @@ var Kinvey =
 
 
 /***/ },
-/* 92 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getNative = __webpack_require__(57),
-	    root = __webpack_require__(62);
+	var getNative = __webpack_require__(58),
+	    root = __webpack_require__(63);
 
 	/* Built-in method references that are verified to be native. */
 	var Promise = getNative(root, 'Promise');
@@ -5004,11 +5055,11 @@ var Kinvey =
 
 
 /***/ },
-/* 93 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getNative = __webpack_require__(57),
-	    root = __webpack_require__(62);
+	var getNative = __webpack_require__(58),
+	    root = __webpack_require__(63);
 
 	/* Built-in method references that are verified to be native. */
 	var Set = getNative(root, 'Set');
@@ -5017,11 +5068,11 @@ var Kinvey =
 
 
 /***/ },
-/* 94 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getNative = __webpack_require__(57),
-	    root = __webpack_require__(62);
+	var getNative = __webpack_require__(58),
+	    root = __webpack_require__(63);
 
 	/* Built-in method references that are verified to be native. */
 	var WeakMap = getNative(root, 'WeakMap');
@@ -5030,11 +5081,11 @@ var Kinvey =
 
 
 /***/ },
-/* 95 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isLength = __webpack_require__(28),
-	    isObjectLike = __webpack_require__(29);
+	var isLength = __webpack_require__(29),
+	    isObjectLike = __webpack_require__(30);
 
 	/** `Object#toString` result references. */
 	var argsTag = '[object Arguments]',
@@ -5116,11 +5167,11 @@ var Kinvey =
 
 
 /***/ },
-/* 96 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isStrictComparable = __webpack_require__(97),
-	    keys = __webpack_require__(15);
+	var isStrictComparable = __webpack_require__(98),
+	    keys = __webpack_require__(16);
 
 	/**
 	 * Gets the property names, values, and compare flags of `object`.
@@ -5146,10 +5197,10 @@ var Kinvey =
 
 
 /***/ },
-/* 97 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(27);
+	var isObject = __webpack_require__(28);
 
 	/**
 	 * Checks if `value` is suitable for strict equality comparisons, i.e. `===`.
@@ -5167,7 +5218,7 @@ var Kinvey =
 
 
 /***/ },
-/* 98 */
+/* 99 */
 /***/ function(module, exports) {
 
 	/**
@@ -5193,16 +5244,16 @@ var Kinvey =
 
 
 /***/ },
-/* 99 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIsEqual = __webpack_require__(77),
-	    get = __webpack_require__(100),
-	    hasIn = __webpack_require__(110),
-	    isKey = __webpack_require__(108),
-	    isStrictComparable = __webpack_require__(97),
-	    matchesStrictComparable = __webpack_require__(98),
-	    toKey = __webpack_require__(109);
+	var baseIsEqual = __webpack_require__(78),
+	    get = __webpack_require__(101),
+	    hasIn = __webpack_require__(111),
+	    isKey = __webpack_require__(109),
+	    isStrictComparable = __webpack_require__(98),
+	    matchesStrictComparable = __webpack_require__(99),
+	    toKey = __webpack_require__(110);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var UNORDERED_COMPARE_FLAG = 1,
@@ -5232,10 +5283,10 @@ var Kinvey =
 
 
 /***/ },
-/* 100 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseGet = __webpack_require__(101);
+	var baseGet = __webpack_require__(102);
 
 	/**
 	 * Gets the value at `path` of `object`. If the resolved value is
@@ -5271,12 +5322,12 @@ var Kinvey =
 
 
 /***/ },
-/* 101 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var castPath = __webpack_require__(102),
-	    isKey = __webpack_require__(108),
-	    toKey = __webpack_require__(109);
+	var castPath = __webpack_require__(103),
+	    isKey = __webpack_require__(109),
+	    toKey = __webpack_require__(110);
 
 	/**
 	 * The base implementation of `_.get` without support for default values.
@@ -5302,11 +5353,11 @@ var Kinvey =
 
 
 /***/ },
-/* 102 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArray = __webpack_require__(30),
-	    stringToPath = __webpack_require__(103);
+	var isArray = __webpack_require__(31),
+	    stringToPath = __webpack_require__(104);
 
 	/**
 	 * Casts `value` to a path array if it's not one.
@@ -5323,11 +5374,11 @@ var Kinvey =
 
 
 /***/ },
-/* 103 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var memoize = __webpack_require__(104),
-	    toString = __webpack_require__(105);
+	var memoize = __webpack_require__(105),
+	    toString = __webpack_require__(106);
 
 	/** Used to match property names within property paths. */
 	var rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(\.|\[\])(?:\4|$))/g;
@@ -5354,10 +5405,10 @@ var Kinvey =
 
 
 /***/ },
-/* 104 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var MapCache = __webpack_require__(52);
+	var MapCache = __webpack_require__(53);
 
 	/** Used as the `TypeError` message for "Functions" methods. */
 	var FUNC_ERROR_TEXT = 'Expected a function';
@@ -5433,10 +5484,10 @@ var Kinvey =
 
 
 /***/ },
-/* 105 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseToString = __webpack_require__(106);
+	var baseToString = __webpack_require__(107);
 
 	/**
 	 * Converts `value` to a string. An empty string is returned for `null`
@@ -5467,11 +5518,11 @@ var Kinvey =
 
 
 /***/ },
-/* 106 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Symbol = __webpack_require__(85),
-	    isSymbol = __webpack_require__(107);
+	var Symbol = __webpack_require__(86),
+	    isSymbol = __webpack_require__(108);
 
 	/** Used as references for various `Number` constants. */
 	var INFINITY = 1 / 0;
@@ -5504,10 +5555,10 @@ var Kinvey =
 
 
 /***/ },
-/* 107 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObjectLike = __webpack_require__(29);
+	var isObjectLike = __webpack_require__(30);
 
 	/** `Object#toString` result references. */
 	var symbolTag = '[object Symbol]';
@@ -5549,11 +5600,11 @@ var Kinvey =
 
 
 /***/ },
-/* 108 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArray = __webpack_require__(30),
-	    isSymbol = __webpack_require__(107);
+	var isArray = __webpack_require__(31),
+	    isSymbol = __webpack_require__(108);
 
 	/** Used to match property names within property paths. */
 	var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,
@@ -5584,10 +5635,10 @@ var Kinvey =
 
 
 /***/ },
-/* 109 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isSymbol = __webpack_require__(107);
+	var isSymbol = __webpack_require__(108);
 
 	/** Used as references for various `Number` constants. */
 	var INFINITY = 1 / 0;
@@ -5611,11 +5662,11 @@ var Kinvey =
 
 
 /***/ },
-/* 110 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseHasIn = __webpack_require__(111),
-	    hasPath = __webpack_require__(112);
+	var baseHasIn = __webpack_require__(112),
+	    hasPath = __webpack_require__(113);
 
 	/**
 	 * Checks if `path` is a direct or inherited property of `object`.
@@ -5651,7 +5702,7 @@ var Kinvey =
 
 
 /***/ },
-/* 111 */
+/* 112 */
 /***/ function(module, exports) {
 
 	/**
@@ -5670,17 +5721,17 @@ var Kinvey =
 
 
 /***/ },
-/* 112 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var castPath = __webpack_require__(102),
-	    isArguments = __webpack_require__(21),
-	    isArray = __webpack_require__(30),
-	    isIndex = __webpack_require__(32),
-	    isKey = __webpack_require__(108),
-	    isLength = __webpack_require__(28),
-	    isString = __webpack_require__(31),
-	    toKey = __webpack_require__(109);
+	var castPath = __webpack_require__(103),
+	    isArguments = __webpack_require__(22),
+	    isArray = __webpack_require__(31),
+	    isIndex = __webpack_require__(33),
+	    isKey = __webpack_require__(109),
+	    isLength = __webpack_require__(29),
+	    isString = __webpack_require__(32),
+	    toKey = __webpack_require__(110);
 
 	/**
 	 * Checks if `path` exists on `object`.
@@ -5717,7 +5768,7 @@ var Kinvey =
 
 
 /***/ },
-/* 113 */
+/* 114 */
 /***/ function(module, exports) {
 
 	/**
@@ -5744,13 +5795,13 @@ var Kinvey =
 
 
 /***/ },
-/* 114 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseProperty = __webpack_require__(25),
-	    basePropertyDeep = __webpack_require__(115),
-	    isKey = __webpack_require__(108),
-	    toKey = __webpack_require__(109);
+	var baseProperty = __webpack_require__(26),
+	    basePropertyDeep = __webpack_require__(116),
+	    isKey = __webpack_require__(109),
+	    toKey = __webpack_require__(110);
 
 	/**
 	 * Creates a function that returns the value at `path` of a given object.
@@ -5782,10 +5833,10 @@ var Kinvey =
 
 
 /***/ },
-/* 115 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseGet = __webpack_require__(101);
+	var baseGet = __webpack_require__(102);
 
 	/**
 	 * A specialized version of `baseProperty` which supports deep paths.
@@ -5804,7 +5855,7 @@ var Kinvey =
 
 
 /***/ },
-/* 116 */
+/* 117 */
 /***/ function(module, exports) {
 
 	/*
@@ -6317,15 +6368,15 @@ var Kinvey =
 
 
 /***/ },
-/* 117 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assignValue = __webpack_require__(118),
-	    copyObject = __webpack_require__(119),
-	    createAssigner = __webpack_require__(120),
-	    isArrayLike = __webpack_require__(23),
-	    isPrototype = __webpack_require__(33),
-	    keys = __webpack_require__(15);
+	var assignValue = __webpack_require__(119),
+	    copyObject = __webpack_require__(120),
+	    createAssigner = __webpack_require__(121),
+	    isArrayLike = __webpack_require__(24),
+	    isPrototype = __webpack_require__(34),
+	    keys = __webpack_require__(16);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -6387,10 +6438,10 @@ var Kinvey =
 
 
 /***/ },
-/* 118 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var eq = __webpack_require__(43);
+	var eq = __webpack_require__(44);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -6420,10 +6471,10 @@ var Kinvey =
 
 
 /***/ },
-/* 119 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assignValue = __webpack_require__(118);
+	var assignValue = __webpack_require__(119);
 
 	/**
 	 * Copies properties of `source` to `object`.
@@ -6457,11 +6508,11 @@ var Kinvey =
 
 
 /***/ },
-/* 120 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isIterateeCall = __webpack_require__(121),
-	    rest = __webpack_require__(122);
+	var isIterateeCall = __webpack_require__(122),
+	    rest = __webpack_require__(123);
 
 	/**
 	 * Creates a function like `_.assign`.
@@ -6500,13 +6551,13 @@ var Kinvey =
 
 
 /***/ },
-/* 121 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var eq = __webpack_require__(43),
-	    isArrayLike = __webpack_require__(23),
-	    isIndex = __webpack_require__(32),
-	    isObject = __webpack_require__(27);
+	var eq = __webpack_require__(44),
+	    isArrayLike = __webpack_require__(24),
+	    isIndex = __webpack_require__(33),
+	    isObject = __webpack_require__(28);
 
 	/**
 	 * Checks if the given arguments are from an iteratee call.
@@ -6536,11 +6587,11 @@ var Kinvey =
 
 
 /***/ },
-/* 122 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var apply = __webpack_require__(123),
-	    toInteger = __webpack_require__(124);
+	var apply = __webpack_require__(124),
+	    toInteger = __webpack_require__(125);
 
 	/** Used as the `TypeError` message for "Functions" methods. */
 	var FUNC_ERROR_TEXT = 'Expected a function';
@@ -6606,7 +6657,7 @@ var Kinvey =
 
 
 /***/ },
-/* 123 */
+/* 124 */
 /***/ function(module, exports) {
 
 	/**
@@ -6634,10 +6685,10 @@ var Kinvey =
 
 
 /***/ },
-/* 124 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var toFinite = __webpack_require__(125);
+	var toFinite = __webpack_require__(126);
 
 	/**
 	 * Converts `value` to an integer.
@@ -6676,10 +6727,10 @@ var Kinvey =
 
 
 /***/ },
-/* 125 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var toNumber = __webpack_require__(126);
+	var toNumber = __webpack_require__(127);
 
 	/** Used as references for various `Number` constants. */
 	var INFINITY = 1 / 0,
@@ -6724,12 +6775,12 @@ var Kinvey =
 
 
 /***/ },
-/* 126 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isFunction = __webpack_require__(26),
-	    isObject = __webpack_require__(27),
-	    isSymbol = __webpack_require__(107);
+	var isFunction = __webpack_require__(27),
+	    isObject = __webpack_require__(28),
+	    isSymbol = __webpack_require__(108);
 
 	/** Used as references for various `Number` constants. */
 	var NAN = 0 / 0;
@@ -6797,10 +6848,10 @@ var Kinvey =
 
 
 /***/ },
-/* 127 */
+/* 128 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObjectLike = __webpack_require__(29);
+	var isObjectLike = __webpack_require__(30);
 
 	/** `Object#toString` result references. */
 	var numberTag = '[object Number]';
@@ -6851,10 +6902,10 @@ var Kinvey =
 
 
 /***/ },
-/* 128 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(27);
+	var isObject = __webpack_require__(28);
 
 	/** `Object#toString` result references. */
 	var regexpTag = '[object RegExp]';
@@ -6895,18 +6946,18 @@ var Kinvey =
 
 
 /***/ },
-/* 129 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getTag = __webpack_require__(90),
-	    isArguments = __webpack_require__(21),
-	    isArray = __webpack_require__(30),
-	    isArrayLike = __webpack_require__(23),
-	    isBuffer = __webpack_require__(130),
-	    isFunction = __webpack_require__(26),
-	    isObjectLike = __webpack_require__(29),
-	    isString = __webpack_require__(31),
-	    keys = __webpack_require__(15);
+	var getTag = __webpack_require__(91),
+	    isArguments = __webpack_require__(22),
+	    isArray = __webpack_require__(31),
+	    isArrayLike = __webpack_require__(24),
+	    isBuffer = __webpack_require__(131),
+	    isFunction = __webpack_require__(27),
+	    isObjectLike = __webpack_require__(30),
+	    isString = __webpack_require__(32),
+	    keys = __webpack_require__(16);
 
 	/** `Object#toString` result references. */
 	var mapTag = '[object Map]',
@@ -6981,11 +7032,11 @@ var Kinvey =
 
 
 /***/ },
-/* 130 */
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(module) {var root = __webpack_require__(62),
-	    stubFalse = __webpack_require__(132);
+	/* WEBPACK VAR INJECTION */(function(module) {var root = __webpack_require__(63),
+	    stubFalse = __webpack_require__(133);
 
 	/** Detect free variable `exports`. */
 	var freeExports = typeof exports == 'object' && exports;
@@ -7022,10 +7073,10 @@ var Kinvey =
 
 	module.exports = isBuffer;
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(131)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(132)(module)))
 
 /***/ },
-/* 131 */
+/* 132 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -7041,7 +7092,7 @@ var Kinvey =
 
 
 /***/ },
-/* 132 */
+/* 133 */
 /***/ function(module, exports) {
 
 	/**
@@ -7065,12 +7116,12 @@ var Kinvey =
 
 
 /***/ },
-/* 133 */
+/* 134 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseFindKey = __webpack_require__(134),
-	    baseForOwn = __webpack_require__(12),
-	    baseIteratee = __webpack_require__(35);
+	var baseFindKey = __webpack_require__(135),
+	    baseForOwn = __webpack_require__(13),
+	    baseIteratee = __webpack_require__(36);
 
 	/**
 	 * This method is like `_.find` except that it returns the key of the first
@@ -7116,7 +7167,7 @@ var Kinvey =
 
 
 /***/ },
-/* 134 */
+/* 135 */
 /***/ function(module, exports) {
 
 	/**
@@ -7145,13 +7196,13 @@ var Kinvey =
 
 
 /***/ },
-/* 135 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var castPath = __webpack_require__(102),
-	    isFunction = __webpack_require__(26),
-	    isKey = __webpack_require__(108),
-	    toKey = __webpack_require__(109);
+	var castPath = __webpack_require__(103),
+	    isFunction = __webpack_require__(27),
+	    isKey = __webpack_require__(109),
+	    toKey = __webpack_require__(110);
 
 	/**
 	 * This method is like `_.get` except that if the resolved value is a
@@ -7208,7 +7259,7 @@ var Kinvey =
 
 
 /***/ },
-/* 136 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7220,19 +7271,19 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _storage = __webpack_require__(137);
+	var _storage = __webpack_require__(138);
 
-	var _url = __webpack_require__(141);
+	var _url = __webpack_require__(142);
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _assign = __webpack_require__(117);
+	var _assign = __webpack_require__(118);
 
 	var _assign2 = _interopRequireDefault(_assign);
 
-	var _isString = __webpack_require__(31);
+	var _isString = __webpack_require__(32);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
@@ -7520,7 +7571,7 @@ var Kinvey =
 	}();
 
 /***/ },
-/* 137 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -7535,7 +7586,7 @@ var Kinvey =
 	exports.getSyncKey = getSyncKey;
 	exports.setSyncKey = setSyncKey;
 
-	var _localStorage = __webpack_require__(138);
+	var _localStorage = __webpack_require__(139);
 
 	var _localStorage2 = _interopRequireDefault(_localStorage);
 
@@ -7598,16 +7649,16 @@ var Kinvey =
 
 	  return _localStorage2.default.remove('' + client.appKey + syncKeyCollectionName);
 	}
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 138 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
 
-	var stub = __webpack_require__(139);
-	var tracking = __webpack_require__(140);
+	var stub = __webpack_require__(140);
+	var tracking = __webpack_require__(141);
 	var ls = 'localStorage' in global && global.localStorage ? global.localStorage : stub;
 
 	function accessor (key, value) {
@@ -7650,7 +7701,7 @@ var Kinvey =
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 139 */
+/* 140 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -7688,7 +7739,7 @@ var Kinvey =
 
 
 /***/ },
-/* 140 */
+/* 141 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -7748,7 +7799,7 @@ var Kinvey =
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 141 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -7774,8 +7825,8 @@ var Kinvey =
 
 	'use strict';
 
-	var punycode = __webpack_require__(142);
-	var util = __webpack_require__(143);
+	var punycode = __webpack_require__(143);
+	var util = __webpack_require__(144);
 
 	exports.parse = urlParse;
 	exports.resolve = urlResolve;
@@ -7850,7 +7901,7 @@ var Kinvey =
 	      'gopher:': true,
 	      'file:': true
 	    },
-	    querystring = __webpack_require__(144);
+	    querystring = __webpack_require__(145);
 
 	function urlParse(url, parseQueryString, slashesDenoteHost) {
 	  if (url && util.isObject(url) && url instanceof Url) return url;
@@ -8486,7 +8537,7 @@ var Kinvey =
 
 
 /***/ },
-/* 142 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/*! https://mths.be/punycode v1.3.2 by @mathias */
@@ -9018,10 +9069,10 @@ var Kinvey =
 
 	}(this));
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(131)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(132)(module), (function() { return this; }())))
 
 /***/ },
-/* 143 */
+/* 144 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -9043,17 +9094,17 @@ var Kinvey =
 
 
 /***/ },
-/* 144 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	exports.decode = exports.parse = __webpack_require__(145);
-	exports.encode = exports.stringify = __webpack_require__(146);
+	exports.decode = exports.parse = __webpack_require__(146);
+	exports.encode = exports.stringify = __webpack_require__(147);
 
 
 /***/ },
-/* 145 */
+/* 146 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -9139,7 +9190,7 @@ var Kinvey =
 
 
 /***/ },
-/* 146 */
+/* 147 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -9209,7 +9260,7 @@ var Kinvey =
 
 
 /***/ },
-/* 147 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -9222,27 +9273,27 @@ var Kinvey =
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
 
 
-	var _client = __webpack_require__(136);
+	var _client = __webpack_require__(137);
 
-	var _request = __webpack_require__(148);
+	var _request = __webpack_require__(149);
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _network = __webpack_require__(197);
+	var _network = __webpack_require__(198);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
-	var _url = __webpack_require__(141);
+	var _url = __webpack_require__(142);
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _assign = __webpack_require__(117);
+	var _assign = __webpack_require__(118);
 
 	var _assign2 = _interopRequireDefault(_assign);
 
-	var _isString = __webpack_require__(31);
+	var _isString = __webpack_require__(32);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
@@ -9351,10 +9402,10 @@ var Kinvey =
 
 	  return CustomEndpoint;
 	}();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 148 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process, global, Buffer) {'use strict';
@@ -9371,57 +9422,57 @@ var Kinvey =
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
 
 
-	var _rack = __webpack_require__(153);
+	var _rack = __webpack_require__(154);
 
-	var _client = __webpack_require__(136);
+	var _client = __webpack_require__(137);
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _urlPattern = __webpack_require__(188);
+	var _urlPattern = __webpack_require__(189);
 
 	var _urlPattern2 = _interopRequireDefault(_urlPattern);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
-	var _qs = __webpack_require__(190);
+	var _qs = __webpack_require__(191);
 
 	var _qs2 = _interopRequireDefault(_qs);
 
-	var _url = __webpack_require__(141);
+	var _url = __webpack_require__(142);
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _appendQuery = __webpack_require__(194);
+	var _appendQuery = __webpack_require__(195);
 
 	var _appendQuery2 = _interopRequireDefault(_appendQuery);
 
-	var _assign = __webpack_require__(117);
+	var _assign = __webpack_require__(118);
 
 	var _assign2 = _interopRequireDefault(_assign);
 
-	var _result = __webpack_require__(135);
+	var _result = __webpack_require__(136);
 
 	var _result2 = _interopRequireDefault(_result);
 
-	var _forEach = __webpack_require__(9);
+	var _forEach = __webpack_require__(10);
 
 	var _forEach2 = _interopRequireDefault(_forEach);
 
-	var _isString = __webpack_require__(31);
+	var _isString = __webpack_require__(32);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
-	var _isPlainObject = __webpack_require__(196);
+	var _isPlainObject = __webpack_require__(197);
 
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 
-	var _isEmpty = __webpack_require__(129);
+	var _isEmpty = __webpack_require__(130);
 
 	var _isEmpty2 = _interopRequireDefault(_isEmpty);
 
-	var _isNumber = __webpack_require__(127);
+	var _isNumber = __webpack_require__(128);
 
 	var _isNumber2 = _interopRequireDefault(_isNumber);
 
@@ -10358,10 +10409,10 @@ var Kinvey =
 
 	  return KinveyRequest;
 	}(Request);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), (function() { return this; }()), __webpack_require__(149).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), (function() { return this; }()), __webpack_require__(150).Buffer))
 
 /***/ },
-/* 149 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer, global) {/*!
@@ -10374,9 +10425,9 @@ var Kinvey =
 
 	'use strict'
 
-	var base64 = __webpack_require__(150)
-	var ieee754 = __webpack_require__(151)
-	var isArray = __webpack_require__(152)
+	var base64 = __webpack_require__(151)
+	var ieee754 = __webpack_require__(152)
+	var isArray = __webpack_require__(153)
 
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
@@ -11913,10 +11964,10 @@ var Kinvey =
 	  return i
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(149).Buffer, (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(150).Buffer, (function() { return this; }())))
 
 /***/ },
-/* 150 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -12046,7 +12097,7 @@ var Kinvey =
 
 
 /***/ },
-/* 151 */
+/* 152 */
 /***/ function(module, exports) {
 
 	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -12136,7 +12187,7 @@ var Kinvey =
 
 
 /***/ },
-/* 152 */
+/* 153 */
 /***/ function(module, exports) {
 
 	var toString = {}.toString;
@@ -12147,7 +12198,7 @@ var Kinvey =
 
 
 /***/ },
-/* 153 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12161,17 +12212,17 @@ var Kinvey =
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _rack = __webpack_require__(154);
+	var _rack = __webpack_require__(155);
 
-	var _cache = __webpack_require__(164);
+	var _cache = __webpack_require__(165);
 
-	var _parse = __webpack_require__(185);
+	var _parse = __webpack_require__(186);
 
-	var _serialize = __webpack_require__(186);
+	var _serialize = __webpack_require__(187);
 
-	var _http = __webpack_require__(187);
+	var _http = __webpack_require__(188);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
@@ -12296,7 +12347,7 @@ var Kinvey =
 	exports.KinveyRackManager = kinveyRackManager;
 
 /***/ },
-/* 154 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12310,17 +12361,17 @@ var Kinvey =
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _middleware = __webpack_require__(155);
+	var _middleware = __webpack_require__(156);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
-	var _findIndex = __webpack_require__(159);
+	var _findIndex = __webpack_require__(160);
 
 	var _findIndex2 = _interopRequireDefault(_findIndex);
 
-	var _reduce = __webpack_require__(161);
+	var _reduce = __webpack_require__(162);
 
 	var _reduce2 = _interopRequireDefault(_reduce);
 
@@ -12523,7 +12574,7 @@ var Kinvey =
 	}(_middleware.Middleware);
 
 /***/ },
-/* 155 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12535,9 +12586,9 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _asciiTree = __webpack_require__(156);
+	var _asciiTree = __webpack_require__(157);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
@@ -12614,7 +12665,7 @@ var Kinvey =
 	}();
 
 /***/ },
-/* 156 */
+/* 157 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -12668,7 +12719,7 @@ var Kinvey =
 	};
 
 /***/ },
-/* 157 */
+/* 158 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {// This method of obtaining a reference to the global object needs to be
@@ -12689,7 +12740,7 @@ var Kinvey =
 	// Force reevalutation of runtime.js.
 	g.regeneratorRuntime = undefined;
 
-	module.exports = __webpack_require__(158);
+	module.exports = __webpack_require__(159);
 
 	if (hadRuntime) {
 	  // Restore the original runtime.
@@ -12706,7 +12757,7 @@ var Kinvey =
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 158 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, process) {/**
@@ -13378,15 +13429,15 @@ var Kinvey =
 	  typeof self === "object" ? self : this
 	);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(3)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(4)))
 
 /***/ },
-/* 159 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseFindIndex = __webpack_require__(160),
-	    baseIteratee = __webpack_require__(35),
-	    toInteger = __webpack_require__(124);
+	var baseFindIndex = __webpack_require__(161),
+	    baseIteratee = __webpack_require__(36),
+	    toInteger = __webpack_require__(125);
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
 	var nativeMax = Math.max;
@@ -13443,7 +13494,7 @@ var Kinvey =
 
 
 /***/ },
-/* 160 */
+/* 161 */
 /***/ function(module, exports) {
 
 	/**
@@ -13473,14 +13524,14 @@ var Kinvey =
 
 
 /***/ },
-/* 161 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayReduce = __webpack_require__(162),
-	    baseEach = __webpack_require__(11),
-	    baseIteratee = __webpack_require__(35),
-	    baseReduce = __webpack_require__(163),
-	    isArray = __webpack_require__(30);
+	var arrayReduce = __webpack_require__(163),
+	    baseEach = __webpack_require__(12),
+	    baseIteratee = __webpack_require__(36),
+	    baseReduce = __webpack_require__(164),
+	    isArray = __webpack_require__(31);
 
 	/**
 	 * Reduces `collection` to a value which is the accumulated result of running
@@ -13530,7 +13581,7 @@ var Kinvey =
 
 
 /***/ },
-/* 162 */
+/* 163 */
 /***/ function(module, exports) {
 
 	/**
@@ -13562,7 +13613,7 @@ var Kinvey =
 
 
 /***/ },
-/* 163 */
+/* 164 */
 /***/ function(module, exports) {
 
 	/**
@@ -13591,7 +13642,7 @@ var Kinvey =
 
 
 /***/ },
-/* 164 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -13607,65 +13658,65 @@ var Kinvey =
 	// eslint-disable-line no-unused-vars
 
 
-	var _query = __webpack_require__(7);
+	var _query = __webpack_require__(8);
 
-	var _aggregation = __webpack_require__(6);
+	var _aggregation = __webpack_require__(7);
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _middleware = __webpack_require__(165);
+	var _middleware = __webpack_require__(166);
 
-	var _request2 = __webpack_require__(148);
+	var _request2 = __webpack_require__(149);
 
-	var _response = __webpack_require__(166);
+	var _response = __webpack_require__(167);
 
-	var _es6Promise = __webpack_require__(167);
+	var _es6Promise = __webpack_require__(168);
 
-	var _fastMemoryCache = __webpack_require__(170);
+	var _fastMemoryCache = __webpack_require__(171);
 
 	var _fastMemoryCache2 = _interopRequireDefault(_fastMemoryCache);
 
-	var _promiseQueue = __webpack_require__(171);
+	var _promiseQueue = __webpack_require__(172);
 
 	var _promiseQueue2 = _interopRequireDefault(_promiseQueue);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
-	var _map = __webpack_require__(174);
+	var _map = __webpack_require__(175);
 
 	var _map2 = _interopRequireDefault(_map);
 
-	var _result = __webpack_require__(135);
+	var _result = __webpack_require__(136);
 
 	var _result2 = _interopRequireDefault(_result);
 
-	var _reduce = __webpack_require__(161);
+	var _reduce = __webpack_require__(162);
 
 	var _reduce2 = _interopRequireDefault(_reduce);
 
-	var _keyBy = __webpack_require__(177);
+	var _keyBy = __webpack_require__(178);
 
 	var _keyBy2 = _interopRequireDefault(_keyBy);
 
-	var _forEach = __webpack_require__(9);
+	var _forEach = __webpack_require__(10);
 
 	var _forEach2 = _interopRequireDefault(_forEach);
 
-	var _values = __webpack_require__(181);
+	var _values = __webpack_require__(182);
 
 	var _values2 = _interopRequireDefault(_values);
 
-	var _find = __webpack_require__(183);
+	var _find = __webpack_require__(184);
 
 	var _find2 = _interopRequireDefault(_find);
 
-	var _isString = __webpack_require__(31);
+	var _isString = __webpack_require__(32);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
-	var _isArray = __webpack_require__(30);
+	var _isArray = __webpack_require__(31);
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
@@ -14500,10 +14551,10 @@ var Kinvey =
 
 	  return CacheMiddleware;
 	}(_middleware.KinveyMiddleware);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 165 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -14517,9 +14568,9 @@ var Kinvey =
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _middleware = __webpack_require__(155);
+	var _middleware = __webpack_require__(156);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
@@ -14580,7 +14631,7 @@ var Kinvey =
 	}(_middleware.Middleware);
 
 /***/ },
-/* 166 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -14596,11 +14647,11 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _request = __webpack_require__(148);
+	var _request = __webpack_require__(149);
 
-	var _assign = __webpack_require__(117);
+	var _assign = __webpack_require__(118);
 
 	var _assign2 = _interopRequireDefault(_assign);
 
@@ -14823,7 +14874,7 @@ var Kinvey =
 	}(Response);
 
 /***/ },
-/* 167 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
@@ -14956,7 +15007,7 @@ var Kinvey =
 	    function lib$es6$promise$asap$$attemptVertx() {
 	      try {
 	        var r = require;
-	        var vertx = __webpack_require__(168);
+	        var vertx = __webpack_require__(169);
 	        lib$es6$promise$asap$$vertxNext = vertx.runOnLoop || vertx.runOnContext;
 	        return lib$es6$promise$asap$$useVertxTimer();
 	      } catch(e) {
@@ -15774,7 +15825,7 @@ var Kinvey =
 	    };
 
 	    /* global define:true module:true window: true */
-	    if ("function" === 'function' && __webpack_require__(169)['amd']) {
+	    if ("function" === 'function' && __webpack_require__(170)['amd']) {
 	      !(__WEBPACK_AMD_DEFINE_RESULT__ = function() { return lib$es6$promise$umd$$ES6Promise; }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	    } else if (typeof module !== 'undefined' && module['exports']) {
 	      module['exports'] = lib$es6$promise$umd$$ES6Promise;
@@ -15786,23 +15837,23 @@ var Kinvey =
 	}).call(this);
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), (function() { return this; }()), __webpack_require__(131)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), (function() { return this; }()), __webpack_require__(132)(module)))
 
 /***/ },
-/* 168 */
+/* 169 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 169 */
+/* 170 */
 /***/ function(module, exports) {
 
 	module.exports = function() { throw new Error("define cannot be used indirect"); };
 
 
 /***/ },
-/* 170 */
+/* 171 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -15882,23 +15933,23 @@ var Kinvey =
 
 
 /***/ },
-/* 171 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {module.exports = process.env.PROMISE_QUEUE_COVERAGE ?
-	    __webpack_require__(172) :
-	    __webpack_require__(173);
+	    __webpack_require__(173) :
+	    __webpack_require__(174);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 172 */
+/* 173 */
 /***/ function(module, exports) {
 
 	
 
 /***/ },
-/* 173 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* global define, Promise */
@@ -16082,13 +16133,13 @@ var Kinvey =
 
 
 /***/ },
-/* 174 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayMap = __webpack_require__(175),
-	    baseIteratee = __webpack_require__(35),
-	    baseMap = __webpack_require__(176),
-	    isArray = __webpack_require__(30);
+	var arrayMap = __webpack_require__(176),
+	    baseIteratee = __webpack_require__(36),
+	    baseMap = __webpack_require__(177),
+	    isArray = __webpack_require__(31);
 
 	/**
 	 * Creates an array of values by running each element in `collection` thru
@@ -16142,7 +16193,7 @@ var Kinvey =
 
 
 /***/ },
-/* 175 */
+/* 176 */
 /***/ function(module, exports) {
 
 	/**
@@ -16169,11 +16220,11 @@ var Kinvey =
 
 
 /***/ },
-/* 176 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseEach = __webpack_require__(11),
-	    isArrayLike = __webpack_require__(23);
+	var baseEach = __webpack_require__(12),
+	    isArrayLike = __webpack_require__(24);
 
 	/**
 	 * The base implementation of `_.map` without support for iteratee shorthands.
@@ -16197,10 +16248,10 @@ var Kinvey =
 
 
 /***/ },
-/* 177 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createAggregator = __webpack_require__(178);
+	var createAggregator = __webpack_require__(179);
 
 	/**
 	 * Creates an object composed of keys generated from the results of running
@@ -16239,13 +16290,13 @@ var Kinvey =
 
 
 /***/ },
-/* 178 */
+/* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayAggregator = __webpack_require__(179),
-	    baseAggregator = __webpack_require__(180),
-	    baseIteratee = __webpack_require__(35),
-	    isArray = __webpack_require__(30);
+	var arrayAggregator = __webpack_require__(180),
+	    baseAggregator = __webpack_require__(181),
+	    baseIteratee = __webpack_require__(36),
+	    isArray = __webpack_require__(31);
 
 	/**
 	 * Creates a function like `_.groupBy`.
@@ -16268,7 +16319,7 @@ var Kinvey =
 
 
 /***/ },
-/* 179 */
+/* 180 */
 /***/ function(module, exports) {
 
 	/**
@@ -16296,10 +16347,10 @@ var Kinvey =
 
 
 /***/ },
-/* 180 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseEach = __webpack_require__(11);
+	var baseEach = __webpack_require__(12);
 
 	/**
 	 * Aggregates elements of `collection` on `accumulator` with keys transformed
@@ -16323,11 +16374,11 @@ var Kinvey =
 
 
 /***/ },
-/* 181 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseValues = __webpack_require__(182),
-	    keys = __webpack_require__(15);
+	var baseValues = __webpack_require__(183),
+	    keys = __webpack_require__(16);
 
 	/**
 	 * Creates an array of the own enumerable string keyed property values of `object`.
@@ -16363,10 +16414,10 @@ var Kinvey =
 
 
 /***/ },
-/* 182 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayMap = __webpack_require__(175);
+	var arrayMap = __webpack_require__(176);
 
 	/**
 	 * The base implementation of `_.values` and `_.valuesIn` which creates an
@@ -16388,11 +16439,11 @@ var Kinvey =
 
 
 /***/ },
-/* 183 */
+/* 184 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createFind = __webpack_require__(184),
-	    findIndex = __webpack_require__(159);
+	var createFind = __webpack_require__(185),
+	    findIndex = __webpack_require__(160);
 
 	/**
 	 * Iterates over elements of `collection`, returning the first element
@@ -16437,12 +16488,12 @@ var Kinvey =
 
 
 /***/ },
-/* 184 */
+/* 185 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIteratee = __webpack_require__(35),
-	    isArrayLike = __webpack_require__(23),
-	    keys = __webpack_require__(15);
+	var baseIteratee = __webpack_require__(36),
+	    isArrayLike = __webpack_require__(24),
+	    keys = __webpack_require__(16);
 
 	/**
 	 * Creates a `_.find` or `_.findLast` function.
@@ -16473,7 +16524,7 @@ var Kinvey =
 
 
 /***/ },
-/* 185 */
+/* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -16487,9 +16538,9 @@ var Kinvey =
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _middleware = __webpack_require__(165);
+	var _middleware = __webpack_require__(166);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
@@ -16576,7 +16627,7 @@ var Kinvey =
 	}(_middleware.KinveyMiddleware);
 
 /***/ },
-/* 186 */
+/* 187 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -16590,9 +16641,9 @@ var Kinvey =
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _middleware = __webpack_require__(165);
+	var _middleware = __webpack_require__(166);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
@@ -16741,7 +16792,7 @@ var Kinvey =
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 187 */
+/* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -16753,9 +16804,9 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _middleware = __webpack_require__(165);
+	var _middleware = __webpack_require__(166);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
@@ -16812,14 +16863,14 @@ var Kinvey =
 	}(_middleware.KinveyMiddleware);
 
 /***/ },
-/* 188 */
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Generated by CoffeeScript 1.10.0
 	var slice = [].slice;
 
 	(function(root, factory) {
-	  if (('function' === "function") && (__webpack_require__(189) != null)) {
+	  if (('function' === "function") && (__webpack_require__(190) != null)) {
 	    return !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	  } else if (typeof exports !== "undefined" && exports !== null) {
 	    return module.exports = factory();
@@ -17254,7 +17305,7 @@ var Kinvey =
 
 
 /***/ },
-/* 189 */
+/* 190 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
@@ -17262,13 +17313,13 @@ var Kinvey =
 	/* WEBPACK VAR INJECTION */}.call(exports, {}))
 
 /***/ },
-/* 190 */
+/* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Stringify = __webpack_require__(191);
-	var Parse = __webpack_require__(193);
+	var Stringify = __webpack_require__(192);
+	var Parse = __webpack_require__(194);
 
 	module.exports = {
 	    stringify: Stringify,
@@ -17277,12 +17328,12 @@ var Kinvey =
 
 
 /***/ },
-/* 191 */
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Utils = __webpack_require__(192);
+	var Utils = __webpack_require__(193);
 
 	var arrayPrefixGenerators = {
 	    brackets: function brackets(prefix) {
@@ -17420,7 +17471,7 @@ var Kinvey =
 
 
 /***/ },
-/* 192 */
+/* 193 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -17590,12 +17641,12 @@ var Kinvey =
 
 
 /***/ },
-/* 193 */
+/* 194 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Utils = __webpack_require__(192);
+	var Utils = __webpack_require__(193);
 
 	var defaults = {
 	    delimiter: '&',
@@ -17763,12 +17814,12 @@ var Kinvey =
 
 
 /***/ },
-/* 194 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var querystring = __webpack_require__(144)
-	  , extend = __webpack_require__(195)
-	  , url = __webpack_require__(141)
+	var querystring = __webpack_require__(145)
+	  , extend = __webpack_require__(196)
+	  , url = __webpack_require__(142)
 
 	module.exports = function appendQuery(uri, q) {
 	  var parts = url.parse(uri, true)
@@ -17808,7 +17859,7 @@ var Kinvey =
 
 
 /***/ },
-/* 195 */
+/* 196 */
 /***/ function(module, exports) {
 
 	var hasOwn = Object.prototype.hasOwnProperty;
@@ -17894,12 +17945,12 @@ var Kinvey =
 
 
 /***/ },
-/* 196 */
+/* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getPrototype = __webpack_require__(17),
-	    isHostObject = __webpack_require__(59),
-	    isObjectLike = __webpack_require__(29);
+	var getPrototype = __webpack_require__(18),
+	    isHostObject = __webpack_require__(60),
+	    isObjectLike = __webpack_require__(30);
 
 	/** `Object#toString` result references. */
 	var objectTag = '[object Object]';
@@ -17970,7 +18021,7 @@ var Kinvey =
 
 
 /***/ },
-/* 197 */
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -17984,21 +18035,21 @@ var Kinvey =
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _request = __webpack_require__(148);
+	var _request = __webpack_require__(149);
 
-	var _rack = __webpack_require__(153);
+	var _rack = __webpack_require__(154);
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _response2 = __webpack_require__(166);
+	var _response2 = __webpack_require__(167);
 
-	var _storage = __webpack_require__(137);
+	var _storage = __webpack_require__(138);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
-	var _url = __webpack_require__(141);
+	var _url = __webpack_require__(142);
 
 	var _url2 = _interopRequireDefault(_url);
 
@@ -18228,10 +18279,10 @@ var Kinvey =
 
 	  return NetworkRequest;
 	}(_request.KinveyRequest);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 198 */
+/* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -18241,7 +18292,7 @@ var Kinvey =
 	});
 	exports.Log = undefined;
 
-	var _loglevel = __webpack_require__(199);
+	var _loglevel = __webpack_require__(200);
 
 	var _loglevel2 = _interopRequireDefault(_loglevel);
 
@@ -18271,7 +18322,7 @@ var Kinvey =
 	exports.Log = _loglevel2.default;
 
 /***/ },
-/* 199 */
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -18500,7 +18551,7 @@ var Kinvey =
 
 
 /***/ },
-/* 200 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -18512,13 +18563,13 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _clone = __webpack_require__(201);
+	var _clone = __webpack_require__(202);
 
 	var _clone2 = _interopRequireDefault(_clone);
 
-	var _isPlainObject = __webpack_require__(196);
+	var _isPlainObject = __webpack_require__(197);
 
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 
@@ -18606,13 +18657,13 @@ var Kinvey =
 
 	  return Metadata;
 	}();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 201 */
+/* 202 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseClone = __webpack_require__(202);
+	var baseClone = __webpack_require__(203);
 
 	/**
 	 * Creates a shallow clone of `value`.
@@ -18648,26 +18699,26 @@ var Kinvey =
 
 
 /***/ },
-/* 202 */
+/* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Stack = __webpack_require__(38),
-	    arrayEach = __webpack_require__(10),
-	    assignValue = __webpack_require__(118),
-	    baseAssign = __webpack_require__(203),
-	    cloneBuffer = __webpack_require__(204),
-	    copyArray = __webpack_require__(205),
-	    copySymbols = __webpack_require__(206),
-	    getAllKeys = __webpack_require__(209),
-	    getTag = __webpack_require__(90),
-	    initCloneArray = __webpack_require__(212),
-	    initCloneByTag = __webpack_require__(213),
-	    initCloneObject = __webpack_require__(223),
-	    isArray = __webpack_require__(30),
-	    isBuffer = __webpack_require__(130),
-	    isHostObject = __webpack_require__(59),
-	    isObject = __webpack_require__(27),
-	    keys = __webpack_require__(15);
+	var Stack = __webpack_require__(39),
+	    arrayEach = __webpack_require__(11),
+	    assignValue = __webpack_require__(119),
+	    baseAssign = __webpack_require__(204),
+	    cloneBuffer = __webpack_require__(205),
+	    copyArray = __webpack_require__(206),
+	    copySymbols = __webpack_require__(207),
+	    getAllKeys = __webpack_require__(210),
+	    getTag = __webpack_require__(91),
+	    initCloneArray = __webpack_require__(213),
+	    initCloneByTag = __webpack_require__(214),
+	    initCloneObject = __webpack_require__(224),
+	    isArray = __webpack_require__(31),
+	    isBuffer = __webpack_require__(131),
+	    isHostObject = __webpack_require__(60),
+	    isObject = __webpack_require__(28),
+	    keys = __webpack_require__(16);
 
 	/** `Object#toString` result references. */
 	var argsTag = '[object Arguments]',
@@ -18793,11 +18844,11 @@ var Kinvey =
 
 
 /***/ },
-/* 203 */
+/* 204 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var copyObject = __webpack_require__(119),
-	    keys = __webpack_require__(15);
+	var copyObject = __webpack_require__(120),
+	    keys = __webpack_require__(16);
 
 	/**
 	 * The base implementation of `_.assign` without support for multiple sources
@@ -18816,7 +18867,7 @@ var Kinvey =
 
 
 /***/ },
-/* 204 */
+/* 205 */
 /***/ function(module, exports) {
 
 	/**
@@ -18840,7 +18891,7 @@ var Kinvey =
 
 
 /***/ },
-/* 205 */
+/* 206 */
 /***/ function(module, exports) {
 
 	/**
@@ -18866,11 +18917,11 @@ var Kinvey =
 
 
 /***/ },
-/* 206 */
+/* 207 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var copyObject = __webpack_require__(119),
-	    getSymbols = __webpack_require__(207);
+	var copyObject = __webpack_require__(120),
+	    getSymbols = __webpack_require__(208);
 
 	/**
 	 * Copies own symbol properties of `source` to `object`.
@@ -18888,10 +18939,10 @@ var Kinvey =
 
 
 /***/ },
-/* 207 */
+/* 208 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var stubArray = __webpack_require__(208);
+	var stubArray = __webpack_require__(209);
 
 	/** Built-in value references. */
 	var getOwnPropertySymbols = Object.getOwnPropertySymbols;
@@ -18918,7 +18969,7 @@ var Kinvey =
 
 
 /***/ },
-/* 208 */
+/* 209 */
 /***/ function(module, exports) {
 
 	/**
@@ -18947,12 +18998,12 @@ var Kinvey =
 
 
 /***/ },
-/* 209 */
+/* 210 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseGetAllKeys = __webpack_require__(210),
-	    getSymbols = __webpack_require__(207),
-	    keys = __webpack_require__(15);
+	var baseGetAllKeys = __webpack_require__(211),
+	    getSymbols = __webpack_require__(208),
+	    keys = __webpack_require__(16);
 
 	/**
 	 * Creates an array of own enumerable property names and symbols of `object`.
@@ -18969,11 +19020,11 @@ var Kinvey =
 
 
 /***/ },
-/* 210 */
+/* 211 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayPush = __webpack_require__(211),
-	    isArray = __webpack_require__(30);
+	var arrayPush = __webpack_require__(212),
+	    isArray = __webpack_require__(31);
 
 	/**
 	 * The base implementation of `getAllKeys` and `getAllKeysIn` which uses
@@ -18995,7 +19046,7 @@ var Kinvey =
 
 
 /***/ },
-/* 211 */
+/* 212 */
 /***/ function(module, exports) {
 
 	/**
@@ -19021,7 +19072,7 @@ var Kinvey =
 
 
 /***/ },
-/* 212 */
+/* 213 */
 /***/ function(module, exports) {
 
 	/** Used for built-in method references. */
@@ -19053,16 +19104,16 @@ var Kinvey =
 
 
 /***/ },
-/* 213 */
+/* 214 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var cloneArrayBuffer = __webpack_require__(214),
-	    cloneDataView = __webpack_require__(215),
-	    cloneMap = __webpack_require__(216),
-	    cloneRegExp = __webpack_require__(218),
-	    cloneSet = __webpack_require__(219),
-	    cloneSymbol = __webpack_require__(221),
-	    cloneTypedArray = __webpack_require__(222);
+	var cloneArrayBuffer = __webpack_require__(215),
+	    cloneDataView = __webpack_require__(216),
+	    cloneMap = __webpack_require__(217),
+	    cloneRegExp = __webpack_require__(219),
+	    cloneSet = __webpack_require__(220),
+	    cloneSymbol = __webpack_require__(222),
+	    cloneTypedArray = __webpack_require__(223);
 
 	/** `Object#toString` result references. */
 	var boolTag = '[object Boolean]',
@@ -19139,10 +19190,10 @@ var Kinvey =
 
 
 /***/ },
-/* 214 */
+/* 215 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Uint8Array = __webpack_require__(86);
+	var Uint8Array = __webpack_require__(87);
 
 	/**
 	 * Creates a clone of `arrayBuffer`.
@@ -19161,10 +19212,10 @@ var Kinvey =
 
 
 /***/ },
-/* 215 */
+/* 216 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var cloneArrayBuffer = __webpack_require__(214);
+	var cloneArrayBuffer = __webpack_require__(215);
 
 	/**
 	 * Creates a clone of `dataView`.
@@ -19183,12 +19234,12 @@ var Kinvey =
 
 
 /***/ },
-/* 216 */
+/* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var addMapEntry = __webpack_require__(217),
-	    arrayReduce = __webpack_require__(162),
-	    mapToArray = __webpack_require__(87);
+	var addMapEntry = __webpack_require__(218),
+	    arrayReduce = __webpack_require__(163),
+	    mapToArray = __webpack_require__(88);
 
 	/**
 	 * Creates a clone of `map`.
@@ -19208,7 +19259,7 @@ var Kinvey =
 
 
 /***/ },
-/* 217 */
+/* 218 */
 /***/ function(module, exports) {
 
 	/**
@@ -19229,7 +19280,7 @@ var Kinvey =
 
 
 /***/ },
-/* 218 */
+/* 219 */
 /***/ function(module, exports) {
 
 	/** Used to match `RegExp` flags from their coerced string values. */
@@ -19252,12 +19303,12 @@ var Kinvey =
 
 
 /***/ },
-/* 219 */
+/* 220 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var addSetEntry = __webpack_require__(220),
-	    arrayReduce = __webpack_require__(162),
-	    setToArray = __webpack_require__(88);
+	var addSetEntry = __webpack_require__(221),
+	    arrayReduce = __webpack_require__(163),
+	    setToArray = __webpack_require__(89);
 
 	/**
 	 * Creates a clone of `set`.
@@ -19277,7 +19328,7 @@ var Kinvey =
 
 
 /***/ },
-/* 220 */
+/* 221 */
 /***/ function(module, exports) {
 
 	/**
@@ -19297,10 +19348,10 @@ var Kinvey =
 
 
 /***/ },
-/* 221 */
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Symbol = __webpack_require__(85);
+	var Symbol = __webpack_require__(86);
 
 	/** Used to convert symbols to primitives and strings. */
 	var symbolProto = Symbol ? Symbol.prototype : undefined,
@@ -19321,10 +19372,10 @@ var Kinvey =
 
 
 /***/ },
-/* 222 */
+/* 223 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var cloneArrayBuffer = __webpack_require__(214);
+	var cloneArrayBuffer = __webpack_require__(215);
 
 	/**
 	 * Creates a clone of `typedArray`.
@@ -19343,12 +19394,12 @@ var Kinvey =
 
 
 /***/ },
-/* 223 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseCreate = __webpack_require__(224),
-	    getPrototype = __webpack_require__(17),
-	    isPrototype = __webpack_require__(33);
+	var baseCreate = __webpack_require__(225),
+	    getPrototype = __webpack_require__(18),
+	    isPrototype = __webpack_require__(34);
 
 	/**
 	 * Initializes an object clone.
@@ -19367,10 +19418,10 @@ var Kinvey =
 
 
 /***/ },
-/* 224 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(27);
+	var isObject = __webpack_require__(28);
 
 	/** Built-in value references. */
 	var objectCreate = Object.create;
@@ -19391,7 +19442,7 @@ var Kinvey =
 
 
 /***/ },
-/* 225 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -19406,61 +19457,61 @@ var Kinvey =
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
 
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _cache = __webpack_require__(226);
+	var _cache = __webpack_require__(227);
 
-	var _deltafetch = __webpack_require__(227);
+	var _deltafetch = __webpack_require__(228);
 
-	var _network = __webpack_require__(197);
+	var _network = __webpack_require__(198);
 
-	var _request = __webpack_require__(148);
+	var _request = __webpack_require__(149);
 
-	var _query4 = __webpack_require__(7);
+	var _query4 = __webpack_require__(8);
 
-	var _observable = __webpack_require__(228);
+	var _observable = __webpack_require__(229);
 
-	var _client = __webpack_require__(136);
+	var _client = __webpack_require__(137);
 
-	var _sync = __webpack_require__(246);
+	var _sync = __webpack_require__(247);
 
-	var _metadata = __webpack_require__(200);
+	var _metadata = __webpack_require__(201);
 
-	var _es6Promise = __webpack_require__(167);
+	var _es6Promise = __webpack_require__(168);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
-	var _differenceBy = __webpack_require__(247);
+	var _differenceBy = __webpack_require__(248);
 
 	var _differenceBy2 = _interopRequireDefault(_differenceBy);
 
-	var _keyBy = __webpack_require__(177);
+	var _keyBy = __webpack_require__(178);
 
 	var _keyBy2 = _interopRequireDefault(_keyBy);
 
-	var _isString = __webpack_require__(31);
+	var _isString = __webpack_require__(32);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
-	var _url = __webpack_require__(141);
+	var _url = __webpack_require__(142);
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _filter = __webpack_require__(258);
+	var _filter = __webpack_require__(259);
 
 	var _filter2 = _interopRequireDefault(_filter);
 
-	var _map = __webpack_require__(174);
+	var _map = __webpack_require__(175);
 
 	var _map2 = _interopRequireDefault(_map);
 
-	var _xorWith = __webpack_require__(261);
+	var _xorWith = __webpack_require__(262);
 
 	var _xorWith2 = _interopRequireDefault(_xorWith);
 
-	var _isArray = __webpack_require__(30);
+	var _isArray = __webpack_require__(31);
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
@@ -21881,10 +21932,10 @@ var Kinvey =
 	}();
 
 	exports.DataStore = DataStore;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 226 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21898,15 +21949,15 @@ var Kinvey =
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _request = __webpack_require__(148);
+	var _request = __webpack_require__(149);
 
-	var _rack = __webpack_require__(153);
+	var _rack = __webpack_require__(154);
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _response = __webpack_require__(166);
+	var _response = __webpack_require__(167);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
@@ -22046,7 +22097,7 @@ var Kinvey =
 	}(_request.KinveyRequest);
 
 /***/ },
-/* 227 */
+/* 228 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -22064,49 +22115,49 @@ var Kinvey =
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _request = __webpack_require__(148);
+	var _request = __webpack_require__(149);
 
-	var _cache = __webpack_require__(226);
+	var _cache = __webpack_require__(227);
 
-	var _network = __webpack_require__(197);
+	var _network = __webpack_require__(198);
 
-	var _response = __webpack_require__(166);
+	var _response = __webpack_require__(167);
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _query3 = __webpack_require__(7);
+	var _query3 = __webpack_require__(8);
 
-	var _es6Promise = __webpack_require__(167);
+	var _es6Promise = __webpack_require__(168);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
-	var _keyBy = __webpack_require__(177);
+	var _keyBy = __webpack_require__(178);
 
 	var _keyBy2 = _interopRequireDefault(_keyBy);
 
-	var _reduce = __webpack_require__(161);
+	var _reduce = __webpack_require__(162);
 
 	var _reduce2 = _interopRequireDefault(_reduce);
 
-	var _result = __webpack_require__(135);
+	var _result = __webpack_require__(136);
 
 	var _result2 = _interopRequireDefault(_result);
 
-	var _values = __webpack_require__(181);
+	var _values = __webpack_require__(182);
 
 	var _values2 = _interopRequireDefault(_values);
 
-	var _forEach = __webpack_require__(9);
+	var _forEach = __webpack_require__(10);
 
 	var _forEach2 = _interopRequireDefault(_forEach);
 
-	var _isArray = __webpack_require__(30);
+	var _isArray = __webpack_require__(31);
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
-	var _isString = __webpack_require__(31);
+	var _isString = __webpack_require__(32);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
@@ -22376,10 +22427,10 @@ var Kinvey =
 
 	  return DeltaFetchRequest;
 	}(_request.KinveyRequest);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 228 */
+/* 229 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22391,9 +22442,9 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Observable2 = __webpack_require__(229);
+	var _Observable2 = __webpack_require__(230);
 
-	var _toPromise2 = __webpack_require__(245);
+	var _toPromise2 = __webpack_require__(246);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -22426,13 +22477,13 @@ var Kinvey =
 	}(_Observable2.Observable);
 
 /***/ },
-/* 229 */
+/* 230 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var root_1 = __webpack_require__(230);
-	var toSubscriber_1 = __webpack_require__(231);
-	var symbol_observable_1 = __webpack_require__(242);
+	var root_1 = __webpack_require__(231);
+	var toSubscriber_1 = __webpack_require__(232);
+	var symbol_observable_1 = __webpack_require__(243);
 	/**
 	 * A representation of any set of values over any amount of time. This the most basic building block
 	 * of RxJS.
@@ -22571,7 +22622,7 @@ var Kinvey =
 	//# sourceMappingURL=Observable.js.map
 
 /***/ },
-/* 230 */
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module, global) {"use strict";
@@ -22592,15 +22643,15 @@ var Kinvey =
 	    exports.root = freeGlobal;
 	}
 	//# sourceMappingURL=root.js.map
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(131)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(132)(module), (function() { return this; }())))
 
 /***/ },
-/* 231 */
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Subscriber_1 = __webpack_require__(232);
-	var rxSubscriber_1 = __webpack_require__(241);
+	var Subscriber_1 = __webpack_require__(233);
+	var rxSubscriber_1 = __webpack_require__(242);
 	function toSubscriber(nextOrObserver, error, complete) {
 	    if (nextOrObserver) {
 	        if (nextOrObserver instanceof Subscriber_1.Subscriber) {
@@ -22619,7 +22670,7 @@ var Kinvey =
 	//# sourceMappingURL=toSubscriber.js.map
 
 /***/ },
-/* 232 */
+/* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -22628,10 +22679,10 @@ var Kinvey =
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var isFunction_1 = __webpack_require__(233);
-	var Subscription_1 = __webpack_require__(234);
-	var Observer_1 = __webpack_require__(240);
-	var rxSubscriber_1 = __webpack_require__(241);
+	var isFunction_1 = __webpack_require__(234);
+	var Subscription_1 = __webpack_require__(235);
+	var Observer_1 = __webpack_require__(241);
+	var rxSubscriber_1 = __webpack_require__(242);
 	/**
 	 * Implements the {@link Observer} interface and extends the
 	 * {@link Subscription} class. While the {@link Observer} is the public API for
@@ -22873,7 +22924,7 @@ var Kinvey =
 	//# sourceMappingURL=Subscriber.js.map
 
 /***/ },
-/* 233 */
+/* 234 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -22884,16 +22935,16 @@ var Kinvey =
 	//# sourceMappingURL=isFunction.js.map
 
 /***/ },
-/* 234 */
+/* 235 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var isArray_1 = __webpack_require__(235);
-	var isObject_1 = __webpack_require__(236);
-	var isFunction_1 = __webpack_require__(233);
-	var tryCatch_1 = __webpack_require__(237);
-	var errorObject_1 = __webpack_require__(238);
-	var UnsubscriptionError_1 = __webpack_require__(239);
+	var isArray_1 = __webpack_require__(236);
+	var isObject_1 = __webpack_require__(237);
+	var isFunction_1 = __webpack_require__(234);
+	var tryCatch_1 = __webpack_require__(238);
+	var errorObject_1 = __webpack_require__(239);
+	var UnsubscriptionError_1 = __webpack_require__(240);
 	/**
 	 * Represents a disposable resource, such as the execution of an Observable. A
 	 * Subscription has one important method, `unsubscribe`, that takes no argument
@@ -23039,7 +23090,7 @@ var Kinvey =
 	//# sourceMappingURL=Subscription.js.map
 
 /***/ },
-/* 235 */
+/* 236 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23047,7 +23098,7 @@ var Kinvey =
 	//# sourceMappingURL=isArray.js.map
 
 /***/ },
-/* 236 */
+/* 237 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23058,11 +23109,11 @@ var Kinvey =
 	//# sourceMappingURL=isObject.js.map
 
 /***/ },
-/* 237 */
+/* 238 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var errorObject_1 = __webpack_require__(238);
+	var errorObject_1 = __webpack_require__(239);
 	var tryCatchTarget;
 	function tryCatcher() {
 	    try {
@@ -23082,7 +23133,7 @@ var Kinvey =
 	//# sourceMappingURL=tryCatch.js.map
 
 /***/ },
-/* 238 */
+/* 239 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23091,7 +23142,7 @@ var Kinvey =
 	//# sourceMappingURL=errorObject.js.map
 
 /***/ },
-/* 239 */
+/* 240 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23121,7 +23172,7 @@ var Kinvey =
 	//# sourceMappingURL=UnsubscriptionError.js.map
 
 /***/ },
-/* 240 */
+/* 241 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23134,25 +23185,25 @@ var Kinvey =
 	//# sourceMappingURL=Observer.js.map
 
 /***/ },
-/* 241 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var root_1 = __webpack_require__(230);
+	var root_1 = __webpack_require__(231);
 	var Symbol = root_1.root.Symbol;
 	exports.$$rxSubscriber = (typeof Symbol === 'function' && typeof Symbol.for === 'function') ?
 	    Symbol.for('rxSubscriber') : '@@rxSubscriber';
 	//# sourceMappingURL=rxSubscriber.js.map
 
 /***/ },
-/* 242 */
+/* 243 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(243);
+	module.exports = __webpack_require__(244);
 
 
 /***/ },
-/* 243 */
+/* 244 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -23161,7 +23212,7 @@ var Kinvey =
 		value: true
 	});
 
-	var _ponyfill = __webpack_require__(244);
+	var _ponyfill = __webpack_require__(245);
 
 	var _ponyfill2 = _interopRequireDefault(_ponyfill);
 
@@ -23180,7 +23231,7 @@ var Kinvey =
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 244 */
+/* 245 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -23208,11 +23259,11 @@ var Kinvey =
 	};
 
 /***/ },
-/* 245 */
+/* 246 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var root_1 = __webpack_require__(230);
+	var root_1 = __webpack_require__(231);
 	/**
 	 * @param PromiseCtor
 	 * @return {Promise<T>}
@@ -23241,7 +23292,7 @@ var Kinvey =
 	//# sourceMappingURL=toPromise.js.map
 
 /***/ },
-/* 246 */
+/* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -23256,43 +23307,43 @@ var Kinvey =
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
 
 
-	var _request2 = __webpack_require__(148);
+	var _request2 = __webpack_require__(149);
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _cache = __webpack_require__(226);
+	var _cache = __webpack_require__(227);
 
-	var _network = __webpack_require__(197);
+	var _network = __webpack_require__(198);
 
-	var _deltafetch = __webpack_require__(227);
+	var _deltafetch = __webpack_require__(228);
 
-	var _client = __webpack_require__(136);
+	var _client = __webpack_require__(137);
 
-	var _query = __webpack_require__(7);
+	var _query = __webpack_require__(8);
 
-	var _es6Promise = __webpack_require__(167);
+	var _es6Promise = __webpack_require__(168);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
-	var _url = __webpack_require__(141);
+	var _url = __webpack_require__(142);
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _map = __webpack_require__(174);
+	var _map = __webpack_require__(175);
 
 	var _map2 = _interopRequireDefault(_map);
 
-	var _result = __webpack_require__(135);
+	var _result = __webpack_require__(136);
 
 	var _result2 = _interopRequireDefault(_result);
 
-	var _isArray = __webpack_require__(30);
+	var _isArray = __webpack_require__(31);
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
-	var _isString = __webpack_require__(31);
+	var _isString = __webpack_require__(32);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
@@ -24360,18 +24411,18 @@ var Kinvey =
 
 	  return SyncManager;
 	}();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 247 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseDifference = __webpack_require__(248),
-	    baseFlatten = __webpack_require__(255),
-	    baseIteratee = __webpack_require__(35),
-	    isArrayLikeObject = __webpack_require__(22),
-	    last = __webpack_require__(257),
-	    rest = __webpack_require__(122);
+	var baseDifference = __webpack_require__(249),
+	    baseFlatten = __webpack_require__(256),
+	    baseIteratee = __webpack_require__(36),
+	    isArrayLikeObject = __webpack_require__(23),
+	    last = __webpack_require__(258),
+	    rest = __webpack_require__(123);
 
 	/**
 	 * This method is like `_.difference` except that it accepts `iteratee` which
@@ -24411,15 +24462,15 @@ var Kinvey =
 
 
 /***/ },
-/* 248 */
+/* 249 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var SetCache = __webpack_require__(80),
-	    arrayIncludes = __webpack_require__(249),
-	    arrayIncludesWith = __webpack_require__(252),
-	    arrayMap = __webpack_require__(175),
-	    baseUnary = __webpack_require__(253),
-	    cacheHas = __webpack_require__(254);
+	var SetCache = __webpack_require__(81),
+	    arrayIncludes = __webpack_require__(250),
+	    arrayIncludesWith = __webpack_require__(253),
+	    arrayMap = __webpack_require__(176),
+	    baseUnary = __webpack_require__(254),
+	    cacheHas = __webpack_require__(255);
 
 	/** Used as the size to enable large array optimizations. */
 	var LARGE_ARRAY_SIZE = 200;
@@ -24484,10 +24535,10 @@ var Kinvey =
 
 
 /***/ },
-/* 249 */
+/* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIndexOf = __webpack_require__(250);
+	var baseIndexOf = __webpack_require__(251);
 
 	/**
 	 * A specialized version of `_.includes` for arrays without support for
@@ -24507,10 +24558,10 @@ var Kinvey =
 
 
 /***/ },
-/* 250 */
+/* 251 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var indexOfNaN = __webpack_require__(251);
+	var indexOfNaN = __webpack_require__(252);
 
 	/**
 	 * The base implementation of `_.indexOf` without `fromIndex` bounds checks.
@@ -24540,7 +24591,7 @@ var Kinvey =
 
 
 /***/ },
-/* 251 */
+/* 252 */
 /***/ function(module, exports) {
 
 	/**
@@ -24569,7 +24620,7 @@ var Kinvey =
 
 
 /***/ },
-/* 252 */
+/* 253 */
 /***/ function(module, exports) {
 
 	/**
@@ -24597,7 +24648,7 @@ var Kinvey =
 
 
 /***/ },
-/* 253 */
+/* 254 */
 /***/ function(module, exports) {
 
 	/**
@@ -24617,7 +24668,7 @@ var Kinvey =
 
 
 /***/ },
-/* 254 */
+/* 255 */
 /***/ function(module, exports) {
 
 	/**
@@ -24636,11 +24687,11 @@ var Kinvey =
 
 
 /***/ },
-/* 255 */
+/* 256 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayPush = __webpack_require__(211),
-	    isFlattenable = __webpack_require__(256);
+	var arrayPush = __webpack_require__(212),
+	    isFlattenable = __webpack_require__(257);
 
 	/**
 	 * The base implementation of `_.flatten` with support for restricting flattening.
@@ -24680,11 +24731,11 @@ var Kinvey =
 
 
 /***/ },
-/* 256 */
+/* 257 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArguments = __webpack_require__(21),
-	    isArray = __webpack_require__(30);
+	var isArguments = __webpack_require__(22),
+	    isArray = __webpack_require__(31);
 
 	/**
 	 * Checks if `value` is a flattenable `arguments` object or array.
@@ -24701,7 +24752,7 @@ var Kinvey =
 
 
 /***/ },
-/* 257 */
+/* 258 */
 /***/ function(module, exports) {
 
 	/**
@@ -24727,13 +24778,13 @@ var Kinvey =
 
 
 /***/ },
-/* 258 */
+/* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayFilter = __webpack_require__(259),
-	    baseFilter = __webpack_require__(260),
-	    baseIteratee = __webpack_require__(35),
-	    isArray = __webpack_require__(30);
+	var arrayFilter = __webpack_require__(260),
+	    baseFilter = __webpack_require__(261),
+	    baseIteratee = __webpack_require__(36),
+	    isArray = __webpack_require__(31);
 
 	/**
 	 * Iterates over elements of `collection`, returning an array of all elements
@@ -24780,7 +24831,7 @@ var Kinvey =
 
 
 /***/ },
-/* 259 */
+/* 260 */
 /***/ function(module, exports) {
 
 	/**
@@ -24811,10 +24862,10 @@ var Kinvey =
 
 
 /***/ },
-/* 260 */
+/* 261 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseEach = __webpack_require__(11);
+	var baseEach = __webpack_require__(12);
 
 	/**
 	 * The base implementation of `_.filter` without support for iteratee shorthands.
@@ -24838,14 +24889,14 @@ var Kinvey =
 
 
 /***/ },
-/* 261 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayFilter = __webpack_require__(259),
-	    baseXor = __webpack_require__(262),
-	    isArrayLikeObject = __webpack_require__(22),
-	    last = __webpack_require__(257),
-	    rest = __webpack_require__(122);
+	var arrayFilter = __webpack_require__(260),
+	    baseXor = __webpack_require__(263),
+	    isArrayLikeObject = __webpack_require__(23),
+	    last = __webpack_require__(258),
+	    rest = __webpack_require__(123);
 
 	/**
 	 * This method is like `_.xor` except that it accepts `comparator` which is
@@ -24879,12 +24930,12 @@ var Kinvey =
 
 
 /***/ },
-/* 262 */
+/* 263 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayPush = __webpack_require__(211),
-	    baseDifference = __webpack_require__(248),
-	    baseUniq = __webpack_require__(263);
+	var arrayPush = __webpack_require__(212),
+	    baseDifference = __webpack_require__(249),
+	    baseUniq = __webpack_require__(264);
 
 	/**
 	 * The base implementation of methods like `_.xor`, without support for
@@ -24915,15 +24966,15 @@ var Kinvey =
 
 
 /***/ },
-/* 263 */
+/* 264 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var SetCache = __webpack_require__(80),
-	    arrayIncludes = __webpack_require__(249),
-	    arrayIncludesWith = __webpack_require__(252),
-	    cacheHas = __webpack_require__(254),
-	    createSet = __webpack_require__(264),
-	    setToArray = __webpack_require__(88);
+	var SetCache = __webpack_require__(81),
+	    arrayIncludes = __webpack_require__(250),
+	    arrayIncludesWith = __webpack_require__(253),
+	    cacheHas = __webpack_require__(255),
+	    createSet = __webpack_require__(265),
+	    setToArray = __webpack_require__(89);
 
 	/** Used as the size to enable large array optimizations. */
 	var LARGE_ARRAY_SIZE = 200;
@@ -24993,12 +25044,12 @@ var Kinvey =
 
 
 /***/ },
-/* 264 */
+/* 265 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Set = __webpack_require__(93),
-	    noop = __webpack_require__(265),
-	    setToArray = __webpack_require__(88);
+	var Set = __webpack_require__(94),
+	    noop = __webpack_require__(266),
+	    setToArray = __webpack_require__(89);
 
 	/** Used as references for various `Number` constants. */
 	var INFINITY = 1 / 0;
@@ -25018,7 +25069,7 @@ var Kinvey =
 
 
 /***/ },
-/* 265 */
+/* 266 */
 /***/ function(module, exports) {
 
 	/**
@@ -25041,7 +25092,7 @@ var Kinvey =
 
 
 /***/ },
-/* 266 */
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -25057,41 +25108,41 @@ var Kinvey =
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _network = __webpack_require__(197);
+	var _network = __webpack_require__(198);
 
-	var _response = __webpack_require__(166);
+	var _response = __webpack_require__(167);
 
-	var _request = __webpack_require__(148);
+	var _request = __webpack_require__(149);
 
-	var _datastore = __webpack_require__(225);
+	var _datastore = __webpack_require__(226);
 
-	var _es6Promise = __webpack_require__(167);
+	var _es6Promise = __webpack_require__(168);
 
-	var _log = __webpack_require__(198);
+	var _log = __webpack_require__(199);
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
-	var _url = __webpack_require__(141);
+	var _url = __webpack_require__(142);
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _map = __webpack_require__(174);
+	var _map = __webpack_require__(175);
 
 	var _map2 = _interopRequireDefault(_map);
 
-	var _assign = __webpack_require__(117);
+	var _assign = __webpack_require__(118);
 
 	var _assign2 = _interopRequireDefault(_assign);
 
-	var _isFunction = __webpack_require__(26);
+	var _isFunction = __webpack_require__(27);
 
 	var _isFunction2 = _interopRequireDefault(_isFunction);
 
-	var _isNumber = __webpack_require__(127);
+	var _isNumber = __webpack_require__(128);
 
 	var _isNumber2 = _interopRequireDefault(_isNumber);
 
@@ -25677,10 +25728,10 @@ var Kinvey =
 
 	  return FileStore;
 	}(_datastore.NetworkStore);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 267 */
+/* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -25696,53 +25747,53 @@ var Kinvey =
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _client = __webpack_require__(136);
+	var _client = __webpack_require__(137);
 
-	var _query = __webpack_require__(7);
+	var _query = __webpack_require__(8);
 
-	var _acl = __webpack_require__(268);
+	var _acl = __webpack_require__(269);
 
-	var _metadata = __webpack_require__(200);
+	var _metadata = __webpack_require__(201);
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _mic = __webpack_require__(269);
+	var _mic = __webpack_require__(270);
 
-	var _request = __webpack_require__(148);
+	var _request = __webpack_require__(149);
 
-	var _datastore = __webpack_require__(225);
+	var _datastore = __webpack_require__(226);
 
-	var _network = __webpack_require__(197);
+	var _network = __webpack_require__(198);
 
-	var _es6Promise = __webpack_require__(167);
+	var _es6Promise = __webpack_require__(168);
 
-	var _storage = __webpack_require__(137);
+	var _storage = __webpack_require__(138);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
-	var _url = __webpack_require__(141);
+	var _url = __webpack_require__(142);
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _assign = __webpack_require__(117);
+	var _assign = __webpack_require__(118);
 
 	var _assign2 = _interopRequireDefault(_assign);
 
-	var _result = __webpack_require__(135);
+	var _result = __webpack_require__(136);
 
 	var _result2 = _interopRequireDefault(_result);
 
-	var _isObject = __webpack_require__(27);
+	var _isObject = __webpack_require__(28);
 
 	var _isObject2 = _interopRequireDefault(_isObject);
 
-	var _isArray = __webpack_require__(30);
+	var _isArray = __webpack_require__(31);
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
-	var _isString = __webpack_require__(31);
+	var _isString = __webpack_require__(32);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
@@ -25769,7 +25820,7 @@ var Kinvey =
 	var hello = void 0;
 
 	if (typeof window !== 'undefined') {
-	  hello = __webpack_require__(271); // eslint-disable-line global-require
+	  hello = __webpack_require__(272); // eslint-disable-line global-require
 	}
 
 	/**
@@ -26985,10 +27036,10 @@ var Kinvey =
 
 	  return User;
 	}();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 268 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -27000,13 +27051,13 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _clone = __webpack_require__(201);
+	var _clone = __webpack_require__(202);
 
 	var _clone2 = _interopRequireDefault(_clone);
 
-	var _isPlainObject = __webpack_require__(196);
+	var _isPlainObject = __webpack_require__(197);
 
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 
@@ -27205,10 +27256,10 @@ var Kinvey =
 
 	  return Acl;
 	}();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 269 */
+/* 270 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
@@ -27220,25 +27271,25 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _network = __webpack_require__(197);
+	var _network = __webpack_require__(198);
 
-	var _request = __webpack_require__(148);
+	var _request = __webpack_require__(149);
 
-	var _client = __webpack_require__(136);
+	var _client = __webpack_require__(137);
 
-	var _es6Promise = __webpack_require__(167);
+	var _es6Promise = __webpack_require__(168);
 
-	var _path = __webpack_require__(270);
+	var _path = __webpack_require__(271);
 
 	var _path2 = _interopRequireDefault(_path);
 
-	var _url = __webpack_require__(141);
+	var _url = __webpack_require__(142);
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _isString = __webpack_require__(31);
+	var _isString = __webpack_require__(32);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
@@ -27507,10 +27558,10 @@ var Kinvey =
 
 	  return MobileIdentityConnect;
 	}();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), (function() { return this; }())))
 
 /***/ },
-/* 270 */
+/* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -27738,10 +27789,10 @@ var Kinvey =
 	    }
 	;
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 271 */
+/* 272 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, setImmediate) {/*! hellojs v1.13.3 | (c) 2012-2016 Andrew Dodson | MIT https://adodson.com/hello.js/LICENSE */
@@ -33558,13 +33609,13 @@ var Kinvey =
 		module.exports = hello;
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(272).setImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(273).setImmediate))
 
 /***/ },
-/* 272 */
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(3).nextTick;
+	/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(4).nextTick;
 	var apply = Function.prototype.apply;
 	var slice = Array.prototype.slice;
 	var immediateIds = {};
@@ -33640,10 +33691,10 @@ var Kinvey =
 	exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate : function(id) {
 	  delete immediateIds[id];
 	};
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(272).setImmediate, __webpack_require__(272).clearImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(273).setImmediate, __webpack_require__(273).clearImmediate))
 
 /***/ },
-/* 273 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -33655,23 +33706,23 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _cache = __webpack_require__(164);
+	var _cache = __webpack_require__(165);
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _log = __webpack_require__(198);
+	var _log = __webpack_require__(199);
 
-	var _webstorage = __webpack_require__(274);
+	var _webstorage = __webpack_require__(275);
 
-	var _indexeddb = __webpack_require__(284);
+	var _indexeddb = __webpack_require__(285);
 
-	var _websql = __webpack_require__(285);
+	var _websql = __webpack_require__(286);
 
-	var _forEach = __webpack_require__(9);
+	var _forEach = __webpack_require__(10);
 
 	var _forEach2 = _interopRequireDefault(_forEach);
 
-	var _isArray = __webpack_require__(30);
+	var _isArray = __webpack_require__(31);
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
@@ -33786,7 +33837,7 @@ var Kinvey =
 	}(_cache.CacheMiddleware);
 
 /***/ },
-/* 274 */
+/* 275 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
@@ -33799,29 +33850,29 @@ var Kinvey =
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
 
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
-	var _keyBy = __webpack_require__(177);
+	var _keyBy = __webpack_require__(178);
 
 	var _keyBy2 = _interopRequireDefault(_keyBy);
 
-	var _merge = __webpack_require__(275);
+	var _merge = __webpack_require__(276);
 
 	var _merge2 = _interopRequireDefault(_merge);
 
-	var _values = __webpack_require__(181);
+	var _values = __webpack_require__(182);
 
 	var _values2 = _interopRequireDefault(_values);
 
-	var _forEach = __webpack_require__(9);
+	var _forEach = __webpack_require__(10);
 
 	var _forEach2 = _interopRequireDefault(_forEach);
 
-	var _findIndex = __webpack_require__(159);
+	var _findIndex = __webpack_require__(160);
 
 	var _findIndex2 = _interopRequireDefault(_findIndex);
 
@@ -34361,14 +34412,14 @@ var Kinvey =
 
 	  return SessionStorage;
 	}(Storage);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), (function() { return this; }())))
 
 /***/ },
-/* 275 */
+/* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseMerge = __webpack_require__(276),
-	    createAssigner = __webpack_require__(120);
+	var baseMerge = __webpack_require__(277),
+	    createAssigner = __webpack_require__(121);
 
 	/**
 	 * This method is like `_.assign` except that it recursively merges own and
@@ -34409,17 +34460,17 @@ var Kinvey =
 
 
 /***/ },
-/* 276 */
+/* 277 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Stack = __webpack_require__(38),
-	    arrayEach = __webpack_require__(10),
-	    assignMergeValue = __webpack_require__(277),
-	    baseMergeDeep = __webpack_require__(278),
-	    isArray = __webpack_require__(30),
-	    isObject = __webpack_require__(27),
-	    isTypedArray = __webpack_require__(95),
-	    keysIn = __webpack_require__(280);
+	var Stack = __webpack_require__(39),
+	    arrayEach = __webpack_require__(11),
+	    assignMergeValue = __webpack_require__(278),
+	    baseMergeDeep = __webpack_require__(279),
+	    isArray = __webpack_require__(31),
+	    isObject = __webpack_require__(28),
+	    isTypedArray = __webpack_require__(96),
+	    keysIn = __webpack_require__(281);
 
 	/**
 	 * The base implementation of `_.merge` without support for multiple sources.
@@ -34465,10 +34516,10 @@ var Kinvey =
 
 
 /***/ },
-/* 277 */
+/* 278 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var eq = __webpack_require__(43);
+	var eq = __webpack_require__(44);
 
 	/**
 	 * This function is like `assignValue` except that it doesn't assign
@@ -34490,20 +34541,20 @@ var Kinvey =
 
 
 /***/ },
-/* 278 */
+/* 279 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assignMergeValue = __webpack_require__(277),
-	    baseClone = __webpack_require__(202),
-	    copyArray = __webpack_require__(205),
-	    isArguments = __webpack_require__(21),
-	    isArray = __webpack_require__(30),
-	    isArrayLikeObject = __webpack_require__(22),
-	    isFunction = __webpack_require__(26),
-	    isObject = __webpack_require__(27),
-	    isPlainObject = __webpack_require__(196),
-	    isTypedArray = __webpack_require__(95),
-	    toPlainObject = __webpack_require__(279);
+	var assignMergeValue = __webpack_require__(278),
+	    baseClone = __webpack_require__(203),
+	    copyArray = __webpack_require__(206),
+	    isArguments = __webpack_require__(22),
+	    isArray = __webpack_require__(31),
+	    isArrayLikeObject = __webpack_require__(23),
+	    isFunction = __webpack_require__(27),
+	    isObject = __webpack_require__(28),
+	    isPlainObject = __webpack_require__(197),
+	    isTypedArray = __webpack_require__(96),
+	    toPlainObject = __webpack_require__(280);
 
 	/**
 	 * A specialized version of `baseMerge` for arrays and objects which performs
@@ -34579,11 +34630,11 @@ var Kinvey =
 
 
 /***/ },
-/* 279 */
+/* 280 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var copyObject = __webpack_require__(119),
-	    keysIn = __webpack_require__(280);
+	var copyObject = __webpack_require__(120),
+	    keysIn = __webpack_require__(281);
 
 	/**
 	 * Converts `value` to a plain object flattening inherited enumerable string
@@ -34617,13 +34668,13 @@ var Kinvey =
 
 
 /***/ },
-/* 280 */
+/* 281 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseKeysIn = __webpack_require__(281),
-	    indexKeys = __webpack_require__(19),
-	    isIndex = __webpack_require__(32),
-	    isPrototype = __webpack_require__(33);
+	var baseKeysIn = __webpack_require__(282),
+	    indexKeys = __webpack_require__(20),
+	    isIndex = __webpack_require__(33),
+	    isPrototype = __webpack_require__(34);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -34678,11 +34729,11 @@ var Kinvey =
 
 
 /***/ },
-/* 281 */
+/* 282 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Reflect = __webpack_require__(282),
-	    iteratorToArray = __webpack_require__(283);
+	var Reflect = __webpack_require__(283),
+	    iteratorToArray = __webpack_require__(284);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -34720,10 +34771,10 @@ var Kinvey =
 
 
 /***/ },
-/* 282 */
+/* 283 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var root = __webpack_require__(62);
+	var root = __webpack_require__(63);
 
 	/** Built-in value references. */
 	var Reflect = root.Reflect;
@@ -34732,7 +34783,7 @@ var Kinvey =
 
 
 /***/ },
-/* 283 */
+/* 284 */
 /***/ function(module, exports) {
 
 	/**
@@ -34756,7 +34807,7 @@ var Kinvey =
 
 
 /***/ },
-/* 284 */
+/* 285 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -34769,27 +34820,27 @@ var Kinvey =
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
 
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _es6Promise = __webpack_require__(167);
+	var _es6Promise = __webpack_require__(168);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
-	var _forEach = __webpack_require__(9);
+	var _forEach = __webpack_require__(10);
 
 	var _forEach2 = _interopRequireDefault(_forEach);
 
-	var _isString = __webpack_require__(31);
+	var _isString = __webpack_require__(32);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
-	var _isArray = __webpack_require__(30);
+	var _isArray = __webpack_require__(31);
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
-	var _isFunction = __webpack_require__(26);
+	var _isFunction = __webpack_require__(27);
 
 	var _isFunction2 = _interopRequireDefault(_isFunction);
 
@@ -35267,7 +35318,7 @@ var Kinvey =
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 285 */
+/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
@@ -35280,31 +35331,31 @@ var Kinvey =
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
 
 
-	var _errors = __webpack_require__(4);
+	var _errors = __webpack_require__(5);
 
-	var _es6Promise = __webpack_require__(167);
+	var _es6Promise = __webpack_require__(168);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
-	var _map = __webpack_require__(174);
+	var _map = __webpack_require__(175);
 
 	var _map2 = _interopRequireDefault(_map);
 
-	var _forEach = __webpack_require__(9);
+	var _forEach = __webpack_require__(10);
 
 	var _forEach2 = _interopRequireDefault(_forEach);
 
-	var _isArray = __webpack_require__(30);
+	var _isArray = __webpack_require__(31);
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
-	var _isFunction = __webpack_require__(26);
+	var _isFunction = __webpack_require__(27);
 
 	var _isFunction2 = _interopRequireDefault(_isFunction);
 
-	var _isString = __webpack_require__(31);
+	var _isString = __webpack_require__(32);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
@@ -35634,10 +35685,10 @@ var Kinvey =
 
 	  return WebSQL;
 	}();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), (function() { return this; }())))
 
 /***/ },
-/* 286 */
+/* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35651,11 +35702,11 @@ var Kinvey =
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _middleware = __webpack_require__(165);
+	var _middleware = __webpack_require__(166);
 
-	var _es6Promise = __webpack_require__(167);
+	var _es6Promise = __webpack_require__(168);
 
-	var _parseHeaders = __webpack_require__(287);
+	var _parseHeaders = __webpack_require__(288);
 
 	var _parseHeaders2 = _interopRequireDefault(_parseHeaders);
 
@@ -35759,11 +35810,11 @@ var Kinvey =
 	}(_middleware.KinveyMiddleware);
 
 /***/ },
-/* 287 */
+/* 288 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var trim = __webpack_require__(288)
-	  , forEach = __webpack_require__(289)
+	var trim = __webpack_require__(289)
+	  , forEach = __webpack_require__(290)
 	  , isArray = function(arg) {
 	      return Object.prototype.toString.call(arg) === '[object Array]';
 	    }
@@ -35795,7 +35846,7 @@ var Kinvey =
 	}
 
 /***/ },
-/* 288 */
+/* 289 */
 /***/ function(module, exports) {
 
 	
@@ -35815,10 +35866,10 @@ var Kinvey =
 
 
 /***/ },
-/* 289 */
+/* 290 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isFunction = __webpack_require__(290)
+	var isFunction = __webpack_require__(291)
 
 	module.exports = forEach
 
@@ -35867,7 +35918,7 @@ var Kinvey =
 
 
 /***/ },
-/* 290 */
+/* 291 */
 /***/ function(module, exports) {
 
 	module.exports = isFunction
@@ -35888,7 +35939,7 @@ var Kinvey =
 
 
 /***/ },
-/* 291 */
+/* 292 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -35900,7 +35951,7 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _package = __webpack_require__(292);
+	var _package = __webpack_require__(293);
 
 	var _package2 = _interopRequireDefault(_package);
 
@@ -35948,12 +35999,12 @@ var Kinvey =
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 292 */
+/* 293 */
 /***/ function(module, exports) {
 
 	module.exports = {
 		"name": "kinvey-html5-sdk",
-		"version": "3.0.0-beta.21",
+		"version": "3.0.0-beta.22",
 		"description": "Kinvey JavaScript SDK for HTML5.",
 		"homepage": "http://www.kinvey.com",
 		"bugs": {
@@ -36038,7 +36089,7 @@ var Kinvey =
 	};
 
 /***/ },
-/* 293 */
+/* 294 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -36050,9 +36101,9 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _events = __webpack_require__(294);
+	var _events = __webpack_require__(295);
 
-	var _regeneratorRuntime = __webpack_require__(157);
+	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
@@ -36189,7 +36240,7 @@ var Kinvey =
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 294 */
+/* 295 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.

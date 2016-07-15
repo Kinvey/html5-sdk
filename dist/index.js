@@ -1,6 +1,6 @@
 'use strict';
 
-var _kinvey = require('kinvey-javascript-sdk-core/dist/kinvey');
+var _kinvey = require('./kinvey');
 
 var _rack = require('kinvey-javascript-sdk-core/dist/rack/rack');
 
