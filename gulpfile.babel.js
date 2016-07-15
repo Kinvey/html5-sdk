@@ -112,8 +112,8 @@ gulp.task('tag', () => {
 
 gulp.task('upload', ['build'], () => {
   const s3 = s3Upload({
-    accessKeyId: process.env.S3ACCESSKEY,
-    secretAccessKey: process.env.S3ACCESSSECRET
+    accessKeyId: process.env.S3_ACCESSKEYID,
+    secretAccessKey: process.env.S3_SECRETACCESSKEY
   });
 
   const stream = gulp.src([

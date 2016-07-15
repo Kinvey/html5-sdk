@@ -22,7 +22,7 @@ bower install kinvey-html5-sdk --save
 ```
 
 #### 3. Configure the SDK
-If you installed the SDK with npm, import the library in your code using `require`.
+If you installed the SDK with npm, import the sdk in your code using `require`.
 
 ```javascript
 var Kinvey = require('kinvey-html5-sdk');
