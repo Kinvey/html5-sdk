@@ -1,6 +1,6 @@
 {
   "name": "kinvey-html5-sdk",
-  "version": "3.0.0-beta.22",
+  "version": "3.0.0",
   "description": "Kinvey JavaScript SDK for HTML5.",
   "homepage": "http://www.kinvey.com",
   "bugs": {
@@ -81,5 +81,45 @@
     "Kinvey",
     "JavaScript",
     "HTML5"
-  ]
+  ],
+  "babel": {
+    "presets": [
+      "es2015",
+      "stage-2"
+    ]
+  },
+  "eslintConfig": {
+    "extends": "airbnb",
+    "parser": "babel-eslint",
+    "rules": {
+      "comma-dangle": "off",
+      "func-names": "off",
+      "id-length": "off",
+      "max-len": [
+        "warn",
+        {
+          "code": 120,
+          "tabWidth": 2,
+          "ignoreComments": true,
+          "ignoreTrailingComments": true
+        }
+      ],
+      "no-console": "error",
+      "no-loop-func": "warn",
+      "no-param-reassign": "off",
+      "no-shadow": "off",
+      "no-underscore-dangle": "off",
+      "object-shorthand": [
+        "error",
+        "methods"
+      ],
+      "space-before-function-paren": "off"
+    },
+    "env": {
+      "browser": true,
+      "es6": true,
+      "mocha": true,
+      "node": true
+    }
+  }
 }
