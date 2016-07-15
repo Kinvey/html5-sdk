@@ -1,7 +1,5 @@
 'use strict';
 
-require('regenerator-runtime');
-
 var _kinvey = require('kinvey-javascript-sdk-core/dist/kinvey');
 
 var _rack = require('kinvey-javascript-sdk-core/dist/rack/rack');
