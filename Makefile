@@ -16,7 +16,7 @@ upload: ;@echo "Uploading ${PROJECT} to S3..."; \
 	./node_modules/.bin/gulp upload
 
 publish: ;@echo "Publishing ${PROJECT}..."; \
-	npm publish . --tag beta
+	npm publish .
 
 audit: clean install test
 release: audit build upload publish
