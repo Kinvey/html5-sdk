@@ -12,13 +12,13 @@ To use the SDK, sign up for Kinvey if you have not already done so. Go to the [s
 You can install the module using npm:
 
 ```bash
-npm install kinvey-html5-sdk --save
+npm install kinvey-html5-sdk@3.0.0-beta.22 --save
 ```
 
 or
 
 ```bash
-bower install kinvey-html5-sdk --save
+bower install kinvey-html5-sdk@3.0.0-beta.22 --save
 ```
 
 #### 3. Configure the SDK
