@@ -1,4 +1,4 @@
-import { Kinvey } from 'kinvey-javascript-sdk-core/dist/kinvey';
+import { Kinvey } from './kinvey';
 import { KinveyRackManager } from 'kinvey-javascript-sdk-core/dist/rack/rack';
 import { CacheMiddleware as CoreCacheMiddleware } from 'kinvey-javascript-sdk-core/dist/rack/cache';
 import { CacheMiddleware } from './cache';
