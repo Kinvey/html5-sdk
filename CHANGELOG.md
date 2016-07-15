@@ -1,4 +1,7 @@
 ## Changelog
+### 3.0.0-beta.32 (2016-06-13)
+* Enhancement: Expose the Promise class.
+
 ### 3.0.0-beta.31 (2016-06-13)
 * Enhancement: Update `kinvey-javascript-sdk-core` to `3.0.0-beta.30`.
 
