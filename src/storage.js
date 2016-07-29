@@ -5,6 +5,7 @@ import merge from 'lodash/merge';
 import values from 'lodash/values';
 import forEach from 'lodash/forEach';
 import findIndex from 'lodash/findIndex';
+import find from 'lodash/find';
 const idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
 const masterCollectionName = 'master';
 
@@ -83,8 +84,7 @@ export class LocalStorage extends Storage {
     }
 
     delete entitiesById[id];
-    global.localStorage.setItem(`${this.name}${collection}`, JSON.stringify(values(entitiesById)));
-
+    await this.save(collection, values(entitiesById));
     return entity;
   }
 
@@ -118,10 +118,6 @@ export class SessionStorage extends Storage {
   constructor(name) {
     super(name);
     global.sessionStorage.setItem(this.masterCollectionName, JSON.stringify([]));
-  }
-
-  get masterCollectionName() {
-    return `${this.name}_${masterCollectionName}`;
   }
 
   async find(collection) {

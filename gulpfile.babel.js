@@ -69,7 +69,7 @@ gulp.task('bundle', ['build'], () => {
       entry: ['./index.js'],
       output: {
         filename: 'kinvey-html5-sdk.js',
-        libraryTarget: 'var',
+        libraryTarget: 'umd',
         library: 'Kinvey'
       },
       module: {
