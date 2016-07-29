@@ -23,13 +23,13 @@
   },
   "dependencies": {
     "es6-promise": "^3.2.1",
-    "kinvey-javascript-sdk-core": "*",
+    "kinvey-javascript-sdk-core": "^3.0.0",
     "lodash": "^4.8.2",
     "parse-headers": "^2.0.1",
     "regenerator-runtime": "^0.9.5"
   },
   "peerDependencies": {
-    "kinvey-javascript-sdk-core": "*"
+    "kinvey-javascript-sdk-core": "^3.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.9.0",
