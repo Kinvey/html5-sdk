@@ -13,7 +13,7 @@ var _errors = require('kinvey-javascript-sdk-core/dist/errors');
 
 var _log = require('kinvey-javascript-sdk-core/dist/log');
 
-var _webstorage = require('./webstorage');
+var _storage = require('./storage');
 
 var _indexeddb = require('./indexeddb');
 
@@ -74,15 +74,15 @@ var DB = exports.DB = function (_CoreDB) {
 
           break;
         case DBAdapter.LocalStorage:
-          if (_webstorage.LocalStorage.isSupported()) {
-            _this.adapter = new _webstorage.LocalStorage(name);
+          if (_storage.LocalStorage.isSupported()) {
+            _this.adapter = new _storage.LocalStorage(name);
             return false;
           }
 
           break;
         case DBAdapter.SessionStorage:
-          if (_webstorage.SessionStorage.isSupported()) {
-            _this.adapter = new _webstorage.SessionStorage(name);
+          if (_storage.SessionStorage.isSupported()) {
+            _this.adapter = new _storage.SessionStorage(name);
             return false;
           }
 
@@ -118,8 +118,6 @@ var CacheMiddleware = exports.CacheMiddleware = function (_CoreCacheMiddelware) 
   _createClass(CacheMiddleware, [{
     key: 'openDatabase',
     value: function openDatabase(name) {
-      var adapters = arguments.length <= 1 || arguments[1] === undefined ? [DBAdapter.IndexedDB, DBAdapter.WebSQL, DBAdapter.LocalStorage, DBAdapter.SessionStorage] : arguments[1];
-
       if (!name) {
         throw new _errors.KinveyError('A name is required to open a database.');
       }
@@ -127,7 +125,7 @@ var CacheMiddleware = exports.CacheMiddleware = function (_CoreCacheMiddelware) 
       var db = dbCache[name];
 
       if (!db) {
-        db = new DB(name, adapters);
+        db = new DB(name);
       }
 
       return db;

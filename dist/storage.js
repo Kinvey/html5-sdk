@@ -34,6 +34,10 @@ var _findIndex = require('lodash/findIndex');
 
 var _findIndex2 = _interopRequireDefault(_findIndex);
 
+var _find = require('lodash/find');
+
+var _find2 = _interopRequireDefault(_find);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
@@ -127,7 +131,7 @@ var LocalStorage = exports.LocalStorage = function (_Storage) {
 
               case 2:
                 entities = _context2.sent;
-                entity = find(entities, function (entity) {
+                entity = (0, _find2.default)(entities, function (entity) {
                   return entity[idAttribute] === id;
                 });
 
@@ -239,11 +243,13 @@ var LocalStorage = exports.LocalStorage = function (_Storage) {
               case 7:
 
                 delete entitiesById[id];
-                global.localStorage.setItem('' + this.name + collection, JSON.stringify((0, _values2.default)(entitiesById)));
-
-                return _context4.abrupt('return', entity);
+                _context4.next = 10;
+                return this.save(collection, (0, _values2.default)(entitiesById));
 
               case 10:
+                return _context4.abrupt('return', entity);
+
+              case 11:
               case 'end':
                 return _context4.stop();
             }
@@ -377,7 +383,7 @@ var SessionStorage = exports.SessionStorage = function (_Storage2) {
 
               case 2:
                 entities = _context7.sent;
-                entity = find(entities, function (entity) {
+                entity = (0, _find2.default)(entities, function (entity) {
                   return entity[idAttribute] === id;
                 });
 
@@ -545,11 +551,6 @@ var SessionStorage = exports.SessionStorage = function (_Storage2) {
 
       return clear;
     }()
-  }, {
-    key: 'masterCollectionName',
-    get: function get() {
-      return this.name + '_' + masterCollectionName;
-    }
   }], [{
     key: 'isSupported',
     value: function isSupported() {
