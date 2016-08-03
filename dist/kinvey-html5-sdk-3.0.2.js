@@ -1,5 +1,5 @@
 /**
- * kinvey-html5-sdk v3.0.1
+ * kinvey-html5-sdk v3.0.2
  * Kinvey JavaScript SDK for HTML5.
  * http://www.kinvey.com
  *
@@ -7434,7 +7434,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    options = (0, _assign2.default)({
 	      apiHostname: 'https://baas.kinvey.com',
-	      micHostname: 'https://auth.kinvey.com'
+	      micHostname: 'https://auth.kinvey.com',
+	      liveServiceHostname: 'https://kls.kinvey.com'
 	    }, options);
 
 	    if (options.apiHostname && (0, _isString2.default)(options.apiHostname)) {
@@ -7447,6 +7448,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var micHostnameParsed = _url2.default.parse(options.micHostname);
 	      options.micProtocol = micHostnameParsed.protocol;
 	      options.micHost = micHostnameParsed.host;
+	    }
+
+	    if (options.liveServiceHostname && (0, _isString2.default)(options.liveServiceHostname)) {
+	      var liveServiceHostnameParsed = _url2.default.parse(options.liveServiceHostname);
+	      options.liveServiceProtocol = liveServiceHostnameParsed.protocol;
+	      options.liveServiceHost = liveServiceHostnameParsed.host;
 	    }
 
 	    /**
@@ -7468,6 +7475,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @type {string}
 	     */
 	    this.micHost = options.micHost;
+
+	    /**
+	     * @type {string}
+	     */
+	    this.liveServiceProtocol = options.liveServiceProtocol;
+
+	    /**
+	     * @type {string}
+	     */
+	    this.liveServiceHost = options.liveServiceHost;
 
 	    /**
 	     * @type {?string}
@@ -7517,6 +7534,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        micHostname: this.micHostname,
 	        micProtocol: this.micProtocol,
 	        micHost: this.micHost,
+	        liveServiceHostname: this.liveServiceHostname,
+	        liveServiceHost: this.liveServiceHost,
+	        liveServiceProtocol: this.liveServiceProtocol,
 	        appKey: this.appKey,
 	        appSecret: this.appSecret,
 	        masterSecret: this.masterSecret,
@@ -7596,6 +7616,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return _url2.default.format({
 	        protocol: this.micProtocol,
 	        host: this.micHost
+	      });
+	    }
+
+	    /**
+	     * Live Service host name used for streaming data.
+	     */
+
+	  }, {
+	    key: 'liveServiceHostname',
+	    get: function get() {
+	      return _url2.default.format({
+	        protocol: this.liveServiceProtocol,
+	        host: this.liveServiceHost
 	      });
 	    }
 
@@ -19615,6 +19648,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _es6Promise = __webpack_require__(168);
 
+	var _log = __webpack_require__(200);
+
 	var _regeneratorRuntime = __webpack_require__(158);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
@@ -19705,7 +19740,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * @type {boolean}
 	     */
-	    this.useDeltaFetch = !!options.useDeltaFetch || false;
+	    this.useDeltaFetch = options.useDeltaFetch === true;
 	  }
 
 	  /**
@@ -19717,6 +19752,59 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(NetworkStore, [{
 	    key: 'find',
 
+
+	    /**
+	     * Returns the live stream for the store.
+	     * @return {Observable} Observable
+	     */
+	    // get liveStream() {
+	    //   if (typeof(EventSource) === 'undefined') {
+	    //     throw new KinveyError('Your environment does not support server-sent events.');
+	    //   }
+
+	    //   if (!this._liveStream) {
+	    //     // Subscribe to KLS
+	    //     const source = new EventSource(url.format({
+	    //       protocol: this.client.liveServiceProtocol,
+	    //       host: this.client.liveServiceHost,
+	    //       pathname: this.pathname,
+	    //     }));
+
+	    //      // Create a live stream
+	    //     this._liveStream = KinveyObservable.create(async observer => {
+	    //       // Open event
+	    //       source.onopen = (event) => {
+	    //         Log.info(`Subscription to Kinvey Live Service is now open at ${source.url}.`);
+	    //         Log.info(event);
+	    //       };
+
+	    //       // Message event
+	    //       source.onmessage = (message) => {
+	    //         try {
+	    //           observer.next(JSON.parse(message.data));
+	    //         } catch (error) {
+	    //           observer.error(error);
+	    //         }
+	    //       };
+
+	    //       // Error event
+	    //       source.onerror = (error) => {
+	    //         observer.error(error);
+	    //       };
+
+	    //       // Dispose function
+	    //       return () => {
+	    //         observer.complete();
+	    //       };
+	    //     }).finally(() => {
+	    //       source.close();
+	    //       delete this._liveStream;
+	    //     });
+	    //   }
+
+	    //   // Return the stream
+	    //   return this._liveStream;
+	    // }
 
 	    /**
 	     * Find all entities in the data store. A query can be optionally provided to return
@@ -20405,6 +20493,64 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      return stream.toPromise();
 	    }
+
+	    /**
+	     * Subscribes an observer to a live stream
+	     */
+
+	  }, {
+	    key: 'subscribe',
+	    value: function subscribe(subscriber) {
+	      var _this8 = this;
+
+	      // Subscribe to KLS
+	      if (typeof EventSource !== 'undefined') {
+	        this.source = new EventSource(_url2.default.format({
+	          protocol: this.client.liveServiceProtocol,
+	          host: this.client.liveServiceHost,
+	          pathname: this.pathname
+	        }));
+
+	        this.source.onopen = function (data) {
+	          _log.Log.info('Subscription to Kinvey live service is now open.');
+	          _log.Log.info(data);
+	        };
+
+	        this.source.onmessage = function (message) {
+	          try {
+	            subscriber.onNext(JSON.parse(message.data));
+	          } catch (error) {
+	            subscriber.onError(error);
+	            _this8.unsubscribe(subscriber);
+	          }
+	        };
+
+	        this.source.onerror = function (error) {
+	          subscriber.onError(error);
+	          _this8.unsubscribe(subscriber);
+	        };
+	      } else {
+	        throw new _errors.KinveyError('Your environment does not support server-sent events.');
+	      }
+
+	      return function () {
+	        _this8.unsubscribe(subscriber);
+	      };
+	    }
+	  }, {
+	    key: 'unsubscribe',
+	    value: function unsubscribe(subscriber) {
+	      if (subscriber) {
+	        subscriber.complete();
+	      }
+
+	      // Close the subscription
+	      if (this.source) {
+	        this.source.close();
+	      }
+
+	      this.source = null;
+	    }
 	  }, {
 	    key: 'pathname',
 	    get: function get() {
@@ -20438,15 +20584,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * @type {number|undefined}
 	     */
-	    var _this8 = _possibleConstructorReturn(this, Object.getPrototypeOf(CacheStore).call(this, collection, options));
+	    var _this9 = _possibleConstructorReturn(this, Object.getPrototypeOf(CacheStore).call(this, collection, options));
 
-	    _this8.ttl = options.ttl || undefined;
+	    _this9.ttl = options.ttl || undefined;
 
 	    /**
 	     * @type {SyncManager}
 	     */
-	    _this8.syncManager = new _sync.SyncManager(_this8.collection, options);
-	    return _this8;
+	    _this9.syncManager = new _sync.SyncManager(_this9.collection, options);
+	    return _this9;
 	  }
 
 	  _createClass(CacheStore, [{
@@ -20468,7 +20614,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return  {Observable}                                                Observable.
 	     */
 	    value: function find(query) {
-	      var _this9 = this;
+	      var _this10 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -20490,7 +20636,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                case 3:
 	                  _context8.next = 5;
-	                  return _this9.pendingSyncCount(null, options);
+	                  return _this10.pendingSyncCount(null, options);
 
 	                case 5:
 	                  syncCount = _context8.sent;
@@ -20501,11 +20647,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  }
 
 	                  _context8.next = 9;
-	                  return _this9.push(null, options);
+	                  return _this10.push(null, options);
 
 	                case 9:
 	                  _context8.next = 11;
-	                  return _this9.pendingSyncCount(null, options);
+	                  return _this10.pendingSyncCount(null, options);
 
 	                case 11:
 	                  syncCount = _context8.sent;
@@ -20526,9 +20672,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  config = new _request.KinveyRequestConfig({
 	                    method: _request.RequestMethod.GET,
 	                    url: _url2.default.format({
-	                      protocol: _this9.client.protocol,
-	                      host: _this9.client.host,
-	                      pathname: _this9.pathname,
+	                      protocol: _this10.client.protocol,
+	                      host: _this10.client.host,
+	                      pathname: _this10.pathname,
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
@@ -20558,7 +20704,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                case 27:
 	                  _context8.next = 29;
-	                  return _get(Object.getPrototypeOf(CacheStore.prototype), 'find', _this9).call(_this9, query, options).toPromise();
+	                  return _get(Object.getPrototypeOf(CacheStore.prototype), 'find', _this10).call(_this10, query, options).toPromise();
 
 	                case 29:
 	                  networkEntities = _context8.sent;
@@ -20569,7 +20715,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  removedIds = Object.keys((0, _keyBy2.default)(removedEntities, idAttribute));
 	                  removeQuery = new _query4.Query().contains(idAttribute, removedIds);
 	                  _context8.next = 35;
-	                  return _this9.clear(removeQuery, options);
+	                  return _this10.clear(removeQuery, options);
 
 	                case 35:
 
@@ -20577,9 +20723,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  saveConfig = new _request.KinveyRequestConfig({
 	                    method: _request.RequestMethod.PUT,
 	                    url: _url2.default.format({
-	                      protocol: _this9.client.protocol,
-	                      host: _this9.client.host,
-	                      pathname: _this9.pathname,
+	                      protocol: _this10.client.protocol,
+	                      host: _this10.client.host,
+	                      pathname: _this10.pathname,
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
@@ -20610,7 +20756,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  return _context8.stop();
 	              }
 	            }
-	          }, _callee8, _this9, [[0, 42], [15, 25]]);
+	          }, _callee8, _this10, [[0, 42], [15, 25]]);
 	        }));
 
 	        return function (_x18) {
@@ -20636,7 +20782,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'findById',
 	    value: function findById(id) {
-	      var _this10 = this;
+	      var _this11 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -20660,7 +20806,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                case 5:
 	                  _context9.next = 7;
-	                  return _this10.pendingSyncCount(null, options);
+	                  return _this11.pendingSyncCount(null, options);
 
 	                case 7:
 	                  syncCount = _context9.sent;
@@ -20671,11 +20817,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  }
 
 	                  _context9.next = 11;
-	                  return _this10.push(null, options);
+	                  return _this11.push(null, options);
 
 	                case 11:
 	                  _context9.next = 13;
-	                  return _this10.pendingSyncCount(null, options);
+	                  return _this11.pendingSyncCount(null, options);
 
 	                case 13:
 	                  syncCount = _context9.sent;
@@ -20695,9 +20841,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  config = new _request.KinveyRequestConfig({
 	                    method: _request.RequestMethod.GET,
 	                    url: _url2.default.format({
-	                      protocol: _this10.client.protocol,
-	                      host: _this10.client.host,
-	                      pathname: _this10.pathname + '/' + id,
+	                      protocol: _this11.client.protocol,
+	                      host: _this11.client.host,
+	                      pathname: _this11.pathname + '/' + id,
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
@@ -20723,7 +20869,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                case 28:
 	                  _context9.next = 30;
-	                  return _get(Object.getPrototypeOf(CacheStore.prototype), 'findById', _this10).call(_this10, id, options).toPromise();
+	                  return _get(Object.getPrototypeOf(CacheStore.prototype), 'findById', _this11).call(_this11, id, options).toPromise();
 
 	                case 30:
 	                  networkEntity = _context9.sent;
@@ -20733,9 +20879,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  saveConfig = new _request.KinveyRequestConfig({
 	                    method: _request.RequestMethod.PUT,
 	                    url: _url2.default.format({
-	                      protocol: _this10.client.protocol,
-	                      host: _this10.client.host,
-	                      pathname: _this10.pathname,
+	                      protocol: _this11.client.protocol,
+	                      host: _this11.client.host,
+	                      pathname: _this11.pathname,
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
@@ -20768,7 +20914,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  return _context9.stop();
 	              }
 	            }
-	          }, _callee9, _this10, [[0, 38], [16, 26]]);
+	          }, _callee9, _this11, [[0, 38], [16, 26]]);
 	        }));
 
 	        return function (_x20) {
@@ -20796,7 +20942,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'count',
 	    value: function count(query) {
-	      var _this11 = this;
+	      var _this12 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -20818,7 +20964,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                case 3:
 	                  _context10.next = 5;
-	                  return _this11.pendingSyncCount(null, options);
+	                  return _this12.pendingSyncCount(null, options);
 
 	                case 5:
 	                  syncCount = _context10.sent;
@@ -20829,11 +20975,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  }
 
 	                  _context10.next = 9;
-	                  return _this11.push(null, options);
+	                  return _this12.push(null, options);
 
 	                case 9:
 	                  _context10.next = 11;
-	                  return _this11.pendingSyncCount(null, options);
+	                  return _this12.pendingSyncCount(null, options);
 
 	                case 11:
 	                  syncCount = _context10.sent;
@@ -20853,9 +20999,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  config = new _request.KinveyRequestConfig({
 	                    method: _request.RequestMethod.GET,
 	                    url: _url2.default.format({
-	                      protocol: _this11.client.protocol,
-	                      host: _this11.client.host,
-	                      pathname: _this11.pathname + '/_count',
+	                      protocol: _this12.client.protocol,
+	                      host: _this12.client.host,
+	                      pathname: _this12.pathname + '/_count',
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
@@ -20885,7 +21031,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                case 26:
 	                  _context10.next = 28;
-	                  return _get(Object.getPrototypeOf(CacheStore.prototype), 'count', _this11).call(_this11, query, options).toPromise();
+	                  return _get(Object.getPrototypeOf(CacheStore.prototype), 'count', _this12).call(_this12, query, options).toPromise();
 
 	                case 28:
 	                  networkCount = _context10.sent;
@@ -20909,7 +21055,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  return _context10.stop();
 	              }
 	            }
-	          }, _callee10, _this11, [[0, 32], [14, 24]]);
+	          }, _callee10, _this12, [[0, 32], [14, 24]]);
 	        }));
 
 	        return function (_x22) {
@@ -20934,7 +21080,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'create',
 	    value: function create(data) {
-	      var _this12 = this;
+	      var _this13 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -20970,9 +21116,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  config = new _request.KinveyRequestConfig({
 	                    method: _request.RequestMethod.POST,
 	                    url: _url2.default.format({
-	                      protocol: _this12.client.protocol,
-	                      host: _this12.client.host,
-	                      pathname: _this12.pathname,
+	                      protocol: _this13.client.protocol,
+	                      host: _this13.client.host,
+	                      pathname: _this13.pathname,
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
@@ -20993,10 +21139,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                  // Add a create operation to sync
 	                  _context11.next = 15;
-	                  return _this12.syncManager.addCreateOperation(data, options);
+	                  return _this13.syncManager.addCreateOperation(data, options);
 
 	                case 15:
-	                  if (!(_this12.syncAutomatically === true)) {
+	                  if (!(_this13.syncAutomatically === true)) {
 	                    _context11.next = 25;
 	                    break;
 	                  }
@@ -21004,7 +21150,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  ids = Object.keys((0, _keyBy2.default)(data, idAttribute));
 	                  query = new _query4.Query().contains('entityId', ids);
 	                  _context11.next = 20;
-	                  return _this12.push(query, options);
+	                  return _this13.push(query, options);
 
 	                case 20:
 	                  results = _context11.sent;
@@ -21039,7 +21185,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  return _context11.stop();
 	              }
 	            }
-	          }, _callee11, _this12, [[0, 28]]);
+	          }, _callee11, _this13, [[0, 28]]);
 	        }));
 
 	        return function (_x24) {
@@ -21064,7 +21210,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'update',
 	    value: function update(data) {
-	      var _this13 = this;
+	      var _this14 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -21100,9 +21246,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  config = new _request.KinveyRequestConfig({
 	                    method: _request.RequestMethod.PUT,
 	                    url: _url2.default.format({
-	                      protocol: _this13.client.protocol,
-	                      host: _this13.client.host,
-	                      pathname: _this13.pathname,
+	                      protocol: _this14.client.protocol,
+	                      host: _this14.client.host,
+	                      pathname: _this14.pathname,
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
@@ -21123,10 +21269,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                  // Add an update operation to sync
 	                  _context12.next = 15;
-	                  return _this13.syncManager.addUpdateOperation(data, options);
+	                  return _this14.syncManager.addUpdateOperation(data, options);
 
 	                case 15:
-	                  if (!(_this13.syncAutomatically === true)) {
+	                  if (!(_this14.syncAutomatically === true)) {
 	                    _context12.next = 25;
 	                    break;
 	                  }
@@ -21134,7 +21280,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  ids = Object.keys((0, _keyBy2.default)(data, idAttribute));
 	                  query = new _query4.Query().contains('entityId', ids);
 	                  _context12.next = 20;
-	                  return _this13.push(query, options);
+	                  return _this14.push(query, options);
 
 	                case 20:
 	                  results = _context12.sent;
@@ -21169,7 +21315,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  return _context12.stop();
 	              }
 	            }
-	          }, _callee12, _this13, [[0, 28]]);
+	          }, _callee12, _this14, [[0, 28]]);
 	        }));
 
 	        return function (_x26) {
@@ -21197,7 +21343,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'remove',
 	    value: function remove(query) {
-	      var _this14 = this;
+	      var _this15 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -21224,9 +21370,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  config = new _request.KinveyRequestConfig({
 	                    method: _request.RequestMethod.DELETE,
 	                    url: _url2.default.format({
-	                      protocol: _this14.client.protocol,
-	                      host: _this14.client.host,
-	                      pathname: _this14.pathname,
+	                      protocol: _this15.client.protocol,
+	                      host: _this15.client.host,
+	                      pathname: _this15.pathname,
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
@@ -21256,7 +21402,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  });
 	                  _query = new _query4.Query().contains('entityId', Object.keys((0, _keyBy2.default)(localEntities, idAttribute)));
 	                  _context13.next = 14;
-	                  return _this14.clearSync(_query, options);
+	                  return _this15.clearSync(_query, options);
 
 	                case 14:
 
@@ -21265,10 +21411,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    return entity[idAttribute] === localEntity[idAttribute];
 	                  });
 	                  _context13.next = 17;
-	                  return _this14.syncManager.addDeleteOperation(syncData, options);
+	                  return _this15.syncManager.addDeleteOperation(syncData, options);
 
 	                case 17:
-	                  if (!(_this14.syncAutomatically === true)) {
+	                  if (!(_this15.syncAutomatically === true)) {
 	                    _context13.next = 22;
 	                    break;
 	                  }
@@ -21276,7 +21422,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  ids = Object.keys((0, _keyBy2.default)(entities, idAttribute));
 	                  _query2 = new _query4.Query().contains('entityId', ids);
 	                  _context13.next = 22;
-	                  return _this14.push(_query2, options);
+	                  return _this15.push(_query2, options);
 
 	                case 22:
 
@@ -21298,7 +21444,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  return _context13.stop();
 	              }
 	            }
-	          }, _callee13, _this14, [[0, 25]]);
+	          }, _callee13, _this15, [[0, 25]]);
 	        }));
 
 	        return function (_x28) {
@@ -21323,7 +21469,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'removeById',
 	    value: function removeById(id) {
-	      var _this15 = this;
+	      var _this16 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -21351,9 +21497,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  config = new _request.KinveyRequestConfig({
 	                    method: _request.RequestMethod.DELETE,
 	                    url: _url2.default.format({
-	                      protocol: _this15.client.protocol,
-	                      host: _this15.client.host,
-	                      pathname: _this15.pathname + '/' + id,
+	                      protocol: _this16.client.protocol,
+	                      host: _this16.client.host,
+	                      pathname: _this16.pathname + '/' + id,
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
@@ -21390,7 +21536,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                  query.equalTo('entityId', entity[idAttribute]);
 	                  _context14.next = 18;
-	                  return _this15.clearSync(query, options);
+	                  return _this16.clearSync(query, options);
 
 	                case 18:
 	                  _context14.next = 22;
@@ -21398,17 +21544,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                case 20:
 	                  _context14.next = 22;
-	                  return _this15.syncManager.addDeleteOperation(entity, options);
+	                  return _this16.syncManager.addDeleteOperation(entity, options);
 
 	                case 22:
-	                  if (!(_this15.syncAutomatically === true)) {
+	                  if (!(_this16.syncAutomatically === true)) {
 	                    _context14.next = 26;
 	                    break;
 	                  }
 
 	                  _query3 = new _query4.Query().equalTo('entityId', entity[idAttribute]);
 	                  _context14.next = 26;
-	                  return _this15.push(_query3, options);
+	                  return _this16.push(_query3, options);
 
 	                case 26:
 
@@ -21432,7 +21578,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  return _context14.stop();
 	              }
 	            }
-	          }, _callee14, _this15, [[0, 29]]);
+	          }, _callee14, _this16, [[0, 29]]);
 	        }));
 
 	        return function (_x30) {
@@ -21457,7 +21603,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'clear',
 	    value: function clear(query) {
-	      var _this16 = this;
+	      var _this17 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -21482,9 +21628,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  config = new _request.KinveyRequestConfig({
 	                    method: _request.RequestMethod.DELETE,
 	                    url: _url2.default.format({
-	                      protocol: _this16.client.protocol,
-	                      host: _this16.client.host,
-	                      pathname: _this16.pathname,
+	                      protocol: _this17.client.protocol,
+	                      host: _this17.client.host,
+	                      pathname: _this17.pathname,
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
@@ -21511,7 +21657,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                  syncQuery = new _query4.Query().contains('entityId', Object.keys((0, _keyBy2.default)(data, idAttribute)));
 	                  _context15.next = 15;
-	                  return _this16.clearSync(syncQuery, options);
+	                  return _this17.clearSync(syncQuery, options);
 
 	                case 15:
 	                  _context15.next = 20;
@@ -21524,7 +21670,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  }
 
 	                  _context15.next = 20;
-	                  return _this16.clearSync(null, options);
+	                  return _this17.clearSync(null, options);
 
 	                case 20:
 
@@ -21547,7 +21693,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  return _context15.stop();
 	              }
 	            }
-	          }, _callee15, _this16, [[0, 23]]);
+	          }, _callee15, _this17, [[0, 23]]);
 	        }));
 
 	        return function (_x32) {
@@ -21696,7 +21842,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return  {Observable}                                                Observable.
 	     */
 	    value: function find(query) {
-	      var _this18 = this;
+	      var _this19 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -21722,9 +21868,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  config = new _request.KinveyRequestConfig({
 	                    method: _request.RequestMethod.GET,
 	                    url: _url2.default.format({
-	                      protocol: _this18.client.protocol,
-	                      host: _this18.client.host,
-	                      pathname: _this18.pathname,
+	                      protocol: _this19.client.protocol,
+	                      host: _this19.client.host,
+	                      pathname: _this19.pathname,
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
@@ -21760,7 +21906,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  return _context16.stop();
 	              }
 	            }
-	          }, _callee16, _this18, [[0, 11]]);
+	          }, _callee16, _this19, [[0, 11]]);
 	        }));
 
 	        return function (_x34) {
@@ -21786,7 +21932,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'findById',
 	    value: function findById(id) {
-	      var _this19 = this;
+	      var _this20 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -21813,9 +21959,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  config = new _request.KinveyRequestConfig({
 	                    method: _request.RequestMethod.GET,
 	                    url: _url2.default.format({
-	                      protocol: _this19.client.protocol,
-	                      host: _this19.client.host,
-	                      pathname: _this19.pathname + '/' + id,
+	                      protocol: _this20.client.protocol,
+	                      host: _this20.client.host,
+	                      pathname: _this20.pathname + '/' + id,
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
@@ -21852,7 +21998,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  return _context17.stop();
 	              }
 	            }
-	          }, _callee17, _this19, [[0, 13]]);
+	          }, _callee17, _this20, [[0, 13]]);
 	        }));
 
 	        return function (_x36) {
@@ -21880,7 +22026,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'count',
 	    value: function count(query) {
-	      var _this20 = this;
+	      var _this21 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -21906,9 +22052,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  config = new _request.KinveyRequestConfig({
 	                    method: _request.RequestMethod.GET,
 	                    url: _url2.default.format({
-	                      protocol: _this20.client.protocol,
-	                      host: _this20.client.host,
-	                      pathname: _this20.pathname + '/_count',
+	                      protocol: _this21.client.protocol,
+	                      host: _this21.client.host,
+	                      pathname: _this21.pathname + '/_count',
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
@@ -21945,7 +22091,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  return _context18.stop();
 	              }
 	            }
-	          }, _callee18, _this20, [[0, 12]]);
+	          }, _callee18, _this21, [[0, 12]]);
 	        }));
 
 	        return function (_x38) {
@@ -23933,6 +24079,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	              case 18:
 	                response = _context8.sent;
 	                networkEntities = response.data;
+
+	                // If the result is empty then clear the cache
+	                // If a query was used then just update the cache
+	                // If a query was not used then replace the cache
 
 	                // Save network entities to cache
 
@@ -25990,6 +26140,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _isObject2 = _interopRequireDefault(_isObject);
 
+	var _isEmpty = __webpack_require__(130);
+
+	var _isEmpty2 = _interopRequireDefault(_isEmpty);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _es6Promise.Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return _es6Promise.Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
@@ -26016,11 +26170,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	var UserStore = exports.UserStore = function (_NetworkStore) {
 	  _inherits(UserStore, _NetworkStore);
 
-	  function UserStore() {
+	  function UserStore(options) {
 	    _classCallCheck(this, UserStore);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(UserStore).apply(this, arguments));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(UserStore).call(this, null, options));
 	  }
+
+	  /**
+	   * The pathname for the store.
+	   *
+	   * @return  {string}   Pathname
+	   */
+
 
 	  _createClass(UserStore, [{
 	    key: 'create',
@@ -26226,12 +26387,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }()
 	  }, {
 	    key: 'pathname',
-
-	    /**
-	     * The pathname for the store.
-	     *
-	     * @return  {string}   Pathname
-	     */
 	    get: function get() {
 	      return '/' + usersNamespace + '/' + this.client.appKey;
 	    }
@@ -27071,7 +27226,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * Sign up a user with Kinvey.
 	     *
-	     * @param {User|Object} data Users data.
+	     * @param {?User|?Object} user Users data.
 	     * @param {Object} [options] Options
 	     * @param {boolean} [options.state=true] If set to true, the user will be set as the active user after successfully
 	     *                                       being signed up.
@@ -27120,7 +27275,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    host: this.client.host,
 	                    pathname: this.pathname
 	                  }),
-	                  body: user,
+	                  body: (0, _isEmpty2.default)(user) ? null : user,
 	                  properties: options.properties,
 	                  timeout: options.timeout,
 	                  client: this.client
@@ -27594,7 +27749,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'login',
 	    value: function login(username, password, options) {
-	      var user = new User();
+	      var user = new User({}, options);
 	      return user.login(username, password, options);
 	    }
 	  }, {
@@ -27602,38 +27757,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function loginWithMIC(redirectUri, authorizationGrant) {
 	      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-	      var user = new User();
+	      var user = new User({}, options);
 	      user.client = options.client || _client.Client.sharedInstance();
 	      return user.loginWithMIC(redirectUri, authorizationGrant, options);
 	    }
 	  }, {
 	    key: 'connectFacebook',
 	    value: function connectFacebook(clientId, options) {
-	      var user = new User({});
+	      var user = new User({}, options);
 	      return user.connectFacebook(clientId, options);
 	    }
 	  }, {
 	    key: 'connectGoogle',
 	    value: function connectGoogle(clientId, options) {
-	      var user = new User({});
+	      var user = new User({}, options);
 	      return user.connectGoogle(clientId, options);
 	    }
 	  }, {
 	    key: 'connectLinkedIn',
 	    value: function connectLinkedIn(clientId, options) {
-	      var user = new User({});
+	      var user = new User({}, options);
 	      return user.connectLinkedIn(clientId, options);
 	    }
 	  }, {
 	    key: 'signup',
 	    value: function signup(data, options) {
-	      var user = new User();
+	      var user = new User({}, options);
 	      return user.signup(data, options);
 	    }
 	  }, {
 	    key: 'signupWithIdentity',
 	    value: function signupWithIdentity(identity, session, options) {
-	      var user = new User();
+	      var user = new User({}, options);
 	      return user.signupWithIdentity(identity, session, options);
 	    }
 	  }, {
@@ -27712,7 +27867,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'exists',
 	    value: function exists(username, options) {
-	      var store = new UserStore();
+	      var store = new UserStore(options);
 	      return store.exists(username, options);
 	    }
 
@@ -27727,7 +27882,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'restore',
 	    value: function restore(id, options) {
-	      var store = new UserStore();
+	      var store = new UserStore(options);
 	      return store.restore(id, options);
 	    }
 	  }]);
@@ -37486,7 +37641,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 		"name": "kinvey-html5-sdk",
-		"version": "3.0.1",
+		"version": "3.0.2",
 		"description": "Kinvey JavaScript SDK for HTML5.",
 		"homepage": "http://www.kinvey.com",
 		"bugs": {
@@ -37509,13 +37664,13 @@ return /******/ (function(modules) { // webpackBootstrap
 		},
 		"dependencies": {
 			"es6-promise": "^3.2.1",
-			"kinvey-javascript-sdk-core": "^3.0.0",
+			"kinvey-javascript-sdk-core": "3.0.2",
 			"lodash": "^4.8.2",
 			"parse-headers": "^2.0.1",
 			"regenerator-runtime": "^0.9.5"
 		},
 		"peerDependencies": {
-			"kinvey-javascript-sdk-core": "^3.0.0"
+			"kinvey-javascript-sdk-core": "3.0.2"
 		},
 		"devDependencies": {
 			"babel-core": "^6.9.0",
