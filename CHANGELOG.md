@@ -1,4 +1,8 @@
 ## Changelog
+### 3.0.3 (2016-08-11)
+* Enhancement: Update `kinvey-javascript-sdk-core` dependency to v3.0.3.
+* BugFix (MLIBZ-1274): Resolve the promise used for opening a transaction for a WebSQL database when no queries are provided.
+
 ### 3.0.2 (2016-08-03)
 * Enhancement: Update `kinvey-javascript-sdk-core` dependency.
 
