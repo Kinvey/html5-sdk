@@ -45,35 +45,39 @@ export class WebSQL {
         let pending = query.length;
         const responses = [];
 
-        forEach(query, parts => {
-          const sql = parts[0].replace('#{collection}', escapedCollection);
+        if (pending === 0) {
+          resolve(isMulti ? responses : responses.shift());
+        } else {
+          forEach(query, parts => {
+            const sql = parts[0].replace('#{collection}', escapedCollection);
 
-          tx.executeSql(sql, parts[1], (_, resultSet) => {
-            const response = {
-              rowCount: resultSet.rowsAffected,
-              result: []
-            };
+            tx.executeSql(sql, parts[1], (_, resultSet) => {
+              const response = {
+                rowCount: resultSet.rowsAffected,
+                result: []
+              };
 
-            if (resultSet.rows.length) {
-              for (let i = 0, len = resultSet.rows.length; i < len; i++) {
-                try {
-                  const value = resultSet.rows.item(i).value;
-                  const entity = isMaster ? value : JSON.parse(value);
-                  response.result.push(entity);
-                } catch (error) {
-                  // Catch the error
+              if (resultSet.rows.length) {
+                for (let i = 0, len = resultSet.rows.length; i < len; i++) {
+                  try {
+                    const value = resultSet.rows.item(i).value;
+                    const entity = isMaster ? value : JSON.parse(value);
+                    response.result.push(entity);
+                  } catch (error) {
+                    // Catch the error
+                  }
                 }
               }
-            }
 
-            responses.push(response);
-            pending = pending - 1;
+              responses.push(response);
+              pending = pending - 1;
 
-            if (pending === 0) {
-              resolve(isMulti ? responses : responses.shift());
-            }
+              if (pending === 0) {
+                resolve(isMulti ? responses : responses.shift());
+              }
+            });
           });
-        });
+        }
       }, error => {
         error = isString(error) ? error : error.message;
 
