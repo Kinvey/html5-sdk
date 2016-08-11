@@ -91,35 +91,39 @@ var WebSQL = exports.WebSQL = function () {
           var pending = query.length;
           var responses = [];
 
-          (0, _forEach2.default)(query, function (parts) {
-            var sql = parts[0].replace('#{collection}', escapedCollection);
+          if (pending === 0) {
+            resolve(isMulti ? responses : responses.shift());
+          } else {
+            (0, _forEach2.default)(query, function (parts) {
+              var sql = parts[0].replace('#{collection}', escapedCollection);
 
-            tx.executeSql(sql, parts[1], function (_, resultSet) {
-              var response = {
-                rowCount: resultSet.rowsAffected,
-                result: []
-              };
+              tx.executeSql(sql, parts[1], function (_, resultSet) {
+                var response = {
+                  rowCount: resultSet.rowsAffected,
+                  result: []
+                };
 
-              if (resultSet.rows.length) {
-                for (var i = 0, len = resultSet.rows.length; i < len; i++) {
-                  try {
-                    var value = resultSet.rows.item(i).value;
-                    var entity = isMaster ? value : JSON.parse(value);
-                    response.result.push(entity);
-                  } catch (error) {
-                    // Catch the error
+                if (resultSet.rows.length) {
+                  for (var i = 0, len = resultSet.rows.length; i < len; i++) {
+                    try {
+                      var value = resultSet.rows.item(i).value;
+                      var entity = isMaster ? value : JSON.parse(value);
+                      response.result.push(entity);
+                    } catch (error) {
+                      // Catch the error
+                    }
                   }
                 }
-              }
 
-              responses.push(response);
-              pending = pending - 1;
+                responses.push(response);
+                pending = pending - 1;
 
-              if (pending === 0) {
-                resolve(isMulti ? responses : responses.shift());
-              }
+                if (pending === 0) {
+                  resolve(isMulti ? responses : responses.shift());
+                }
+              });
             });
-          });
+          }
         }, function (error) {
           error = (0, _isString2.default)(error) ? error : error.message;
 
