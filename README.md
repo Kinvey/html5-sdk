@@ -86,7 +86,6 @@ The workflow for releasing a new version of the sdk is as follows:
 3. Update the [Changelog](CHANGELOG.md).
 4. Run `gulp bump --type <type>` replacing `<type>` with major, minor, patch, or prerelease. See [Flags](#Flags) above.
 5. Run `gulp bundle` and commit file changes.
-6. Run `gulp tag`.
 6. Make sure all changes are committed on the master branch and push.
 7. Checkout the develop branch and merge the master branch.
 8. __Optional:__ Update Dev Center and Sample apps.
