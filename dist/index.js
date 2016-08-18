@@ -2,15 +2,11 @@
 
 var _kinvey = require('./kinvey');
 
-var _rack = require('kinvey-javascript-sdk-core/dist/rack/rack');
+var _rack = require('kinvey-javascript-sdk-core/dist/rack');
 
-var _cache = require('kinvey-javascript-sdk-core/dist/rack/cache');
+var _cache = require('./cache');
 
-var _cache2 = require('./cache');
-
-var _http = require('kinvey-javascript-sdk-core/dist/rack/http');
-
-var _http2 = require('./http');
+var _http = require('./http');
 
 var _device = require('./device');
 
@@ -18,11 +14,11 @@ var _popup = require('./popup');
 
 // Swap Cache Middelware
 var cacheRack = _rack.KinveyRackManager.cacheRack;
-cacheRack.swap(_cache.CacheMiddleware, new _cache2.CacheMiddleware());
+cacheRack.swap(_rack.CacheMiddleware, new _cache.CacheMiddleware());
 
 // Swap Http middleware
 var networkRack = _rack.KinveyRackManager.networkRack;
-networkRack.swap(_http.HttpMiddleware, new _http2.HttpMiddleware());
+networkRack.swap(_rack.HttpMiddleware, new _http.HttpMiddleware());
 
 // Expose some globals
 global.KinveyDevice = _device.Device;

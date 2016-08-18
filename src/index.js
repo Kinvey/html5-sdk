@@ -1,8 +1,10 @@
 import { Kinvey } from './kinvey';
-import { KinveyRackManager } from 'kinvey-javascript-sdk-core/dist/rack/rack';
-import { CacheMiddleware as CoreCacheMiddleware } from 'kinvey-javascript-sdk-core/dist/rack/cache';
+import {
+  CacheMiddleware as CoreCacheMiddleware,
+  HttpMiddleware as CoreHttpMiddleware,
+  KinveyRackManager
+} from 'kinvey-javascript-sdk-core/dist/rack';
 import { CacheMiddleware } from './cache';
-import { HttpMiddleware as CoreHttpMiddleware } from 'kinvey-javascript-sdk-core/dist/rack/http';
 import { HttpMiddleware } from './http';
 import { Device } from './device';
 import { Popup } from './popup';

@@ -7,9 +7,7 @@ exports.HttpMiddleware = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _middleware = require('kinvey-javascript-sdk-core/dist/rack/middleware');
+var _rack = require('kinvey-javascript-sdk-core/dist/rack');
 
 var _es6Promise = require('es6-promise');
 
@@ -39,79 +37,71 @@ var HttpMiddleware = exports.HttpMiddleware = function (_KinveyMiddleware) {
   _createClass(HttpMiddleware, [{
     key: 'handle',
     value: function handle(request) {
-      return _get(Object.getPrototypeOf(HttpMiddleware.prototype), 'handle', this).call(this, request).then(function () {
-        var promise = new _es6Promise.Promise(function (resolve, reject) {
-          var url = request.url;
-          var method = request.method;
-          var headers = request.headers;
-          var body = request.body;
+      var promise = new _es6Promise.Promise(function (resolve) {
+        var url = request.url;
+        var method = request.method;
+        var headers = request.headers;
+        var body = request.body;
 
-          // Create request
+        // Create request
 
-          var xhr = new XMLHttpRequest();
-          xhr.open(method, url);
-          // xhr.responseType = request.responseType;
+        var xhr = new XMLHttpRequest();
+        xhr.open(method, url);
+        // xhr.responseType = request.responseType;
 
-          // Append request headers
-          var names = Object.keys(headers.toJSON());
-          var _iteratorNormalCompletion = true;
-          var _didIteratorError = false;
-          var _iteratorError = undefined;
+        // Append request headers
+        var names = Object.keys(headers.toJSON());
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
 
+        try {
+          for (var _iterator = names[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var name = _step.value;
+
+            xhr.setRequestHeader(name, headers.get(name));
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
           try {
-            for (var _iterator = names[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-              var name = _step.value;
-
-              xhr.setRequestHeader(name, headers.get(name));
+            if (!_iteratorNormalCompletion && _iterator.return) {
+              _iterator.return();
             }
-          } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
           } finally {
-            try {
-              if (!_iteratorNormalCompletion && _iterator.return) {
-                _iterator.return();
-              }
-            } finally {
-              if (_didIteratorError) {
-                throw _iteratorError;
-              }
+            if (_didIteratorError) {
+              throw _iteratorError;
             }
           }
+        }
 
-          xhr.onload = xhr.ontimeout = xhr.onabort = xhr.onerror = function () {
-            // Extract status code
-            var statusCode = xhr.status;
+        xhr.onload = xhr.ontimeout = xhr.onabort = xhr.onerror = function () {
+          // Extract status code
+          var statusCode = xhr.status;
 
-            // Extract the response
-            var responseData = xhr.response || null;
-            if (xhr.response) {
-              responseData = xhr.responseText || null;
-            }
+          // Extract the response
+          var data = xhr.response || null;
+          if (xhr.response) {
+            data = xhr.responseText || null;
+          }
 
-            // Set the response for the request
-            request.response = {
+          // Resolve
+          return resolve({
+            response: {
               statusCode: statusCode,
               headers: (0, _parseHeaders2.default)(xhr.getAllResponseHeaders()),
-              data: responseData
-            };
-
-            // Success
-            if (statusCode >= 200 && statusCode < 300 || statusCode === 304) {
-              return resolve(request);
+              data: data
             }
+          });
+        };
 
-            // Error
-            return reject(request);
-          };
-
-          // Send xhr
-          xhr.send(body);
-        });
-        return promise;
+        // Send xhr
+        xhr.send(body);
       });
+      return promise;
     }
   }]);
 
   return HttpMiddleware;
-}(_middleware.KinveyMiddleware);
+}(_rack.KinveyMiddleware);

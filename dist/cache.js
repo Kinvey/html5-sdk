@@ -7,11 +7,11 @@ exports.CacheMiddleware = exports.DB = exports.DBAdapter = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _cache = require('kinvey-javascript-sdk-core/dist/rack/cache');
+var _rack = require('kinvey-javascript-sdk-core/dist/rack');
 
 var _errors = require('kinvey-javascript-sdk-core/dist/errors');
 
-var _log = require('kinvey-javascript-sdk-core/dist/log');
+var _utils = require('kinvey-javascript-sdk-core/dist/utils');
 
 var _storage = require('./storage');
 
@@ -95,7 +95,7 @@ var DB = exports.DB = function (_CoreDB) {
 
           break;
         default:
-          _log.Log.warn('The ' + adapter + ' adapter is is not recognized.');
+          _utils.Log.warn('The ' + adapter + ' adapter is is not recognized.');
       }
 
       return true;
@@ -104,7 +104,7 @@ var DB = exports.DB = function (_CoreDB) {
   }
 
   return DB;
-}(_cache.DB);
+}(_rack.DB);
 
 var CacheMiddleware = exports.CacheMiddleware = function (_CoreCacheMiddelware) {
   _inherits(CacheMiddleware, _CoreCacheMiddelware);
@@ -133,4 +133,4 @@ var CacheMiddleware = exports.CacheMiddleware = function (_CoreCacheMiddelware) 
   }]);
 
   return CacheMiddleware;
-}(_cache.CacheMiddleware);
+}(_rack.CacheMiddleware);
