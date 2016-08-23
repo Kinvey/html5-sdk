@@ -1,4 +1,6 @@
 import { Kinvey as CoreKinvey } from 'kinvey-javascript-sdk-core';
+import { NetworkRequest, CacheRequest } from 'kinvey-javascript-sdk-core/dist/request';
+import { CacheRack, NetworkRack } from './rack';
 import { Promise } from 'es6-promise';
 
 export class Kinvey extends CoreKinvey {
@@ -12,5 +14,17 @@ export class Kinvey extends CoreKinvey {
    */
   static get Promise() {
     return Promise;
+  }
+
+  static init(options) {
+    const client = super.init(options);
+
+    // Set CacheRequest rack
+    CacheRequest.rack = new CacheRack();
+
+    // Set NetworkRequest rack
+    NetworkRequest.rack = new NetworkRack();
+
+    return client;
   }
 }

@@ -185,7 +185,7 @@ var IndexedDB = exports.IndexedDB = function () {
   }, {
     key: 'find',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2(collection) {
+      var _ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2(collection) {
         var _this2 = this;
 
         return _regeneratorRuntime2.default.wrap(function _callee2$(_context2) {
@@ -194,7 +194,7 @@ var IndexedDB = exports.IndexedDB = function () {
               case 0:
                 return _context2.abrupt('return', new _es6Promise.Promise(function (resolve, reject) {
                   _this2.openTransaction(collection, false, function () {
-                    var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(txn) {
+                    var _ref2 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(txn) {
                       var store, request, entities;
                       return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
                         while (1) {
@@ -229,7 +229,7 @@ var IndexedDB = exports.IndexedDB = function () {
                     }));
 
                     return function (_x4) {
-                      return ref.apply(this, arguments);
+                      return _ref2.apply(this, arguments);
                     };
                   }(), reject);
                 }));
@@ -243,7 +243,7 @@ var IndexedDB = exports.IndexedDB = function () {
       }));
 
       function find(_x3) {
-        return ref.apply(this, arguments);
+        return _ref.apply(this, arguments);
       }
 
       return find;
@@ -251,7 +251,7 @@ var IndexedDB = exports.IndexedDB = function () {
   }, {
     key: 'findById',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee4(collection, id) {
+      var _ref3 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee4(collection, id) {
         var _this3 = this;
 
         return _regeneratorRuntime2.default.wrap(function _callee4$(_context4) {
@@ -260,7 +260,7 @@ var IndexedDB = exports.IndexedDB = function () {
               case 0:
                 return _context4.abrupt('return', new _es6Promise.Promise(function (resolve, reject) {
                   _this3.openTransaction(collection, false, function () {
-                    var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee3(txn) {
+                    var _ref4 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee3(txn) {
                       var store, request;
                       return _regeneratorRuntime2.default.wrap(function _callee3$(_context3) {
                         while (1) {
@@ -293,7 +293,7 @@ var IndexedDB = exports.IndexedDB = function () {
                     }));
 
                     return function (_x7) {
-                      return ref.apply(this, arguments);
+                      return _ref4.apply(this, arguments);
                     };
                   }(), reject);
                 }));
@@ -307,7 +307,7 @@ var IndexedDB = exports.IndexedDB = function () {
       }));
 
       function findById(_x5, _x6) {
-        return ref.apply(this, arguments);
+        return _ref3.apply(this, arguments);
       }
 
       return findById;
@@ -315,7 +315,7 @@ var IndexedDB = exports.IndexedDB = function () {
   }, {
     key: 'save',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee6(collection, entities) {
+      var _ref5 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee6(collection, entities) {
         var _this4 = this;
 
         var singular;
@@ -341,7 +341,7 @@ var IndexedDB = exports.IndexedDB = function () {
               case 4:
                 return _context6.abrupt('return', new _es6Promise.Promise(function (resolve, reject) {
                   _this4.openTransaction(collection, true, function () {
-                    var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee5(txn) {
+                    var _ref6 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee5(txn) {
                       var store;
                       return _regeneratorRuntime2.default.wrap(function _callee5$(_context5) {
                         while (1) {
@@ -371,7 +371,7 @@ var IndexedDB = exports.IndexedDB = function () {
                     }));
 
                     return function (_x10) {
-                      return ref.apply(this, arguments);
+                      return _ref6.apply(this, arguments);
                     };
                   }(), reject);
                 }));
@@ -385,7 +385,7 @@ var IndexedDB = exports.IndexedDB = function () {
       }));
 
       function save(_x8, _x9) {
-        return ref.apply(this, arguments);
+        return _ref5.apply(this, arguments);
       }
 
       return save;
@@ -393,7 +393,7 @@ var IndexedDB = exports.IndexedDB = function () {
   }, {
     key: 'removeById',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee8(collection, id) {
+      var _ref7 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee8(collection, id) {
         var _this5 = this;
 
         return _regeneratorRuntime2.default.wrap(function _callee8$(_context8) {
@@ -402,7 +402,7 @@ var IndexedDB = exports.IndexedDB = function () {
               case 0:
                 return _context8.abrupt('return', new _es6Promise.Promise(function (resolve, reject) {
                   _this5.openTransaction(collection, true, function () {
-                    var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee7(txn) {
+                    var _ref8 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee7(txn) {
                       var store, request;
                       return _regeneratorRuntime2.default.wrap(function _callee7$(_context7) {
                         while (1) {
@@ -436,7 +436,7 @@ var IndexedDB = exports.IndexedDB = function () {
                     }));
 
                     return function (_x13) {
-                      return ref.apply(this, arguments);
+                      return _ref8.apply(this, arguments);
                     };
                   }(), reject);
                 }));
@@ -450,7 +450,7 @@ var IndexedDB = exports.IndexedDB = function () {
       }));
 
       function removeById(_x11, _x12) {
-        return ref.apply(this, arguments);
+        return _ref7.apply(this, arguments);
       }
 
       return removeById;
@@ -458,7 +458,7 @@ var IndexedDB = exports.IndexedDB = function () {
   }, {
     key: 'clear',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee9() {
+      var _ref9 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee9() {
         var _this6 = this;
 
         return _regeneratorRuntime2.default.wrap(function _callee9$(_context9) {
@@ -488,7 +488,7 @@ var IndexedDB = exports.IndexedDB = function () {
       }));
 
       function clear() {
-        return ref.apply(this, arguments);
+        return _ref9.apply(this, arguments);
       }
 
       return clear;

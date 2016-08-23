@@ -1,9 +1,9 @@
-import { KinveyMiddleware } from 'kinvey-javascript-sdk-core/dist/rack';
+import { Middleware } from 'kinvey-javascript-rack/dist/middleware';
 import { Promise } from 'es6-promise';
 import parseHeaders from 'parse-headers';
 
-export class HttpMiddleware extends KinveyMiddleware {
-  constructor(name = 'Kinvey HTML5 Http Middleware') {
+export class HttpMiddleware extends Middleware {
+  constructor(name = 'Http Middleware') {
     super(name);
   }
 
@@ -17,9 +17,9 @@ export class HttpMiddleware extends KinveyMiddleware {
       // xhr.responseType = request.responseType;
 
       // Append request headers
-      const names = Object.keys(headers.toJSON());
+      const names = Object.keys(headers);
       for (const name of names) {
-        xhr.setRequestHeader(name, headers.get(name));
+        xhr.setRequestHeader(name, headers[name]);
       }
 
       xhr.onload = xhr.ontimeout = xhr.onabort = xhr.onerror = () => {

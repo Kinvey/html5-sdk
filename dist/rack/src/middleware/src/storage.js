@@ -85,7 +85,7 @@ var LocalStorage = exports.LocalStorage = function (_Storage) {
   _createClass(LocalStorage, [{
     key: 'find',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(collection) {
+      var _ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(collection) {
         var entities;
         return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
           while (1) {
@@ -112,7 +112,7 @@ var LocalStorage = exports.LocalStorage = function (_Storage) {
       }));
 
       function find(_x2) {
-        return ref.apply(this, arguments);
+        return _ref.apply(this, arguments);
       }
 
       return find;
@@ -120,7 +120,7 @@ var LocalStorage = exports.LocalStorage = function (_Storage) {
   }, {
     key: 'findById',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2(collection, id) {
+      var _ref2 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2(collection, id) {
         var entities, entity;
         return _regeneratorRuntime2.default.wrap(function _callee2$(_context2) {
           while (1) {
@@ -154,7 +154,7 @@ var LocalStorage = exports.LocalStorage = function (_Storage) {
       }));
 
       function findById(_x3, _x4) {
-        return ref.apply(this, arguments);
+        return _ref2.apply(this, arguments);
       }
 
       return findById;
@@ -162,7 +162,7 @@ var LocalStorage = exports.LocalStorage = function (_Storage) {
   }, {
     key: 'save',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee3(collection, entities) {
+      var _ref3 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee3(collection, entities) {
         var collections, existingEntities, existingEntitiesById, entitiesById, existingEntityIds;
         return _regeneratorRuntime2.default.wrap(function _callee3$(_context3) {
           while (1) {
@@ -211,7 +211,7 @@ var LocalStorage = exports.LocalStorage = function (_Storage) {
       }));
 
       function save(_x5, _x6) {
-        return ref.apply(this, arguments);
+        return _ref3.apply(this, arguments);
       }
 
       return save;
@@ -219,7 +219,7 @@ var LocalStorage = exports.LocalStorage = function (_Storage) {
   }, {
     key: 'removeById',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee4(collection, id) {
+      var _ref4 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee4(collection, id) {
         var entities, entitiesById, entity;
         return _regeneratorRuntime2.default.wrap(function _callee4$(_context4) {
           while (1) {
@@ -258,7 +258,7 @@ var LocalStorage = exports.LocalStorage = function (_Storage) {
       }));
 
       function removeById(_x7, _x8) {
-        return ref.apply(this, arguments);
+        return _ref4.apply(this, arguments);
       }
 
       return removeById;
@@ -266,7 +266,7 @@ var LocalStorage = exports.LocalStorage = function (_Storage) {
   }, {
     key: 'clear',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee5() {
+      var _ref5 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee5() {
         var _this2 = this;
 
         var collections;
@@ -296,7 +296,7 @@ var LocalStorage = exports.LocalStorage = function (_Storage) {
       }));
 
       function clear() {
-        return ref.apply(this, arguments);
+        return _ref5.apply(this, arguments);
       }
 
       return clear;
@@ -337,7 +337,7 @@ var SessionStorage = exports.SessionStorage = function (_Storage2) {
   _createClass(SessionStorage, [{
     key: 'find',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee6(collection) {
+      var _ref6 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee6(collection) {
         var entities;
         return _regeneratorRuntime2.default.wrap(function _callee6$(_context6) {
           while (1) {
@@ -364,7 +364,7 @@ var SessionStorage = exports.SessionStorage = function (_Storage2) {
       }));
 
       function find(_x9) {
-        return ref.apply(this, arguments);
+        return _ref6.apply(this, arguments);
       }
 
       return find;
@@ -372,7 +372,7 @@ var SessionStorage = exports.SessionStorage = function (_Storage2) {
   }, {
     key: 'findById',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee7(collection, id) {
+      var _ref7 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee7(collection, id) {
         var entities, entity;
         return _regeneratorRuntime2.default.wrap(function _callee7$(_context7) {
           while (1) {
@@ -406,7 +406,7 @@ var SessionStorage = exports.SessionStorage = function (_Storage2) {
       }));
 
       function findById(_x10, _x11) {
-        return ref.apply(this, arguments);
+        return _ref7.apply(this, arguments);
       }
 
       return findById;
@@ -414,7 +414,7 @@ var SessionStorage = exports.SessionStorage = function (_Storage2) {
   }, {
     key: 'save',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee8(collection, entities) {
+      var _ref8 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee8(collection, entities) {
         var collections, existingEntities, existingEntitiesById, entitiesById, existingEntityIds;
         return _regeneratorRuntime2.default.wrap(function _callee8$(_context8) {
           while (1) {
@@ -463,7 +463,7 @@ var SessionStorage = exports.SessionStorage = function (_Storage2) {
       }));
 
       function save(_x12, _x13) {
-        return ref.apply(this, arguments);
+        return _ref8.apply(this, arguments);
       }
 
       return save;
@@ -471,7 +471,7 @@ var SessionStorage = exports.SessionStorage = function (_Storage2) {
   }, {
     key: 'removeById',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee9(collection, id) {
+      var _ref9 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee9(collection, id) {
         var entities, entitiesById, entity;
         return _regeneratorRuntime2.default.wrap(function _callee9$(_context9) {
           while (1) {
@@ -508,7 +508,7 @@ var SessionStorage = exports.SessionStorage = function (_Storage2) {
       }));
 
       function removeById(_x14, _x15) {
-        return ref.apply(this, arguments);
+        return _ref9.apply(this, arguments);
       }
 
       return removeById;
@@ -516,7 +516,7 @@ var SessionStorage = exports.SessionStorage = function (_Storage2) {
   }, {
     key: 'clear',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee10() {
+      var _ref10 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee10() {
         var _this4 = this;
 
         var collections;
@@ -546,7 +546,7 @@ var SessionStorage = exports.SessionStorage = function (_Storage2) {
       }));
 
       function clear() {
-        return ref.apply(this, arguments);
+        return _ref10.apply(this, arguments);
       }
 
       return clear;

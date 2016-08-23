@@ -151,7 +151,7 @@ var WebSQL = exports.WebSQL = function () {
   }, {
     key: 'find',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(collection) {
+      var _ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(collection) {
         var sql, response;
         return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
           while (1) {
@@ -174,7 +174,7 @@ var WebSQL = exports.WebSQL = function () {
       }));
 
       function find(_x3) {
-        return ref.apply(this, arguments);
+        return _ref.apply(this, arguments);
       }
 
       return find;
@@ -182,7 +182,7 @@ var WebSQL = exports.WebSQL = function () {
   }, {
     key: 'findById',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2(collection, id) {
+      var _ref2 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2(collection, id) {
         var sql, response, entities;
         return _regeneratorRuntime2.default.wrap(function _callee2$(_context2) {
           while (1) {
@@ -215,7 +215,7 @@ var WebSQL = exports.WebSQL = function () {
       }));
 
       function findById(_x4, _x5) {
-        return ref.apply(this, arguments);
+        return _ref2.apply(this, arguments);
       }
 
       return findById;
@@ -223,7 +223,7 @@ var WebSQL = exports.WebSQL = function () {
   }, {
     key: 'save',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee3(collection, entities) {
+      var _ref3 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee3(collection, entities) {
         var queries;
         return _regeneratorRuntime2.default.wrap(function _callee3$(_context3) {
           while (1) {
@@ -252,7 +252,7 @@ var WebSQL = exports.WebSQL = function () {
       }));
 
       function save(_x6, _x7) {
-        return ref.apply(this, arguments);
+        return _ref3.apply(this, arguments);
       }
 
       return save;
@@ -260,7 +260,7 @@ var WebSQL = exports.WebSQL = function () {
   }, {
     key: 'removeById',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee4(collection, id) {
+      var _ref4 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee4(collection, id) {
         var queries, response, entities, count;
         return _regeneratorRuntime2.default.wrap(function _callee4$(_context4) {
           while (1) {
@@ -296,7 +296,7 @@ var WebSQL = exports.WebSQL = function () {
       }));
 
       function removeById(_x8, _x9) {
-        return ref.apply(this, arguments);
+        return _ref4.apply(this, arguments);
       }
 
       return removeById;
@@ -304,7 +304,7 @@ var WebSQL = exports.WebSQL = function () {
   }, {
     key: 'clear',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee5() {
+      var _ref5 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee5() {
         var response, tables, queries;
         return _regeneratorRuntime2.default.wrap(function _callee5$(_context5) {
           while (1) {
@@ -352,7 +352,7 @@ var WebSQL = exports.WebSQL = function () {
       }));
 
       function clear() {
-        return ref.apply(this, arguments);
+        return _ref5.apply(this, arguments);
       }
 
       return clear;

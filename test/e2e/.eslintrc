@@ -2,7 +2,15 @@
   "extends": [
     "../../.eslintrc"
   ],
+  "rules": {
+    "arrow-body-style": "off",
+    "prefer-arrow-callback": "off"
+  },
   "globals": {
-    "browser": true
+    "$", true,
+    "angular": true,
+    "browser": true,
+    "element": true,
+    "by": true
   }
 }
