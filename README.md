@@ -66,8 +66,6 @@ _Note: Before running any tasks you will need to run `npm install` to install an
 * `npm run bundle`: bundle the sdk for dist
 
 ## Test
-The Kinvey-Angular-SDK is setup to run unit and end to end tests.
-
 _Note: Before running any tests you will need to run `npm install` to install any dependencies required._
 
 ### Unit Tests
