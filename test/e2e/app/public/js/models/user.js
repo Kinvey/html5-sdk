@@ -10,13 +10,7 @@
     },
 
     logout: function() {
-      var user = Kinvey.User.getActiveUser();
-
-      if (user) {
-        return user.logout();
-      }
-
-      return null;
+      return Kinvey.User.logout();
     }
   });
 
