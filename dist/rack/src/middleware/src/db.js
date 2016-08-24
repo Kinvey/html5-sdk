@@ -8,10 +8,6 @@ exports.DB = exports.DBAdapter = undefined;
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
 
 
-var _query = require('kinvey-javascript-sdk-core/dist/query');
-
-var _aggregation = require('kinvey-javascript-sdk-core/dist/aggregation');
-
 var _errors = require('kinvey-javascript-sdk-core/dist/errors');
 
 var _utils = require('kinvey-javascript-sdk-core/dist/utils');
@@ -35,10 +31,6 @@ var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 var _map = require('lodash/map');
 
 var _map2 = _interopRequireDefault(_map);
-
-var _result = require('lodash/result');
-
-var _result2 = _interopRequireDefault(_result);
 
 var _reduce = require('lodash/reduce');
 
@@ -159,7 +151,7 @@ var DB = exports.DB = function () {
   }, {
     key: 'find',
     value: function () {
-      var _ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(collection, query) {
+      var _ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(collection) {
         var entities;
         return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
           while (1) {
@@ -180,40 +172,31 @@ var DB = exports.DB = function () {
                 return _context.abrupt('return', []);
 
               case 6:
-
-                if (query && !(query instanceof _query.Query)) {
-                  query = new _query.Query((0, _result2.default)(query, 'toJSON', query));
-                }
-
-                if (entities.length > 0 && query) {
-                  entities = query.process(entities);
-                }
-
                 return _context.abrupt('return', entities);
 
-              case 11:
-                _context.prev = 11;
+              case 9:
+                _context.prev = 9;
                 _context.t0 = _context['catch'](0);
 
                 if (!(_context.t0 instanceof _errors.NotFoundError)) {
-                  _context.next = 15;
+                  _context.next = 13;
                   break;
                 }
 
                 return _context.abrupt('return', []);
 
-              case 15:
+              case 13:
                 throw _context.t0;
 
-              case 16:
+              case 14:
               case 'end':
                 return _context.stop();
             }
           }
-        }, _callee, this, [[0, 11]]);
+        }, _callee, this, [[0, 9]]);
       }));
 
-      function find(_x3, _x4) {
+      function find(_x3) {
         return _ref.apply(this, arguments);
       }
 
@@ -245,86 +228,27 @@ var DB = exports.DB = function () {
         }, _callee2, this);
       }));
 
-      function findById(_x5, _x6) {
+      function findById(_x4, _x5) {
         return _ref2.apply(this, arguments);
       }
 
       return findById;
     }()
-  }, {
-    key: 'count',
-    value: function () {
-      var _ref3 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee3(collection, query) {
-        var entities;
-        return _regeneratorRuntime2.default.wrap(function _callee3$(_context3) {
-          while (1) {
-            switch (_context3.prev = _context3.next) {
-              case 0:
-                _context3.next = 2;
-                return this.find(collection, query);
 
-              case 2:
-                entities = _context3.sent;
-                return _context3.abrupt('return', { count: entities.length });
+    // async group(collection, aggregation) {
+    //   const entities = await this.find(collection);
 
-              case 4:
-              case 'end':
-                return _context3.stop();
-            }
-          }
-        }, _callee3, this);
-      }));
+    //   if (!(aggregation instanceof Aggregation)) {
+    //     aggregation = new Aggregation(result(aggregation, 'toJSON', aggregation));
+    //   }
 
-      function count(_x7, _x8) {
-        return _ref3.apply(this, arguments);
-      }
+    //   if (entities.length > 0 && aggregation) {
+    //     return aggregation.process(entities);
+    //   }
 
-      return count;
-    }()
-  }, {
-    key: 'group',
-    value: function () {
-      var _ref4 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee4(collection, aggregation) {
-        var entities;
-        return _regeneratorRuntime2.default.wrap(function _callee4$(_context4) {
-          while (1) {
-            switch (_context4.prev = _context4.next) {
-              case 0:
-                _context4.next = 2;
-                return this.find(collection);
+    //   return null;
+    // }
 
-              case 2:
-                entities = _context4.sent;
-
-
-                if (!(aggregation instanceof _aggregation.Aggregation)) {
-                  aggregation = new _aggregation.Aggregation((0, _result2.default)(aggregation, 'toJSON', aggregation));
-                }
-
-                if (!(entities.length > 0 && aggregation)) {
-                  _context4.next = 6;
-                  break;
-                }
-
-                return _context4.abrupt('return', aggregation.process(entities));
-
-              case 6:
-                return _context4.abrupt('return', null);
-
-              case 7:
-              case 'end':
-                return _context4.stop();
-            }
-          }
-        }, _callee4, this);
-      }));
-
-      function group(_x9, _x10) {
-        return _ref4.apply(this, arguments);
-      }
-
-      return group;
-    }()
   }, {
     key: 'save',
     value: function save(collection) {
@@ -332,20 +256,20 @@ var DB = exports.DB = function () {
 
       var entities = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
 
-      return queue.add(_asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee5() {
+      return queue.add(_asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee3() {
         var singular;
-        return _regeneratorRuntime2.default.wrap(function _callee5$(_context5) {
+        return _regeneratorRuntime2.default.wrap(function _callee3$(_context3) {
           while (1) {
-            switch (_context5.prev = _context5.next) {
+            switch (_context3.prev = _context3.next) {
               case 0:
                 singular = false;
 
                 if (entities) {
-                  _context5.next = 3;
+                  _context3.next = 3;
                   break;
                 }
 
-                return _context5.abrupt('return', null);
+                return _context3.abrupt('return', null);
 
               case 3:
 
@@ -368,79 +292,64 @@ var DB = exports.DB = function () {
                   return entity;
                 });
 
-                _context5.next = 7;
+                _context3.next = 7;
                 return _this2.adapter.save(collection, entities);
 
               case 7:
-                entities = _context5.sent;
+                entities = _context3.sent;
 
                 if (!(singular && entities.length > 0)) {
-                  _context5.next = 10;
+                  _context3.next = 10;
                   break;
                 }
 
-                return _context5.abrupt('return', entities[0]);
+                return _context3.abrupt('return', entities[0]);
 
               case 10:
-                return _context5.abrupt('return', entities);
+                return _context3.abrupt('return', entities);
 
               case 11:
               case 'end':
-                return _context5.stop();
+                return _context3.stop();
             }
           }
-        }, _callee5, _this2);
+        }, _callee3, _this2);
       })));
     }
   }, {
     key: 'remove',
     value: function () {
-      var _ref6 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee6(collection, query) {
+      var _ref4 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee4(collection) {
         var _this3 = this;
 
-        var entities, responses;
-        return _regeneratorRuntime2.default.wrap(function _callee6$(_context6) {
+        var entities = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
+        var responses;
+        return _regeneratorRuntime2.default.wrap(function _callee4$(_context4) {
           while (1) {
-            switch (_context6.prev = _context6.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
-                if (query && !(query instanceof _query.Query)) {
-                  query = new _query.Query(query);
-                }
-
-                // Removing should not take the query sort, limit, and skip into account.
-                if (query) {
-                  query.sort = null;
-                  query.limit = null;
-                  query.skip = 0;
-                }
-
-                _context6.next = 4;
-                return this.find(collection, query);
-
-              case 4:
-                entities = _context6.sent;
-                _context6.next = 7;
+                _context4.next = 2;
                 return _es6Promise.Promise.all(entities.map(function (entity) {
                   return _this3.removeById(collection, entity[idAttribute]);
                 }));
 
-              case 7:
-                responses = _context6.sent;
-                return _context6.abrupt('return', (0, _reduce2.default)(responses, function (entities, entity) {
+              case 2:
+                responses = _context4.sent;
+                return _context4.abrupt('return', (0, _reduce2.default)(responses, function (entities, entity) {
                   entities.push(entity);
                   return entities;
                 }, []));
 
-              case 9:
+              case 4:
               case 'end':
-                return _context6.stop();
+                return _context4.stop();
             }
           }
-        }, _callee6, this);
+        }, _callee4, this);
       }));
 
-      function remove(_x12, _x13) {
-        return _ref6.apply(this, arguments);
+      function remove(_x7, _x8) {
+        return _ref4.apply(this, arguments);
       }
 
       return remove;

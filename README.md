@@ -1,4 +1,4 @@
-# Kinvey Html5 SDK
+# Kinvey HTML5 SDK
 [Kinvey](http://www.kinvey.com) (pronounced Kin-vey, like convey) makes it ridiculously easy for developers to setup, use and operate a cloud backend for their mobile apps. They don't have to worry about connecting to various cloud services, setting up servers for their backend, or maintaining and scaling them.
 
 This node and bower module makes it very easy to connect your Html5 app with Kinvey.

@@ -5,7 +5,12 @@ import regeneratorRuntime from 'regenerator-runtime'; // eslint-disable-line no-
 import isEmpty from 'lodash/isEmpty';
 const dbCache = {};
 
+
 export class CacheMiddleware extends Middleware {
+  constructor(name = 'Cache Middleware') {
+    super(name);
+  }
+
   openDatabase(name) {
     if (!name) {
       throw new KinveyError('A name is required to open a database.');
@@ -21,21 +26,15 @@ export class CacheMiddleware extends Middleware {
   }
 
   async handle(request) {
-    const { method, query, body, appKey, collection, entityId, client } = request;
-    const db = this.openDatabase(appKey, client ? client.encryptionKey : undefined);
+    const { method, body, appKey, collection, entityId } = request;
+    const db = this.openDatabase(appKey);
     let data;
 
     if (method === 'GET') {
       if (entityId) {
-        if (entityId === '_count') {
-          data = await db.count(collection, query);
-        } else if (entityId === '_group') {
-          data = await db.group(collection, body);
-        } else {
-          data = await db.findById(collection, entityId);
-        }
+        data = await db.findById(collection, entityId);
       } else {
-        data = await db.find(collection, query);
+        data = await db.find(collection);
       }
     } else if (method === 'POST' || method === 'PUT') {
       data = await db.save(collection, body);
@@ -45,7 +44,7 @@ export class CacheMiddleware extends Middleware {
       } else if (!collection) {
         data = await db.clear();
       } else {
-        data = await db.remove(collection, query);
+        data = await db.remove(collection, body);
       }
     }
 

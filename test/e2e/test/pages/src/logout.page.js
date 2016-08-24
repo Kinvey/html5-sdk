@@ -6,17 +6,16 @@ export class LogoutPage extends AppPage {
     browser.ignoreSynchronization = true;
 
     // Go to the logout page
-    browser.driver.get('http://localhost:3000/pages/logout.html');
+    browser.driver.get('http://localhost:3000/logout');
 
     // Switch contexts
     await this.switchToContext();
+
+    // Grab references to elements on page
+    this.logoutButton = await browser.driver.findElement(by.id('logout'));
   }
 
-  async switchToContext() {
-    // Get available window handles
-    const handles = await browser.getAllWindowHandles();
-
-    // Switch context
-    await browser.switchTo().window(handles[0]);
+  logout() {
+    return this.logoutButton.click();
   }
 }

@@ -6,7 +6,7 @@ export class LoginPage extends AppPage {
     browser.ignoreSynchronization = true;
 
     // Go to the login page
-    browser.driver.get('http://localhost:3000/pages/login.html');
+    browser.driver.get('http://localhost:3000/login');
 
     // Switch contexts
     await this.switchToContext();
@@ -16,14 +16,6 @@ export class LoginPage extends AppPage {
     this.passwordInput = await browser.driver.findElement(by.id('password'));
     this.loginButton = await browser.driver.findElement(by.id('login'));
     this.loginWithMICButton = await browser.driver.findElement(by.id('loginWithMIC'));
-  }
-
-  async switchToContext() {
-    // Get available window handles
-    const handles = await browser.getAllWindowHandles();
-
-    // Switch context
-    await browser.switchTo().window(handles[0]);
   }
 
   setUsername(username) {

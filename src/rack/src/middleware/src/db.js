@@ -1,5 +1,3 @@
-import { Query } from 'kinvey-javascript-sdk-core/dist/query';
-import { Aggregation } from 'kinvey-javascript-sdk-core/dist/aggregation';
 import { KinveyError, NotFoundError } from 'kinvey-javascript-sdk-core/dist/errors';
 import { Log } from 'kinvey-javascript-sdk-core/dist/utils';
 import { LocalStorage, SessionStorage } from './storage';
@@ -9,7 +7,6 @@ import { Promise } from 'es6-promise';
 import Queue from 'promise-queue';
 import regeneratorRuntime from 'regenerator-runtime'; // eslint-disable-line no-unused-vars
 import map from 'lodash/map';
-import result from 'lodash/result';
 import reduce from 'lodash/reduce';
 import forEach from 'lodash/forEach';
 import isString from 'lodash/isString';
@@ -98,20 +95,12 @@ export class DB {
     return objectId;
   }
 
-  async find(collection, query) {
+  async find(collection) {
     try {
-      let entities = await this.adapter.find(collection);
+      const entities = await this.adapter.find(collection);
 
       if (!entities) {
         return [];
-      }
-
-      if (query && !(query instanceof Query)) {
-        query = new Query(result(query, 'toJSON', query));
-      }
-
-      if (entities.length > 0 && query) {
-        entities = query.process(entities);
       }
 
       return entities;
@@ -132,24 +121,19 @@ export class DB {
     return this.adapter.findById(collection, id);
   }
 
-  async count(collection, query) {
-    const entities = await this.find(collection, query);
-    return { count: entities.length };
-  }
+  // async group(collection, aggregation) {
+  //   const entities = await this.find(collection);
 
-  async group(collection, aggregation) {
-    const entities = await this.find(collection);
+  //   if (!(aggregation instanceof Aggregation)) {
+  //     aggregation = new Aggregation(result(aggregation, 'toJSON', aggregation));
+  //   }
 
-    if (!(aggregation instanceof Aggregation)) {
-      aggregation = new Aggregation(result(aggregation, 'toJSON', aggregation));
-    }
+  //   if (entities.length > 0 && aggregation) {
+  //     return aggregation.process(entities);
+  //   }
 
-    if (entities.length > 0 && aggregation) {
-      return aggregation.process(entities);
-    }
-
-    return null;
-  }
+  //   return null;
+  // }
 
   save(collection, entities = []) {
     return queue.add(async () => {
@@ -188,19 +172,7 @@ export class DB {
     });
   }
 
-  async remove(collection, query) {
-    if (query && !(query instanceof Query)) {
-      query = new Query(query);
-    }
-
-    // Removing should not take the query sort, limit, and skip into account.
-    if (query) {
-      query.sort = null;
-      query.limit = null;
-      query.skip = 0;
-    }
-
-    const entities = await this.find(collection, query);
+  async remove(collection, entities = []) {
     const responses = await Promise.all(entities.map(entity => this.removeById(collection, entity[idAttribute])));
     return reduce(responses, (entities, entity) => {
       entities.push(entity);

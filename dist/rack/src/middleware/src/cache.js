@@ -38,9 +38,11 @@ var CacheMiddleware = exports.CacheMiddleware = function (_Middleware) {
   _inherits(CacheMiddleware, _Middleware);
 
   function CacheMiddleware() {
+    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Cache Middleware' : arguments[0];
+
     _classCallCheck(this, CacheMiddleware);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(CacheMiddleware).apply(this, arguments));
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(CacheMiddleware).call(this, name));
   }
 
   _createClass(CacheMiddleware, [{
@@ -62,135 +64,103 @@ var CacheMiddleware = exports.CacheMiddleware = function (_Middleware) {
     key: 'handle',
     value: function () {
       var _ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(request) {
-        var method, query, body, appKey, collection, entityId, client, db, data, response;
+        var method, body, appKey, collection, entityId, db, data, response;
         return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 method = request.method;
-                query = request.query;
                 body = request.body;
                 appKey = request.appKey;
                 collection = request.collection;
                 entityId = request.entityId;
-                client = request.client;
-                db = this.openDatabase(appKey, client ? client.encryptionKey : undefined);
+                db = this.openDatabase(appKey);
                 data = void 0;
 
                 if (!(method === 'GET')) {
-                  _context.next = 33;
+                  _context.next = 19;
                   break;
                 }
 
                 if (!entityId) {
-                  _context.next = 28;
+                  _context.next = 14;
                   break;
                 }
 
-                if (!(entityId === '_count')) {
-                  _context.next = 17;
-                  break;
-                }
-
-                _context.next = 14;
-                return db.count(collection, query);
-
-              case 14:
-                data = _context.sent;
-                _context.next = 26;
-                break;
-
-              case 17:
-                if (!(entityId === '_group')) {
-                  _context.next = 23;
-                  break;
-                }
-
-                _context.next = 20;
-                return db.group(collection, body);
-
-              case 20:
-                data = _context.sent;
-                _context.next = 26;
-                break;
-
-              case 23:
-                _context.next = 25;
+                _context.next = 11;
                 return db.findById(collection, entityId);
 
-              case 25:
+              case 11:
                 data = _context.sent;
-
-              case 26:
-                _context.next = 31;
+                _context.next = 17;
                 break;
 
-              case 28:
-                _context.next = 30;
-                return db.find(collection, query);
+              case 14:
+                _context.next = 16;
+                return db.find(collection);
 
-              case 30:
+              case 16:
                 data = _context.sent;
 
-              case 31:
-                _context.next = 55;
+              case 17:
+                _context.next = 41;
                 break;
 
-              case 33:
+              case 19:
                 if (!(method === 'POST' || method === 'PUT')) {
-                  _context.next = 39;
+                  _context.next = 25;
                   break;
                 }
 
-                _context.next = 36;
+                _context.next = 22;
                 return db.save(collection, body);
 
-              case 36:
+              case 22:
                 data = _context.sent;
-                _context.next = 55;
+                _context.next = 41;
                 break;
 
-              case 39:
+              case 25:
                 if (!(method === 'DELETE')) {
-                  _context.next = 55;
+                  _context.next = 41;
                   break;
                 }
 
                 if (!(collection && entityId)) {
-                  _context.next = 46;
+                  _context.next = 32;
                   break;
                 }
 
-                _context.next = 43;
+                _context.next = 29;
                 return db.removeById(collection, entityId);
 
-              case 43:
+              case 29:
                 data = _context.sent;
-                _context.next = 55;
+                _context.next = 41;
                 break;
 
-              case 46:
+              case 32:
                 if (collection) {
-                  _context.next = 52;
+                  _context.next = 38;
                   break;
                 }
 
-                _context.next = 49;
+                _context.next = 35;
                 return db.clear();
 
-              case 49:
+              case 35:
                 data = _context.sent;
-                _context.next = 55;
+                _context.next = 41;
                 break;
 
-              case 52:
-                _context.next = 54;
-                return db.remove(collection, query);
+              case 38:
+                _context.next = 40;
+                return db.remove(collection, body);
 
-              case 54:
+              case 40:
                 data = _context.sent;
 
-              case 55:
+              case 41:
                 response = {
                   statusCode: method === 'POST' ? 201 : 200,
                   headers: {},
@@ -204,7 +174,7 @@ var CacheMiddleware = exports.CacheMiddleware = function (_Middleware) {
 
                 return _context.abrupt('return', { response: response });
 
-              case 58:
+              case 44:
               case 'end':
                 return _context.stop();
             }
@@ -212,7 +182,7 @@ var CacheMiddleware = exports.CacheMiddleware = function (_Middleware) {
         }, _callee, this);
       }));
 
-      function handle(_x) {
+      function handle(_x2) {
         return _ref.apply(this, arguments);
       }
 

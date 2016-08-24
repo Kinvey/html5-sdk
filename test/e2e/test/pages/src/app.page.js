@@ -11,4 +11,12 @@ export class AppPage {
       }
     });
   }
+
+  async switchToContext() {
+    // Get available window handles
+    const handles = await browser.getAllWindowHandles();
+
+    // Switch context
+    await browser.switchTo().window(handles[0]);
+  }
 }

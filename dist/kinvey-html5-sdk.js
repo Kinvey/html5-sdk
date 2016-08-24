@@ -1675,7 +1675,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			"/"
 		],
 		"_resolved": "file:../../Core/SDK",
-		"_shasum": "c797d6e44071b60be4744e7fa9a420ecb0e75e98",
+		"_shasum": "16e43a791d4b4023dd5e1bec790aff70134235d3",
 		"_shrinkwrap": null,
 		"_spec": "kinvey-javascript-sdk-core@../../Core/SDK",
 		"_where": "/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/HTML5/SDK",
@@ -1739,7 +1739,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			"sinon-chai": "^2.8.0",
 			"yargs": "^4.7.1"
 		},
-		"gitHead": "7d16b56e43e5ec01e6bd41ad4a6ac25e502bdd6b",
+		"gitHead": "22c64e42eb1df415269b024615ea8eb6ba7fbf5d",
 		"homepage": "https://github.com/Kinvey/javascript-sdk-core#readme",
 		"license": "Apache-2.0",
 		"main": "./dist/kinvey.js",
@@ -8818,19 +8818,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _response = __webpack_require__(175);
 
+	var _client = __webpack_require__(5);
+
 	var _rack = __webpack_require__(176);
 
 	var _urlPattern = __webpack_require__(187);
 
 	var _urlPattern2 = _interopRequireDefault(_urlPattern);
 
-	var _regeneratorRuntime = __webpack_require__(164);
-
-	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
-
 	var _url = __webpack_require__(146);
 
 	var _url2 = _interopRequireDefault(_url);
+
+	var _assign = __webpack_require__(152);
+
+	var _assign2 = _interopRequireDefault(_assign);
+
+	var _regeneratorRuntime = __webpack_require__(164);
+
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -8840,8 +8846,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // eslint-disable-line no-unused-vars
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	// eslint-disable-line no-unused-vars
 
 	/**
 	 * @private
@@ -8849,12 +8856,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	var CacheRequest = exports.CacheRequest = function (_Request) {
 	  _inherits(CacheRequest, _Request);
 
-	  function CacheRequest(options) {
+	  function CacheRequest() {
+	    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
 	    _classCallCheck(this, CacheRequest);
 
+	    // Set default options
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(CacheRequest).call(this, options));
 
+	    options = (0, _assign2.default)({
+	      query: null,
+	      client: _client.Client.sharedInstance()
+	    }, options);
+
 	    _this.query = options.query;
+	    _this.client = options.client;
 	    _this.rack = CacheRequest.rack;
 	    return _this;
 	  }
@@ -8919,9 +8935,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	                throw response.error;
 
 	              case 11:
+
+	                // If a query was provided then process the data with the query
+	                if (this.query) {
+	                  response.data = this.query.process(response.data);
+	                }
+
+	                // Just return the response
 	                return _context.abrupt('return', response);
 
-	              case 12:
+	              case 13:
 	              case 'end':
 	                return _context.stop();
 	            }
@@ -8967,10 +8990,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'toPlainObject',
 	    value: function toPlainObject() {
 	      var obj = _get(Object.getPrototypeOf(CacheRequest.prototype), 'toPlainObject', this).call(this);
-	      obj.query = this.query;
 	      obj.appKey = this.appKey;
 	      obj.collection = this.collection;
 	      obj.entityId = this.entityId;
+	      obj.encryptionKey = this.client ? this.client.encryptionKey : undefined;
 	      return obj;
 	    }
 	  }, {
@@ -8989,9 +9012,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var collection = _ref3.collection;
 	      var entityId = _ref3.entityId;
 
-	      this.appKey = !!appKey ? global.unescape(appKey) : appKey;
-	      this.collection = !!collection ? global.unescape(collection) : collection;
-	      this.entityId = !!entityId ? global.unescape(entityId) : entityId;
+	      this.appKey = appKey;
+	      this.collection = collection;
+	      this.entityId = entityId;
+	    }
+	  }, {
+	    key: 'client',
+	    get: function get() {
+	      return this._client;
+	    },
+	    set: function set(client) {
+	      if (client) {
+	        if (!(client instanceof _client.Client)) {
+	          throw new _errors.KinveyError('client must be an instance of the Client class.');
+	        }
+	      }
+
+	      this._client = client;
 	    }
 	  }], [{
 	    key: 'rack',
@@ -12473,7 +12510,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 190 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(process, Buffer, global) {'use strict';
+	/* WEBPACK VAR INJECTION */(function(process, Buffer) {'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -12499,10 +12536,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _social = __webpack_require__(197);
 
 	var _utils = __webpack_require__(8);
-
-	var _urlPattern = __webpack_require__(187);
-
-	var _urlPattern2 = _interopRequireDefault(_urlPattern);
 
 	var _regeneratorRuntime = __webpack_require__(164);
 
@@ -13003,18 +13036,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 	    set: function set(urlString) {
 	      _set(Object.getPrototypeOf(KinveyRequest.prototype), 'url', urlString, this);
-	      var pathname = global.escape(_url2.default.parse(urlString).pathname);
-	      var pattern = new _urlPattern2.default('(/:namespace)(/)(:appKey)(/)(:collection)(/)(:entityId)(/)');
-
-	      var _ref2 = pattern.match(pathname) || {};
-
-	      var appKey = _ref2.appKey;
-	      var collection = _ref2.collection;
-	      var entityId = _ref2.entityId;
-
-	      this.appKey = !!appKey ? global.unescape(appKey) : appKey;
-	      this.collection = !!collection ? global.unescape(collection) : collection;
-	      this.entityId = !!entityId ? global.unescape(entityId) : entityId;
 	    }
 	  }, {
 	    key: 'apiVersion',
@@ -13056,7 +13077,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  return KinveyRequest;
 	}(_networkrequest.NetworkRequest);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(191).Buffer, (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(191).Buffer))
 
 /***/ },
 /* 191 */
@@ -24447,7 +24468,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function process(data) {
 	      var _this3 = this;
 
-	      if (!this.isSupportedOffline()) {
+	      if (this.isSupportedOffline() === false) {
 	        (function () {
 	          var message = 'This query is not able to run locally. The following filters are not supported' + ' locally:';
 
@@ -24535,16 +24556,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    /**
-	     * Returns JSON representation of the query.
+	     * Returns Object representation of the query.
 	     *
-	     * @returns {Object} JSON object-literal.
+	     * @returns {Object} Object
 	     */
 
 	  }, {
-	    key: 'toJSON',
-	    value: function toJSON() {
+	    key: 'toPlainObject',
+	    value: function toPlainObject() {
 	      if (this._parent) {
-	        return this._parent.toJSON();
+	        return this._parent.toPlainObject();
 	      }
 
 	      // Return set of parameters.
@@ -24557,6 +24578,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	      };
 
 	      return json;
+	    }
+
+	    /**
+	     * Returns Object representation of the query.
+	     *
+	     * @returns {Object} Object
+	     * @deprecated Use toPlainObject() instead.
+	     */
+
+	  }, {
+	    key: 'toJSON',
+	    value: function toJSON() {
+	      return this.toPlainObject();
 	    }
 
 	    /**
@@ -26510,7 +26544,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    url: _url2.default.format({
 	                      protocol: _this4.client.protocol,
 	                      host: _this4.client.host,
-	                      pathname: _this4.pathname + '/_count',
+	                      pathname: _this4.pathname,
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
@@ -26529,7 +26563,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                  // Emit the cache count
 
-	                  observer.next(data ? data.count : 0);
+	                  observer.next(data ? data.length : 0);
 	                  _context3.next = 14;
 	                  break;
 
@@ -26892,7 +26926,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var stream = _utils.KinveyObservable.create(function () {
 	        var _ref6 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee6(observer) {
-	          var request, response, entities, localEntities, _query, syncEntities, ids, _query2;
+	          var fetchRequest, fetchResponse, entities, removeRequest, removeResponse, localEntities, _query, syncEntities, ids, _query2;
 
 	          return _regeneratorRuntime2.default.wrap(function _callee6$(_context6) {
 	            while (1) {
@@ -26909,9 +26943,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                case 3:
 
-	                  // Remove the data from the cache
-	                  request = new _request.CacheRequest({
-	                    method: _request.RequestMethod.DELETE,
+	                  // Fetch the cache entities
+	                  fetchRequest = new _request.CacheRequest({
+	                    method: _request.RequestMethod.GET,
 	                    url: _url2.default.format({
 	                      protocol: _this7.client.protocol,
 	                      host: _this7.client.host,
@@ -26926,14 +26960,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  // Execute the request
 
 	                  _context6.next = 6;
-	                  return request.execute();
+	                  return fetchRequest.execute();
 
 	                case 6:
-	                  response = _context6.sent;
-	                  entities = response.data;
+	                  fetchResponse = _context6.sent;
+	                  entities = fetchResponse.data;
+
+	                  // Remove the data from the cache
+
+	                  removeRequest = new _request.CacheRequest({
+	                    method: _request.RequestMethod.DELETE,
+	                    url: _url2.default.format({
+	                      protocol: _this7.client.protocol,
+	                      host: _this7.client.host,
+	                      pathname: _this7.pathname,
+	                      query: options.query
+	                    }),
+	                    properties: options.properties,
+	                    body: entities,
+	                    timeout: options.timeout
+	                  });
+
+	                  // Execite the request
+
+	                  _context6.next = 11;
+	                  return removeRequest.execute();
+
+	                case 11:
+	                  removeResponse = _context6.sent;
+
+	                  entities = removeResponse.data;
 
 	                  if (!(entities && entities.length > 0)) {
-	                    _context6.next = 16;
+	                    _context6.next = 21;
 	                    break;
 	                  }
 
@@ -26943,50 +27002,50 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    return metadata.isLocal();
 	                  });
 	                  _query = new _query4.Query().contains('entityId', Object.keys((0, _keyBy2.default)(localEntities, idAttribute)));
-	                  _context6.next = 13;
+	                  _context6.next = 18;
 	                  return _this7.clearSync(_query, options);
 
-	                case 13:
+	                case 18:
 
 	                  // Create delete operations for non local data in the sync table
 	                  syncEntities = (0, _xorWith2.default)(entities, localEntities, function (entity, localEntity) {
 	                    return entity[idAttribute] === localEntity[idAttribute];
 	                  });
-	                  _context6.next = 16;
+	                  _context6.next = 21;
 	                  return _this7.syncManager.addDeleteOperation(syncEntities, options);
 
-	                case 16:
+	                case 21:
 	                  if (!(_this7.syncAutomatically === true)) {
-	                    _context6.next = 21;
+	                    _context6.next = 26;
 	                    break;
 	                  }
 
 	                  ids = Object.keys((0, _keyBy2.default)(entities, idAttribute));
 	                  _query2 = new _query4.Query().contains('entityId', ids);
-	                  _context6.next = 21;
+	                  _context6.next = 26;
 	                  return _this7.push(_query2, options);
 
-	                case 21:
+	                case 26:
 
 	                  // Emit the data
 	                  observer.next(entities);
-	                  _context6.next = 27;
+	                  _context6.next = 32;
 	                  break;
 
-	                case 24:
-	                  _context6.prev = 24;
+	                case 29:
+	                  _context6.prev = 29;
 	                  _context6.t0 = _context6['catch'](0);
 	                  return _context6.abrupt('return', observer.error(_context6.t0));
 
-	                case 27:
+	                case 32:
 	                  return _context6.abrupt('return', observer.complete());
 
-	                case 28:
+	                case 33:
 	                case 'end':
 	                  return _context6.stop();
 	              }
 	            }
-	          }, _callee6, _this7, [[0, 24]]);
+	          }, _callee6, _this7, [[0, 29]]);
 	        }));
 
 	        return function (_x13) {
@@ -27138,7 +27197,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var stream = _utils.KinveyObservable.create(function () {
 	        var _ref8 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee8(observer) {
-	          var request, response, data, syncQuery;
+	          var entities, syncQuery;
 	          return _regeneratorRuntime2.default.wrap(function _callee8$(_context8) {
 	            while (1) {
 	              switch (_context8.prev = _context8.next) {
@@ -27153,75 +27212,56 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  throw new _errors.KinveyError('Invalid query. It must be an instance of the Query class.');
 
 	                case 5:
-	                  // Create the request
-	                  request = new _request.CacheRequest({
-	                    method: _request.RequestMethod.DELETE,
-	                    url: _url2.default.format({
-	                      protocol: _this9.client.protocol,
-	                      host: _this9.client.host,
-	                      pathname: _this9.pathname,
-	                      query: options.query
-	                    }),
-	                    properties: options.properties,
-	                    query: query,
-	                    timeout: options.timeout
-	                  });
+	                  _context8.next = 7;
+	                  return _this9.remove(query, options);
 
-	                  // Execute the request
-
-	                  _context8.next = 8;
-	                  return request.execute();
-
-	                case 8:
-	                  response = _context8.sent;
-	                  data = response.data;
-
-	                  // Remove the data from sync
+	                case 7:
+	                  entities = _context8.sent;
 
 	                  if (query) {
-	                    _context8.next = 15;
+	                    _context8.next = 13;
 	                    break;
 	                  }
 
-	                  _context8.next = 13;
+	                  _context8.next = 11;
 	                  return _this9.clearSync(null, options);
 
-	                case 13:
-	                  _context8.next = 19;
+	                case 11:
+	                  _context8.next = 17;
 	                  break;
 
-	                case 15:
-	                  if (!(data && data.length > 0)) {
-	                    _context8.next = 19;
+	                case 13:
+	                  if (!(entities && entities.length > 0)) {
+	                    _context8.next = 17;
 	                    break;
 	                  }
 
-	                  syncQuery = new _query4.Query().contains('entityId', Object.keys((0, _keyBy2.default)(data, idAttribute)));
-	                  _context8.next = 19;
+	                  syncQuery = new _query4.Query().contains('entityId', Object.keys((0, _keyBy2.default)(entities, idAttribute)));
+	                  _context8.next = 17;
 	                  return _this9.clearSync(syncQuery, options);
 
-	                case 19:
+	                case 17:
 
-	                  observer.next(data);
+	                  observer.next(entities);
 
-	                case 20:
-	                  _context8.next = 25;
+	                case 18:
+	                  _context8.next = 23;
 	                  break;
 
-	                case 22:
-	                  _context8.prev = 22;
+	                case 20:
+	                  _context8.prev = 20;
 	                  _context8.t0 = _context8['catch'](0);
 	                  return _context8.abrupt('return', observer.error(_context8.t0));
 
-	                case 25:
+	                case 23:
 	                  return _context8.abrupt('return', observer.complete());
 
-	                case 26:
+	                case 24:
 	                case 'end':
 	                  return _context8.stop();
 	              }
 	            }
-	          }, _callee8, _this9, [[0, 22]]);
+	          }, _callee8, _this9, [[0, 20]]);
 	        }));
 
 	        return function (_x17) {
@@ -27297,7 +27337,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function () {
 	      var _ref9 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee9(query) {
 	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	        var entities, clearRequest, saveRequest;
+	        var entities, saveRequest;
 	        return _regeneratorRuntime2.default.wrap(function _callee9$(_context9) {
 	          while (1) {
 	            switch (_context9.prev = _context9.next) {
@@ -27307,25 +27347,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	              case 2:
 	                entities = _context9.sent;
+	                _context9.next = 5;
+	                return this.clear(query, options);
 
-
-	                // Clear the cache
-	                clearRequest = new _request.CacheRequest({
-	                  method: _request.RequestMethod.DELETE,
-	                  url: _url2.default.format({
-	                    protocol: this.client.protocol,
-	                    host: this.client.host,
-	                    pathname: this.pathname,
-	                    query: options.query
-	                  }),
-	                  query: query,
-	                  properties: options.properties,
-	                  timeout: options.timeout
-	                });
-	                _context9.next = 6;
-	                return clearRequest.execute();
-
-	              case 6:
+	              case 5:
 
 	                // Save network entities to cache
 	                saveRequest = new _request.CacheRequest({
@@ -27340,13 +27365,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  body: entities,
 	                  timeout: options.timeout
 	                });
-	                _context9.next = 9;
+	                _context9.next = 8;
 	                return saveRequest.execute();
 
-	              case 9:
+	              case 8:
 	                return _context9.abrupt('return', entities);
 
-	              case 10:
+	              case 9:
 	              case 'end':
 	                return _context9.stop();
 	            }
@@ -29427,28 +29452,69 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  }, {
 	    key: 'clear',
-	    value: function clear() {
-	      var query = arguments.length <= 0 || arguments[0] === undefined ? new _query.Query() : arguments[0];
-	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	    value: function () {
+	      var _ref16 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee16() {
+	        var query = arguments.length <= 0 || arguments[0] === undefined ? new _query.Query() : arguments[0];
+	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	        var fetchRequest, fetchResponse, entities, removeRequest, removeResponse;
+	        return _regeneratorRuntime2.default.wrap(function _callee16$(_context16) {
+	          while (1) {
+	            switch (_context16.prev = _context16.next) {
+	              case 0:
+	                if (!(query instanceof _query.Query)) {
+	                  query = new _query.Query(query);
+	                }
+	                query.equalTo('collection', this.collection);
 
-	      if (!(query instanceof _query.Query)) {
-	        query = new _query.Query((0, _result2.default)(query, 'toJSON', query));
+	                fetchRequest = new _request2.CacheRequest({
+	                  method: _request2.RequestMethod.GET,
+	                  url: _url2.default.format({
+	                    protocol: this.client.protocol,
+	                    host: this.client.host,
+	                    pathname: this.pathname
+	                  }),
+	                  properties: options.properties,
+	                  query: query,
+	                  timeout: options.timeout
+	                });
+	                _context16.next = 5;
+	                return fetchRequest.execute();
+
+	              case 5:
+	                fetchResponse = _context16.sent;
+	                entities = fetchResponse.data;
+	                removeRequest = new _request2.CacheRequest({
+	                  method: _request2.RequestMethod.DELETE,
+	                  url: _url2.default.format({
+	                    protocol: this.client.protocol,
+	                    host: this.client.host,
+	                    pathname: this.pathname
+	                  }),
+	                  properties: options.properties,
+	                  body: entities,
+	                  timeout: options.timeout
+	                });
+	                _context16.next = 10;
+	                return removeRequest.execute();
+
+	              case 10:
+	                removeResponse = _context16.sent;
+	                return _context16.abrupt('return', removeResponse.data);
+
+	              case 12:
+	              case 'end':
+	                return _context16.stop();
+	            }
+	          }
+	        }, _callee16, this);
+	      }));
+
+	      function clear(_x39, _x40) {
+	        return _ref16.apply(this, arguments);
 	      }
-	      query.equalTo('collection', this.collection);
 
-	      var request = new _request2.CacheRequest({
-	        method: _request2.RequestMethod.DELETE,
-	        url: _url2.default.format({
-	          protocol: this.client.protocol,
-	          host: this.client.host,
-	          pathname: this.pathname
-	        }),
-	        properties: options.properties,
-	        query: query,
-	        timeout: options.timeout
-	      });
-	      return request.execute();
-	    }
+	      return clear;
+	    }()
 	  }, {
 	    key: 'pathname',
 	    get: function get() {
@@ -33327,13 +33393,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                case 3:
 
-	                  // Count the entities in the cache
+	                  // Fetch the entities in the cache
 	                  request = new _request.CacheRequest({
 	                    method: _request.RequestMethod.GET,
 	                    url: _url2.default.format({
 	                      protocol: _this4.client.protocol,
 	                      host: _this4.client.host,
-	                      pathname: _this4.pathname + '/_count',
+	                      pathname: _this4.pathname,
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
@@ -33352,7 +33418,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                  // Emit the cache count
 
-	                  observer.next(data ? data.count : 0);
+	                  observer.next(data ? data.length : 0);
 	                  _context3.next = 14;
 	                  break;
 
@@ -34588,9 +34654,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _inherits(CacheMiddleware, _Middleware);
 
 	  function CacheMiddleware() {
+	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Cache Middleware' : arguments[0];
+
 	    _classCallCheck(this, CacheMiddleware);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(CacheMiddleware).apply(this, arguments));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(CacheMiddleware).call(this, name));
 	  }
 
 	  _createClass(CacheMiddleware, [{
@@ -34612,135 +34680,103 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'handle',
 	    value: function () {
 	      var _ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(request) {
-	        var method, query, body, appKey, collection, entityId, client, db, data, response;
+	        var method, body, appKey, collection, entityId, db, data, response;
 	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
 	          while (1) {
 	            switch (_context.prev = _context.next) {
 	              case 0:
 	                method = request.method;
-	                query = request.query;
 	                body = request.body;
 	                appKey = request.appKey;
 	                collection = request.collection;
 	                entityId = request.entityId;
-	                client = request.client;
-	                db = this.openDatabase(appKey, client ? client.encryptionKey : undefined);
+	                db = this.openDatabase(appKey);
 	                data = void 0;
 
 	                if (!(method === 'GET')) {
-	                  _context.next = 33;
+	                  _context.next = 19;
 	                  break;
 	                }
 
 	                if (!entityId) {
-	                  _context.next = 28;
+	                  _context.next = 14;
 	                  break;
 	                }
 
-	                if (!(entityId === '_count')) {
-	                  _context.next = 17;
-	                  break;
-	                }
-
-	                _context.next = 14;
-	                return db.count(collection, query);
-
-	              case 14:
-	                data = _context.sent;
-	                _context.next = 26;
-	                break;
-
-	              case 17:
-	                if (!(entityId === '_group')) {
-	                  _context.next = 23;
-	                  break;
-	                }
-
-	                _context.next = 20;
-	                return db.group(collection, body);
-
-	              case 20:
-	                data = _context.sent;
-	                _context.next = 26;
-	                break;
-
-	              case 23:
-	                _context.next = 25;
+	                _context.next = 11;
 	                return db.findById(collection, entityId);
 
-	              case 25:
+	              case 11:
 	                data = _context.sent;
-
-	              case 26:
-	                _context.next = 31;
+	                _context.next = 17;
 	                break;
 
-	              case 28:
-	                _context.next = 30;
-	                return db.find(collection, query);
+	              case 14:
+	                _context.next = 16;
+	                return db.find(collection);
 
-	              case 30:
+	              case 16:
 	                data = _context.sent;
 
-	              case 31:
-	                _context.next = 55;
+	              case 17:
+	                _context.next = 41;
 	                break;
 
-	              case 33:
+	              case 19:
 	                if (!(method === 'POST' || method === 'PUT')) {
-	                  _context.next = 39;
+	                  _context.next = 25;
 	                  break;
 	                }
 
-	                _context.next = 36;
+	                _context.next = 22;
 	                return db.save(collection, body);
 
-	              case 36:
+	              case 22:
 	                data = _context.sent;
-	                _context.next = 55;
+	                _context.next = 41;
 	                break;
 
-	              case 39:
+	              case 25:
 	                if (!(method === 'DELETE')) {
-	                  _context.next = 55;
+	                  _context.next = 41;
 	                  break;
 	                }
 
 	                if (!(collection && entityId)) {
-	                  _context.next = 46;
+	                  _context.next = 32;
 	                  break;
 	                }
 
-	                _context.next = 43;
+	                _context.next = 29;
 	                return db.removeById(collection, entityId);
 
-	              case 43:
+	              case 29:
 	                data = _context.sent;
-	                _context.next = 55;
+	                _context.next = 41;
 	                break;
 
-	              case 46:
+	              case 32:
 	                if (collection) {
-	                  _context.next = 52;
+	                  _context.next = 38;
 	                  break;
 	                }
 
-	                _context.next = 49;
+	                _context.next = 35;
 	                return db.clear();
 
-	              case 49:
+	              case 35:
 	                data = _context.sent;
-	                _context.next = 55;
+	                _context.next = 41;
 	                break;
 
-	              case 52:
-	                _context.next = 54;
-	                return db.remove(collection, query);
+	              case 38:
+	                _context.next = 40;
+	                return db.remove(collection, body);
 
-	              case 54:
+	              case 40:
 	                data = _context.sent;
 
-	              case 55:
+	              case 41:
 	                response = {
 	                  statusCode: method === 'POST' ? 201 : 200,
 	                  headers: {},
@@ -34754,7 +34790,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                return _context.abrupt('return', { response: response });
 
-	              case 58:
+	              case 44:
 	              case 'end':
 	                return _context.stop();
 	            }
@@ -34762,7 +34798,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, _callee, this);
 	      }));
 
-	      function handle(_x) {
+	      function handle(_x2) {
 	        return _ref.apply(this, arguments);
 	      }
 
@@ -34787,10 +34823,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
 
 
-	var _query = __webpack_require__(214);
-
-	var _aggregation = __webpack_require__(228);
-
 	var _errors = __webpack_require__(6);
 
 	var _utils = __webpack_require__(8);
@@ -34814,10 +34846,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _map = __webpack_require__(232);
 
 	var _map2 = _interopRequireDefault(_map);
-
-	var _result = __webpack_require__(224);
-
-	var _result2 = _interopRequireDefault(_result);
 
 	var _reduce = __webpack_require__(184);
 
@@ -34938,7 +34966,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'find',
 	    value: function () {
-	      var _ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(collection, query) {
+	      var _ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(collection) {
 	        var entities;
 	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
 	          while (1) {
@@ -34959,40 +34987,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return _context.abrupt('return', []);
 
 	              case 6:
-
-	                if (query && !(query instanceof _query.Query)) {
-	                  query = new _query.Query((0, _result2.default)(query, 'toJSON', query));
-	                }
-
-	                if (entities.length > 0 && query) {
-	                  entities = query.process(entities);
-	                }
-
 	                return _context.abrupt('return', entities);
 
-	              case 11:
-	                _context.prev = 11;
+	              case 9:
+	                _context.prev = 9;
 	                _context.t0 = _context['catch'](0);
 
 	                if (!(_context.t0 instanceof _errors.NotFoundError)) {
-	                  _context.next = 15;
+	                  _context.next = 13;
 	                  break;
 	                }
 
 	                return _context.abrupt('return', []);
 
-	              case 15:
+	              case 13:
 	                throw _context.t0;
 
-	              case 16:
+	              case 14:
 	              case 'end':
 	                return _context.stop();
 	            }
 	          }
-	        }, _callee, this, [[0, 11]]);
+	        }, _callee, this, [[0, 9]]);
 	      }));
 
-	      function find(_x3, _x4) {
+	      function find(_x3) {
 	        return _ref.apply(this, arguments);
 	      }
 
@@ -35024,86 +35043,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, _callee2, this);
 	      }));
 
-	      function findById(_x5, _x6) {
+	      function findById(_x4, _x5) {
 	        return _ref2.apply(this, arguments);
 	      }
 
 	      return findById;
 	    }()
-	  }, {
-	    key: 'count',
-	    value: function () {
-	      var _ref3 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee3(collection, query) {
-	        var entities;
-	        return _regeneratorRuntime2.default.wrap(function _callee3$(_context3) {
-	          while (1) {
-	            switch (_context3.prev = _context3.next) {
-	              case 0:
-	                _context3.next = 2;
-	                return this.find(collection, query);
 
-	              case 2:
-	                entities = _context3.sent;
-	                return _context3.abrupt('return', { count: entities.length });
+	    // async group(collection, aggregation) {
+	    //   const entities = await this.find(collection);
 
-	              case 4:
-	              case 'end':
-	                return _context3.stop();
-	            }
-	          }
-	        }, _callee3, this);
-	      }));
+	    //   if (!(aggregation instanceof Aggregation)) {
+	    //     aggregation = new Aggregation(result(aggregation, 'toJSON', aggregation));
+	    //   }
 
-	      function count(_x7, _x8) {
-	        return _ref3.apply(this, arguments);
-	      }
+	    //   if (entities.length > 0 && aggregation) {
+	    //     return aggregation.process(entities);
+	    //   }
 
-	      return count;
-	    }()
-	  }, {
-	    key: 'group',
-	    value: function () {
-	      var _ref4 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee4(collection, aggregation) {
-	        var entities;
-	        return _regeneratorRuntime2.default.wrap(function _callee4$(_context4) {
-	          while (1) {
-	            switch (_context4.prev = _context4.next) {
-	              case 0:
-	                _context4.next = 2;
-	                return this.find(collection);
+	    //   return null;
+	    // }
 
-	              case 2:
-	                entities = _context4.sent;
-
-
-	                if (!(aggregation instanceof _aggregation.Aggregation)) {
-	                  aggregation = new _aggregation.Aggregation((0, _result2.default)(aggregation, 'toJSON', aggregation));
-	                }
-
-	                if (!(entities.length > 0 && aggregation)) {
-	                  _context4.next = 6;
-	                  break;
-	                }
-
-	                return _context4.abrupt('return', aggregation.process(entities));
-
-	              case 6:
-	                return _context4.abrupt('return', null);
-
-	              case 7:
-	              case 'end':
-	                return _context4.stop();
-	            }
-	          }
-	        }, _callee4, this);
-	      }));
-
-	      function group(_x9, _x10) {
-	        return _ref4.apply(this, arguments);
-	      }
-
-	      return group;
-	    }()
 	  }, {
 	    key: 'save',
 	    value: function save(collection) {
@@ -35111,20 +35071,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var entities = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
 
-	      return queue.add(_asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee5() {
+	      return queue.add(_asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee3() {
 	        var singular;
-	        return _regeneratorRuntime2.default.wrap(function _callee5$(_context5) {
+	        return _regeneratorRuntime2.default.wrap(function _callee3$(_context3) {
 	          while (1) {
-	            switch (_context5.prev = _context5.next) {
+	            switch (_context3.prev = _context3.next) {
 	              case 0:
 	                singular = false;
 
 	                if (entities) {
-	                  _context5.next = 3;
+	                  _context3.next = 3;
 	                  break;
 	                }
 
-	                return _context5.abrupt('return', null);
+	                return _context3.abrupt('return', null);
 
 	              case 3:
 
@@ -35147,79 +35107,64 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  return entity;
 	                });
 
-	                _context5.next = 7;
+	                _context3.next = 7;
 	                return _this2.adapter.save(collection, entities);
 
 	              case 7:
-	                entities = _context5.sent;
+	                entities = _context3.sent;
 
 	                if (!(singular && entities.length > 0)) {
-	                  _context5.next = 10;
+	                  _context3.next = 10;
 	                  break;
 	                }
 
-	                return _context5.abrupt('return', entities[0]);
+	                return _context3.abrupt('return', entities[0]);
 
 	              case 10:
-	                return _context5.abrupt('return', entities);
+	                return _context3.abrupt('return', entities);
 
 	              case 11:
 	              case 'end':
-	                return _context5.stop();
+	                return _context3.stop();
 	            }
 	          }
-	        }, _callee5, _this2);
+	        }, _callee3, _this2);
 	      })));
 	    }
 	  }, {
 	    key: 'remove',
 	    value: function () {
-	      var _ref6 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee6(collection, query) {
+	      var _ref4 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee4(collection) {
 	        var _this3 = this;
 
-	        var entities, responses;
-	        return _regeneratorRuntime2.default.wrap(function _callee6$(_context6) {
+	        var entities = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
+	        var responses;
+	        return _regeneratorRuntime2.default.wrap(function _callee4$(_context4) {
 	          while (1) {
-	            switch (_context6.prev = _context6.next) {
+	            switch (_context4.prev = _context4.next) {
 	              case 0:
-	                if (query && !(query instanceof _query.Query)) {
-	                  query = new _query.Query(query);
-	                }
-
-	                // Removing should not take the query sort, limit, and skip into account.
-	                if (query) {
-	                  query.sort = null;
-	                  query.limit = null;
-	                  query.skip = 0;
-	                }
-
-	                _context6.next = 4;
-	                return this.find(collection, query);
-
-	              case 4:
-	                entities = _context6.sent;
-	                _context6.next = 7;
+	                _context4.next = 2;
 	                return _es6Promise.Promise.all(entities.map(function (entity) {
 	                  return _this3.removeById(collection, entity[idAttribute]);
 	                }));
 
-	              case 7:
-	                responses = _context6.sent;
-	                return _context6.abrupt('return', (0, _reduce2.default)(responses, function (entities, entity) {
+	              case 2:
+	                responses = _context4.sent;
+	                return _context4.abrupt('return', (0, _reduce2.default)(responses, function (entities, entity) {
 	                  entities.push(entity);
 	                  return entities;
 	                }, []));
 
-	              case 9:
+	              case 4:
 	              case 'end':
-	                return _context6.stop();
+	                return _context4.stop();
 	            }
 	          }
-	        }, _callee6, this);
+	        }, _callee4, this);
 	      }));
 
-	      function remove(_x12, _x13) {
-	        return _ref6.apply(this, arguments);
+	      function remove(_x7, _x8) {
+	        return _ref4.apply(this, arguments);
 	      }
 
 	      return remove;

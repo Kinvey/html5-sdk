@@ -9,8 +9,11 @@ describe('User', function() {
     // Open logout page
     await logoutPage.get();
 
+    // Login
+    await logoutPage.logout();
+
     // Sleep 5 seconds
-    await browser.sleep(2000);
+    await browser.sleep(5000);
 
     // Get the active user
     const activeUser = await logoutPage.getActiveUser();
@@ -36,7 +39,7 @@ describe('User', function() {
       await loginPage.login();
 
       // Sleep 5 seconds
-      await browser.sleep(2000);
+      await browser.sleep(5000);
 
       // Get the active user
       const activeUser = await loginPage.getActiveUser();
@@ -61,7 +64,7 @@ describe('User', function() {
       await loginPage.login();
 
       // Sleep 5 seconds
-      await browser.sleep(2000);
+      await browser.sleep(5000);
 
       // Get the active user
       const activeUser = await loginPage.getActiveUser();
@@ -86,7 +89,7 @@ describe('User', function() {
       await loginPage.login();
 
       // Sleep 5 seconds
-      await browser.sleep(2000);
+      await browser.sleep(5000);
 
       // Get the active user
       const activeUser = await loginPage.getActiveUser();
@@ -118,7 +121,7 @@ describe('User', function() {
       await micPage.login();
 
       // Sleep 5 seconds
-      await browser.sleep(2000);
+      await browser.sleep(5000);
 
       // Get the active user
       await loginPage.switchToContext();
