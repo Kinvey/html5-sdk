@@ -3,19 +3,24 @@
     routes: {
       '': 'home',
       'login': 'login',
-      'logout': 'logout'
+      'logout': 'logout',
+      'books': 'books'
     },
 
     home: function() {
-      new root.HomePage({ el: 'main' }).render();
+      new root.HomeView().render();
     },
 
     login: function() {
-      new root.LoginPage({ el: 'main' }).render();
+      new root.LoginView().render();
     },
 
     logout: function() {
-      new root.LogoutPage({ el: 'main' }).render();
+      new root.LogoutView().render();
+    },
+
+    books: function() {
+      new root.BooksView().render();
     }
   });
 })(window, window._, window.$, window.Backbone);

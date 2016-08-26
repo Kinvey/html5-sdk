@@ -1,30 +1,27 @@
-import { Kinvey as CoreKinvey } from 'kinvey-javascript-sdk-core';
+import { Kinvey } from 'kinvey-javascript-sdk-core';
 import { NetworkRequest, CacheRequest } from 'kinvey-javascript-sdk-core/dist/request';
-import { CacheRack, NetworkRack } from './rack';
+import {
+  CacheRack,
+  NetworkRack,
+  CacheMiddleware,
+  HttpMiddleware,
+  ParseMiddleware,
+  SerializeMiddleware
+} from './rack';
 import { Promise } from 'es6-promise';
 
-export class Kinvey extends CoreKinvey {
-  /**
-   * Returns the Promise class.
-   *
-   * @return {Promise} The Promise class.
-   *
-   * @example
-   * var Promise = Kinvey.Promise;
-   */
-  static get Promise() {
-    return Promise;
-  }
+// Set CacheRequest rack
+CacheRequest.rack = new CacheRack();
 
-  static init(options) {
-    const client = super.init(options);
+// Set NetworkRequest rack
+NetworkRequest.rack = new NetworkRack();
 
-    // Set CacheRequest rack
-    CacheRequest.rack = new CacheRack();
+// Add modules
+Kinvey.Promise = Promise;
+Kinvey.CacheMiddleware = CacheMiddleware;
+Kinvey.HttpMiddleware = HttpMiddleware;
+Kinvey.ParseMiddleware = ParseMiddleware;
+Kinvey.SerializeMiddleware = SerializeMiddleware;
 
-    // Set NetworkRequest rack
-    NetworkRequest.rack = new NetworkRack();
-
-    return client;
-  }
-}
+// Export
+export { Kinvey };

@@ -98,10 +98,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.Kinvey = undefined;
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
 	var _kinveyJavascriptSdkCore = __webpack_require__(3);
 
 	var _request = __webpack_require__(161);
@@ -110,52 +106,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _es6Promise = __webpack_require__(203);
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	// Set CacheRequest rack
+	_request.CacheRequest.rack = new _rack.CacheRack();
 
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	// Set NetworkRequest rack
+	_request.NetworkRequest.rack = new _rack.NetworkRack();
 
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	// Add modules
+	_kinveyJavascriptSdkCore.Kinvey.Promise = _es6Promise.Promise;
+	_kinveyJavascriptSdkCore.Kinvey.CacheMiddleware = _rack.CacheMiddleware;
+	_kinveyJavascriptSdkCore.Kinvey.HttpMiddleware = _rack.HttpMiddleware;
+	_kinveyJavascriptSdkCore.Kinvey.ParseMiddleware = _rack.ParseMiddleware;
+	_kinveyJavascriptSdkCore.Kinvey.SerializeMiddleware = _rack.SerializeMiddleware;
 
-	var Kinvey = exports.Kinvey = function (_CoreKinvey) {
-	  _inherits(Kinvey, _CoreKinvey);
-
-	  function Kinvey() {
-	    _classCallCheck(this, Kinvey);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Kinvey).apply(this, arguments));
-	  }
-
-	  _createClass(Kinvey, null, [{
-	    key: 'init',
-	    value: function init(options) {
-	      var client = _get(Object.getPrototypeOf(Kinvey), 'init', this).call(this, options);
-
-	      // Set CacheRequest rack
-	      _request.CacheRequest.rack = new _rack.CacheRack();
-
-	      // Set NetworkRequest rack
-	      _request.NetworkRequest.rack = new _rack.NetworkRack();
-
-	      return client;
-	    }
-	  }, {
-	    key: 'Promise',
-
-	    /**
-	     * Returns the Promise class.
-	     *
-	     * @return {Promise} The Promise class.
-	     *
-	     * @example
-	     * var Promise = Kinvey.Promise;
-	     */
-	    get: function get() {
-	      return _es6Promise.Promise;
-	    }
-	  }]);
-
-	  return Kinvey;
-	}(_kinveyJavascriptSdkCore.Kinvey);
+	// Export
+	exports.Kinvey = _kinveyJavascriptSdkCore.Kinvey;
 
 /***/ },
 /* 3 */
@@ -191,6 +156,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _errors = __webpack_require__(6);
 
+	var _rack = __webpack_require__(176);
+
+	var _middleware = __webpack_require__(177);
+
 	var _regeneratorRuntime = __webpack_require__(164);
 
 	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
@@ -211,7 +180,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * The Kinvey class is used as the entry point for the Kinvey JavaScript SDK.
 	 */
 
-	var Kinvey = exports.Kinvey = function () {
+	var Kinvey = function () {
 	  function Kinvey() {
 	    _classCallCheck(this, Kinvey);
 	  }
@@ -256,17 +225,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // Initialize the client
 	      var client = _client.Client.init(options);
 
-	      // Add all the modules to the Kinvey namespace
-	      this.Acl = _entity.Acl;
-	      this.Aggregation = _aggregation.Aggregation;
-	      this.AuthorizationGrant = _social.AuthorizationGrant;
+	      // Add modules that require initialization
 	      this.CustomEndpoint = _endpoint.CustomEndpoint;
 	      this.DataStore = _datastore.DataStore;
-	      this.DataStoreType = _datastore.DataStoreType;
 	      this.Files = new _datastore.FileStore();
-	      this.Metadata = _entity.Metadata;
-	      this.Query = _query.Query;
-	      this.SocialIdentity = _social.SocialIdentity;
 	      this.Sync = _datastore.SyncManager;
 	      this.User = _entity.User;
 	      this.UserStore = _entity.UserStore;
@@ -376,25 +338,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	    set: function set(appVersion) {
 	      this.client.appVersion = appVersion;
 	    }
-
-	    /**
-	     * Get the logging module.
-	     *
-	     * @return {Log}  The log module.
-	     *
-	     * @example
-	     * var Log = Kinvey.Log;
-	     */
-
-	  }, {
-	    key: 'Log',
-	    get: function get() {
-	      return _utils.Log;
-	    }
 	  }]);
 
 	  return Kinvey;
 	}();
+
+	// Add modules
+
+
+	Kinvey.Acl = _entity.Acl;
+	Kinvey.Aggregation = _aggregation.Aggregation;
+	Kinvey.AuthorizationGrant = _social.AuthorizationGrant;
+	Kinvey.CacheRequest = _request.CacheRequest;
+	Kinvey.DataStoreType = _datastore.DataStoreType;
+	Kinvey.Log = _utils.Log;
+	Kinvey.Metadata = _entity.Metadata;
+	Kinvey.Middleware = _middleware.Middleware;
+	Kinvey.NetworkRequest = _request.NetworkRequest;
+	Kinvey.Query = _query.Query;
+	Kinvey.Rack = _rack.Rack;
+	Kinvey.SocialIdentity = _social.SocialIdentity;
+
+	// Export
+	exports.Kinvey = Kinvey;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
@@ -1675,7 +1641,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			"/"
 		],
 		"_resolved": "file:../../Core/SDK",
-		"_shasum": "16e43a791d4b4023dd5e1bec790aff70134235d3",
+		"_shasum": "727831216c1e50fb7eab983dffaabe63b524743e",
 		"_shrinkwrap": null,
 		"_spec": "kinvey-javascript-sdk-core@../../Core/SDK",
 		"_where": "/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/HTML5/SDK",
@@ -1691,6 +1657,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			"es6-promise": "^3.2.1",
 			"fast-memory-cache": "^2.0.4",
 			"hellojs": "^1.13.1",
+			"kinvey-javascript-rack": "../../Rack",
 			"local-storage": "^1.4.2",
 			"lodash": "^4.12.0",
 			"loglevel": "^1.4.1",
@@ -1728,7 +1695,6 @@ return /******/ (function(modules) { // webpackBootstrap
 			"gulp-util": "^3.0.7",
 			"istanbul": "^1.0.0-alpha.2",
 			"json-loader": "^0.5.4",
-			"kinvey-javascript-rack": "../../Rack",
 			"mocha": "^2.4.5",
 			"nock": "^8.0.0",
 			"parse-headers": "^2.0.1",
@@ -31770,14 +31736,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }()
 
 	    /**
-	     * Retfresh the users data.
+	     * Update the active user.
 	     *
-	     * @param {Object} [options={}] Options
+	     * @param {Object} data Data.
+	     * @param {Object} [options] Options
 	     * @return {Promise<User>} The user.
 	     */
 
 	  }, {
 	    key: 'me',
+
+
+	    /**
+	     * Retfresh the users data.
+	     *
+	     * @param {Object} [options={}] Options
+	     * @return {Promise<User>} The user.
+	     */
 	    value: function () {
 	      var _ref16 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee15() {
 	        var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
@@ -31836,14 +31811,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }()
 
 	    /**
+	     * Refresh the active user.
+	     *
+	     * @param {Object} [options={}] Options
+	     * @return {Promise<User>} The user.
+	     */
+
+	  }, {
+	    key: 'verifyEmail',
+
+
+	    /**
 	     * Request an email to be sent to verify the users email.
 	     *
 	     * @param {Object} [options={}] Options
 	     * @return {Promise<Object>} The response.
 	     */
-
-	  }, {
-	    key: 'verifyEmail',
 	    value: function () {
 	      var _ref18 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee16() {
 	        var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
@@ -32196,19 +32179,89 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return user.signupWithIdentity(identity, session, options);
 	    }
 	  }, {
-	    key: 'resetPassword',
+	    key: 'update',
 	    value: function () {
-	      var _ref23 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee19(username) {
-	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-	        var client, request, _ref24, data;
-
+	      var _ref23 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee19(data, options) {
+	        var user;
 	        return _regeneratorRuntime2.default.wrap(function _callee19$(_context19) {
 	          while (1) {
 	            switch (_context19.prev = _context19.next) {
 	              case 0:
+	                user = User.getActiveUser(options.client);
+
+	                if (!user) {
+	                  _context19.next = 3;
+	                  break;
+	                }
+
+	                return _context19.abrupt('return', user.update(data, options));
+
+	              case 3:
+	                return _context19.abrupt('return', null);
+
+	              case 4:
+	              case 'end':
+	                return _context19.stop();
+	            }
+	          }
+	        }, _callee19, this);
+	      }));
+
+	      function update(_x46, _x47) {
+	        return _ref23.apply(this, arguments);
+	      }
+
+	      return update;
+	    }()
+	  }, {
+	    key: 'me',
+	    value: function () {
+	      var _ref24 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee20(data, options) {
+	        var user;
+	        return _regeneratorRuntime2.default.wrap(function _callee20$(_context20) {
+	          while (1) {
+	            switch (_context20.prev = _context20.next) {
+	              case 0:
+	                user = User.getActiveUser(options.client);
+
+	                if (!user) {
+	                  _context20.next = 3;
+	                  break;
+	                }
+
+	                return _context20.abrupt('return', user.me(options));
+
+	              case 3:
+	                return _context20.abrupt('return', null);
+
+	              case 4:
+	              case 'end':
+	                return _context20.stop();
+	            }
+	          }
+	        }, _callee20, this);
+	      }));
+
+	      function me(_x48, _x49) {
+	        return _ref24.apply(this, arguments);
+	      }
+
+	      return me;
+	    }()
+	  }, {
+	    key: 'resetPassword',
+	    value: function () {
+	      var _ref25 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee21(username) {
+	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	        var client, request, _ref26, data;
+
+	        return _regeneratorRuntime2.default.wrap(function _callee21$(_context21) {
+	          while (1) {
+	            switch (_context21.prev = _context21.next) {
+	              case 0:
 	                if (username) {
-	                  _context19.next = 2;
+	                  _context21.next = 2;
 	                  break;
 	                }
 
@@ -32216,7 +32269,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	              case 2:
 	                if ((0, _isString2.default)(username)) {
-	                  _context19.next = 4;
+	                  _context21.next = 4;
 	                  break;
 	                }
 
@@ -32236,24 +32289,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  timeout: options.timeout,
 	                  client: client
 	                });
-	                _context19.next = 8;
+	                _context21.next = 8;
 	                return request.execute();
 
 	              case 8:
-	                _ref24 = _context19.sent;
-	                data = _ref24.data;
-	                return _context19.abrupt('return', data);
+	                _ref26 = _context21.sent;
+	                data = _ref26.data;
+	                return _context21.abrupt('return', data);
 
 	              case 11:
 	              case 'end':
-	                return _context19.stop();
+	                return _context21.stop();
 	            }
 	          }
-	        }, _callee19, this);
+	        }, _callee21, this);
 	      }));
 
-	      function resetPassword(_x46, _x47) {
-	        return _ref23.apply(this, arguments);
+	      function resetPassword(_x50, _x51) {
+	        return _ref25.apply(this, arguments);
 	      }
 
 	      return resetPassword;
@@ -34894,7 +34947,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function DB(name) {
 	    var _this = this;
 
-	    var adapters = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
+	    var adapters = arguments.length <= 1 || arguments[1] === undefined ? [DBAdapter.WebSQL, DBAdapter.IndexedDB, DBAdapter.LocalStorage, DBAdapter.SessionStorage] : arguments[1];
 
 	    _classCallCheck(this, DB);
 

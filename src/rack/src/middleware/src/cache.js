@@ -5,7 +5,6 @@ import regeneratorRuntime from 'regenerator-runtime'; // eslint-disable-line no-
 import isEmpty from 'lodash/isEmpty';
 const dbCache = {};
 
-
 export class CacheMiddleware extends Middleware {
   constructor(name = 'Cache Middleware') {
     super(name);

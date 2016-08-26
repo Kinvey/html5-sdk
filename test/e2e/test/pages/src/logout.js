@@ -1,4 +1,4 @@
-import { AppPage } from './app.page';
+import { AppPage } from './app';
 import regeneratorRuntime from 'regenerator-runtime'; // eslint-disable-line no-unused-vars
 
 export class LogoutPage extends AppPage {
@@ -10,12 +10,14 @@ export class LogoutPage extends AppPage {
 
     // Switch contexts
     await this.switchToContext();
-
-    // Grab references to elements on page
-    this.logoutButton = await browser.driver.findElement(by.id('logout'));
   }
 
-  logout() {
-    return this.logoutButton.click();
+  async logout() {
+    // Click the logout button
+    const button = await browser.driver.findElement(by.id('logout'));
+    await button.click();
+
+    // Sleep 5 seconds
+    await browser.sleep(2000);
   }
 }

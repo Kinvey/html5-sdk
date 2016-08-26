@@ -18,8 +18,6 @@ hr {
   -moz-border-right-colors: none;
   -moz-border-top-colors: none;
   -moz-use-text-color #FFFFFF;
-  border-color: #EEEEEE;
-  border-style: solid none;
-  border-width: 1px 0;
+  border-bottom: 1px solid #eee;
   margin: 18px 0;
 }

@@ -79,7 +79,7 @@ var DB = exports.DB = function () {
   function DB(name) {
     var _this = this;
 
-    var adapters = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
+    var adapters = arguments.length <= 1 || arguments[1] === undefined ? [DBAdapter.WebSQL, DBAdapter.IndexedDB, DBAdapter.LocalStorage, DBAdapter.SessionStorage] : arguments[1];
 
     _classCallCheck(this, DB);
 

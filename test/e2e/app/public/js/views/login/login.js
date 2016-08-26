@@ -1,7 +1,7 @@
 (function(root, _, $, Backbone) {
-  root.LoginPage = root.Page.extend({
-    prefix: '/js/views/pages/login/',
-    template: 'login.html',
+  root.LoginView = Backbone.Layout.extend({
+    template: '/login/login.html',
+    el: 'main',
 
     events: {
       'submit #loginForm': 'login',

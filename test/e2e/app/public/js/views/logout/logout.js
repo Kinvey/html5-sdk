@@ -1,7 +1,7 @@
 (function(root, _, $, Backbone) {
-  root.LogoutPage = root.Page.extend({
-    prefix: '/js/views/pages/logout/',
-    template: 'logout.html',
+  root.LogoutView = Backbone.Layout.extend({
+    template: '/logout/logout.html',
+    el: 'main',
 
     events: {
       'submit #logoutForm': 'logout'

@@ -32,7 +32,7 @@ export { DBAdapter };
  * @private
  */
 export class DB {
-  constructor(name, adapters = []) {
+  constructor(name, adapters = [DBAdapter.WebSQL, DBAdapter.IndexedDB, DBAdapter.LocalStorage, DBAdapter.SessionStorage]) {
     if (!name) {
       throw new KinveyError('Unable to create a DB instance without a name.');
     }
