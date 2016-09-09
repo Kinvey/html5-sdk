@@ -1,5 +1,5 @@
 /**
- * kinvey-html5-sdk v3.0.3
+ * kinvey-html5-sdk v3.1.0
  * Kinvey JavaScript SDK for HTML5.
  * http://www.kinvey.com
  *
@@ -12954,39 +12954,49 @@ return /******/ (function(modules) { // webpackBootstrap
 		"_args": [
 			[
 				{
-					"raw": "kinvey-javascript-sdk-core@../../Core/SDK",
+					"raw": "kinvey-javascript-sdk-core@^3.0.0",
 					"scope": null,
 					"escapedName": "kinvey-javascript-sdk-core",
 					"name": "kinvey-javascript-sdk-core",
-					"rawSpec": "../../Core/SDK",
-					"spec": "/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/Core/SDK",
-					"type": "directory"
+					"rawSpec": "^3.0.0",
+					"spec": ">=3.0.0 <4.0.0",
+					"type": "range"
 				},
 				"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/HTML5/SDK"
 			]
 		],
-		"_from": "../../Core/SDK",
-		"_id": "kinvey-javascript-sdk-core@3.0.3",
+		"_from": "kinvey-javascript-sdk-core@>=3.0.0 <4.0.0",
+		"_id": "kinvey-javascript-sdk-core@3.1.0",
 		"_inCache": true,
 		"_installable": true,
 		"_location": "/kinvey-javascript-sdk-core",
+		"_nodeVersion": "5.9.0",
+		"_npmOperationalInternal": {
+			"host": "packages-12-west.internal.npmjs.com",
+			"tmp": "tmp/kinvey-javascript-sdk-core-3.1.0.tgz_1473450407854_0.7726616486907005"
+		},
+		"_npmUser": {
+			"name": "kinvey",
+			"email": "opensource@kinvey.com"
+		},
+		"_npmVersion": "3.8.5",
 		"_phantomChildren": {},
 		"_requested": {
-			"raw": "kinvey-javascript-sdk-core@../../Core/SDK",
+			"raw": "kinvey-javascript-sdk-core@^3.0.0",
 			"scope": null,
 			"escapedName": "kinvey-javascript-sdk-core",
 			"name": "kinvey-javascript-sdk-core",
-			"rawSpec": "../../Core/SDK",
-			"spec": "/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/Core/SDK",
-			"type": "directory"
+			"rawSpec": "^3.0.0",
+			"spec": ">=3.0.0 <4.0.0",
+			"type": "range"
 		},
 		"_requiredBy": [
 			"/"
 		],
-		"_resolved": "file:../../Core/SDK",
-		"_shasum": "f69e6655b0f683c16053e8ba23223eaf0aa0b958",
+		"_resolved": "https://registry.npmjs.org/kinvey-javascript-sdk-core/-/kinvey-javascript-sdk-core-3.1.0.tgz",
+		"_shasum": "fdd16a61a2742e8e429776c124a66c3de0072c5e",
 		"_shrinkwrap": null,
-		"_spec": "kinvey-javascript-sdk-core@../../Core/SDK",
+		"_spec": "kinvey-javascript-sdk-core@^3.0.0",
 		"_where": "/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/HTML5/SDK",
 		"author": {
 			"name": "Kinvey, Inc."
@@ -13049,17 +13059,31 @@ return /******/ (function(modules) { // webpackBootstrap
 			"webpack": "^1.13.2",
 			"yargs": "^4.7.1"
 		},
-		"gitHead": "a3f7b025e9f0f7c0694a0e105b24a07d1bb94d73",
+		"directories": {},
+		"dist": {
+			"shasum": "fdd16a61a2742e8e429776c124a66c3de0072c5e",
+			"tarball": "https://registry.npmjs.org/kinvey-javascript-sdk-core/-/kinvey-javascript-sdk-core-3.1.0.tgz"
+		},
+		"gitHead": "1d4372d287bc543fd52866ba27229d8205002f04",
 		"homepage": "https://github.com/Kinvey/javascript-sdk-core#readme",
 		"license": "Apache-2.0",
 		"main": "./dist/export.js",
+		"maintainers": [
+			{
+				"name": "kinvey",
+				"email": "opensource@kinvey.com"
+			},
+			{
+				"name": "thomas.conner",
+				"email": "thomas.conner@me.com"
+			}
+		],
 		"name": "kinvey-javascript-sdk-core",
 		"optionalDependencies": {},
 		"peerDependencies": {
 			"kinvey-javascript-rack": "^1.0.0"
 		},
-		"readme": "# Kinvey JavaScript SDK Core\n\nThe Kinvey JavaScript SDK core is a package that can be used to develop JavaScript applications on the Kinvey platform. The Kinvey JavaScript SDK core is intended used as a way to share common code across different JS SDK builds. \n\nThe Kinvey JS SDK core supports several platforms through platform-specific shims. Here is a list of shims we currently support, each as a separate repo -\n\n* [Angular](https://github.com/Kinvey/angular-sdk)\n* [PhoneGap](https://github.com/Kinvey/phonegap-sdk)\n* [HTML5](https://github.com/Kinvey/html5-sdk)\n* [Titanium](https://github.com/Kinvey/titanium-sdk)\n* [Node](https://github.com/Kinvey/kinvey-nodejs)\n* [Angular 2](https://github.com/Kinvey/angular2-sdk)\n\nRefer to the Kinvey [DevCenter](http://devcenter.kinvey.com/) for documentation on using Kinvey. \n\n## Building\nThe simplest way to build the sdk is by running `gulp`. More advanced tasks are available.\n\n* `gulp bump`: bump the pacakge version\n* `gulp build`: build the sdk\n* `gulp clean`: remove files created by the build process\n* `gulp lint`: lint src files\n\n### Flags\nThe following flags are available when running `gulp bump`:\n\n* `--type <major|minor|patch|prerelease>`: Bumps the package version using the [Semantic Version 2.0.0](http://semver.org/) spec. Defaults to `patch`.\n* `--version <version>`: Sets the package version to the provided version.\n\n## Testing\n\nYou can run the tests using `npm test`.\n\n## Releasing\nThe workflow for releasing a new version of the sdk is as follows:\n\n1. Commit all changes on the develop branch.\n2. Checkout the master branch and merge the develop branch.\n3. Update the [Changelog](CHANGELOG.md).\n4. Run `gulp bump --type <type>` replacing `<type>` with major, minor, patch, or prerelease. See [Flags](#Flags) above.\n5. Run `gulp`.\n6. Run `gulp tag`.\n7. Make sure all changes are committed on the master branch and push.\n8. Checkout the develop branch and merge the master branch.\n\n### Version Management\nUpdating the sdk version should follow [Semantic Version 2.0.0](http://semver.org/):\n\n* Major (x.0.0): when making an incompatible API changes.\n* Minor (3.x.0): when adding functionality in a backwards-compatible manner.\n* Patch (3.0.x): when making backwards-compatible bug fixes or enhancements.\n\n## License\nSee [LICENSE](LICENSE) for details.\n\n## Contributing \nSee [CONTRIBUTING.md](CONTRIBUTING.md) for details on reporting bugs and making contributions.\n",
-		"readmeFilename": "README.md",
+		"readme": "ERROR: No README data found!",
 		"repository": {
 			"type": "git",
 			"url": "git+https://github.com/Kinvey/javascript-sdk-core.git"
@@ -13074,7 +13098,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			"test:mocha": "mocha --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit",
 			"test:watch": "mocha -w --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit"
 		},
-		"version": "3.0.3"
+		"version": "3.1.0"
 	};
 
 /***/ },
@@ -13625,9 +13649,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 174 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	/* WEBPACK VAR INJECTION */(function(module, global) {"use strict";
+	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
 	var objectTypes = {
 	    'boolean': false,
 	    'function': true,
@@ -13637,15 +13661,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    'undefined': false
 	};
 	exports.root = (objectTypes[typeof self] && self) || (objectTypes[typeof window] && window);
-	/* tslint:disable:no-unused-variable */
-	var freeExports = objectTypes[typeof exports] && exports && !exports.nodeType && exports;
-	var freeModule = objectTypes[typeof module] && module && !module.nodeType && module;
 	var freeGlobal = objectTypes[typeof global] && global;
 	if (freeGlobal && (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal)) {
 	    exports.root = freeGlobal;
 	}
 	//# sourceMappingURL=root.js.map
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(96)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
 /* 175 */
@@ -38481,7 +38502,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 		"name": "kinvey-html5-sdk",
-		"version": "3.0.3",
+		"version": "3.1.0",
 		"description": "Kinvey JavaScript SDK for HTML5.",
 		"homepage": "http://www.kinvey.com",
 		"bugs": {
@@ -38513,16 +38534,16 @@ return /******/ (function(modules) { // webpackBootstrap
 		},
 		"dependencies": {
 			"es6-promise": "^3.2.1",
-			"kinvey-javascript-rack": "../../Rack",
-			"kinvey-javascript-sdk-core": "../../Core/SDK",
+			"kinvey-javascript-rack": "^1.0.0",
+			"kinvey-javascript-sdk-core": "^3.0.0",
 			"lodash": "^4.8.2",
 			"parse-headers": "^2.0.1",
 			"promise-queue": "^2.2.3",
 			"regenerator-runtime": "^0.9.5"
 		},
 		"peerDependencies": {
-			"kinvey-javascript-rack": "../../Rack",
-			"kinvey-javascript-sdk-core": "../../Core/SDK"
+			"kinvey-javascript-rack": "^1.0.0",
+			"kinvey-javascript-sdk-core": "^3.0.0"
 		},
 		"devDependencies": {
 			"babel-core": "^6.9.0",
