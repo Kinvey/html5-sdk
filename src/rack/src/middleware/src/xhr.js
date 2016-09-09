@@ -1,8 +1,8 @@
-import { Middleware } from 'kinvey-javascript-rack/dist/middleware';
+import { Middleware } from 'kinvey-javascript-rack';
 import { Promise } from 'es6-promise';
 import parseHeaders from 'parse-headers';
 
-export class HttpMiddleware extends Middleware {
+export class XHRMiddleware extends Middleware {
   constructor(name = 'Http Middleware') {
     super(name);
   }
@@ -14,7 +14,6 @@ export class HttpMiddleware extends Middleware {
       // Create request
       const xhr = new XMLHttpRequest();
       xhr.open(method, url);
-      // xhr.responseType = request.responseType;
 
       // Append request headers
       const names = Object.keys(headers);

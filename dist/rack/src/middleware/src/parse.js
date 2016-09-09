@@ -7,7 +7,7 @@ exports.ParseMiddleware = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _middleware = require('kinvey-javascript-rack/dist/middleware');
+var _kinveyJavascriptRack = require('kinvey-javascript-rack');
 
 var _regeneratorRuntime = require('regenerator-runtime');
 
@@ -25,9 +25,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 // eslint-disable-line no-unused-vars
 
-/**
- * @private
- */
 var ParseMiddleware = exports.ParseMiddleware = function (_Middleware) {
   _inherits(ParseMiddleware, _Middleware);
 
@@ -36,7 +33,7 @@ var ParseMiddleware = exports.ParseMiddleware = function (_Middleware) {
 
     _classCallCheck(this, ParseMiddleware);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(ParseMiddleware).call(this, name));
+    return _possibleConstructorReturn(this, (ParseMiddleware.__proto__ || Object.getPrototypeOf(ParseMiddleware)).call(this, name));
   }
 
   _createClass(ParseMiddleware, [{
@@ -82,4 +79,4 @@ var ParseMiddleware = exports.ParseMiddleware = function (_Middleware) {
   }]);
 
   return ParseMiddleware;
-}(_middleware.Middleware);
+}(_kinveyJavascriptRack.Middleware);

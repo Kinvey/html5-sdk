@@ -1,9 +1,6 @@
-import { Middleware } from 'kinvey-javascript-rack/dist/middleware';
+import { Middleware } from 'kinvey-javascript-rack';
 import regeneratorRuntime from 'regenerator-runtime'; // eslint-disable-line no-unused-vars
 
-/**
- * @private
- */
 export class SerializeMiddleware extends Middleware {
   constructor(name = 'Serialize Middleware') {
     super(name);

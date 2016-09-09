@@ -31,7 +31,7 @@ var Popup = exports.Popup = function (_EventEmitter) {
   function Popup() {
     _classCallCheck(this, Popup);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(Popup).apply(this, arguments));
+    return _possibleConstructorReturn(this, (Popup.__proto__ || Object.getPrototypeOf(Popup)).apply(this, arguments));
   }
 
   _createClass(Popup, [{

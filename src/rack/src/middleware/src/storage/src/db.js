@@ -1,8 +1,8 @@
-import { KinveyError, NotFoundError } from 'kinvey-javascript-sdk-core/dist/errors';
-import { Log } from 'kinvey-javascript-sdk-core/dist/utils';
-import { LocalStorage, SessionStorage } from './storage';
+import { KinveyError, NotFoundError, Log } from 'kinvey-javascript-sdk-core';
+import { LocalStorage, SessionStorage } from './webstorage';
 import { IndexedDB } from './indexeddb';
 import { WebSQL } from './websql';
+import { Memory } from './memory';
 import { Promise } from 'es6-promise';
 import Queue from 'promise-queue';
 import regeneratorRuntime from 'regenerator-runtime'; // eslint-disable-line no-unused-vars
@@ -17,22 +17,29 @@ Queue.configure(Promise);
 const queue = new Queue(1, Infinity);
 
 /**
- * Enum for DB Adapters.
+ * Enum for Storage Adapters.
  */
-const DBAdapter = {
+const StorageAdapter = {
   IndexedDB: 'IndexedDB',
   LocalStorage: 'LocalStorage',
+  Memory: 'Memory',
   SessionStorage: 'SessionStorage',
   WebSQL: 'WebSQL'
 };
-Object.freeze(DBAdapter);
-export { DBAdapter };
+Object.freeze(StorageAdapter);
+export { StorageAdapter };
 
 /**
  * @private
  */
 export class DB {
-  constructor(name, adapters = [DBAdapter.WebSQL, DBAdapter.IndexedDB, DBAdapter.LocalStorage, DBAdapter.SessionStorage]) {
+  constructor(name, adapters = [
+    StorageAdapter.WebSQL,
+    StorageAdapter.IndexedDB,
+    StorageAdapter.LocalStorage,
+    StorageAdapter.SessionStorage,
+    StorageAdapter.Memory
+  ]) {
     if (!name) {
       throw new KinveyError('Unable to create a DB instance without a name.');
     }
@@ -47,30 +54,37 @@ export class DB {
 
     forEach(adapters, adapter => {
       switch (adapter) {
-        case DBAdapter.IndexedDB:
+        case StorageAdapter.IndexedDB:
           if (IndexedDB.isSupported()) {
             this.adapter = new IndexedDB(name);
             return false;
           }
 
           break;
-        case DBAdapter.LocalStorage:
+        case StorageAdapter.LocalStorage:
           if (LocalStorage.isSupported()) {
             this.adapter = new LocalStorage(name);
             return false;
           }
 
           break;
-        case DBAdapter.SessionStorage:
+        case StorageAdapter.SessionStorage:
           if (SessionStorage.isSupported()) {
             this.adapter = new SessionStorage(name);
             return false;
           }
 
           break;
-        case DBAdapter.WebSQL:
+        case StorageAdapter.WebSQL:
           if (WebSQL.isSupported()) {
             this.adapter = new WebSQL(name);
+            return false;
+          }
+
+          break;
+        case StorageAdapter.Memory:
+          if (Memory.isSupported()) {
+            this.adapter = new Memory(name);
             return false;
           }
 

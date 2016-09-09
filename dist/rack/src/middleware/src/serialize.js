@@ -7,7 +7,7 @@ exports.SerializeMiddleware = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _middleware = require('kinvey-javascript-rack/dist/middleware');
+var _kinveyJavascriptRack = require('kinvey-javascript-rack');
 
 var _regeneratorRuntime = require('regenerator-runtime');
 
@@ -25,9 +25,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 // eslint-disable-line no-unused-vars
 
-/**
- * @private
- */
 var SerializeMiddleware = exports.SerializeMiddleware = function (_Middleware) {
   _inherits(SerializeMiddleware, _Middleware);
 
@@ -36,7 +33,7 @@ var SerializeMiddleware = exports.SerializeMiddleware = function (_Middleware) {
 
     _classCallCheck(this, SerializeMiddleware);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(SerializeMiddleware).call(this, name));
+    return _possibleConstructorReturn(this, (SerializeMiddleware.__proto__ || Object.getPrototypeOf(SerializeMiddleware)).call(this, name));
   }
 
   _createClass(SerializeMiddleware, [{
@@ -147,4 +144,4 @@ var SerializeMiddleware = exports.SerializeMiddleware = function (_Middleware) {
   }]);
 
   return SerializeMiddleware;
-}(_middleware.Middleware);
+}(_kinveyJavascriptRack.Middleware);

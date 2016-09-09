@@ -3,20 +3,20 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.DB = exports.DBAdapter = undefined;
+exports.DB = exports.StorageAdapter = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
 
 
-var _errors = require('kinvey-javascript-sdk-core/dist/errors');
+var _kinveyJavascriptSdkCore = require('kinvey-javascript-sdk-core');
 
-var _utils = require('kinvey-javascript-sdk-core/dist/utils');
-
-var _storage = require('./storage');
+var _webstorage = require('./webstorage');
 
 var _indexeddb = require('./indexeddb');
 
 var _websql = require('./websql');
+
+var _memory = require('./memory');
 
 var _es6Promise = require('es6-promise');
 
@@ -60,16 +60,17 @@ _promiseQueue2.default.configure(_es6Promise.Promise);
 var queue = new _promiseQueue2.default(1, Infinity);
 
 /**
- * Enum for DB Adapters.
+ * Enum for Storage Adapters.
  */
-var DBAdapter = {
+var StorageAdapter = {
   IndexedDB: 'IndexedDB',
   LocalStorage: 'LocalStorage',
+  Memory: 'Memory',
   SessionStorage: 'SessionStorage',
   WebSQL: 'WebSQL'
 };
-Object.freeze(DBAdapter);
-exports.DBAdapter = DBAdapter;
+Object.freeze(StorageAdapter);
+exports.StorageAdapter = StorageAdapter;
 
 /**
  * @private
@@ -79,16 +80,16 @@ var DB = exports.DB = function () {
   function DB(name) {
     var _this = this;
 
-    var adapters = arguments.length <= 1 || arguments[1] === undefined ? [DBAdapter.WebSQL, DBAdapter.IndexedDB, DBAdapter.LocalStorage, DBAdapter.SessionStorage] : arguments[1];
+    var adapters = arguments.length <= 1 || arguments[1] === undefined ? [StorageAdapter.WebSQL, StorageAdapter.IndexedDB, StorageAdapter.LocalStorage, StorageAdapter.SessionStorage, StorageAdapter.Memory] : arguments[1];
 
     _classCallCheck(this, DB);
 
     if (!name) {
-      throw new _errors.KinveyError('Unable to create a DB instance without a name.');
+      throw new _kinveyJavascriptSdkCore.KinveyError('Unable to create a DB instance without a name.');
     }
 
     if (!(0, _isString2.default)(name)) {
-      throw new _errors.KinveyError('The name is not a string. A name must be a string to create a DB instance.');
+      throw new _kinveyJavascriptSdkCore.KinveyError('The name is not a string. A name must be a string to create a DB instance.');
     }
 
     if (!(0, _isArray2.default)(adapters)) {
@@ -97,36 +98,43 @@ var DB = exports.DB = function () {
 
     (0, _forEach2.default)(adapters, function (adapter) {
       switch (adapter) {
-        case DBAdapter.IndexedDB:
+        case StorageAdapter.IndexedDB:
           if (_indexeddb.IndexedDB.isSupported()) {
             _this.adapter = new _indexeddb.IndexedDB(name);
             return false;
           }
 
           break;
-        case DBAdapter.LocalStorage:
-          if (_storage.LocalStorage.isSupported()) {
-            _this.adapter = new _storage.LocalStorage(name);
+        case StorageAdapter.LocalStorage:
+          if (_webstorage.LocalStorage.isSupported()) {
+            _this.adapter = new _webstorage.LocalStorage(name);
             return false;
           }
 
           break;
-        case DBAdapter.SessionStorage:
-          if (_storage.SessionStorage.isSupported()) {
-            _this.adapter = new _storage.SessionStorage(name);
+        case StorageAdapter.SessionStorage:
+          if (_webstorage.SessionStorage.isSupported()) {
+            _this.adapter = new _webstorage.SessionStorage(name);
             return false;
           }
 
           break;
-        case DBAdapter.WebSQL:
+        case StorageAdapter.WebSQL:
           if (_websql.WebSQL.isSupported()) {
             _this.adapter = new _websql.WebSQL(name);
             return false;
           }
 
           break;
+        case StorageAdapter.Memory:
+          if (_memory.Memory.isSupported()) {
+            _this.adapter = new _memory.Memory(name);
+            return false;
+          }
+
+          break;
         default:
-          _utils.Log.warn('The ' + adapter + ' adapter is is not recognized.');
+          _kinveyJavascriptSdkCore.Log.warn('The ' + adapter + ' adapter is is not recognized.');
       }
 
       return true;
@@ -178,7 +186,7 @@ var DB = exports.DB = function () {
                 _context.prev = 9;
                 _context.t0 = _context['catch'](0);
 
-                if (!(_context.t0 instanceof _errors.NotFoundError)) {
+                if (!(_context.t0 instanceof _kinveyJavascriptSdkCore.NotFoundError)) {
                   _context.next = 13;
                   break;
                 }
@@ -215,7 +223,7 @@ var DB = exports.DB = function () {
                   break;
                 }
 
-                throw new _errors.KinveyError('id must be a string', id);
+                throw new _kinveyJavascriptSdkCore.KinveyError('id must be a string', id);
 
               case 2:
                 return _context2.abrupt('return', this.adapter.findById(collection, id));
@@ -365,7 +373,7 @@ var DB = exports.DB = function () {
         }
 
         if (!(0, _isString2.default)(id)) {
-          throw new _errors.KinveyError('id must be a string', id);
+          throw new _kinveyJavascriptSdkCore.KinveyError('id must be a string', id);
         }
 
         return _this4.adapter.removeById(collection, id);

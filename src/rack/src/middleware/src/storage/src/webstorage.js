@@ -1,4 +1,4 @@
-import { NotFoundError } from 'kinvey-javascript-sdk-core/dist/errors';
+import { NotFoundError } from 'kinvey-javascript-sdk-core';
 import regeneratorRuntime from 'regenerator-runtime'; // eslint-disable-line no-unused-vars
 import keyBy from 'lodash/keyBy';
 import merge from 'lodash/merge';
@@ -9,7 +9,7 @@ import find from 'lodash/find';
 const idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
 const masterCollectionName = 'master';
 
-class Storage {
+class WebStorage {
   constructor(name = 'kinvey') {
     this.name = name;
   }
@@ -19,7 +19,7 @@ class Storage {
   }
 }
 
-export class LocalStorage extends Storage {
+export class LocalStorage extends WebStorage {
   constructor(name) {
     super(name);
     global.localStorage.setItem(this.masterCollectionName, JSON.stringify([]));
@@ -114,7 +114,7 @@ export class LocalStorage extends Storage {
   }
 }
 
-export class SessionStorage extends Storage {
+export class SessionStorage extends WebStorage {
   constructor(name) {
     super(name);
     global.sessionStorage.setItem(this.masterCollectionName, JSON.stringify([]));

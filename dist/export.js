@@ -4,50 +4,50 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _cache = require('./src/cache');
+var _rack = require('./rack');
 
-Object.keys(_cache).forEach(function (key) {
+Object.keys(_rack).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   Object.defineProperty(exports, key, {
     enumerable: true,
     get: function get() {
-      return _cache[key];
+      return _rack[key];
     }
   });
 });
 
-var _xhr = require('./src/xhr');
+var _device = require('./device');
 
-Object.keys(_xhr).forEach(function (key) {
+Object.keys(_device).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   Object.defineProperty(exports, key, {
     enumerable: true,
     get: function get() {
-      return _xhr[key];
+      return _device[key];
     }
   });
 });
 
-var _parse = require('./src/parse');
+var _kinvey = require('./kinvey');
 
-Object.keys(_parse).forEach(function (key) {
+Object.keys(_kinvey).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   Object.defineProperty(exports, key, {
     enumerable: true,
     get: function get() {
-      return _parse[key];
+      return _kinvey[key];
     }
   });
 });
 
-var _serialize = require('./src/serialize');
+var _popup = require('./popup');
 
-Object.keys(_serialize).forEach(function (key) {
+Object.keys(_popup).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   Object.defineProperty(exports, key, {
     enumerable: true,
     get: function get() {
-      return _serialize[key];
+      return _popup[key];
     }
   });
 });

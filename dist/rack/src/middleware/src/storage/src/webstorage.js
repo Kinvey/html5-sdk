@@ -8,7 +8,7 @@ exports.SessionStorage = exports.LocalStorage = undefined;
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
 
 
-var _errors = require('kinvey-javascript-sdk-core/dist/errors');
+var _kinveyJavascriptSdkCore = require('kinvey-javascript-sdk-core');
 
 var _regeneratorRuntime = require('regenerator-runtime');
 
@@ -51,32 +51,32 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
 var masterCollectionName = 'master';
 
-var Storage = function () {
-  function Storage() {
+var WebStorage = function () {
+  function WebStorage() {
     var name = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
 
-    _classCallCheck(this, Storage);
+    _classCallCheck(this, WebStorage);
 
     this.name = name;
   }
 
-  _createClass(Storage, [{
+  _createClass(WebStorage, [{
     key: 'masterCollectionName',
     get: function get() {
       return this.name + '_' + masterCollectionName;
     }
   }]);
 
-  return Storage;
+  return WebStorage;
 }();
 
-var LocalStorage = exports.LocalStorage = function (_Storage) {
-  _inherits(LocalStorage, _Storage);
+var LocalStorage = exports.LocalStorage = function (_WebStorage) {
+  _inherits(LocalStorage, _WebStorage);
 
   function LocalStorage(name) {
     _classCallCheck(this, LocalStorage);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(LocalStorage).call(this, name));
+    var _this = _possibleConstructorReturn(this, (LocalStorage.__proto__ || Object.getPrototypeOf(LocalStorage)).call(this, name));
 
     global.localStorage.setItem(_this.masterCollectionName, JSON.stringify([]));
     return _this;
@@ -140,7 +140,7 @@ var LocalStorage = exports.LocalStorage = function (_Storage) {
                   break;
                 }
 
-                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + this.name + ' localstorage database.'));
+                throw new _kinveyJavascriptSdkCore.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + this.name + ' localstorage database.'));
 
               case 6:
                 return _context2.abrupt('return', entity);
@@ -238,7 +238,7 @@ var LocalStorage = exports.LocalStorage = function (_Storage) {
                   break;
                 }
 
-                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + this.name + ' memory database.'));
+                throw new _kinveyJavascriptSdkCore.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + this.name + ' memory database.'));
 
               case 7:
 
@@ -320,15 +320,15 @@ var LocalStorage = exports.LocalStorage = function (_Storage) {
   }]);
 
   return LocalStorage;
-}(Storage);
+}(WebStorage);
 
-var SessionStorage = exports.SessionStorage = function (_Storage2) {
-  _inherits(SessionStorage, _Storage2);
+var SessionStorage = exports.SessionStorage = function (_WebStorage2) {
+  _inherits(SessionStorage, _WebStorage2);
 
   function SessionStorage(name) {
     _classCallCheck(this, SessionStorage);
 
-    var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(SessionStorage).call(this, name));
+    var _this3 = _possibleConstructorReturn(this, (SessionStorage.__proto__ || Object.getPrototypeOf(SessionStorage)).call(this, name));
 
     global.sessionStorage.setItem(_this3.masterCollectionName, JSON.stringify([]));
     return _this3;
@@ -392,7 +392,7 @@ var SessionStorage = exports.SessionStorage = function (_Storage2) {
                   break;
                 }
 
-                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + this.name + ' localstorage database.'));
+                throw new _kinveyJavascriptSdkCore.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + this.name + ' localstorage database.'));
 
               case 6:
                 return _context7.abrupt('return', entity);
@@ -490,7 +490,7 @@ var SessionStorage = exports.SessionStorage = function (_Storage2) {
                   break;
                 }
 
-                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + this.name + ' memory database.'));
+                throw new _kinveyJavascriptSdkCore.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + this.name + ' memory database.'));
 
               case 7:
 
@@ -570,4 +570,4 @@ var SessionStorage = exports.SessionStorage = function (_Storage2) {
   }]);
 
   return SessionStorage;
-}(Storage);
+}(WebStorage);

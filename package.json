@@ -11,7 +11,7 @@
   "contributors": [
     "Thomas Conner <thomas@kinvey.com>"
   ],
-  "main": "./dist/index.js",
+  "main": "./dist/export.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:Kinvey/html5-sdk"

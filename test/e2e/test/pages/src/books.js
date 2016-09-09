@@ -12,9 +12,9 @@ export class BooksPage extends AppPage {
     await this.switchToContext();
   }
 
-  async refresh() {
-    // Click refresh button
-    const button = await browser.driver.findElement(by.id('refresh'));
+  async pull() {
+    // Click pull button
+    const button = await browser.driver.findElement(by.id('pull'));
     await button.click();
 
     // Sleep for 5 seconds

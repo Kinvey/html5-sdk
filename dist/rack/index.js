@@ -4,18 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _cacherack = require('./src/cacherack');
-
-Object.keys(_cacherack).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function get() {
-      return _cacherack[key];
-    }
-  });
-});
-
 var _middleware = require('./src/middleware');
 
 Object.keys(_middleware).forEach(function (key) {
@@ -28,14 +16,14 @@ Object.keys(_middleware).forEach(function (key) {
   });
 });
 
-var _networkrack = require('./src/networkrack');
+var _rack = require('./src/rack');
 
-Object.keys(_networkrack).forEach(function (key) {
+Object.keys(_rack).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   Object.defineProperty(exports, key, {
     enumerable: true,
     get: function get() {
-      return _networkrack[key];
+      return _rack[key];
     }
   });
 });

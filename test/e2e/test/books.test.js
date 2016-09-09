@@ -48,14 +48,14 @@ describe('Books', function() {
     expect(books.length).toEqual(0);
   });
 
-  it('should have 2 books in the table after a refresh', async function() {
+  it('should have 2 books in the table after a pull', async function() {
     const page = new BooksPage();
 
     // Open logout page
     await page.get();
 
-    // Refresh
-    await page.refresh();
+    // Pull
+    await page.pull();
 
     // Expectations
     const books = await browser.driver.findElements(by.className('book'));

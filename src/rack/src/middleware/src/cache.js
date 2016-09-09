@@ -1,6 +1,6 @@
-import { Middleware } from 'kinvey-javascript-rack/dist/middleware';
-import { DB } from './db';
-import { KinveyError } from 'kinvey-javascript-sdk-core/dist/errors';
+import { Middleware } from 'kinvey-javascript-rack';
+import { DB } from './storage';
+import { KinveyError } from 'kinvey-javascript-sdk-core';
 import regeneratorRuntime from 'regenerator-runtime'; // eslint-disable-line no-unused-vars
 import isEmpty from 'lodash/isEmpty';
 const dbCache = {};

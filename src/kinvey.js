@@ -1,13 +1,14 @@
-import { Kinvey } from 'kinvey-javascript-sdk-core';
-import { NetworkRequest, CacheRequest } from 'kinvey-javascript-sdk-core/dist/request';
 import {
   CacheRack,
   NetworkRack,
   CacheMiddleware,
-  HttpMiddleware,
+  XHRMiddleware,
   ParseMiddleware,
   SerializeMiddleware
 } from './rack';
+import { Kinvey, NetworkRequest, CacheRequest } from 'kinvey-javascript-sdk-core';
+import { Device } from './device';
+import { Popup } from './popup';
 import { Promise } from 'es6-promise';
 
 // Set CacheRequest rack
@@ -17,9 +18,11 @@ CacheRequest.rack = new CacheRack();
 NetworkRequest.rack = new NetworkRack();
 
 // Add modules
+Kinvey.Device = Device;
+Kinvey.Popup = Popup;
 Kinvey.Promise = Promise;
 Kinvey.CacheMiddleware = CacheMiddleware;
-Kinvey.HttpMiddleware = HttpMiddleware;
+Kinvey.HttpMiddleware = XHRMiddleware;
 Kinvey.ParseMiddleware = ParseMiddleware;
 Kinvey.SerializeMiddleware = SerializeMiddleware;
 

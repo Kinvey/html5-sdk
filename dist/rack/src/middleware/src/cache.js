@@ -7,11 +7,11 @@ exports.CacheMiddleware = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _middleware = require('kinvey-javascript-rack/dist/middleware');
+var _kinveyJavascriptRack = require('kinvey-javascript-rack');
 
-var _db = require('./db');
+var _storage = require('./storage');
 
-var _errors = require('kinvey-javascript-sdk-core/dist/errors');
+var _kinveyJavascriptSdkCore = require('kinvey-javascript-sdk-core');
 
 var _regeneratorRuntime = require('regenerator-runtime');
 
@@ -42,20 +42,20 @@ var CacheMiddleware = exports.CacheMiddleware = function (_Middleware) {
 
     _classCallCheck(this, CacheMiddleware);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(CacheMiddleware).call(this, name));
+    return _possibleConstructorReturn(this, (CacheMiddleware.__proto__ || Object.getPrototypeOf(CacheMiddleware)).call(this, name));
   }
 
   _createClass(CacheMiddleware, [{
     key: 'openDatabase',
     value: function openDatabase(name) {
       if (!name) {
-        throw new _errors.KinveyError('A name is required to open a database.');
+        throw new _kinveyJavascriptSdkCore.KinveyError('A name is required to open a database.');
       }
 
       var db = dbCache[name];
 
       if (!db) {
-        db = new _db.DB(name);
+        db = new _storage.DB(name);
       }
 
       return db;
@@ -191,4 +191,4 @@ var CacheMiddleware = exports.CacheMiddleware = function (_Middleware) {
   }]);
 
   return CacheMiddleware;
-}(_middleware.Middleware);
+}(_kinveyJavascriptRack.Middleware);

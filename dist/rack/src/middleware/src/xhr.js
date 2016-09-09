@@ -3,11 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.HttpMiddleware = undefined;
+exports.XHRMiddleware = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _middleware = require('kinvey-javascript-rack/dist/middleware');
+var _kinveyJavascriptRack = require('kinvey-javascript-rack');
 
 var _es6Promise = require('es6-promise');
 
@@ -23,18 +23,18 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var HttpMiddleware = exports.HttpMiddleware = function (_Middleware) {
-  _inherits(HttpMiddleware, _Middleware);
+var XHRMiddleware = exports.XHRMiddleware = function (_Middleware) {
+  _inherits(XHRMiddleware, _Middleware);
 
-  function HttpMiddleware() {
+  function XHRMiddleware() {
     var name = arguments.length <= 0 || arguments[0] === undefined ? 'Http Middleware' : arguments[0];
 
-    _classCallCheck(this, HttpMiddleware);
+    _classCallCheck(this, XHRMiddleware);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(HttpMiddleware).call(this, name));
+    return _possibleConstructorReturn(this, (XHRMiddleware.__proto__ || Object.getPrototypeOf(XHRMiddleware)).call(this, name));
   }
 
-  _createClass(HttpMiddleware, [{
+  _createClass(XHRMiddleware, [{
     key: 'handle',
     value: function handle(request) {
       var promise = new _es6Promise.Promise(function (resolve) {
@@ -47,7 +47,6 @@ var HttpMiddleware = exports.HttpMiddleware = function (_Middleware) {
 
         var xhr = new XMLHttpRequest();
         xhr.open(method, url);
-        // xhr.responseType = request.responseType;
 
         // Append request headers
         var names = Object.keys(headers);
@@ -103,5 +102,5 @@ var HttpMiddleware = exports.HttpMiddleware = function (_Middleware) {
     }
   }]);
 
-  return HttpMiddleware;
-}(_middleware.Middleware);
+  return XHRMiddleware;
+}(_kinveyJavascriptRack.Middleware);
