@@ -6,7 +6,7 @@ export class LogoutPage extends AppPage {
     browser.ignoreSynchronization = true;
 
     // Go to the logout page
-    browser.driver.get('http://localhost:3000/logout');
+    browser.driver.get('http://localhost:3000/logout.html');
 
     // Switch contexts
     await this.switchToContext();

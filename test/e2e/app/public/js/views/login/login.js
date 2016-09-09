@@ -1,28 +1,23 @@
-(function(root, _, $, Backbone) {
-  root.LoginView = Backbone.Layout.extend({
-    template: '/login/login.html',
-    el: 'main',
+(function(root, Kinvey) {
+  root.LoginView = {
+    login: function() {
+      // Get username and password
+      var username = document.getElementById('username').value;
+      var password = document.getElementById('password').value;
 
-    events: {
-      'submit #loginForm': 'login',
-      'submit #loginWithMICForm': 'loginWithMIC',
+      // Login
+      Kinvey.User.login(username, password);
+
+      // Return false to prevent form submission
+      return false;
     },
 
-    bindings: {
-      '#username': 'username',
-      '#password': 'password'
-    },
+    loginWithMIC: function() {
+      // Login with MIC
+      Kinvey.User.loginWithMIC('http://localhost:3000');
 
-    model: root.User,
-
-    login: function(event) {
-      event.preventDefault();
-      this.model.login();
-    },
-
-    loginWithMIC: function(event) {
-      event.preventDefault();
-      this.model.loginWithMIC();
+      // Return false to prevent form submission
+      return false;
     }
-  });
-})(window, window._, window.$, window.Backbone, window.Kinvey);
+  };
+})(window, window.Kinvey);

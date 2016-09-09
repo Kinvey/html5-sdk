@@ -1,76 +1,68 @@
-(function(root, _, $, Backbone) {
-  root.BooksView = Backbone.Layout.extend({
-    template: '/books/books.html',
-    el: 'main',
-    collection: new root.Books(),
+(function(root, Kinvey) {
+  function addBooks(books) {
+    var tbody = document.getElementsByTagName('tbody')[0];
 
-    events: {
-      'click #refresh': 'refresh',
-      'click #pull': 'pull',
-      'click #add': 'add',
-      'click #clear': 'clear'
-    },
+    for(var i = 0; i < books.length; i++) {
+      var book = books[i];
+      var tr = document.createElement('tr');
+      tr.className = 'book';
+      tr.innerHTML = '<td>' + book._id + '</td>'
+        + '<td>' + book.title + '</td>'
+        + '<td>' + book.author + '</td>'
+        + '<td>' + book.isbn + '</td>'
+        + '<td><p>' + book.summary + '</p></td>';
+      tbody.appendChild(tr);
+    }
+  }
 
-    initialize: function() {
-      this.listenTo(this.collection, 'add', this.addView);
-      this.listenTo(this.collection, 'reset', this.removeViews);
-      this.refresh();
-    },
+  function clearBooks() {
+    var tbody = document.getElementsByTagName('tbody')[0];
+    while (tbody.firstChild) {
+      tbody.removeChild(tbody.firstChild);
+    }
+  }
 
-    addView: function(model, render) {
-      // Insert a nested View into this View.
-      var view = this.insertView('tbody', new root.BookView({ model: model }));
-
-      // Only trigger render if it not inserted inside `beforeRender`.
-      if (render !== false) {
-        view.render();
-      }
-    },
-
-    removeViews: function() {
-      var views = this.getViews().each(function(view) {
-        view.remove();
+  root.BooksView = {
+    refresh: function() {
+      var collection = Kinvey.DataStore.collection('Books', Kinvey.DataStoreType.Sync);
+      return collection.find().subscribe(function onNext(books) {
+        clearBooks();
+        addBooks(books);
       });
     },
 
-    beforeRender: function() {
-      this.collection.each(function(model) {
-        this.addView(model, false);
-      }, this);
-    },
-
-    refresh: function() {
-      return this.collection.fetch();
-    },
-
     pull: function() {
-      return this.collection.pull();
+      var collection = Kinvey.DataStore.collection('Books', Kinvey.DataStoreType.Sync);
+      return collection.pull().then(function(books) {
+        clearBooks();
+        addBooks(books);
+      });
     },
 
     add: function() {
       var that = this;
-      var book = new root.Book();
-      var view = new root.AddBookView({ model: book });
-
-      // Listen for sync event on book
-      book.on('sync', function() {
-        that.collection.add(book);
+      var collection = Kinvey.DataStore.collection('Books', Kinvey.DataStoreType.Sync);
+      return collection.save({
+        title: 'Kinvey',
+        author: 'Kinvey'
+      }).then(function() {
+        that.refresh();
       });
+    },
 
-      // Insert the view
-      this.insertView(view);
-
-      // Show the view
-      view.show();
-
-      // Listen for the hideen event and remove the view
-      view.$el.on('hidden.bs.modal', function() {
-        view.removeView();
+    push: function() {
+      var collection = Kinvey.DataStore.collection('Books', Kinvey.DataStoreType.Sync);
+      return collection.push().then(function() {
+        alert('Push complete');
       });
     },
 
     clear: function() {
-      return this.collection.clear();
+      var collection = Kinvey.DataStore.collection('Books', Kinvey.DataStoreType.Sync);
+      return collection.clear().then(function() {
+        clearBooks();
+        addBooks(books);
+      });
     }
-  });
-})(window, window._, window.$, window.Backbone, window.Kinvey);
+  };
+})(window, window.Kinvey);

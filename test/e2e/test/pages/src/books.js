@@ -6,7 +6,7 @@ export class BooksPage extends AppPage {
     browser.ignoreSynchronization = true;
 
     // Go to the login page
-    browser.driver.get('http://localhost:3000/books');
+    browser.driver.get('http://localhost:3000/books.html');
 
     // Switch contexts
     await this.switchToContext();

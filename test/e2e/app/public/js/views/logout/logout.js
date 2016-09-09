@@ -1,17 +1,11 @@
-(function(root, _, $, Backbone) {
-  root.LogoutView = Backbone.Layout.extend({
-    template: '/logout/logout.html',
-    el: 'main',
+(function(root, Kinvey) {
+  root.LogoutView = {
+    logout: function() {
+      // Logout
+      Kinvey.User.logout();
 
-    events: {
-      'submit #logoutForm': 'logout'
-    },
-
-    model: root.User,
-
-    logout: function(event) {
-      event.preventDefault();
-      this.model.logout();
+      // Return false to prevent form submission
+      return false;
     }
-  });
-})(window, window._, window.$, window.Backbone, window.Kinvey);
+  };
+})(window, window.Kinvey);

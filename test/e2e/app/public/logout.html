@@ -14,14 +14,26 @@
     <link rel="stylesheet" href="css/main.css">
   </head>
   <body>
-    <h1>Home Page</h1>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+          <div class="page-header">
+            <h1>Logout</h1>
+          </div>
+
+          <form id="logoutForm" onsubmit="return LogoutView.logout();">
+            <button id="logout" type="submit" class="btn btn-primary">Logout</button>
+          </form>
+        </div>
+      </div>
+    </div>
 
     <!-- Vendor -->
     <script src="/js/vendor/jquery.min.js"></script>
     <script src="/sdk/kinvey-html5-sdk.js"></script>
 
     <!-- Views -->
-    <script src="/js/views/home/home.js"></script>
+    <script src="/js/views/logout/logout.js"></script>
 
     <!-- App -->
     <script src="/js/index.js"></script>

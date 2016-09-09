@@ -6,7 +6,7 @@ export class LoginPage extends AppPage {
     browser.ignoreSynchronization = true;
 
     // Go to the login page
-    browser.driver.get('http://localhost:3000/login');
+    browser.driver.get('http://localhost:3000/login.html');
 
     // Switch contexts
     await this.switchToContext();
