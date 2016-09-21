@@ -23,6 +23,8 @@ README.md
 .env
 .tmp
 tmp
+/dist/kinvey-html5-sdk.js
+/dist/kinvey-html5-sdk.min.js
 
 # Test Files
 coverage

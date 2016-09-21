@@ -3,7 +3,7 @@ import { LocalStorage, SessionStorage } from './webstorage';
 import { IndexedDB } from './indexeddb';
 import { WebSQL } from './websql';
 import { Memory } from './memory';
-import { Promise } from 'es6-promise';
+import Promise from 'core-js/es6/promise';
 import Queue from 'promise-queue';
 import regeneratorRuntime from 'regenerator-runtime'; // eslint-disable-line no-unused-vars
 import map from 'lodash/map';

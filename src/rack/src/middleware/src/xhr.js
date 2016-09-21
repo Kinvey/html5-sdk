@@ -1,5 +1,5 @@
 import { Middleware } from 'kinvey-javascript-rack';
-import { Promise } from 'es6-promise';
+import Promise from 'core-js/es6/promise';
 import parseHeaders from 'parse-headers';
 
 export class XHRMiddleware extends Middleware {
