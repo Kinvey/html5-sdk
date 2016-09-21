@@ -1,6 +1,7 @@
 language: node_js
 node_js:
 - '6'
+# before_deploy: "npm run s3"
 deploy:
   provider: npm
   email: thomas.conner@me.com
