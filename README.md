@@ -54,13 +54,13 @@ Kinvey.ping().then(function(response) {
 ```
 
 ## What’s next?
-You are now ready to start building your awesome apps! Next we recommend diving into the [User guide](http://devcenter.kinvey.com/html5-v3.0/guides/users) or [Data store guide](http://devcenter.kinvey.com/html5-v3.0/guides/datastore) to learn more about our service, or explore the [sample apps](http://devcenter.kinvey.com/html5-v3.0/samples) to go straight to working projects.
+You are now ready to start building your awesome apps! Next we recommend diving into the [User guide](http://devcenter.kinvey.com/html5/guides/users) or [Data store guide](http://devcenter.kinvey.com/html5/guides/datastore) to learn more about our service, or explore the [sample apps](http://devcenter.kinvey.com/html5/samples) to go straight to working projects.
 
 ## Build
 Execute `npm run build` to build the package.
 
 ## Release
-[TravisCI](https://travis-ci.org/Kinvey/javascript-sdk-core) will deploy the pacakge to [NPM](https://www.npmjs.com/package/kinvey-javascript-sdk-core).
+[TravisCI](https://travis-ci.org/Kinvey/html5-sdk) will deploy the pacakge to [NPM](https://www.npmjs.com/package/kinvey-html5-sdk).
 
 1. Checkout the master branch.
 2. Update the CHANGELOG.md.

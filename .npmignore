@@ -11,8 +11,6 @@ npm-debug.log
 .gitignore
 .nvmrc
 /src
-docs
-manual
 esdoc.json
 gulpfile.babel.js
 hints.md
@@ -28,10 +26,10 @@ tmp
 /s3
 
 # Test Files
-coverage
+/coverage
 report.xml
 *.tap
-test
+/test
 
 # MacOS Files
 .DS_Store
