@@ -22,15 +22,7 @@ module.exports = {
     library: 'Kinvey',
     path: path.join(__dirname, 'dist')
   },
-  module: {
-    loaders: [
-      { test: /\.json$/, loader: 'json' }
-    ]
-  },
   plugins: [
     new webpack.BannerPlugin(BANNER, { raw: true })
-  ],
-  resolveLoader: {
-    root: path.join(__dirname, 'node_modules')
-  }
+  ]
 };
