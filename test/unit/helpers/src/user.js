@@ -1,5 +1,5 @@
-import { User as CoreUser } from 'kinvey-javascript-sdk-core/dist/entity';
-import { Client } from 'kinvey-javascript-sdk-core/dist/client';
+import { User as CoreUser } from 'kinvey-node-sdk/dist/entity';
+import { Client } from 'kinvey-node-sdk/dist/client';
 import nock from 'nock';
 
 export class User extends CoreUser {
