@@ -33,10 +33,14 @@
 
     pull: function() {
       var collection = Kinvey.DataStore.collection('Books', Kinvey.DataStoreType.Sync);
-      return collection.pull().then(function(books) {
-        clearBooks();
-        addBooks(books);
-      });
+      return collection.pull()
+        .then(function(books) {
+          clearBooks();
+          addBooks(books);
+        })
+        .catch(function(error) {
+          console.error(error);
+        });
     },
 
     add: function() {

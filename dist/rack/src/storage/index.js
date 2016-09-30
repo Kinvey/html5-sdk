@@ -8,13 +8,19 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _kinveyNodeSdk = require('kinvey-node-sdk');
+var _storage = require('kinvey-node-sdk/dist/rack/src/storage');
 
-var _kinveyNodeSdk2 = _interopRequireDefault(_kinveyNodeSdk);
+var _storage2 = _interopRequireDefault(_storage);
 
-var _rack = require('./rack');
+var _indexeddb = require('./src/indexeddb');
 
-var _utils = require('./utils');
+var _indexeddb2 = _interopRequireDefault(_indexeddb);
+
+var _websql = require('./src/websql');
+
+var _websql2 = _interopRequireDefault(_websql);
+
+var _webstorage = require('./src/webstorage');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24,27 +30,33 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Kinvey = function (_NodeKinvey) {
-  _inherits(Kinvey, _NodeKinvey);
+var Storage = function (_NodeStorage) {
+  _inherits(Storage, _NodeStorage);
 
-  function Kinvey() {
-    _classCallCheck(this, Kinvey);
+  function Storage() {
+    _classCallCheck(this, Storage);
 
-    return _possibleConstructorReturn(this, (Kinvey.__proto__ || Object.getPrototypeOf(Kinvey)).apply(this, arguments));
+    return _possibleConstructorReturn(this, (Storage.__proto__ || Object.getPrototypeOf(Storage)).apply(this, arguments));
   }
 
-  _createClass(Kinvey, null, [{
-    key: 'init',
-    value: function init() {
-      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  _createClass(Storage, [{
+    key: 'adapter',
+    get: function get() {
+      if (_websql2.default.isSupported()) {
+        return new _websql2.default(this.name);
+      } else if (_indexeddb2.default.isSupported()) {
+        return new _indexeddb2.default(this.name);
+      } else if (_webstorage.LocalStorage.isSupported()) {
+        return new _webstorage.LocalStorage(this.name);
+      } else if (_webstorage.SessionStorage.isSupported()) {
+        return new _webstorage.SessionStorage(this.name);
+      }
 
-      options.cacheRack = options.cacheRack || new _rack.CacheRack();
-      options.popupClass = _utils.Popup;
-      return _get(Kinvey.__proto__ || Object.getPrototypeOf(Kinvey), 'init', this).call(this, options);
+      return _get(Storage.prototype.__proto__ || Object.getPrototypeOf(Storage.prototype), 'adapter', this);
     }
   }]);
 
-  return Kinvey;
-}(_kinveyNodeSdk2.default);
+  return Storage;
+}(_storage2.default);
 
-exports.default = Kinvey;
+exports.default = Storage;
