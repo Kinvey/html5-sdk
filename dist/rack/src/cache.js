@@ -26,11 +26,9 @@ var CacheMiddleware = function (_NodeCacheMiddleware) {
   _inherits(CacheMiddleware, _NodeCacheMiddleware);
 
   function CacheMiddleware() {
-    var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Cache Middleware';
-
     _classCallCheck(this, CacheMiddleware);
 
-    return _possibleConstructorReturn(this, (CacheMiddleware.__proto__ || Object.getPrototypeOf(CacheMiddleware)).call(this, name));
+    return _possibleConstructorReturn(this, (CacheMiddleware.__proto__ || Object.getPrototypeOf(CacheMiddleware)).apply(this, arguments));
   }
 
   _createClass(CacheMiddleware, [{

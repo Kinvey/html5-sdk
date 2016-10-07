@@ -89,7 +89,7 @@ var Popup = function (_EventEmitter) {
       };
 
       // Open the popup
-      popupWindow = global.open(url, '_blank', 'location=yes');
+      popupWindow = global.open(url, '_blank', 'toolbar=no,location=no');
 
       if (popupWindow) {
         if ((0, _isFunction2.default)(popupWindow.addEventListener)) {

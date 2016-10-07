@@ -14,7 +14,13 @@ var _kinveyNodeSdk2 = _interopRequireDefault(_kinveyNodeSdk);
 
 var _rack = require('./rack');
 
-var _utils = require('./utils');
+var _popup = require('./popup');
+
+var _popup2 = _interopRequireDefault(_popup);
+
+var _assign = require('lodash/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -38,8 +44,10 @@ var Kinvey = function (_NodeKinvey) {
     value: function init() {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-      options.cacheRack = options.cacheRack || new _rack.CacheRack();
-      options.popupClass = _utils.Popup;
+      options = (0, _assign2.default)({
+        cacheRack: new _rack.CacheRack(),
+        popupClass: _popup2.default
+      }, options);
       return _get(Kinvey.__proto__ || Object.getPrototypeOf(Kinvey), 'init', this).call(this, options);
     }
   }]);
