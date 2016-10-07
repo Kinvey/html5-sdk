@@ -1,4 +1,11 @@
 # Changelog
+## [v3.2.1](https://github.com/Kinvey/html5-sdk/tree/v3.2.1) (2016-10-07)
+
+**Implemented enhancements:**
+
+- Add cache middleware.
+- Add device class.
+
 ## [v3.2.0](https://github.com/Kinvey/html5-sdk/tree/v3.2.0) (2016-09-23)
 [Full Changelog](https://github.com/Kinvey/html5-sdk/compare/3.1.1...3.2.0)<br/>
 [SDK Core Changelog](https://github.com/Kinvey/javascript-sdk-core/blob/master/CHANGELOG.md)
