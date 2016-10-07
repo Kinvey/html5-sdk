@@ -10,8 +10,11 @@ export class MICPage extends AppPage {
   }
 
   async switchToContext() {
+    browser.ignoreSynchronization = true;
+
     // Get available window handles
     const handles = await browser.getAllWindowHandles();
+    console.log(handles);
 
     // Check that a MIC page was opened
     if (handles.length < 2) {

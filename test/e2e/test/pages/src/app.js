@@ -3,13 +3,11 @@ import regeneratorRuntime from 'regenerator-runtime'; // eslint-disable-line no-
 export class AppPage {
   async getActiveUser() {
     // Grab value from local storage
-    return browser.executeScript(function() {
-      try {
-        return JSON.parse(this.localStorage.getItem('kid_HkTD2CJckinvey_user'));
-      } catch (error) {
-        return null;
-      }
-    });
+    return browser.executeAsyncScript(function() {
+      const callback = arguments[arguments.length - 1];
+      Kinvey.User.getActiveUser()
+        .then(user => callback(JSON.stringify(user)));
+    }).then(user => JSON.parse(user));
   }
 
   async switchToContext() {
