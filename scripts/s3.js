@@ -3,9 +3,6 @@ var pkg = require('../package.json');
 var path = require('path');
 var rootDir = path.resolve(__dirname, '..');
 
-// Build
-exec('npm run build');
-
 // Copy files
 mkdir('-p', path.join(rootDir, 's3'));
 cp(path.join(rootDir, 'dist', pkg.name + '.js'), path.join(rootDir, 's3', pkg.name + '-' + pkg.version + '.js'));
