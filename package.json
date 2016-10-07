@@ -11,7 +11,7 @@
   "contributors": [
     "Thomas Conner <thomas@kinvey.com>"
   ],
-  "main": "./dist/export.js",
+  "main": "./dist/index.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:Kinvey/html5-sdk"
@@ -60,10 +60,14 @@
     "mocha": "^2.5.3",
     "nock": "^8.0.0",
     "protractor": "^4.0.8",
+    "regenerator-runtime": "^0.9.5",
     "shelljs": "^0.7.4",
     "uglify-js": "^2.7.3",
     "webdriver-manager": "^10.2.3",
     "webpack": "^1.13.0"
+  },
+  "peerDependencies": {
+    "kinvey-node-sdk": "../../Node/SDK"
   },
   "engines": {
     "node": ">=4.0"
