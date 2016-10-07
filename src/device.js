@@ -1,6 +1,4 @@
 import pkg from '../package.json';
-import Promise from 'es6-promise';
-let deviceReady;
 
 // Helper function to detect the browser name and version.
 function browserDetect(ua) {
@@ -24,16 +22,6 @@ function deviceInformation() {
   let platform;
   let version;
   let manufacturer;
-  let id;
-
-  if (global.cordova !== undefined && global.device !== undefined) { // PhoneGap
-    const device = global.device;
-    libraries.push(`phonegap/${device.cordova}`);
-    platform = device.platform;
-    version = device.version;
-    manufacturer = device.model;
-    id = device.uuid;
-  }
 
   // Default platform, most likely this is just a plain web app.
   if ((platform === null || platform === undefined) && global.navigator) {
@@ -70,7 +58,7 @@ function deviceInformation() {
     parts.push(`(${libraries.sort().join(', ')})`);
   }
 
-  return parts.concat([platform, version, manufacturer, id]).map((part) => {
+  return parts.concat([platform, version, manufacturer]).map((part) => {
     if (part) {
       return part.toString().replace(/\s/g, '_').toLowerCase();
     }
@@ -81,53 +69,7 @@ function deviceInformation() {
 
 
 export default class Device {
-  static isPhoneGap() {
-    if (typeof document !== 'undefined') {
-      return document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1;
-    }
-
-    return false;
-  }
-
-  static isiOS() {
-    return typeof global.device !== 'undefined' && global.device.platform.toLowerCase() === 'ios';
-  }
-
-  static isAndroid() {
-    return typeof global.device !== 'undefined' && global.device.platform.toLowerCase() === 'android';
-  }
-
-  static ready() {
-    if (typeof deviceReady === 'undefined') {
-      if (this.isPhoneGap()) {
-        deviceReady = new Promise((resolve) => {
-          const onDeviceReady = () => {
-            document.removeEventListener('deviceready', onDeviceReady);
-            resolve();
-          };
-
-          document.addEventListener('deviceready', onDeviceReady, false);
-        });
-      } else {
-        deviceReady = Promise.resolve();
-      }
-    }
-
-    return deviceReady;
-  }
-
   static toString() {
     return deviceInformation();
   }
-}
-
-// Check that cordova plugins are installed
-if (Device.isPhoneGap()) {
-  Device.ready().then(() => {
-    if (typeof global.device === 'undefined') {
-      throw new Error('Cordova Device Plugin is not installed.'
-        + ' Please refer to devcenter.kinvey.com/phonegap-v3.0/guides/getting-started for help with'
-        + ' setting up your project.');
-    }
-  });
 }
