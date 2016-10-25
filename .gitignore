@@ -9,8 +9,6 @@ docs
 # Build Files
 .tmp
 tmp
-/dist/kinvey-html5-sdk.js
-/dist/kinvey-html5-sdk.min.js
 /s3
 
 # Test Files
