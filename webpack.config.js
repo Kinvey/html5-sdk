@@ -23,7 +23,7 @@ module.exports = {
     ]
   },
   output: {
-    filename: 'kinvey-html5-sdk.js',
+    filename: pkg.name + '.js',
     libraryTarget: 'umd',
     library: 'Kinvey',
     path: path.resolve(__dirname, 'dist')
