@@ -18,6 +18,10 @@ var _popup = require('./popup');
 
 var _popup2 = _interopRequireDefault(_popup);
 
+var _device = require('./device');
+
+var _device2 = _interopRequireDefault(_device);
+
 var _assign = require('lodash/assign');
 
 var _assign2 = _interopRequireDefault(_assign);
@@ -46,6 +50,7 @@ var Kinvey = function (_NodeKinvey) {
 
       options = (0, _assign2.default)({
         cacheRack: new _rack.CacheRack(),
+        deviceClass: _device2.default,
         popupClass: _popup2.default
       }, options);
       return _get(Kinvey.__proto__ || Object.getPrototypeOf(Kinvey), 'init', this).call(this, options);
