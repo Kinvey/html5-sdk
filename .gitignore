@@ -15,6 +15,9 @@ tmp
 coverage
 report.xml
 *.tap
+/test/browserstack/app
+/shots
+/local.log
 
 # MacOS Files
 .DS_Store
@@ -66,5 +69,3 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
-/shots
-/local.log
