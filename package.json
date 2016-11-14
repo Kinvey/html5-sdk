@@ -23,9 +23,10 @@
     "minify": "uglifyjs --screw-ie8 --compress warnings=false --mangle --comments --output ./dist/kinvey-html5-sdk.min.js -- ./dist/kinvey-html5-sdk.js ",
     "cover": "istanbul cover _mocha -- --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit",
     "docs": "esdoc -c esdoc.json",
-    "e2e:server": "webdriver-manager update && webdriver-manager start",
-    "e2e:app": "npm run build && node ./test/e2e/app",
-    "e2e:test": "protractor ./test/e2e/test/protractor.conf.js",
+    "e2e:server": "selenium-standalone install --version=3.0.1 && selenium-standalone start",
+    "e2e:app": "shjs ./scripts/e2e.js && npm run build && node ./test/browserstack/app",
+    "e2e:test": "wdio ./test/browserstack/wdio.conf",
+    "e2e:test:browserstack": "wdio ./test/browserstack/browserstack.conf",
     "lint": "npm run lint:src",
     "lint:src": "eslint src/**",
     "lint:test": "eslint test/unit/**",
@@ -40,13 +41,14 @@
   "dependencies": {
     "core-js": "^2.4.1",
     "es6-promise": "^4.0.3",
-    "kinvey-node-sdk": "3.2.2",
-    "lodash": "^4.16.2"
+    "kinvey-node-sdk": "../../Node/SDK",
+    "lodash": "^4.16.2",
+    "wdio-spec-reporter": "0.0.3"
   },
   "peerDependencies": {
     "core-js": "^2.4.1",
     "es6-promise": "^4.0.3",
-    "kinvey-node-sdk": "3.2.2",
+    "kinvey-node-sdk": "../../Node/SDK",
     "lodash": "^4.16.2"
   },
   "devDependencies": {
@@ -58,22 +60,26 @@
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-stage-2": "^6.0.15",
     "babel-register": "^6.9.0",
+    "browserstack-local": "^1.2.0",
     "del-cli": "^0.2.0",
     "eslint": "^3.5.0",
     "eslint-config-airbnb-base": "^7.1.0",
     "eslint-plugin-import": "^1.15.0",
     "expect": "^1.20.2",
     "express": "^4.14.0",
+    "is-there": "^4.3.6",
     "istanbul": "^1.0.0-alpha.2",
     "json-loader": "^0.5.4",
     "mocha": "^2.5.3",
     "nock": "^8.0.0",
-    "protractor": "^4.0.8",
     "regenerator-runtime": "^0.9.5",
+    "selenium-standalone": "^5.8.0",
     "shelljs": "^0.7.4",
     "uglify-js": "^2.7.3",
-    "webdriver-manager": "^10.2.3",
-    "webpack": "^1.13.0"
+    "wdio-mocha-framework": "^0.5.3",
+    "webdriverio": "^4.4.0",
+    "webpack": "^1.13.0",
+    "yo": "^1.8.5"
   },
   "engines": {
     "node": ">=4.0"
