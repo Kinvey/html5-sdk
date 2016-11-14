@@ -1,0 +1,16 @@
+{
+  "name": "Starter",
+  "version": "0.0.0",
+  "description": "A Kinvey application built on the Kinvey Platform using the [HTML5 SDK](http://devcenter.kinvey.com/html5)",
+  "scripts": {
+    "start": "open http://localhost:3000/ && node ."
+  },
+  "keywords": [],
+  "private": true,
+  "dependencies": {
+    "express": "^4.14.0"
+  },
+  "devDependencies": {
+    "bower": "^1.8.0"
+  }
+}
