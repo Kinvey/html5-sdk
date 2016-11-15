@@ -41,14 +41,14 @@
   "dependencies": {
     "core-js": "^2.4.1",
     "es6-promise": "^4.0.3",
-    "kinvey-node-sdk": "../../Node/SDK",
+    "kinvey-node-sdk": "3.2.2",
     "lodash": "^4.16.2",
     "wdio-spec-reporter": "0.0.3"
   },
   "peerDependencies": {
     "core-js": "^2.4.1",
     "es6-promise": "^4.0.3",
-    "kinvey-node-sdk": "../../Node/SDK",
+    "kinvey-node-sdk": "3.2.2",
     "lodash": "^4.16.2"
   },
   "devDependencies": {
