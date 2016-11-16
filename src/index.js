@@ -1,4 +1,4 @@
-import Kinvey from './kinvey';
+import Kinvey from 'kinvey-node-sdk';
 
-// Export default
-export default Kinvey;
+// Export
+module.exports = Kinvey;
