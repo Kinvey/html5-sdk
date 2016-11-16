@@ -1,9 +1,9 @@
-import NodeStorage from 'kinvey-node-sdk/dist/rack/src/storage';
+import KinveyStorage from 'kinvey-node-sdk/dist//request/src/rack/src/storage';
 import IndexedDB from './src/indexeddb';
 import WebSQL from './src/websql';
 import { LocalStorage, SessionStorage } from './src/webstorage';
 
-export default class Storage extends NodeStorage {
+export default class Storage extends KinveyStorage {
   get adapter() {
     if (WebSQL.isSupported()) {
       return new WebSQL(this.name);
