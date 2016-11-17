@@ -1,20 +1,31 @@
 import KinveyStorage from 'kinvey-node-sdk/dist//request/src/rack/src/storage';
 import IndexedDB from './src/indexeddb';
 import WebSQL from './src/websql';
-import { LocalStorage, SessionStorage } from './src/webstorage';
+import { LocalStorage } from './src/webstorage';
 
 export default class Storage extends KinveyStorage {
-  get adapter() {
-    if (WebSQL.isSupported()) {
-      return new WebSQL(this.name);
-    } else if (IndexedDB.isSupported()) {
-      return new IndexedDB(this.name);
-    } else if (LocalStorage.isSupported()) {
-      return new LocalStorage(this.name);
-    } else if (SessionStorage.isSupported()) {
-      return new SessionStorage(this.name);
-    }
+  getAdapter() {
+    return WebSQL.isSupported()
+      .then((isWebSQLSupported) => {
+        if (isWebSQLSupported) {
+          return new WebSQL(this.name);
+        }
 
-    return super.adapter;
+        return IndexedDB.isSupported()
+          .then((isIndexedDBSupported) => {
+            if (isIndexedDBSupported) {
+              return new IndexedDB(this.name);
+            }
+
+            return LocalStorage.isSupported()
+              .then((isLocalStorageSupported) => {
+                if (isLocalStorageSupported) {
+                  return new LocalStorage(this.name);
+                }
+
+                return super.getAdapter();
+              });
+          });
+      });
   }
 }

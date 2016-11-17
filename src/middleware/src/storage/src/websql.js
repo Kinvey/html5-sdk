@@ -9,6 +9,7 @@ const idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
 const masterCollectionName = 'sqlite_master';
 const size = 5 * 1000 * 1000; // Database size in bytes
 let dbCache = {};
+let isSupported = undefined;
 
 export default class WebSQL {
   constructor(name = 'kinvey') {
@@ -128,6 +129,17 @@ export default class WebSQL {
 
   save(collection, entities) {
     const queries = [];
+    let singular = false;
+
+    if (!isArray(entities)) {
+      singular = true;
+      entities = [entities];
+    }
+
+    if (entities.length === 0) {
+      return Promise.resolve(null);
+    }
+
     entities = map(entities, (entity) => {
       queries.push([
         'REPLACE INTO #{collection} (key, value) VALUES (?, ?)',
@@ -138,7 +150,7 @@ export default class WebSQL {
     });
 
     return this.openTransaction(collection, queries, null, true)
-      .then(() => entities);
+      .then(() => (singular ? entities[0] : entities));
   }
 
   removeById(collection, id) {
@@ -189,6 +201,26 @@ export default class WebSQL {
   }
 
   static isSupported() {
-    return typeof global.openDatabase !== 'undefined';
+    const name = 'testWebSQLSupport';
+
+    if (typeof global.openDatabase === 'undefined') {
+      return Promise.resolve(false);
+    }
+
+    if (typeof isSupported !== 'undefined') {
+      return Promise.resolve(isSupported);
+    }
+
+    const db = new WebSQL(name);
+    return db.save(name, { _id: '1' })
+      .then(() => db.clear())
+      .then(() => {
+        isSupported = true;
+        return true;
+      })
+      .catch(() => {
+        isSupported = false;
+        return false;
+      });
   }
 }

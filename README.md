@@ -91,6 +91,8 @@ The steps for running the end to end tests is as follows:
 3. Execute `npm run e2e:server`. __Keep this terminal window open.__
 
 #### Start App
+__Requirement:__ Execute `npm install -g yo generator-kinvey-html` to globally install [Yeoman](http://yeoman.io/) and [generator-kinvey-html](https://www.npmjs.com/package/generator-kinvey-html). You only need to do this once.
+
 1. Open a terminal window.
 2. Change directory to the location of the project.
 3. Execute `npm run e2e:app`. __Keep this terminal window open.__

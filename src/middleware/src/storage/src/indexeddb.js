@@ -5,6 +5,7 @@ import isString from 'lodash/isString';
 import isArray from 'lodash/isArray';
 import isFunction from 'lodash/isFunction';
 let dbCache = {};
+let isSupported = undefined;
 
 const TransactionMode = {
   ReadWrite: 'readwrite',
@@ -65,12 +66,16 @@ export default class IndexedDB {
     this.inTransaction = true;
     let request;
 
-    if (db) {
-      const version = db.version + 1;
-      db.close();
-      request = indexedDB.open(this.name, version);
-    } else {
-      request = indexedDB.open(this.name);
+    try {
+      if (db) {
+        const version = db.version + 1;
+        db.close();
+        request = indexedDB.open(this.name, version);
+      } else {
+        request = indexedDB.open(this.name);
+      }
+    } catch (err) {
+      error(err);
     }
 
     // If the database is opened with an higher version than its current, the
@@ -129,11 +134,12 @@ export default class IndexedDB {
       return this.openTransaction(collection, write, wrap(success), wrap(error), true);
     };
 
-    request.onblocked = () => {
-      error(new Error(`The ${this.name} IndexedDB database version can't be upgraded`
-        + ' because the database is already open.'));
-    };
+    // The `blocked` event is not handled. In case such an event occurs, it
+    // will resolve itself since the `versionchange` event handler will close
+    // the conflicting database and enable the `blocked` event to continue.
+    request.onblocked = () => {};
 
+    // Handle errors
     request.onerror = (e) => {
       error(new Error(`Unable to open the ${this.name} IndexedDB database.`
         + ` ${e.target.error.message}.`));
@@ -268,7 +274,27 @@ export default class IndexedDB {
   }
 
   static isSupported() {
+    const name = 'testIndexedDBSupport';
     const indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
-    return typeof indexedDB !== 'undefined';
+
+    if (typeof indexedDB === 'undefined') {
+      return Promise.resolve(false);
+    }
+
+    if (typeof isSupported !== 'undefined') {
+      return Promise.resolve(isSupported);
+    }
+
+    const db = new IndexedDB(name);
+    return db.save(name, { _id: '1' })
+      .then(() => db.clear())
+      .then(() => {
+        isSupported = true;
+        return true;
+      })
+      .catch(() => {
+        isSupported = false;
+        return false;
+      });
   }
 }
