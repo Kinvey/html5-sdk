@@ -15,6 +15,9 @@ tmp
 coverage
 report.xml
 *.tap
+/test/browserstack/app
+/shots
+/local.log
 
 # MacOS Files
 .DS_Store

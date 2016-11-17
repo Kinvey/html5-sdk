@@ -129,11 +129,12 @@ export default class IndexedDB {
       return this.openTransaction(collection, write, wrap(success), wrap(error), true);
     };
 
-    request.onblocked = () => {
-      error(new Error(`The ${this.name} IndexedDB database version can't be upgraded`
-        + ' because the database is already open.'));
-    };
+    // The `blocked` event is not handled. In case such an event occurs, it
+    // will resolve itself since the `versionchange` event handler will close
+    // the conflicting database and enable the `blocked` event to continue.
+    request.onblocked = () => {};
 
+    // Handle errors
     request.onerror = (e) => {
       error(new Error(`Unable to open the ${this.name} IndexedDB database.`
         + ` ${e.target.error.message}.`));

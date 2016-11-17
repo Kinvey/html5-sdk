@@ -3,6 +3,11 @@
     "../.eslintrc"
   ],
   "rules": {
+    "import/no-extraneous-dependencies": "off",
     "prefer-arrow-callback": "off"
+  },
+  "globals": {
+    "browser": true,
+    "Kinvey": true
   }
 }
