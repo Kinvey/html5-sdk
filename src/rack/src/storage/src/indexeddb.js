@@ -5,6 +5,7 @@ import isString from 'lodash/isString';
 import isArray from 'lodash/isArray';
 import isFunction from 'lodash/isFunction';
 let dbCache = {};
+let isSupported = undefined;
 
 const TransactionMode = {
   ReadWrite: 'readwrite',
@@ -65,12 +66,16 @@ export default class IndexedDB {
     this.inTransaction = true;
     let request;
 
-    if (db) {
-      const version = db.version + 1;
-      db.close();
-      request = indexedDB.open(this.name, version);
-    } else {
-      request = indexedDB.open(this.name);
+    try {
+      if (db) {
+        const version = db.version + 1;
+        db.close();
+        request = indexedDB.open(this.name, version);
+      } else {
+        request = indexedDB.open(this.name);
+      }
+    } catch (err) {
+      error(err);
     }
 
     // If the database is opened with an higher version than its current, the
@@ -269,7 +274,27 @@ export default class IndexedDB {
   }
 
   static isSupported() {
+    const name = 'testIndexedDBSupport';
     const indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
-    return typeof indexedDB !== 'undefined';
+
+    if (typeof indexedDB === 'undefined') {
+      return Promise.resolve(false);
+    }
+
+    if (typeof isSupported !== 'undefined') {
+      return Promise.resolve(isSupported);
+    }
+
+    const db = new IndexedDB(name);
+    return db.save(name, { _id: '1' })
+      .then(() => db.clear())
+      .then(() => {
+        isSupported = true;
+        return true;
+      })
+      .catch(() => {
+        isSupported = false;
+        return false;
+      });
   }
 }
