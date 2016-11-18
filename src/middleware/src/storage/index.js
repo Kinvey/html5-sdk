@@ -1,4 +1,4 @@
-import KinveyStorage from 'kinvey-node-sdk/dist//request/src/rack/src/storage';
+import KinveyStorage from 'kinvey-node-sdk/dist/request/src/middleware/src/storage';
 import IndexedDB from './src/indexeddb';
 import WebSQL from './src/websql';
 import { LocalStorage } from './src/webstorage';

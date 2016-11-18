@@ -1,4 +1,4 @@
-import Middleware from 'kinvey-node-sdk/dist/request/src/rack/src/middleware';
+import Middleware from 'kinvey-node-sdk/dist/request/src/middleware/src/middleware';
 import Storage from './storage';
 import isEmpty from 'lodash/isEmpty';
 
