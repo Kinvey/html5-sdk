@@ -17,7 +17,7 @@
     "url": "git@github.com:Kinvey/html5-sdk"
   },
   "scripts": {
-    "build": "npm run clean && npm run transpile && npm run bundle && npm run minify",
+    "build": "npm uninstall kinvey-node-sdk && npm install && npm run clean && npm run transpile && npm run bundle && npm run minify",
     "bundle": "webpack",
     "clean": "del coverage dist s3",
     "minify": "uglifyjs --screw-ie8 --compress warnings=false --mangle --comments --output ./dist/kinvey-html5-sdk.min.js -- ./dist/kinvey-html5-sdk.js ",
@@ -41,13 +41,13 @@
   "dependencies": {
     "core-js": "^2.4.1",
     "es6-promise": "^4.0.3",
-    "kinvey-node-sdk": "3.2.2",
+    "kinvey-node-sdk": "../../Node/SDK",
     "lodash": "^4.16.2"
   },
   "peerDependencies": {
     "core-js": "^2.4.1",
     "es6-promise": "^4.0.3",
-    "kinvey-node-sdk": "3.2.2",
+    "kinvey-node-sdk": "../../Node/SDK",
     "lodash": "^4.16.2"
   },
   "devDependencies": {
