@@ -11,8 +11,8 @@ describe('Login', function() {
   });
 
   it('should login a user using Kinvey', function() {
-    const username = 'admin';
-    const password = 'admin';
+    const username = 'test';
+    const password = 'test';
     const page = new LoginPage();
     page.get();
     page.login(username, password);

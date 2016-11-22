@@ -41,6 +41,16 @@ exports.config = {
   capabilities: [{
     os: 'OS X',
     os_version: 'Sierra',
+    browser: 'Safari',
+    browser_version: '10.0'
+  }, {
+    os: 'OS X',
+    os_version: 'Sierra',
+    browser: 'Chrome',
+    browser_version: '54.0'
+  }, {
+    os: 'OS X',
+    os_version: 'Sierra',
     browser: 'Firefox',
     browser_version: '49.0'
   }],

@@ -20,4 +20,8 @@ fs.emptyDir(e2eAppPath, function (error) {
     path.resolve(__dirname, '../dist/kinvey-html5-sdk.js'),
     path.resolve(__dirname, '../test/browserstack/app/static/bower_components/kinvey-html5-sdk/dist/kinvey-html5-sdk.js')
   );
+  cp(
+    path.resolve(__dirname, '../dist/kinvey-html5-sdk.min.js'),
+    path.resolve(__dirname, '../test/browserstack/app/static/bower_components/kinvey-html5-sdk/dist/kinvey-html5-sdk.min.js')
+  );
 });

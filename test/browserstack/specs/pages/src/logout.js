@@ -9,7 +9,10 @@ export default class LogoutPage extends AppPage {
     browser.waitUntil(
       () => {
         const url = browser.getUrl();
-        return url.split(/[?#]/)[0] === `${browser.options.baseUrl}/login.html`;
+        if (url) {
+          return url.split(/[?#]/)[0] === `${browser.options.baseUrl}/login.html`;
+        }
+        return false;
       },
       10000,
       `expected url to be ${browser.options.baseUrl}/login.html`);

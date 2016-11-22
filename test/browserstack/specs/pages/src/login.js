@@ -28,8 +28,9 @@ export default class LoginPage extends AppPage {
         return url.split(/[?#]/)[0] === `${browser.options.baseUrl}/`
           || url.split(/[?#]/)[0] === `${browser.options.baseUrl}`;
       },
-      10000,
-      `expected url to be ${browser.options.baseUrl}/`);
+      30000,
+      `expected url to be ${browser.options.baseUrl}/`,
+      5000);
   }
 
   loginWithMIC() {
