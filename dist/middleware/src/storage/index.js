@@ -8,7 +8,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _storage = require('kinvey-node-sdk/dist/rack/src/storage');
+var _storage = require('kinvey-node-sdk/dist/request/src/middleware/src/storage');
 
 var _storage2 = _interopRequireDefault(_storage);
 
@@ -30,8 +30,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Storage = function (_NodeStorage) {
-  _inherits(Storage, _NodeStorage);
+var Storage = function (_KinveyStorage) {
+  _inherits(Storage, _KinveyStorage);
 
   function Storage() {
     _classCallCheck(this, Storage);
@@ -40,19 +40,29 @@ var Storage = function (_NodeStorage) {
   }
 
   _createClass(Storage, [{
-    key: 'adapter',
-    get: function get() {
-      if (_websql2.default.isSupported()) {
-        return new _websql2.default(this.name);
-      } else if (_indexeddb2.default.isSupported()) {
-        return new _indexeddb2.default(this.name);
-      } else if (_webstorage.LocalStorage.isSupported()) {
-        return new _webstorage.LocalStorage(this.name);
-      } else if (_webstorage.SessionStorage.isSupported()) {
-        return new _webstorage.SessionStorage(this.name);
-      }
+    key: 'getAdapter',
+    value: function getAdapter() {
+      var _this2 = this;
 
-      return _get(Storage.prototype.__proto__ || Object.getPrototypeOf(Storage.prototype), 'adapter', this);
+      return _websql2.default.isSupported().then(function (isWebSQLSupported) {
+        if (isWebSQLSupported) {
+          return new _websql2.default(_this2.name);
+        }
+
+        return _indexeddb2.default.isSupported().then(function (isIndexedDBSupported) {
+          if (isIndexedDBSupported) {
+            return new _indexeddb2.default(_this2.name);
+          }
+
+          return _webstorage.LocalStorage.isSupported().then(function (isLocalStorageSupported) {
+            if (isLocalStorageSupported) {
+              return new _webstorage.LocalStorage(_this2.name);
+            }
+
+            return _get(Storage.prototype.__proto__ || Object.getPrototypeOf(Storage.prototype), 'getAdapter', _this2).call(_this2);
+          });
+        });
+      });
     }
   }]);
 

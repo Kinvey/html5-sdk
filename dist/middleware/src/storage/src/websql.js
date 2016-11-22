@@ -40,6 +40,7 @@ var idAttribute = process && process.env && process.env.KINVEY_ID_ATTRIBUTE || '
 var masterCollectionName = 'sqlite_master';
 var size = 5 * 1000 * 1000; // Database size in bytes
 var dbCache = {};
+var _isSupported = undefined;
 
 var WebSQL = function () {
   function WebSQL() {
@@ -170,6 +171,17 @@ var WebSQL = function () {
     key: 'save',
     value: function save(collection, entities) {
       var queries = [];
+      var singular = false;
+
+      if (!(0, _isArray2.default)(entities)) {
+        singular = true;
+        entities = [entities];
+      }
+
+      if (entities.length === 0) {
+        return _es6Promise2.default.resolve(null);
+      }
+
       entities = (0, _map2.default)(entities, function (entity) {
         queries.push(['REPLACE INTO #{collection} (key, value) VALUES (?, ?)', [entity[idAttribute], JSON.stringify(entity)]]);
 
@@ -177,7 +189,7 @@ var WebSQL = function () {
       });
 
       return this.openTransaction(collection, queries, null, true).then(function () {
-        return entities;
+        return singular ? entities[0] : entities;
       });
     }
   }, {
@@ -228,7 +240,26 @@ var WebSQL = function () {
   }], [{
     key: 'isSupported',
     value: function isSupported() {
-      return typeof global.openDatabase !== 'undefined';
+      var name = 'testWebSQLSupport';
+
+      if (typeof global.openDatabase === 'undefined') {
+        return _es6Promise2.default.resolve(false);
+      }
+
+      if (typeof _isSupported !== 'undefined') {
+        return _es6Promise2.default.resolve(_isSupported);
+      }
+
+      var db = new WebSQL(name);
+      return db.save(name, { _id: '1' }).then(function () {
+        return db.clear();
+      }).then(function () {
+        _isSupported = true;
+        return true;
+      }).catch(function () {
+        _isSupported = false;
+        return false;
+      });
     }
   }]);
 

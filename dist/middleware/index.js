@@ -3,13 +3,13 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.CacheRack = undefined;
+exports.CacheMiddleware = undefined;
 
-var _rack = require('./src/rack');
+var _cache = require('./src/cache');
 
-var _rack2 = _interopRequireDefault(_rack);
+var _cache2 = _interopRequireDefault(_cache);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Export
-exports.CacheRack = _rack2.default;
+exports.CacheMiddleware = _cache2.default;

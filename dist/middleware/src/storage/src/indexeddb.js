@@ -33,6 +33,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var dbCache = {};
+var _isSupported = undefined;
 
 var TransactionMode = {
   ReadWrite: 'readwrite',
@@ -102,12 +103,16 @@ var IndexedDB = function () {
       this.inTransaction = true;
       var request = void 0;
 
-      if (db) {
-        var version = db.version + 1;
-        db.close();
-        request = indexedDB.open(this.name, version);
-      } else {
-        request = indexedDB.open(this.name);
+      try {
+        if (db) {
+          var version = db.version + 1;
+          db.close();
+          request = indexedDB.open(this.name, version);
+        } else {
+          request = indexedDB.open(this.name);
+        }
+      } catch (err) {
+        error(err);
       }
 
       // If the database is opened with an higher version than its current, the
@@ -166,10 +171,12 @@ var IndexedDB = function () {
         return _this.openTransaction(collection, write, wrap(success), wrap(error), true);
       };
 
-      request.onblocked = function () {
-        error(new Error('The ' + _this.name + ' IndexedDB database version can\'t be upgraded' + ' because the database is already open.'));
-      };
+      // The `blocked` event is not handled. In case such an event occurs, it
+      // will resolve itself since the `versionchange` event handler will close
+      // the conflicting database and enable the `blocked` event to continue.
+      request.onblocked = function () {};
 
+      // Handle errors
       request.onerror = function (e) {
         error(new Error('Unable to open the ' + _this.name + ' IndexedDB database.' + (' ' + e.target.error.message + '.')));
       };
@@ -313,8 +320,27 @@ var IndexedDB = function () {
   }], [{
     key: 'isSupported',
     value: function isSupported() {
+      var name = 'testIndexedDBSupport';
       var indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
-      return typeof indexedDB !== 'undefined';
+
+      if (typeof indexedDB === 'undefined') {
+        return _es6Promise2.default.resolve(false);
+      }
+
+      if (typeof _isSupported !== 'undefined') {
+        return _es6Promise2.default.resolve(_isSupported);
+      }
+
+      var db = new IndexedDB(name);
+      return db.save(name, { _id: '1' }).then(function () {
+        return db.clear();
+      }).then(function () {
+        _isSupported = true;
+        return true;
+      }).catch(function () {
+        _isSupported = false;
+        return false;
+      });
     }
   }]);
 
