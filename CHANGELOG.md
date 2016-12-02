@@ -1,4 +1,10 @@
 # Changelog
+## [v3.3.1](https://github.com/Kinvey/html5-sdk/tree/v3.3.1) (2016-12-02)
+
+**Packages:**
+
+- Update `kinvey-node-sdk` to `v3.3.1`.
+
 ## [v3.3.0](https://github.com/Kinvey/html5-sdk/tree/v3.3.0) (2016-11-22)
 
 **Packages:**
