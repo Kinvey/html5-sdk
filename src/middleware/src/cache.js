@@ -19,7 +19,11 @@ export default class CacheMiddleware extends Middleware {
         promise = storage.find(collection);
       }
     } else if (method === 'POST' || method === 'PUT') {
-      promise = storage.save(collection, body);
+      if (entityId === '_group') {
+        promise = storage.find(collection);
+      } else {
+        promise = storage.save(collection, body);
+      }
     } else if (method === 'DELETE') {
       if (collection && entityId) {
         promise = storage.removeById(collection, entityId);
@@ -36,6 +40,10 @@ export default class CacheMiddleware extends Middleware {
         data: data
       };
 
+      if (method === 'POST' && entityId === '_group') {
+        response.statusCode = 200;
+      }
+
       if (!data || isEmpty(data)) {
         response.statusCode = 204;
       }
@@ -46,3 +54,4 @@ export default class CacheMiddleware extends Middleware {
     .then(response => ({ response: response }));
   }
 }
+
