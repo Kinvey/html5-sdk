@@ -1,11 +1,11 @@
-import { NotFoundError } from './errors';
+import { NotFoundError, isDefined } from 'kinvey-node-sdk/lib/export';
 import Promise from 'es6-promise';
 import forEach from 'lodash/forEach';
 import isString from 'lodash/isString';
 import isArray from 'lodash/isArray';
 import isFunction from 'lodash/isFunction';
 let dbCache = {};
-let isSupported = undefined;
+let isSupported;
 
 const TransactionMode = {
   ReadWrite: 'readwrite',
@@ -13,13 +13,13 @@ const TransactionMode = {
 };
 Object.freeze(TransactionMode);
 
-export default class IndexedDB {
+class IndexedDB {
   constructor(name) {
-    if (!name) {
+    if (isDefined(name) === false) {
       throw new Error('A name is required to use the IndexedDB adapter.', name);
     }
 
-    if (!isString(name)) {
+    if (isString(name) === false) {
       throw new Error('The name must be a string to use the IndexedDB adapter', name);
     }
 
@@ -298,3 +298,32 @@ export default class IndexedDB {
       });
   }
 }
+
+export default {
+  load(name) {
+    const indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
+    const db = new IndexedDB(name);
+
+    if (isDefined(indexedDB) === false) {
+      return Promise.resolve(undefined);
+    }
+
+    if (isDefined(isSupported)) {
+      if (isSupported) {
+        return Promise.resolve(db);
+      }
+
+      return Promise.resolve(undefined);
+    }
+
+    return db.save('__supporttest', { _id: '1' })
+      .then(() => {
+        isSupported = true;
+        return db;
+      })
+      .catch(() => {
+        isSupported = false;
+        return undefined;
+      });
+  }
+};

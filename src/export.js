@@ -1,1 +1,1 @@
-export * from 'kinvey-node-sdk';
+export * from 'kinvey-node-sdk/lib/export';

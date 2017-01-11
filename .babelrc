@@ -1,6 +1,11 @@
 {
   "plugins": [
-    "inline-dotenv"
+    "inline-dotenv",
+    ["module-resolver", {
+      "alias": {
+        "package.json": "./package.json"
+      }
+    }]
   ],
   "presets": [
     "es2015",

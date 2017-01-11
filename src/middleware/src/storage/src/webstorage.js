@@ -1,4 +1,4 @@
-import { NotFoundError } from './errors';
+import { NotFoundError } from 'kinvey-node-sdk/lib/export';
 import Promise from 'es6-promise';
 import keyBy from 'lodash/keyBy';
 import merge from 'lodash/merge';

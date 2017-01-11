@@ -36,5 +36,10 @@
     "es6": true,
     "mocha": true,
     "node": true
+  },
+  "settings": {
+    "import/resolver": {
+      "babel-module": {}
+    }
   }
 }

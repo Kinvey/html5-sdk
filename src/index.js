@@ -1,4 +1,4 @@
-import Kinvey from 'kinvey-node-sdk';
+import Kinvey from './kinvey';
 
 // Export
 module.exports = Kinvey;
