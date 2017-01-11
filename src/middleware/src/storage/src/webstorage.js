@@ -130,6 +130,22 @@ export class LocalStorage extends WebStorage {
 
     return Promise.resolve(false);
   }
+
+  static loadAdapter(name) {
+    if (global.localStorage) {
+      const item = '__testSupport';
+      try {
+        global.localStorage.setItem(item, item);
+        global.localStorage.getItem(item);
+        global.localStorage.removeItem(item);
+        return Promise.resolve(new LocalStorage(name));
+      } catch (e) {
+        return Promise.resolve(undefined);
+      }
+    }
+
+    return Promise.resolve(undefined);
+  }
 }
 
 export class SessionStorage extends WebStorage {
@@ -228,20 +244,20 @@ export class SessionStorage extends WebStorage {
       });
   }
 
-  static isSupported() {
+  static loadAdapter(name) {
     if (global.sessionStorage) {
-      const item = 'testSessionStorageSupport';
+      const item = '__testSupport';
       try {
         global.sessionStorage.setItem(item, item);
-        gloabl.sessionStorage.getItem(item);
+        global.sessionStorage.getItem(item);
         global.sessionStorage.removeItem(item);
-        return Promise.resolve(true);
+        return Promise.resolve(new LocalStorage(name));
       } catch (e) {
-        return Promise.resolve(false);
+        return Promise.resolve(undefined);
       }
     }
 
-    return Promise.resolve(false);
+    return Promise.resolve(undefined);
   }
 }
 
@@ -353,5 +369,13 @@ export class CookieStorage extends WebStorage {
 
   static isSupported() {
     return Promise.resolve(typeof global.document.cookie !== 'undefined');
+  }
+
+  static loadAdapter(name) {
+    if (typeof global.document.cookie === 'undefined') {
+      return Promise.resolve(undefined);
+    }
+
+    return Promise.resolve(new CookieStorage(name));
   }
 }
