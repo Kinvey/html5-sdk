@@ -75,7 +75,7 @@ export default class WebSQL {
               if (pending === 0) {
                 resolve(isMulti ? responses : responses.shift());
               }
-            }, () => false); // Returning true to rollback, false to continue the transaction
+            });
           });
         }
       }, (error) => {
@@ -83,7 +83,7 @@ export default class WebSQL {
 
         // Safari calls this function regardless if user permits more quota or not.
         // And there's no way for a developer to know user's reaction.
-        if (error && error.code === SQLError.QUOTA_ERR) {
+        if (error && typeof SQLError !== 'undefined' && error.code === SQLError.QUOTA_ERR) {
           // Start over the transaction again to check if user permitted or not.
           return this.openTransaction(collection, query, parameters, write);
         }
