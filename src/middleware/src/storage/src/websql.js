@@ -9,18 +9,18 @@ const idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
 const masterCollectionName = 'sqlite_master';
 let dbCache = {};
 let isSupported;
+const SIZE = 5000;
 
 export default class WebSQL {
-  constructor(name = 'kinvey', size = 5000) {
+  constructor(name = 'kinvey') {
     this.name = name;
-    this.size = size;
   }
 
   openDatabase() {
     let db = dbCache[this.name];
 
     if (!db) {
-      db = global.openDatabase(this.name, 1, '', this.size);
+      db = global.openDatabase(this.name, 1, '', SIZE);
       dbCache[this.name] = db;
     }
 
