@@ -33,7 +33,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var dbCache = {};
-var _isSupported = undefined;
+var isSupported = void 0;
 
 var TransactionMode = {
   ReadWrite: 'readwrite',
@@ -318,28 +318,30 @@ var IndexedDB = function () {
       });
     }
   }], [{
-    key: 'isSupported',
-    value: function isSupported() {
-      var name = 'testIndexedDBSupport';
+    key: 'loadAdapter',
+    value: function loadAdapter(name) {
       var indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
+      var db = new IndexedDB(name);
+
+      if (typeof isSupported !== 'undefined') {
+        if (isSupported) {
+          return _es6Promise2.default.resolve(db);
+        }
+
+        return _es6Promise2.default.resolve(undefined);
+      }
 
       if (typeof indexedDB === 'undefined') {
-        return _es6Promise2.default.resolve(false);
+        isSupported = false;
+        return _es6Promise2.default.resolve(undefined);
       }
 
-      if (typeof _isSupported !== 'undefined') {
-        return _es6Promise2.default.resolve(_isSupported);
-      }
-
-      var db = new IndexedDB(name);
-      return db.save(name, { _id: '1' }).then(function () {
-        return db.clear();
-      }).then(function () {
-        _isSupported = true;
-        return true;
+      return db.save('__testSupport', { _id: '1' }).then(function () {
+        isSupported = true;
+        return db;
       }).catch(function () {
-        _isSupported = false;
-        return false;
+        isSupported = false;
+        return undefined;
       });
     }
   }]);

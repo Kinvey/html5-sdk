@@ -38,9 +38,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var idAttribute = process && process.env && process.env.KINVEY_ID_ATTRIBUTE || '_id' || '_id';
 var masterCollectionName = 'sqlite_master';
-var size = 5 * 1000 * 1000; // Database size in bytes
 var dbCache = {};
-var _isSupported = undefined;
+var isSupported = void 0;
+var SIZE = 5 * 1000 * 1000; // 5mb
 
 var WebSQL = function () {
   function WebSQL() {
@@ -57,7 +57,7 @@ var WebSQL = function () {
       var db = dbCache[this.name];
 
       if (!db) {
-        db = global.openDatabase(this.name, 1, '', size);
+        db = global.openDatabase(this.name, 1, '', SIZE);
         dbCache[this.name] = db;
       }
 
@@ -122,14 +122,21 @@ var WebSQL = function () {
         }, function (error) {
           error = (0, _isString2.default)(error) ? error : error.message;
 
+          // Safari calls this function regardless if user permits more quota or not.
+          // And there's no way for a developer to know user's reaction.
+          if (error && typeof SQLError !== 'undefined' && error.code === SQLError.QUOTA_ERR) {
+            // Start over the transaction again to check if user permitted or not.
+            return _this.openTransaction(collection, query, parameters, write);
+          }
+
           if (error && error.indexOf('no such table') === -1) {
             return reject(new _errors.NotFoundError('The ' + collection + ' collection was not found on' + (' the ' + _this.name + ' WebSQL database.')));
           }
 
-          var query = 'SELECT name AS value from #{collection} WHERE type = ? AND name = ?';
-          var parameters = ['table', collection];
+          var checkQuery = 'SELECT name AS value from #{collection} WHERE type = ? AND name = ?';
+          var checkParameters = ['table', collection];
 
-          return _this.openTransaction(masterCollectionName, query, parameters).then(function (response) {
+          return _this.openTransaction(masterCollectionName, checkQuery, checkParameters).then(function (response) {
             if (response.result.length === 0) {
               return reject(new _errors.NotFoundError('The ' + collection + ' collection was not found on' + (' the ' + _this.name + ' WebSQL database.')));
             }
@@ -226,7 +233,7 @@ var WebSQL = function () {
         // Drop all tables. Filter tables first to avoid attempting to delete
         // system tables (which will fail).
         var queries = tables.filter(function (table) {
-          return (/^[a-zA-Z0-9\-]{1,128}/.test(table)
+          return (/^[a-zA-Z0-9-]{1,128}/.test(table)
           );
         }).map(function (table) {
           return ['DROP TABLE IF EXISTS \'' + table + '\''];
@@ -238,27 +245,29 @@ var WebSQL = function () {
       });
     }
   }], [{
-    key: 'isSupported',
-    value: function isSupported() {
-      var name = 'testWebSQLSupport';
+    key: 'loadAdapter',
+    value: function loadAdapter(name) {
+      var db = new WebSQL(name);
+
+      if (typeof isSupported !== 'undefined') {
+        if (isSupported) {
+          return _es6Promise2.default.resolve(db);
+        }
+
+        return _es6Promise2.default.resolve(undefined);
+      }
 
       if (typeof global.openDatabase === 'undefined') {
-        return _es6Promise2.default.resolve(false);
+        isSupported = false;
+        return _es6Promise2.default.resolve(undefined);
       }
 
-      if (typeof _isSupported !== 'undefined') {
-        return _es6Promise2.default.resolve(_isSupported);
-      }
-
-      var db = new WebSQL(name);
-      return db.save(name, { _id: '1' }).then(function () {
-        return db.clear();
-      }).then(function () {
-        _isSupported = true;
-        return true;
+      return db.save('__testSupport', { _id: '1' }).then(function () {
+        isSupported = true;
+        return db;
       }).catch(function () {
-        _isSupported = false;
-        return false;
+        isSupported = false;
+        return undefined;
       });
     }
   }]);

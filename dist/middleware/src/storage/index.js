@@ -12,6 +12,8 @@ var _storage = require('kinvey-node-sdk/dist/request/src/middleware/src/storage'
 
 var _storage2 = _interopRequireDefault(_storage);
 
+var _utils = require('kinvey-node-sdk/dist/utils');
+
 var _indexeddb = require('./src/indexeddb');
 
 var _indexeddb2 = _interopRequireDefault(_indexeddb);
@@ -44,24 +46,24 @@ var Storage = function (_KinveyStorage) {
     value: function getAdapter() {
       var _this2 = this;
 
-      return _websql2.default.isSupported().then(function (isWebSQLSupported) {
-        if (isWebSQLSupported) {
-          return new _websql2.default(_this2.name);
+      return _websql2.default.loadAdapter(this.name).then(function (adapter) {
+        if ((0, _utils.isDefined)(adapter) === false) {
+          return _indexeddb2.default.loadAdapter(_this2.name);
         }
 
-        return _indexeddb2.default.isSupported().then(function (isIndexedDBSupported) {
-          if (isIndexedDBSupported) {
-            return new _indexeddb2.default(_this2.name);
-          }
+        return adapter;
+      }).then(function (adapter) {
+        if ((0, _utils.isDefined)(adapter) === false) {
+          return _webstorage.LocalStorage.loadAdapter(_this2.name);
+        }
 
-          return _webstorage.LocalStorage.isSupported().then(function (isLocalStorageSupported) {
-            if (isLocalStorageSupported) {
-              return new _webstorage.LocalStorage(_this2.name);
-            }
+        return adapter;
+      }).then(function (adapter) {
+        if ((0, _utils.isDefined)(adapter) === false) {
+          return _get(Storage.prototype.__proto__ || Object.getPrototypeOf(Storage.prototype), 'getAdapter', _this2).call(_this2);
+        }
 
-            return _get(Storage.prototype.__proto__ || Object.getPrototypeOf(Storage.prototype), 'getAdapter', _this2).call(_this2);
-          });
-        });
+        return adapter;
       });
     }
   }]);
