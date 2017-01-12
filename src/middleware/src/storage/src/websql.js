@@ -7,9 +7,9 @@ import isFunction from 'lodash/isFunction';
 import isString from 'lodash/isString';
 const idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
 const masterCollectionName = 'sqlite_master';
-const size = 5 * 1000 * 1000; // Database size in bytes
 let dbCache = {};
-let isSupported = undefined;
+let isSupported;
+const SIZE = 5 * 1000 * 1000; // 5mb
 
 export default class WebSQL {
   constructor(name = 'kinvey') {
@@ -20,7 +20,7 @@ export default class WebSQL {
     let db = dbCache[this.name];
 
     if (!db) {
-      db = global.openDatabase(this.name, 1, '', size);
+      db = global.openDatabase(this.name, 1, '', SIZE);
       dbCache[this.name] = db;
     }
 
@@ -81,15 +81,22 @@ export default class WebSQL {
       }, (error) => {
         error = isString(error) ? error : error.message;
 
+        // Safari calls this function regardless if user permits more quota or not.
+        // And there's no way for a developer to know user's reaction.
+        if (error && typeof SQLError !== 'undefined' && error.code === SQLError.QUOTA_ERR) {
+          // Start over the transaction again to check if user permitted or not.
+          return this.openTransaction(collection, query, parameters, write);
+        }
+
         if (error && error.indexOf('no such table') === -1) {
           return reject(new NotFoundError(`The ${collection} collection was not found on`
             + ` the ${this.name} WebSQL database.`));
         }
 
-        const query = 'SELECT name AS value from #{collection} WHERE type = ? AND name = ?';
-        const parameters = ['table', collection];
+        const checkQuery = 'SELECT name AS value from #{collection} WHERE type = ? AND name = ?';
+        const checkParameters = ['table', collection];
 
-        return this.openTransaction(masterCollectionName, query, parameters).then((response) => {
+        return this.openTransaction(masterCollectionName, checkQuery, checkParameters).then((response) => {
           if (response.result.length === 0) {
             return reject(new NotFoundError(`The ${collection} collection was not found on`
               + ` the ${this.name} WebSQL database.`));
@@ -190,7 +197,7 @@ export default class WebSQL {
         // Drop all tables. Filter tables first to avoid attempting to delete
         // system tables (which will fail).
         const queries = tables
-          .filter(table => (/^[a-zA-Z0-9\-]{1,128}/).test(table))
+          .filter(table => (/^[a-zA-Z0-9-]{1,128}/).test(table))
           .map(table => [`DROP TABLE IF EXISTS '${table}'`]);
         return this.openTransaction(masterCollectionName, queries, null, true);
       })
@@ -200,27 +207,30 @@ export default class WebSQL {
       });
   }
 
-  static isSupported() {
-    const name = 'testWebSQLSupport';
-
-    if (typeof global.openDatabase === 'undefined') {
-      return Promise.resolve(false);
-    }
+  static loadAdapter(name) {
+    const db = new WebSQL(name);
 
     if (typeof isSupported !== 'undefined') {
-      return Promise.resolve(isSupported);
+      if (isSupported) {
+        return Promise.resolve(db);
+      }
+
+      return Promise.resolve(undefined);
     }
 
-    const db = new WebSQL(name);
-    return db.save(name, { _id: '1' })
-      .then(() => db.clear())
+    if (typeof global.openDatabase === 'undefined') {
+      isSupported = false;
+      return Promise.resolve(undefined);
+    }
+
+    return db.save('__testSupport', { _id: '1' })
       .then(() => {
         isSupported = true;
-        return true;
+        return db;
       })
       .catch(() => {
         isSupported = false;
-        return false;
+        return undefined;
       });
   }
 }
