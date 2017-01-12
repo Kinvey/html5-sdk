@@ -81,15 +81,22 @@ export default class WebSQL {
       }, (error) => {
         error = isString(error) ? error : error.message;
 
+        // Safari calls this function regardless if user permits more quota or not.
+        // And there's no way for a developer to know user's reaction.
+        if (error && typeof SQLError !== 'undefined' && error.code === SQLError.QUOTA_ERR) {
+          // Start over the transaction again to check if user permitted or not.
+          return this.openTransaction(collection, query, parameters, write);
+        }
+
         if (error && error.indexOf('no such table') === -1) {
           return reject(new NotFoundError(`The ${collection} collection was not found on`
             + ` the ${this.name} WebSQL database.`));
         }
 
-        const query = 'SELECT name AS value from #{collection} WHERE type = ? AND name = ?';
-        const parameters = ['table', collection];
+        const checkQuery = 'SELECT name AS value from #{collection} WHERE type = ? AND name = ?';
+        const checkParameters = ['table', collection];
 
-        return this.openTransaction(masterCollectionName, query, parameters).then((response) => {
+        return this.openTransaction(masterCollectionName, checkQuery, checkParameters).then((response) => {
           if (response.result.length === 0) {
             return reject(new NotFoundError(`The ${collection} collection was not found on`
               + ` the ${this.name} WebSQL database.`));
