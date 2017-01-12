@@ -1,8 +1,18 @@
 # Changelog
+## [v3.3.4](https://github.com/Kinvey/html5-sdk/tree/v3.3.4) (2016-01-12)
+[Full Changelog](https://github.com/Kinvey/html5-sdk/compare/v3.3.3...v3.3.4)<br/>
+
+**Changes**
+- Prevent popup from being shown to allow an application to store 10mb of data with WebSQL when it hasn't stored more then 5mb of data. [#7](https://github.com/Kinvey/html5-sdk/pull/7)
+- Increase the size of a WebSQL database as needed. [#8](https://github.com/Kinvey/html5-sdk/pull/8)
+
+**Updated packages:**
+- Updated `kinvey-node-sdk` to `v3.3.4`.
+
 ## [v3.3.3](https://github.com/Kinvey/html5-sdk/tree/v3.3.3) (2016-12-16)
 [Full Changelog](https://github.com/Kinvey/html5-sdk/compare/v3.3.2...v3.3.3)<br/>
 
-**Merged pull requests:**
+**Changes**
 - Added support for aggregations against the local cache. [#6](https://github.com/Kinvey/html5-sdk/pull/6)
 
 **Updated packages:**
@@ -11,7 +21,6 @@
 ## [v3.3.2](https://github.com/Kinvey/html5-sdk/tree/v3.3.2) (2016-12-03)
 
 **Packages:**
-
 - Update `kinvey-node-sdk` to `v3.3.2`.
 
 
