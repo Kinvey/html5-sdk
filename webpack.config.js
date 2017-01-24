@@ -16,7 +16,7 @@ var BANNER = '/**\n'
 
 module.exports = {
   context: path.resolve(__dirname, 'dist'),
-  entry: ['core-js/es6/symbol', './index.js'],
+  entry: ['core-js/es6/symbol', 'indexeddbshim', './index.js'],
   module: {
     loaders: [
       { test: /\.json$/, loader: 'json-loader' }
