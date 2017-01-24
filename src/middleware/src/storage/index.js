@@ -6,10 +6,10 @@ import { LocalStorage } from './src/webstorage';
 
 export default class Storage extends KinveyStorage {
   getAdapter() {
-    return WebSQL.loadAdapter(this.name)
+    return IndexedDB.loadAdapter(this.name)
       .then((adapter) => {
         if (isDefined(adapter) === false) {
-          return IndexedDB.loadAdapter(this.name);
+          return WebSQL.loadAdapter(this.name);
         }
 
         return adapter;
