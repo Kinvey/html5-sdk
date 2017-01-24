@@ -29,7 +29,11 @@ export default class IndexedDB {
   }
 
   openTransaction(collection, write = false, success, error, force = false) {
-    const indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
+    const indexedDB = global.indexedDB
+      || global.webkitIndexedDB
+      || global.mozIndexedDB
+      || global.msIndexedDB
+      || global.shimIndexedDB;
     let db = dbCache[this.name];
 
     if (db) {
@@ -258,7 +262,11 @@ export default class IndexedDB {
 
   clear() {
     return new Promise((resolve, reject) => {
-      const indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
+      const indexedDB = global.indexedDB
+      || global.webkitIndexedDB
+      || global.mozIndexedDB
+      || global.msIndexedDB
+      || global.shimIndexedDB;
       const request = indexedDB.deleteDatabase(this.name);
 
       request.onsuccess = () => {
@@ -274,7 +282,11 @@ export default class IndexedDB {
   }
 
   static loadAdapter(name) {
-    const indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
+    const indexedDB = global.indexedDB
+      || global.webkitIndexedDB
+      || global.mozIndexedDB
+      || global.msIndexedDB
+      || global.shimIndexedDB;
     const db = new IndexedDB(name);
 
     if (typeof isSupported !== 'undefined') {
