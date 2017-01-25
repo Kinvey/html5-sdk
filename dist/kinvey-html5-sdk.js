@@ -1,6 +1,6 @@
 /**
  * @preserve
- * kinvey-html5-sdk v3.3.4
+ * kinvey-html5-sdk v3.3.5
  * Kinvey JavaScript SDK for HTML5.
  * http://www.kinvey.com
  *
@@ -22016,7 +22016,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	              throw error;
 	            }
 
-	            var socialIdentities = activeUser._socialIdentity;
+	            var socialIdentities = (0, _utils.isDefined)(activeUser._socialIdentity) ? activeUser._socialIdentity : {};
 	            var sessionKey = Object.keys(socialIdentities).find(function (sessionKey) {
 	              return socialIdentities[sessionKey].identity === _identity.SocialIdentity.MobileIdentityConnect;
 	            });
@@ -33557,7 +33557,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 		"name": "kinvey-html5-sdk",
-		"version": "3.3.4",
+		"version": "3.3.5",
 		"description": "Kinvey JavaScript SDK for HTML5.",
 		"homepage": "http://www.kinvey.com",
 		"bugs": {
@@ -33598,7 +33598,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		"dependencies": {
 			"core-js": "^2.4.1",
 			"es6-promise": "^4.0.3",
-			"kinvey-node-sdk": "3.3.4",
+			"kinvey-node-sdk": "3.3.5",
 			"lodash": "^4.16.2"
 		},
 		"devDependencies": {
@@ -36523,8 +36523,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: 'connectIdentity',
-	    value: function connectIdentity(identity, session, options) {
+	    value: function connectIdentity(identity, session) {
 	      var _this3 = this;
+
+	      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
 	      var isActive = this.isActive();
 	      var data = {};
@@ -36548,13 +36550,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: 'connectWithIdentity',
-	    value: function connectWithIdentity(identity, session, options) {
+	    value: function connectWithIdentity(identity, session) {
+	      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
 	      return this.connectIdentity(identity, session, options);
 	    }
 	  }, {
 	    key: 'connectFacebook',
-	    value: function connectFacebook(clientId, options) {
+	    value: function connectFacebook(clientId) {
 	      var _this4 = this;
+
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 	      var facebook = new _identity.Facebook({ client: this.client });
 	      return facebook.login(clientId, options).then(function (session) {
@@ -36563,13 +36569,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: 'disconnectFacebook',
-	    value: function disconnectFacebook(options) {
+	    value: function disconnectFacebook() {
+	      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
 	      return this.disconnectIdentity(_identity.Facebook.identity, options);
 	    }
 	  }, {
 	    key: 'connectGoogle',
-	    value: function connectGoogle(clientId, options) {
+	    value: function connectGoogle(clientId) {
 	      var _this5 = this;
+
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 	      var google = new _identity.Google({ client: this.client });
 	      return google.login(clientId, options).then(function (session) {
@@ -36578,13 +36588,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: 'disconnectGoogle',
-	    value: function disconnectGoogle(options) {
+	    value: function disconnectGoogle() {
+	      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
 	      return this.disconnectIdentity(_identity.Google.identity, options);
 	    }
 	  }, {
 	    key: 'googleconnectLinkedIn',
-	    value: function googleconnectLinkedIn(clientId, options) {
+	    value: function googleconnectLinkedIn(clientId) {
 	      var _this6 = this;
+
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 	      var linkedIn = new _identity.LinkedIn({ client: this.client });
 	      return linkedIn.login(clientId, options).then(function (session) {
@@ -36593,13 +36607,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: 'disconnectLinkedIn',
-	    value: function disconnectLinkedIn(options) {
+	    value: function disconnectLinkedIn() {
+	      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
 	      return this.disconnectIdentity(_identity.LinkedIn.identity, options);
 	    }
 	  }, {
 	    key: 'disconnectIdentity',
-	    value: function disconnectIdentity(identity, options) {
+	    value: function disconnectIdentity(identity) {
 	      var _this7 = this;
+
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 	      var promise = _es6Promise2.default.resolve();
 
@@ -36718,7 +36736,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: 'signupWithIdentity',
-	    value: function signupWithIdentity(identity, session, options) {
+	    value: function signupWithIdentity(identity, session) {
+	      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
 	      var data = {};
 	      data[socialIdentityAttribute] = {};
 	      data[socialIdentityAttribute][identity] = session;
@@ -36726,20 +36746,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: 'update',
-	    value: function update(data, options) {
+	    value: function update(data) {
 	      var _this10 = this;
 
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
 	      data = (0, _assign2.default)(this.data, data);
-	      return _datastore.UserStore.update(data, options).then(function () {
-	        _this10.data = data;
-	        return _this10.isActive();
-	      }).then(function (isActive) {
-	        if (isActive) {
-	          return _request.CacheRequest.setActiveUser(_this10.client, _this10.data);
+	      return _datastore.UserStore.update(data, options).then(function (data) {
+	        if (_this10.isActive()) {
+	          return _request.CacheRequest.setActiveUser(_this10.client, data);
 	        }
 
-	        return _this10;
-	      }).then(function () {
+	        return data;
+	      }).then(function (data) {
+	        _this10.data = data;
 	        return _this10;
 	      });
 	    }
@@ -36854,7 +36874,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: 'login',
-	    value: function login(username, password, options) {
+	    value: function login(username, password) {
+	      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
 	      var user = new this({}, options);
 	      return user.login(username, password, options);
 	    }
@@ -36868,25 +36890,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: 'connectIdentity',
-	    value: function connectIdentity(identity, session, options) {
+	    value: function connectIdentity(identity, session) {
+	      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
 	      var user = new this({}, options);
 	      return user.connectIdentity(identity, session, options);
 	    }
 	  }, {
 	    key: 'connectFacebook',
-	    value: function connectFacebook(clientId, options) {
+	    value: function connectFacebook(clientId) {
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
 	      var user = new this({}, options);
 	      return user.connectFacebook(clientId, options);
 	    }
 	  }, {
 	    key: 'connectGoogle',
-	    value: function connectGoogle(clientId, options) {
+	    value: function connectGoogle(clientId) {
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
 	      var user = new this({}, options);
 	      return user.connectGoogle(clientId, options);
 	    }
 	  }, {
 	    key: 'connectLinkedIn',
-	    value: function connectLinkedIn(clientId, options) {
+	    value: function connectLinkedIn(clientId) {
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
 	      var user = new this({}, options);
 	      return user.connectLinkedIn(clientId, options);
 	    }
@@ -36905,19 +36935,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: 'signup',
-	    value: function signup(data, options) {
+	    value: function signup(data) {
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
 	      var user = new this({}, options);
 	      return user.signup(data, options);
 	    }
 	  }, {
 	    key: 'signupWithIdentity',
-	    value: function signupWithIdentity(identity, session, options) {
+	    value: function signupWithIdentity(identity, session) {
+	      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
 	      var user = new this({}, options);
 	      return user.signupWithIdentity(identity, session, options);
 	    }
 	  }, {
 	    key: 'update',
-	    value: function update(data, options) {
+	    value: function update(data) {
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
 	      var activeUser = User.getActiveUser(options.client);
 
 	      if ((0, _utils.isDefined)(activeUser)) {
@@ -36928,7 +36964,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: 'me',
-	    value: function me(options) {
+	    value: function me() {
+	      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
 	      var activeUser = User.getActiveUser(options.client);
 
 	      if (activeUser) {
@@ -37029,13 +37067,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 	    }
 	  }, {
+	    key: 'lookup',
+	    value: function lookup(query) {
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+	      return _datastore.UserStore.lookup(query, options);
+	    }
+	  }, {
 	    key: 'exists',
-	    value: function exists(username, options) {
+	    value: function exists(username) {
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
 	      return _datastore.UserStore.exists(username, options);
 	    }
 	  }, {
 	    key: 'restore',
-	    value: function restore(id, options) {
+	    value: function restore(id) {
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
 	      return _datastore.UserStore.restore(id, options);
 	    }
 	  }]);
@@ -38240,6 +38289,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _errors = __webpack_require__(61);
 
+	var _utils = __webpack_require__(86);
+
+	var _query = __webpack_require__(194);
+
+	var _query2 = _interopRequireDefault(_query);
+
 	var _networkstore = __webpack_require__(424);
 
 	var _networkstore2 = _interopRequireDefault(_networkstore);
@@ -38277,6 +38332,45 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  _createClass(UserStore, [{
+	    key: 'lookup',
+	    value: function lookup(query) {
+	      var _this2 = this;
+
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+	      var stream = _utils.KinveyObservable.create(function (observer) {
+	        if ((0, _utils.isDefined)(query) && !(query instanceof _query2.default)) {
+	          return observer.error(new _errors.KinveyError('Invalid query. It must be an instance of the Query class.'));
+	        }
+
+	        var request = new _request.KinveyRequest({
+	          method: _request.RequestMethod.POST,
+	          authType: _request.AuthType.Default,
+	          url: _url2.default.format({
+	            protocol: _this2.client.protocol,
+	            host: _this2.client.host,
+	            pathname: _this2.pathname + '/_lookup',
+	            query: options.query
+	          }),
+	          properties: options.properties,
+	          body: (0, _utils.isDefined)(query) ? query.toPlainObject().filter : null,
+	          timeout: options.timeout,
+	          client: _this2.client
+	        });
+
+	        return request.execute().then(function (response) {
+	          return response.data;
+	        }).then(function (data) {
+	          return observer.next(data);
+	        }).then(function () {
+	          return observer.complete();
+	        }).catch(function (error) {
+	          return observer.error(error);
+	        });
+	      });
+	      return stream;
+	    }
+	  }, {
 	    key: 'create',
 	    value: function create() {
 	      return _es6Promise2.default.reject(new _errors.KinveyError('Please use `User.signup()` to create a user.'));
@@ -38295,7 +38389,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      if (!data._id) {
-	        return _es6Promise2.default.ject(new _errors.KinveyError('User must have an _id.'));
+	        return _es6Promise2.default.reject(new _errors.KinveyError('User must have an _id.'));
 	      }
 
 	      return _get(UserStore.prototype.__proto__ || Object.getPrototypeOf(UserStore.prototype), 'update', this).call(this, data, options);
