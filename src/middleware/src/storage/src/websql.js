@@ -1,5 +1,4 @@
-import { NotFoundError, isDefined } from 'kinvey-node-sdk/lib/export';
-import Promise from 'es6-promise';
+import { NotFoundError, isDefined } from 'kinvey-node-sdk/dist/export';
 import map from 'lodash/map';
 import forEach from 'lodash/forEach';
 import isArray from 'lodash/isArray';
@@ -249,7 +248,7 @@ export default {
       return Promise.resolve(undefined);
     }
 
-    return db.save('__supporttest', { _id: '1' })
+    return db.save('__testSupport', { _id: '1' })
       .then(() => {
         isSupported = true;
         return db;

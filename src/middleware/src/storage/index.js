@@ -1,4 +1,4 @@
-import { Storage, isDefined } from 'kinvey-node-sdk/lib/export';
+import { Storage, isDefined } from 'kinvey-node-sdk/dist/export';
 import IndexedDBAdapter from './src/indexeddb';
 import WebSQLAdapter from './src/websql';
 import { LocalStorageAdapter } from './src/webstorage';

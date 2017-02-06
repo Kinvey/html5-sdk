@@ -11,7 +11,7 @@
   "contributors": [
     "Thomas Conner <thomas@kinvey.com>"
   ],
-  "main": "./lib/index.js",
+  "main": "./dist/index.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:Kinvey/html5-sdk"
@@ -19,7 +19,7 @@
   "scripts": {
     "build": "npm run clean && npm run transpile && npm run bundle && npm run minify",
     "bundle": "webpack --config config/webpack.config.js",
-    "clean": "del coverage lib dist s3",
+    "clean": "del coverage dist s3",
     "minify": "uglifyjs --screw-ie8 --compress warnings=false --mangle --comments --output ./dist/kinvey-html5-sdk.min.js -- ./dist/kinvey-html5-sdk.js ",
     "cover": "istanbul cover _mocha -- --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit",
     "docs": "esdoc -c esdoc.json",
@@ -35,7 +35,7 @@
     "s3": "npm run build && shjs ./scripts/s3.js",
     "test": "mocha --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit",
     "test:watch": "mocha -w --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit",
-    "transpile": "babel src --out-dir lib",
+    "transpile": "babel src --out-dir dist",
     "version": "npm run build && git add -A dist"
   },
   "dependencies": {

@@ -15,7 +15,7 @@ var BANNER = '/**\n'
   + ' */\n';
 
 module.exports = {
-  context: path.resolve(__dirname, '../lib'),
+  context: path.resolve(__dirname, '../dist'),
   entry: ['core-js/es6/symbol', './index.js'],
   module: {
     loaders: [

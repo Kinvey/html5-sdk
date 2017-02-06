@@ -1,4 +1,4 @@
-import Kinvey, { ParseMiddleware, SerializeMiddleware } from 'kinvey-node-sdk/lib/export';
+import Kinvey, { ParseMiddleware, SerializeMiddleware } from 'kinvey-node-sdk/dist/export';
 import {
   CacheMiddleware,
   HttpMiddleware

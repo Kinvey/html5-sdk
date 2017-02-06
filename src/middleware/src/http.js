@@ -1,4 +1,4 @@
-import { HttpMiddleware } from 'kinvey-node-sdk/lib/export';
+import { HttpMiddleware } from 'kinvey-node-sdk/dist/export';
 import pkg from 'package.json';
 
 // Helper function to detect the browser name and version.

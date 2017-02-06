@@ -3,7 +3,8 @@
     "inline-dotenv",
     ["module-resolver", {
       "alias": {
-        "package.json": "./package.json"
+        "package.json": "./package.json",
+        "src": "./src"
       }
     }]
   ],

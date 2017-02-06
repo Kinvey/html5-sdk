@@ -1,5 +1,4 @@
-import { NotFoundError } from 'kinvey-node-sdk/lib/export';
-import Promise from 'es6-promise';
+import { NotFoundError } from 'kinvey-node-sdk/dist/export';
 import keyBy from 'lodash/keyBy';
 import merge from 'lodash/merge';
 import values from 'lodash/values';
@@ -117,7 +116,7 @@ export class LocalStorage extends WebStorage {
 
   static isSupported() {
     if (global.localStorage) {
-      const item = 'testLocalStorageSupport';
+      const item = '__testSupport';
       try {
         global.localStorage.setItem(item, item);
         global.localStorage.getItem(item);
@@ -230,10 +229,10 @@ export class SessionStorage extends WebStorage {
 
   static isSupported() {
     if (global.sessionStorage) {
-      const item = 'testSessionStorageSupport';
+      const item = '__testSupport';
       try {
         global.sessionStorage.setItem(item, item);
-        gloabl.sessionStorage.getItem(item);
+        global.sessionStorage.getItem(item);
         global.sessionStorage.removeItem(item);
         return Promise.resolve(true);
       } catch (e) {
