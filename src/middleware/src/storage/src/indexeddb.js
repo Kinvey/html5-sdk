@@ -272,28 +272,31 @@ class IndexedDB {
     });
   }
 
-  static isSupported() {
-    const name = 'testIndexedDBSupport';
+  static loadAdapter(name) {
     const indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
-
-    if (typeof indexedDB === 'undefined') {
-      return Promise.resolve(false);
-    }
+    const db = new IndexedDB(name);
 
     if (typeof isSupported !== 'undefined') {
-      return Promise.resolve(isSupported);
+      if (isSupported) {
+        return Promise.resolve(db);
+      }
+
+      return Promise.resolve(undefined);
     }
 
-    const db = new IndexedDB(name);
-    return db.save(name, { _id: '1' })
-      .then(() => db.clear())
+    if (typeof indexedDB === 'undefined') {
+      isSupported = false;
+      return Promise.resolve(undefined);
+    }
+
+    return db.save('__testSupport', { _id: '1' })
       .then(() => {
         isSupported = true;
-        return true;
+        return db;
       })
       .catch(() => {
         isSupported = false;
-        return false;
+        return undefined;
       });
   }
 }

@@ -1,29 +1,29 @@
-import { Storage, isDefined } from 'kinvey-node-sdk/dist/export';
-import IndexedDBAdapter from './src/indexeddb';
-import WebSQLAdapter from './src/websql';
-import { LocalStorageAdapter } from './src/webstorage';
+import KinveyStorage from 'kinvey-node-sdk/dist/request/src/middleware/src/storage';
+import { isDefined } from 'kinvey-node-sdk/dist/utils';
+import IndexedDB from './src/indexeddb';
+import WebSQL from './src/websql';
+import { LocalStorage } from './src/webstorage';
 
-export default class HTML5Storage extends Storage {
-  loadAdapter() {
-    return Promise.resolve()
-      .then(() => WebSQLAdapter.load(this.name))
+export default class Storage extends KinveyStorage {
+  getAdapter() {
+    return WebSQL.loadAdapter(this.name)
       .then((adapter) => {
         if (isDefined(adapter) === false) {
-          return IndexedDBAdapter.load(this.name);
+          return IndexedDB.loadAdapter(this.name);
         }
 
         return adapter;
       })
       .then((adapter) => {
         if (isDefined(adapter) === false) {
-          return LocalStorageAdapter.load(this.name);
+          return LocalStorage.loadAdapter(this.name);
         }
 
         return adapter;
       })
       .then((adapter) => {
         if (isDefined(adapter) === false) {
-          return super.loadAdapter();
+          return super.getAdapter();
         }
 
         return adapter;
