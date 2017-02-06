@@ -18,7 +18,7 @@
   },
   "scripts": {
     "build": "npm run clean && npm run transpile && npm run bundle && npm run minify",
-    "bundle": "webpack --config config/webpack.config.js",
+    "bundle": "webpack --config webpack.config.js",
     "clean": "del coverage dist s3",
     "minify": "uglifyjs --screw-ie8 --compress warnings=false --mangle --comments --output ./dist/kinvey-html5-sdk.min.js -- ./dist/kinvey-html5-sdk.js ",
     "cover": "istanbul cover _mocha -- --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit",
@@ -39,10 +39,10 @@
     "version": "npm run build && git add -A dist"
   },
   "dependencies": {
-    "core-js": "^2.4.1",
-    "es6-promise": "^4.0.3",
+    "core-js": "2.4.1",
+    "es6-promise": "4.0.5",
     "kinvey-node-sdk": "file:///Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/Node/SDK",
-    "lodash": "^4.16.2",
+    "lodash": "4.16.2",
     "xhr": "2.3.3"
   },
   "devDependencies": {
