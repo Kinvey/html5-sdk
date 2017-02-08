@@ -206,30 +206,6 @@ class WebSQL {
         return null;
       });
   }
-
-  static isSupported() {
-    const name = 'testWebSQLSupport';
-
-    if (typeof global.openDatabase === 'undefined') {
-      return Promise.resolve(false);
-    }
-
-    if (typeof isSupported !== 'undefined') {
-      return Promise.resolve(isSupported);
-    }
-
-    const db = new WebSQL(name);
-    return db.save(name, { _id: '1' })
-      .then(() => db.clear())
-      .then(() => {
-        isSupported = true;
-        return true;
-      })
-      .catch(() => {
-        isSupported = false;
-        return false;
-      });
-  }
 }
 
 export default {

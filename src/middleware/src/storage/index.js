@@ -5,25 +5,25 @@ import WebSQL from './src/websql';
 import { LocalStorage } from './src/webstorage';
 
 export default class Storage extends KinveyStorage {
-  getAdapter() {
-    return WebSQL.loadAdapter(this.name)
+  loadAdapter() {
+    return WebSQL.load(this.name)
       .then((adapter) => {
         if (isDefined(adapter) === false) {
-          return IndexedDB.loadAdapter(this.name);
+          return IndexedDB.load(this.name);
         }
 
         return adapter;
       })
       .then((adapter) => {
         if (isDefined(adapter) === false) {
-          return LocalStorage.loadAdapter(this.name);
+          return LocalStorage.load(this.name);
         }
 
         return adapter;
       })
       .then((adapter) => {
         if (isDefined(adapter) === false) {
-          return super.getAdapter();
+          return super.loadAdapter();
         }
 
         return adapter;

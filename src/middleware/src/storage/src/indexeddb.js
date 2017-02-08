@@ -271,34 +271,6 @@ class IndexedDB {
       };
     });
   }
-
-  static loadAdapter(name) {
-    const indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
-    const db = new IndexedDB(name);
-
-    if (typeof isSupported !== 'undefined') {
-      if (isSupported) {
-        return Promise.resolve(db);
-      }
-
-      return Promise.resolve(undefined);
-    }
-
-    if (typeof indexedDB === 'undefined') {
-      isSupported = false;
-      return Promise.resolve(undefined);
-    }
-
-    return db.save('__testSupport', { _id: '1' })
-      .then(() => {
-        isSupported = true;
-        return db;
-      })
-      .catch(() => {
-        isSupported = false;
-        return undefined;
-      });
-  }
 }
 
 export default {
