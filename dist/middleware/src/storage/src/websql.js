@@ -36,7 +36,7 @@ var idAttribute = process && process.env && process.env.KINVEY_ID_ATTRIBUTE || '
 var masterCollectionName = 'sqlite_master';
 var size = 5 * 1000 * 1000; // Database size in bytes
 var dbCache = {};
-var _isSupported = void 0;
+var isSupported = void 0;
 
 var WebSQL = function () {
   function WebSQL() {
@@ -45,11 +45,11 @@ var WebSQL = function () {
     _classCallCheck(this, WebSQL);
 
     if ((0, _export.isDefined)(name) === false) {
-      throw new Error('A name is required to use the IndexedDB adapter.', name);
+      throw new Error('A name is required to use the WebSQL adapter.', name);
     }
 
     if ((0, _isString2.default)(name) === false) {
-      throw new Error('The name must be a string to use the IndexedDB adapter', name);
+      throw new Error('The name must be a string to use the WebSQL adapter', name);
     }
 
     this.name = name;
@@ -61,7 +61,7 @@ var WebSQL = function () {
       var db = dbCache[this.name];
 
       if (!db) {
-        db = global.openDatabase(this.name, 1, '', size);
+        db = global.openDatabase(this.name, 1, 'Kinvey Cache', size);
         dbCache[this.name] = db;
       }
 
@@ -241,30 +241,6 @@ var WebSQL = function () {
         return null;
       });
     }
-  }], [{
-    key: 'isSupported',
-    value: function isSupported() {
-      var name = 'testWebSQLSupport';
-
-      if (typeof global.openDatabase === 'undefined') {
-        return Promise.resolve(false);
-      }
-
-      if (typeof _isSupported !== 'undefined') {
-        return Promise.resolve(_isSupported);
-      }
-
-      var db = new WebSQL(name);
-      return db.save(name, { _id: '1' }).then(function () {
-        return db.clear();
-      }).then(function () {
-        _isSupported = true;
-        return true;
-      }).catch(function () {
-        _isSupported = false;
-        return false;
-      });
-    }
   }]);
 
   return WebSQL;
@@ -278,8 +254,8 @@ exports.default = {
       return Promise.resolve(undefined);
     }
 
-    if ((0, _export.isDefined)(_isSupported)) {
-      if (_isSupported) {
+    if ((0, _export.isDefined)(isSupported)) {
+      if (isSupported) {
         return Promise.resolve(db);
       }
 
@@ -287,10 +263,10 @@ exports.default = {
     }
 
     return db.save('__testSupport', { _id: '1' }).then(function () {
-      _isSupported = true;
+      isSupported = true;
       return db;
     }).catch(function () {
-      _isSupported = false;
+      isSupported = false;
       return undefined;
     });
   }

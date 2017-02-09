@@ -178,21 +178,21 @@ var LocalStorage = exports.LocalStorage = function (_WebStorage) {
       });
     }
   }], [{
-    key: 'isSupported',
-    value: function isSupported() {
+    key: 'load',
+    value: function load(name) {
       if (global.localStorage) {
         var item = '__testSupport';
         try {
           global.localStorage.setItem(item, item);
           global.localStorage.getItem(item);
           global.localStorage.removeItem(item);
-          return Promise.resolve(true);
+          return Promise.resolve(new LocalStorage(name));
         } catch (e) {
-          return Promise.resolve(false);
+          return Promise.resolve(undefined);
         }
       }
 
-      return Promise.resolve(false);
+      return Promise.resolve(undefined);
     }
   }]);
 
@@ -312,21 +312,21 @@ var SessionStorage = exports.SessionStorage = function (_WebStorage2) {
       });
     }
   }], [{
-    key: 'isSupported',
-    value: function isSupported() {
+    key: 'load',
+    value: function load(name) {
       if (global.sessionStorage) {
         var item = '__testSupport';
         try {
           global.sessionStorage.setItem(item, item);
           global.sessionStorage.getItem(item);
           global.sessionStorage.removeItem(item);
-          return Promise.resolve(true);
+          return Promise.resolve(new LocalStorage(name));
         } catch (e) {
-          return Promise.resolve(false);
+          return Promise.resolve(undefined);
         }
       }
 
-      return Promise.resolve(false);
+      return Promise.resolve(undefined);
     }
   }]);
 
@@ -456,9 +456,13 @@ var CookieStorage = exports.CookieStorage = function (_WebStorage3) {
       });
     }
   }], [{
-    key: 'isSupported',
-    value: function isSupported() {
-      return Promise.resolve(typeof global.document.cookie !== 'undefined');
+    key: 'load',
+    value: function load(name) {
+      if (typeof global.document.cookie === 'undefined') {
+        return Promise.resolve(undefined);
+      }
+
+      return Promise.resolve(new CookieStorage(name));
     }
   }]);
 
