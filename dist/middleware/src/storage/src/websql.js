@@ -6,11 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _errors = require('./errors');
-
-var _es6Promise = require('es6-promise');
-
-var _es6Promise2 = _interopRequireDefault(_es6Promise);
+var _export = require('kinvey-node-sdk/dist/export');
 
 var _map = require('lodash/map');
 
@@ -38,15 +34,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var idAttribute = process && process.env && process.env.KINVEY_ID_ATTRIBUTE || '_id' || '_id';
 var masterCollectionName = 'sqlite_master';
+var size = 5 * 1000 * 1000; // Database size in bytes
 var dbCache = {};
-var isSupported = void 0;
-var SIZE = 5 * 1000 * 1000; // 5mb
+var _isSupported = void 0;
 
 var WebSQL = function () {
   function WebSQL() {
     var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'kinvey';
 
     _classCallCheck(this, WebSQL);
+
+    if ((0, _export.isDefined)(name) === false) {
+      throw new Error('A name is required to use the IndexedDB adapter.', name);
+    }
+
+    if ((0, _isString2.default)(name) === false) {
+      throw new Error('The name must be a string to use the IndexedDB adapter', name);
+    }
 
     this.name = name;
   }
@@ -57,7 +61,7 @@ var WebSQL = function () {
       var db = dbCache[this.name];
 
       if (!db) {
-        db = global.openDatabase(this.name, 1, '', SIZE);
+        db = global.openDatabase(this.name, 1, '', size);
         dbCache[this.name] = db;
       }
 
@@ -76,7 +80,7 @@ var WebSQL = function () {
       var isMulti = (0, _isArray2.default)(query);
       query = isMulti ? query : [[query, parameters]];
 
-      var promise = new _es6Promise2.default(function (resolve, reject) {
+      var promise = new Promise(function (resolve, reject) {
         var writeTxn = write || !(0, _isFunction2.default)(db.readTransaction);
         db[writeTxn ? 'transaction' : 'readTransaction'](function (tx) {
           if (write && !isMaster) {
@@ -122,23 +126,16 @@ var WebSQL = function () {
         }, function (error) {
           error = (0, _isString2.default)(error) ? error : error.message;
 
-          // Safari calls this function regardless if user permits more quota or not.
-          // And there's no way for a developer to know user's reaction.
-          if (error && typeof SQLError !== 'undefined' && error.code === SQLError.QUOTA_ERR) {
-            // Start over the transaction again to check if user permitted or not.
-            return _this.openTransaction(collection, query, parameters, write);
-          }
-
           if (error && error.indexOf('no such table') === -1) {
-            return reject(new _errors.NotFoundError('The ' + collection + ' collection was not found on' + (' the ' + _this.name + ' WebSQL database.')));
+            return reject(new _export.NotFoundError('The ' + collection + ' collection was not found on' + (' the ' + _this.name + ' WebSQL database.')));
           }
 
-          var checkQuery = 'SELECT name AS value from #{collection} WHERE type = ? AND name = ?';
-          var checkParameters = ['table', collection];
+          var query = 'SELECT name AS value from #{collection} WHERE type = ? AND name = ?';
+          var parameters = ['table', collection];
 
-          return _this.openTransaction(masterCollectionName, checkQuery, checkParameters).then(function (response) {
+          return _this.openTransaction(masterCollectionName, query, parameters).then(function (response) {
             if (response.result.length === 0) {
-              return reject(new _errors.NotFoundError('The ' + collection + ' collection was not found on' + (' the ' + _this.name + ' WebSQL database.')));
+              return reject(new _export.NotFoundError('The ' + collection + ' collection was not found on' + (' the ' + _this.name + ' WebSQL database.')));
             }
 
             return reject(new Error('Unable to open a transaction for the ' + collection + (' collection on the ' + _this.name + ' WebSQL database.')));
@@ -168,7 +165,7 @@ var WebSQL = function () {
         return response.result;
       }).then(function (entities) {
         if (entities.length === 0) {
-          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this2.name + ' WebSQL database.'));
+          throw new _export.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this2.name + ' WebSQL database.'));
         }
 
         return entities[0];
@@ -186,7 +183,7 @@ var WebSQL = function () {
       }
 
       if (entities.length === 0) {
-        return _es6Promise2.default.resolve(null);
+        return Promise.resolve(null);
       }
 
       entities = (0, _map2.default)(entities, function (entity) {
@@ -211,7 +208,7 @@ var WebSQL = function () {
         count = count || entities.length;
 
         if (count === 0) {
-          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this3.name + ' WebSQL database.'));
+          throw new _export.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this3.name + ' WebSQL database.'));
         }
 
         return entities[0];
@@ -245,29 +242,27 @@ var WebSQL = function () {
       });
     }
   }], [{
-    key: 'loadAdapter',
-    value: function loadAdapter(name) {
-      var db = new WebSQL(name);
-
-      if (typeof isSupported !== 'undefined') {
-        if (isSupported) {
-          return _es6Promise2.default.resolve(db);
-        }
-
-        return _es6Promise2.default.resolve(undefined);
-      }
+    key: 'isSupported',
+    value: function isSupported() {
+      var name = 'testWebSQLSupport';
 
       if (typeof global.openDatabase === 'undefined') {
-        isSupported = false;
-        return _es6Promise2.default.resolve(undefined);
+        return Promise.resolve(false);
       }
 
-      return db.save('__testSupport', { _id: '1' }).then(function () {
-        isSupported = true;
-        return db;
+      if (typeof _isSupported !== 'undefined') {
+        return Promise.resolve(_isSupported);
+      }
+
+      var db = new WebSQL(name);
+      return db.save(name, { _id: '1' }).then(function () {
+        return db.clear();
+      }).then(function () {
+        _isSupported = true;
+        return true;
       }).catch(function () {
-        isSupported = false;
-        return undefined;
+        _isSupported = false;
+        return false;
       });
     }
   }]);
@@ -275,4 +270,28 @@ var WebSQL = function () {
   return WebSQL;
 }();
 
-exports.default = WebSQL;
+exports.default = {
+  load: function load(name) {
+    var db = new WebSQL(name);
+
+    if ((0, _export.isDefined)(global.openDatabase) === false) {
+      return Promise.resolve(undefined);
+    }
+
+    if ((0, _export.isDefined)(_isSupported)) {
+      if (_isSupported) {
+        return Promise.resolve(db);
+      }
+
+      return Promise.resolve(undefined);
+    }
+
+    return db.save('__testSupport', { _id: '1' }).then(function () {
+      _isSupported = true;
+      return db;
+    }).catch(function () {
+      _isSupported = false;
+      return undefined;
+    });
+  }
+};

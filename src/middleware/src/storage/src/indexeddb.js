@@ -1,5 +1,4 @@
-import { NotFoundError } from './errors';
-import Promise from 'es6-promise';
+import { NotFoundError, isDefined } from 'kinvey-node-sdk/dist/export';
 import forEach from 'lodash/forEach';
 import isString from 'lodash/isString';
 import isArray from 'lodash/isArray';
@@ -13,13 +12,13 @@ const TransactionMode = {
 };
 Object.freeze(TransactionMode);
 
-export default class IndexedDB {
+class IndexedDB {
   constructor(name) {
-    if (!name) {
+    if (isDefined(name) === false) {
       throw new Error('A name is required to use the IndexedDB adapter.', name);
     }
 
-    if (!isString(name)) {
+    if (isString(name) === false) {
       throw new Error('The name must be a string to use the IndexedDB adapter', name);
     }
 
@@ -272,21 +271,22 @@ export default class IndexedDB {
       };
     });
   }
+}
 
-  static loadAdapter(name) {
+export default {
+  load(name) {
     const indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
     const db = new IndexedDB(name);
 
-    if (typeof isSupported !== 'undefined') {
+    if (isDefined(indexedDB) === false) {
+      return Promise.resolve(undefined);
+    }
+
+    if (isDefined(isSupported)) {
       if (isSupported) {
         return Promise.resolve(db);
       }
 
-      return Promise.resolve(undefined);
-    }
-
-    if (typeof indexedDB === 'undefined') {
-      isSupported = false;
       return Promise.resolve(undefined);
     }
 
@@ -300,4 +300,4 @@ export default class IndexedDB {
         return undefined;
       });
   }
-}
+};

@@ -39,5 +39,10 @@
   },
   "globals": {
     "SQLError": true
+  },
+  "settings": {
+    "import/resolver": {
+      "babel-module": {}
+    }
   }
 }

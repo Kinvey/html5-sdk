@@ -6,11 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _errors = require('./errors');
-
-var _es6Promise = require('es6-promise');
-
-var _es6Promise2 = _interopRequireDefault(_es6Promise);
+var _export = require('kinvey-node-sdk/dist/export');
 
 var _forEach = require('lodash/forEach');
 
@@ -33,7 +29,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var dbCache = {};
-var isSupported = void 0;
+var _isSupported = void 0;
 
 var TransactionMode = {
   ReadWrite: 'readwrite',
@@ -45,11 +41,11 @@ var IndexedDB = function () {
   function IndexedDB(name) {
     _classCallCheck(this, IndexedDB);
 
-    if (!name) {
+    if ((0, _export.isDefined)(name) === false) {
       throw new Error('A name is required to use the IndexedDB adapter.', name);
     }
 
-    if (!(0, _isString2.default)(name)) {
+    if ((0, _isString2.default)(name) === false) {
       throw new Error('The name must be a string to use the IndexedDB adapter', name);
     }
 
@@ -89,7 +85,7 @@ var IndexedDB = function () {
             return error(err);
           }
         } else if (!write) {
-          return error(new _errors.NotFoundError('The ' + collection + ' collection was not found on' + (' the ' + this.name + ' IndexedDB database.')));
+          return error(new _export.NotFoundError('The ' + collection + ' collection was not found on' + (' the ' + this.name + ' IndexedDB database.')));
         }
       }
 
@@ -188,7 +184,7 @@ var IndexedDB = function () {
     value: function find(collection) {
       var _this2 = this;
 
-      return new _es6Promise2.default(function (resolve, reject) {
+      return new Promise(function (resolve, reject) {
         _this2.openTransaction(collection, false, function (txn) {
           var store = txn.objectStore(collection);
           var request = store.openCursor();
@@ -216,7 +212,7 @@ var IndexedDB = function () {
     value: function findById(collection, id) {
       var _this3 = this;
 
-      return new _es6Promise2.default(function (resolve, reject) {
+      return new Promise(function (resolve, reject) {
         _this3.openTransaction(collection, false, function (txn) {
           var store = txn.objectStore(collection);
           var request = store.get(id);
@@ -227,12 +223,12 @@ var IndexedDB = function () {
             if (entity) {
               resolve(entity);
             } else {
-              reject(new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this3.name + ' IndexedDB database.')));
+              reject(new _export.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this3.name + ' IndexedDB database.')));
             }
           };
 
           request.onerror = function () {
-            reject(new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this3.name + ' IndexedDB database.')));
+            reject(new _export.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this3.name + ' IndexedDB database.')));
           };
         }, reject);
       });
@@ -250,10 +246,10 @@ var IndexedDB = function () {
       }
 
       if (entities.length === 0) {
-        return _es6Promise2.default.resolve(null);
+        return Promise.resolve(null);
       }
 
-      return new _es6Promise2.default(function (resolve, reject) {
+      return new Promise(function (resolve, reject) {
         _this4.openTransaction(collection, true, function (txn) {
           var store = txn.objectStore(collection);
 
@@ -276,7 +272,7 @@ var IndexedDB = function () {
     value: function removeById(collection, id) {
       var _this5 = this;
 
-      return new _es6Promise2.default(function (resolve, reject) {
+      return new Promise(function (resolve, reject) {
         _this5.openTransaction(collection, true, function (txn) {
           var store = txn.objectStore(collection);
           var request = store.get(id);
@@ -288,12 +284,12 @@ var IndexedDB = function () {
             if (entity) {
               resolve(entity);
             } else {
-              reject(new _errors.NotFoundError('An entity with id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this5.name + ' IndexedDB database.')));
+              reject(new _export.NotFoundError('An entity with id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this5.name + ' IndexedDB database.')));
             }
           };
 
           txn.onerror = function () {
-            reject(new _errors.NotFoundError('An entity with id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this5.name + ' IndexedDB database.')));
+            reject(new _export.NotFoundError('An entity with id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this5.name + ' IndexedDB database.')));
           };
         }, reject);
       });
@@ -303,7 +299,7 @@ var IndexedDB = function () {
     value: function clear() {
       var _this6 = this;
 
-      return new _es6Promise2.default(function (resolve, reject) {
+      return new Promise(function (resolve, reject) {
         var indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
         var request = indexedDB.deleteDatabase(_this6.name);
 
@@ -318,30 +314,28 @@ var IndexedDB = function () {
       });
     }
   }], [{
-    key: 'loadAdapter',
-    value: function loadAdapter(name) {
+    key: 'isSupported',
+    value: function isSupported() {
+      var name = 'testIndexedDBSupport';
       var indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
-      var db = new IndexedDB(name);
-
-      if (typeof isSupported !== 'undefined') {
-        if (isSupported) {
-          return _es6Promise2.default.resolve(db);
-        }
-
-        return _es6Promise2.default.resolve(undefined);
-      }
 
       if (typeof indexedDB === 'undefined') {
-        isSupported = false;
-        return _es6Promise2.default.resolve(undefined);
+        return Promise.resolve(false);
       }
 
-      return db.save('__testSupport', { _id: '1' }).then(function () {
-        isSupported = true;
-        return db;
+      if (typeof _isSupported !== 'undefined') {
+        return Promise.resolve(_isSupported);
+      }
+
+      var db = new IndexedDB(name);
+      return db.save(name, { _id: '1' }).then(function () {
+        return db.clear();
+      }).then(function () {
+        _isSupported = true;
+        return true;
       }).catch(function () {
-        isSupported = false;
-        return undefined;
+        _isSupported = false;
+        return false;
       });
     }
   }]);
@@ -349,4 +343,29 @@ var IndexedDB = function () {
   return IndexedDB;
 }();
 
-exports.default = IndexedDB;
+exports.default = {
+  load: function load(name) {
+    var indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
+    var db = new IndexedDB(name);
+
+    if ((0, _export.isDefined)(indexedDB) === false) {
+      return Promise.resolve(undefined);
+    }
+
+    if ((0, _export.isDefined)(_isSupported)) {
+      if (_isSupported) {
+        return Promise.resolve(db);
+      }
+
+      return Promise.resolve(undefined);
+    }
+
+    return db.save('__testSupport', { _id: '1' }).then(function () {
+      _isSupported = true;
+      return db;
+    }).catch(function () {
+      _isSupported = false;
+      return undefined;
+    });
+  }
+};

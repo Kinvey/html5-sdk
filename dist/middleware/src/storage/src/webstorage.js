@@ -7,11 +7,7 @@ exports.CookieStorage = exports.SessionStorage = exports.LocalStorage = undefine
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _errors = require('./errors');
-
-var _es6Promise = require('es6-promise');
-
-var _es6Promise2 = _interopRequireDefault(_es6Promise);
+var _export = require('kinvey-node-sdk/dist/export');
 
 var _keyBy = require('lodash/keyBy');
 
@@ -88,12 +84,12 @@ var LocalStorage = exports.LocalStorage = function (_WebStorage) {
         var entities = global.localStorage.getItem(collection);
 
         if (entities) {
-          return _es6Promise2.default.resolve(JSON.parse(entities));
+          return Promise.resolve(JSON.parse(entities));
         }
 
-        return _es6Promise2.default.resolve(entities || []);
+        return Promise.resolve(entities || []);
       } catch (error) {
-        return _es6Promise2.default.reject(error);
+        return Promise.reject(error);
       }
     }
   }, {
@@ -112,7 +108,7 @@ var LocalStorage = exports.LocalStorage = function (_WebStorage) {
         });
 
         if (!entity) {
-          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this2.name + ' localstorage database.'));
+          throw new _export.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this2.name + ' localstorage database.'));
         }
 
         return entity;
@@ -158,7 +154,7 @@ var LocalStorage = exports.LocalStorage = function (_WebStorage) {
         var entity = entitiesById[id];
 
         if (!entity) {
-          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this4.name + ' memory database.'));
+          throw new _export.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this4.name + ' memory database.'));
         }
 
         delete entitiesById[id];
@@ -185,35 +181,18 @@ var LocalStorage = exports.LocalStorage = function (_WebStorage) {
     key: 'isSupported',
     value: function isSupported() {
       if (global.localStorage) {
-        var item = 'testLocalStorageSupport';
-        try {
-          global.localStorage.setItem(item, item);
-          global.localStorage.getItem(item);
-          global.localStorage.removeItem(item);
-          return _es6Promise2.default.resolve(true);
-        } catch (e) {
-          return _es6Promise2.default.resolve(false);
-        }
-      }
-
-      return _es6Promise2.default.resolve(false);
-    }
-  }, {
-    key: 'loadAdapter',
-    value: function loadAdapter(name) {
-      if (global.localStorage) {
         var item = '__testSupport';
         try {
           global.localStorage.setItem(item, item);
           global.localStorage.getItem(item);
           global.localStorage.removeItem(item);
-          return _es6Promise2.default.resolve(new LocalStorage(name));
+          return Promise.resolve(true);
         } catch (e) {
-          return _es6Promise2.default.resolve(undefined);
+          return Promise.resolve(false);
         }
       }
 
-      return _es6Promise2.default.resolve(undefined);
+      return Promise.resolve(false);
     }
   }]);
 
@@ -239,12 +218,12 @@ var SessionStorage = exports.SessionStorage = function (_WebStorage2) {
         var entities = global.localStorage.getItem(collection);
 
         if (entities) {
-          return _es6Promise2.default.resolve(JSON.parse(entities));
+          return Promise.resolve(JSON.parse(entities));
         }
 
-        return _es6Promise2.default.resolve(entities || []);
+        return Promise.resolve(entities || []);
       } catch (error) {
-        return _es6Promise2.default.reject(error);
+        return Promise.reject(error);
       }
     }
   }, {
@@ -263,7 +242,7 @@ var SessionStorage = exports.SessionStorage = function (_WebStorage2) {
         });
 
         if (!entity) {
-          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this7.name + ' localstorage database.'));
+          throw new _export.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this7.name + ' localstorage database.'));
         }
 
         return entity;
@@ -309,7 +288,7 @@ var SessionStorage = exports.SessionStorage = function (_WebStorage2) {
         var entity = entitiesById[id];
 
         if (!entity) {
-          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this9.name + ' memory database.'));
+          throw new _export.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this9.name + ' memory database.'));
         }
 
         delete entitiesById[id];
@@ -333,21 +312,21 @@ var SessionStorage = exports.SessionStorage = function (_WebStorage2) {
       });
     }
   }], [{
-    key: 'loadAdapter',
-    value: function loadAdapter(name) {
+    key: 'isSupported',
+    value: function isSupported() {
       if (global.sessionStorage) {
         var item = '__testSupport';
         try {
           global.sessionStorage.setItem(item, item);
           global.sessionStorage.getItem(item);
           global.sessionStorage.removeItem(item);
-          return _es6Promise2.default.resolve(new LocalStorage(name));
+          return Promise.resolve(true);
         } catch (e) {
-          return _es6Promise2.default.resolve(undefined);
+          return Promise.resolve(false);
         }
       }
 
-      return _es6Promise2.default.resolve(undefined);
+      return Promise.resolve(false);
     }
   }]);
 
@@ -378,10 +357,10 @@ var CookieStorage = exports.CookieStorage = function (_WebStorage3) {
           value = value.substring(1);
         }
         if (value.indexOf(collection) === 0) {
-          return _es6Promise2.default.resolve(JSON.parse(decodeURIComponent(value.substring(collection.length, value.length))));
+          return Promise.resolve(JSON.parse(decodeURIComponent(value.substring(collection.length, value.length))));
         }
       }
-      return _es6Promise2.default.resolve([]);
+      return Promise.resolve([]);
     }
   }, {
     key: 'find',
@@ -399,7 +378,7 @@ var CookieStorage = exports.CookieStorage = function (_WebStorage3) {
         });
 
         if (!entity) {
-          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this12.name + ' localstorage database.'));
+          throw new _export.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this12.name + ' localstorage database.'));
         }
 
         return entity;
@@ -449,7 +428,7 @@ var CookieStorage = exports.CookieStorage = function (_WebStorage3) {
         var entity = entitiesById[id];
 
         if (!entity) {
-          throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this14.name + ' memory database.'));
+          throw new _export.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + _this14.name + ' memory database.'));
         }
 
         delete entitiesById[id];
@@ -479,16 +458,7 @@ var CookieStorage = exports.CookieStorage = function (_WebStorage3) {
   }], [{
     key: 'isSupported',
     value: function isSupported() {
-      return _es6Promise2.default.resolve(typeof global.document.cookie !== 'undefined');
-    }
-  }, {
-    key: 'loadAdapter',
-    value: function loadAdapter(name) {
-      if (typeof global.document.cookie === 'undefined') {
-        return _es6Promise2.default.resolve(undefined);
-      }
-
-      return _es6Promise2.default.resolve(new CookieStorage(name));
+      return Promise.resolve(typeof global.document.cookie !== 'undefined');
     }
   }]);
 

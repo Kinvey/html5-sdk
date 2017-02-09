@@ -1,5 +1,4 @@
-import { NotFoundError } from './errors';
-import Promise from 'es6-promise';
+import { NotFoundError } from 'kinvey-node-sdk/dist/export';
 import keyBy from 'lodash/keyBy';
 import merge from 'lodash/merge';
 import values from 'lodash/values';
@@ -115,23 +114,7 @@ export class LocalStorage extends WebStorage {
       });
   }
 
-  static isSupported() {
-    if (global.localStorage) {
-      const item = 'testLocalStorageSupport';
-      try {
-        global.localStorage.setItem(item, item);
-        global.localStorage.getItem(item);
-        global.localStorage.removeItem(item);
-        return Promise.resolve(true);
-      } catch (e) {
-        return Promise.resolve(false);
-      }
-    }
-
-    return Promise.resolve(false);
-  }
-
-  static loadAdapter(name) {
+  static load(name) {
     if (global.localStorage) {
       const item = '__testSupport';
       try {
@@ -244,7 +227,7 @@ export class SessionStorage extends WebStorage {
       });
   }
 
-  static loadAdapter(name) {
+  static load(name) {
     if (global.sessionStorage) {
       const item = '__testSupport';
       try {
@@ -367,11 +350,7 @@ export class CookieStorage extends WebStorage {
       });
   }
 
-  static isSupported() {
-    return Promise.resolve(typeof global.document.cookie !== 'undefined');
-  }
-
-  static loadAdapter(name) {
+  static load(name) {
     if (typeof global.document.cookie === 'undefined') {
       return Promise.resolve(undefined);
     }
