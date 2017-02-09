@@ -27,7 +27,7 @@ class WebSQL {
     let db = dbCache[this.name];
 
     if (!db) {
-      db = global.openDatabase(this.name, 1, '', size);
+      db = global.openDatabase(this.name, 1, 'Kinvey Cache', size);
       dbCache[this.name] = db;
     }
 
