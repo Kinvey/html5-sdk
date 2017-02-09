@@ -13,11 +13,11 @@ let isSupported;
 class WebSQL {
   constructor(name = 'kinvey') {
     if (isDefined(name) === false) {
-      throw new Error('A name is required to use the IndexedDB adapter.', name);
+      throw new Error('A name is required to use the WebSQL adapter.', name);
     }
 
     if (isString(name) === false) {
-      throw new Error('The name must be a string to use the IndexedDB adapter', name);
+      throw new Error('The name must be a string to use the WebSQL adapter', name);
     }
 
     this.name = name;
