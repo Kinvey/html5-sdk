@@ -2,7 +2,7 @@
 
 [Kinvey](http://www.kinvey.com) (pronounced Kin-vey, like convey) makes it ridiculously easy for developers to setup, use and operate a cloud backend for their mobile apps. They don't have to worry about connecting to various cloud services, setting up servers for their backend, or maintaining and scaling them.
 
-This node and bower module makes it very easy to connect your Html5 app with Kinvey.
+This npm package makes it very easy to connect your HTML5 app with Kinvey.
 
 ## How to use
 
@@ -33,24 +33,16 @@ If you downloaded the SDK and saved it to a file, add a script tag to your main 
 <script src="path/to/kinvey-html5-sdk.js"></script>
 ```
 
-Next, use `Kinvey.init` to configure your app. Replace `<appKey>` and `<appSecret>` with your apps app key and secret. You can find these for your app using the [Kinvey Console App](https://console.kinvey.com).
+Next, use `Kinvey.initialize` to configure your app. Replace `<appKey>` and `<appSecret>` with your apps app key and secret. You can find these for your app using the [Kinvey Console App](https://console.kinvey.com).
 
 ```javascript
-Kinvey.init({
+Kinvey.initialize({
     appKey: '<appKey>',
     appSecret: '<appSecret>'
-});
-```
-
-### 4. Verify Set Up
-You can use the following snippet to verify the app credentials were entered correctly. This function will contact the backend and verify that the SDK can communicate with your app.
-
-```javascript
-Kinvey.ping().then(function(response) {
-  console.log('Kinvey Ping Success. Kinvey Service is alive, version: ' + response.version + ', response: ' + response.kinvey);
-}).catch(function(error) {
-  console.log('Kinvey Ping Failed. Response: ' + error.message);
-});
+})
+  .then(function(activeUser) {
+    // ...
+  });
 ```
 
 ## What’s next?
