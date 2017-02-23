@@ -10,6 +10,7 @@ docs
 .tmp
 tmp
 /s3
+dist
 
 # Test Files
 coverage
