@@ -35,8 +35,7 @@
     "s3": "npm run build && shjs ./scripts/s3.js",
     "test": "mocha --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit",
     "test:watch": "mocha -w --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit",
-    "transpile": "babel src --out-dir dist",
-    "version": "npm run build && git add -A dist"
+    "transpile": "babel src --out-dir dist"
   },
   "dependencies": {
     "core-js": "2.4.1",
