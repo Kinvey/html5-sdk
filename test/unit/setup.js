@@ -1,4 +1,4 @@
-import { Kinvey } from 'kinvey-node-sdk';
+import { Kinvey } from 'kinvey-js-sdk';
 import nock from 'nock';
 
 // Record for nock
