@@ -1,4 +1,5 @@
-import { HttpMiddleware } from 'kinvey-node-sdk/dist/export';
+import { Middleware, NoNetworkConnectionError, TimeoutError, isDefined } from 'kinvey-js-sdk/dist/export';
+import xhr from 'xhr';
 import pkg from 'package.json';
 
 // Helper function to detect the browser name and version.
@@ -68,8 +69,53 @@ export function deviceInformation() {
   }).join(' ');
 }
 
-export default class HTML5HttpMiddleware extends HttpMiddleware {
+export default class HttpMiddleware extends Middleware {
+  constructor(name = 'Http Middleware') {
+    super(name);
+  }
+
   get deviceInformation() {
     return deviceInformation();
+  }
+
+  handle(request) {
+    const promise = new Promise((resolve, reject) => {
+      const { url, method, headers, body, timeout, followRedirect } = request;
+
+      // Add the X-Kinvey-Device-Information header
+      headers['X-Kinvey-Device-Information'] = this.deviceInformation;
+
+      xhr({
+        method: method,
+        url: url,
+        headers: headers,
+        body: body,
+        followRedirect: followRedirect,
+        timeout: timeout
+      }, (error, response, body) => {
+        if (isDefined(response) === false) {
+          if (error.code === 'ESOCKETTIMEDOUT' || error.code === 'ETIMEDOUT') {
+            return reject(new TimeoutError('The network request timed out.'));
+          } else if (error.code === 'ENOENT') {
+            return reject(new NoNetworkConnectionError('You do not have a network connection.'));
+          }
+
+          return reject(error);
+        }
+
+        return resolve({
+          response: {
+            statusCode: response.statusCode,
+            headers: response.headers,
+            data: body
+          }
+        });
+      });
+    });
+    return promise;
+  }
+
+  cancel() {
+    return Promise.resolve();
   }
 }
