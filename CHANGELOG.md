@@ -1,4 +1,13 @@
 # Changelog
+## [v3.4.1](https://github.com/Kinvey/html5-sdk/tree/v3.4.1) (2016-02-23)
+[Full Changelog](https://github.com/Kinvey/html5-sdk/compare/v3.4.0...v3.4.1)<br/>
+
+**Changes**
+- Used rack API to replace `CacheMiddleware` and `HttpMiddleware`. [#12](https://github.com/Kinvey/html5-sdk/pull/12)
+
+**Updated Dependencies:**
+- Updated `kinvey-node-sdk` to `v3.4.0`.
+
 ## [v3.4.0](https://github.com/Kinvey/html5-sdk/tree/v3.4.0) (2016-02-09)
 [Full Changelog](https://github.com/Kinvey/html5-sdk/compare/v3.3.5...v3.4.0)<br/>
 
