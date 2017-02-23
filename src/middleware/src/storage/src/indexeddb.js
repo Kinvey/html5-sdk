@@ -1,4 +1,4 @@
-import { NotFoundError, isDefined } from 'kinvey-node-sdk/dist/export';
+import { NotFoundError, isDefined } from 'kinvey-js-sdk/dist/export';
 import forEach from 'lodash/forEach';
 import isString from 'lodash/isString';
 import isArray from 'lodash/isArray';

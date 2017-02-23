@@ -1,4 +1,4 @@
-import { NotFoundError } from 'kinvey-node-sdk/dist/export';
+import { NotFoundError } from 'kinvey-js-sdk/dist/export';
 import keyBy from 'lodash/keyBy';
 import merge from 'lodash/merge';
 import values from 'lodash/values';

@@ -1,5 +1,5 @@
-import KinveyStorage from 'kinvey-node-sdk/dist/request/src/middleware/src/storage';
-import { isDefined } from 'kinvey-node-sdk/dist/utils';
+import KinveyStorage from 'kinvey-js-sdk/dist/request/src/middleware/src/storage';
+import { isDefined } from 'kinvey-js-sdk/dist/utils';
 import IndexedDB from './src/indexeddb';
 import WebSQL from './src/websql';
 import { LocalStorage } from './src/webstorage';
