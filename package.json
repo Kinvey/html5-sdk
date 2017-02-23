@@ -1,7 +1,7 @@
 {
   "name": "kinvey-html5-sdk",
   "version": "3.4.0",
-  "description": "Kinvey JavaScript SDK for HTML5.",
+  "description": "Kinvey JavaScript SDK for HTML5 applications.",
   "homepage": "http://www.kinvey.com",
   "bugs": {
     "url": "https://github.com/Kinvey/html5-sdk/issues"
