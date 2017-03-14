@@ -44,6 +44,9 @@
     "lodash": "4.17.4",
     "xhr": "2.3.3"
   },
+  "peerDependencies": {
+    "kinvey-js-sdk": "3.4.2"
+  },
   "devDependencies": {
     "babel-cli": "^6.16.0",
     "babel-core": "^6.9.0",
