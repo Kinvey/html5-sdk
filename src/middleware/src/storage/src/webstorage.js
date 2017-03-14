@@ -1,4 +1,4 @@
-import { NotFoundError } from 'kinvey-js-sdk/dist/export';
+import { NotFoundError, isDefined } from 'kinvey-js-sdk/dist/export';
 import keyBy from 'lodash/keyBy';
 import merge from 'lodash/merge';
 import values from 'lodash/values';
@@ -16,14 +16,18 @@ export default class WebStorage {
   }
 
   get masterCollectionName() {
-    return `${this.name}_${masterCollectionName}`;
+    return `${this.name}${masterCollectionName}`;
   }
 }
 
 export class LocalStorage extends WebStorage {
   constructor(name) {
     super(name);
-    global.localStorage.setItem(this.masterCollectionName, JSON.stringify([]));
+
+    const masterCollection = global.localStorage.getItem(this.masterCollectionName);
+    if (isDefined(masterCollection) === false) {
+      global.localStorage.setItem(this.masterCollectionName, JSON.stringify([]));
+    }
   }
 
   _find(collection) {
@@ -111,7 +115,7 @@ export class LocalStorage extends WebStorage {
           global.localStorage.removeItem(`${this.name}${collection}`);
         });
 
-        global.localStorage.setItem(this.masterCollectionName, JSON.stringify([]));
+        global.localStorage.removeItem(this.masterCollectionName);
         return null;
       });
   }
@@ -136,7 +140,11 @@ export class LocalStorage extends WebStorage {
 export class SessionStorage extends WebStorage {
   constructor(name) {
     super(name);
-    global.sessionStorage.setItem(this.masterCollectionName, JSON.stringify([]));
+
+    const masterCollection = global.localStorage.getItem(this.masterCollectionName);
+    if (isDefined(masterCollection) === false) {
+      global.localStorage.setItem(this.masterCollectionName, JSON.stringify([]));
+    }
   }
 
   _find(collection) {
@@ -224,7 +232,7 @@ export class SessionStorage extends WebStorage {
           global.sessionStorage.removeItem(`${this.name}${collection}`);
         });
 
-        global.sessionStorage.setItem(this.masterCollectionName, JSON.stringify([]));
+        global.sessionStorage.removeItem(this.masterCollectionName);
         return null;
       });
   }
@@ -249,9 +257,23 @@ export class SessionStorage extends WebStorage {
 export class CookieStorage extends WebStorage {
   constructor(name) {
     super(name);
-    const expires = new Date();
-    expires.setTime(expires.getTime() + (100 * 365 * 24 * 60 * 60 * 1000)); // Expire in 100 years
-    global.document.cookie = `${this.masterCollectionName}=${encodeURIComponent(JSON.stringify([]))}; expires=${expires.toUTCString()}; path=/`;
+
+    const values = document.cookie.split(';');
+    for (let i = 0, len = values.length; i < len; i += 1) {
+      let value = values[i];
+      while (value.charAt(0) === ' ') {
+        value = value.substring(1);
+      }
+      if (value.indexOf(this.masterCollectionName) === 0) {
+        const masterCollection = decodeURIComponent(value.substring(this.masterCollectionName.length, value.length));
+
+        if (isDefined(masterCollection) === false) {
+          const expires = new Date();
+          expires.setTime(expires.getTime() + (100 * 365 * 24 * 60 * 60 * 1000)); // Expire in 100 years
+          global.document.cookie = `${this.masterCollectionName}=${encodeURIComponent(JSON.stringify([]))}; expires=${expires.toUTCString()}; path=/`;
+        }
+      }
+    }
   }
 
   _find(collection) {
@@ -347,7 +369,7 @@ export class CookieStorage extends WebStorage {
 
         const expires = new Date();
         expires.setTime(expires.getTime() + (100 * 365 * 24 * 60 * 60 * 1000)); // Expire in 100 years
-        global.document.cookie = `${this.masterCollectionName}=${encodeURIComponent(JSON.stringify([]))}; expires=${expires.toUTCString()}; path=/`;
+        global.document.cookie = `${this.masterCollectionName}=${encodeURIComponent()}; expires=${expires.toUTCString()}; path=/`;
         return null;
       });
   }
