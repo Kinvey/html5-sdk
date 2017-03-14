@@ -5,6 +5,8 @@ import values from 'lodash/values';
 import forEach from 'lodash/forEach';
 import findIndex from 'lodash/findIndex';
 import find from 'lodash/find';
+import Promise from 'es6-promise';
+
 const idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
 const masterCollectionName = 'master';
 

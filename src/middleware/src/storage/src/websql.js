@@ -4,6 +4,8 @@ import forEach from 'lodash/forEach';
 import isArray from 'lodash/isArray';
 import isFunction from 'lodash/isFunction';
 import isString from 'lodash/isString';
+import Promise from 'es6-promise';
+
 const idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
 const masterCollectionName = 'sqlite_master';
 const size = 5 * 1000 * 1000; // Database size in bytes

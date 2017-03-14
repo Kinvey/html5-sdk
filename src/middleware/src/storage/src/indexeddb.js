@@ -3,6 +3,8 @@ import forEach from 'lodash/forEach';
 import isString from 'lodash/isString';
 import isArray from 'lodash/isArray';
 import isFunction from 'lodash/isFunction';
+import Promise from 'es6-promise';
+
 let dbCache = {};
 let isSupported;
 
