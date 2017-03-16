@@ -1,3 +1,4 @@
+import Promise from 'es6-promise';
 import { NotFoundError, isDefined } from 'kinvey-js-sdk/dist/export';
 import keyBy from 'lodash/keyBy';
 import merge from 'lodash/merge';
@@ -5,7 +6,6 @@ import values from 'lodash/values';
 import forEach from 'lodash/forEach';
 import findIndex from 'lodash/findIndex';
 import find from 'lodash/find';
-import Promise from 'es6-promise';
 
 const idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
 const masterCollectionName = 'master';

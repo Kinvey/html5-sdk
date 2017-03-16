@@ -1,9 +1,9 @@
+import Promise from 'es6-promise';
 import { NotFoundError, isDefined } from 'kinvey-js-sdk/dist/export';
 import forEach from 'lodash/forEach';
 import isString from 'lodash/isString';
 import isArray from 'lodash/isArray';
 import isFunction from 'lodash/isFunction';
-import Promise from 'es6-promise';
 
 let dbCache = {};
 let isSupported;
