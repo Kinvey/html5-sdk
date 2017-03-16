@@ -30,7 +30,7 @@ var Kinvey = require('kinvey-html5-sdk');
 If you downloaded the SDK and saved it to a file, add a script tag to your main html file to load the SDK.
 
 ```html
-<script src="path/to/kinvey-html5-sdk.js"></script>
+<script src="path/to/kinvey-html5-sdk.min.js"></script>
 ```
 
 Next, use `Kinvey.initialize` to configure your app. Replace `<appKey>` and `<appSecret>` with your apps app key and secret. You can find these for your app using the [Kinvey Console App](https://console.kinvey.com).
