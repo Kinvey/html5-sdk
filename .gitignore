@@ -9,16 +9,18 @@ docs
 # Build Files
 .tmp
 tmp
-/s3
-dist
+s3
+dist/*
+!dist/kinvey-html5-sdk.js
+!dist/kinvey-html5-sdk.min.js
 
 # Test Files
 coverage
 report.xml
 *.tap
-/test/browserstack/app
+test/browserstack/app
 
 # MacOS Files
 .DS_Store
-/shots
-/local.log
+shots
+local.log
