@@ -149,6 +149,13 @@ class IndexedDB {
     return request;
   }
 
+  close() {
+    const db = dbCache[this.name];
+    if (isDefined(db)) {
+      db.close();
+    }
+  }
+
   find(collection) {
     return new Promise((resolve, reject) => {
       this.openTransaction(collection, false, (txn) => {
@@ -258,6 +265,10 @@ class IndexedDB {
   }
 
   clear() {
+    // Close the open DB to prevent from blocking the deleteDatabase operation
+    this.close();
+
+    // Delete the database
     return new Promise((resolve, reject) => {
       const indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
       const request = indexedDB.deleteDatabase(this.name);
@@ -270,6 +281,11 @@ class IndexedDB {
       request.onerror = (e) => {
         reject(new Error(`An error occurred while clearing the ${this.name} IndexedDB database.`
             + ` ${e.target.error.message}.`));
+      };
+
+      request.onblocked = () => {
+        reject(new Error(`The ${this.name} IndexedDB database could not be cleared`
+          + ' due to the operation being blocked.'));
       };
     });
   }
