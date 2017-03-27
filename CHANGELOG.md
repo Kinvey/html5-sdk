@@ -1,4 +1,10 @@
 # Changelog
+## [v3.4.4](https://github.com/Kinvey/html5-sdk/tree/v3.4.4) (2016-03-27)
+[Full Changelog](https://github.com/Kinvey/html5-sdk/compare/v3.4.3...v3.4.4)<br/>
+
+**Changes**
+- Bumping version to keep the same as other Kinvey SDKs.
+
 ## [v3.4.3](https://github.com/Kinvey/html5-sdk/tree/v3.4.3) (2016-03-27)
 [Full Changelog](https://github.com/Kinvey/html5-sdk/compare/v3.4.2...v3.4.3)<br/>
 
