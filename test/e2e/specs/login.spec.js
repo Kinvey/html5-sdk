@@ -1,5 +1,5 @@
-import { LoginPage, LogoutPage } from './pages';
 import expect from 'expect';
+import { LoginPage, LogoutPage } from './pages';
 
 describe('Login', function() {
   beforeEach(function() {
@@ -11,8 +11,8 @@ describe('Login', function() {
   });
 
   it('should login a user using Kinvey', function() {
-    const username = 'test';
-    const password = 'test';
+    const username = 'admin';
+    const password = 'admin';
     const page = new LoginPage();
     page.get();
     page.login(username, password);

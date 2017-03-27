@@ -1,6 +1,6 @@
 {
   "name": "kinvey-html5-sdk",
-  "version": "3.4.2",
+  "version": "3.4.3-rc.1",
   "description": "Kinvey JavaScript SDK for HTML5 applications.",
   "homepage": "http://www.kinvey.com",
   "bugs": {
@@ -24,9 +24,9 @@
     "cover": "istanbul cover _mocha -- --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit",
     "docs": "esdoc -c esdoc.json",
     "e2e:server": "selenium-standalone install --version=3.0.1 && selenium-standalone start",
-    "e2e:app": "npm run build && shjs ./scripts/e2e.js && node ./test/browserstack/app",
-    "e2e:test": "wdio ./test/browserstack/wdio.conf",
-    "e2e:test:browserstack": "wdio ./test/browserstack/browserstack.conf",
+    "e2e:app": "npm run build && shjs ./scripts/e2e.js && node ./test/e2e/app",
+    "e2e:test": "wdio ./test/e2e/wdio.conf",
+    "e2e:test:browserstack": "wdio ./test/e2e/browserstack.conf",
     "lint": "npm run lint:src",
     "lint:src": "eslint src/**",
     "lint:test": "eslint test/unit/**",
@@ -42,7 +42,7 @@
     "es6-promise": "4.1.0",
     "kinvey-js-sdk": "3.4.3",
     "lodash": "4.17.4",
-    "xhr": "2.4.0"
+    "xhr": "2.3.3"
   },
   "peerDependencies": {
     "kinvey-js-sdk": "3.4.3"

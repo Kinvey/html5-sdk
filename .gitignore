@@ -18,7 +18,7 @@ dist/*
 coverage
 report.xml
 *.tap
-test/browserstack/app
+test/e2e/app
 
 # MacOS Files
 .DS_Store

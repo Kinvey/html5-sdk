@@ -1,6 +1,7 @@
 /* eslint-disable */
 require('babel-core/register');
 var browserstack = require('browserstack-local');
+var pkg = require('../../package.json');
 
 exports.config = {
   // =================
@@ -34,6 +35,8 @@ exports.config = {
   // Sauce Labs platform configurator - a great tool to configure your capabilities:
   // https://docs.saucelabs.com/reference/platforms-configurator
   commonCapabilities: {
+    "build": pkg.version,
+    "name": pkg.name,
     'browserstack.selenium_version': '3.0.1',
     'browserstack.local': true,
     'browserstack.debug': true
@@ -41,18 +44,18 @@ exports.config = {
   capabilities: [{
     os: 'OS X',
     os_version: 'Sierra',
-    browser: 'Safari',
-    browser_version: '10.0'
-  }, {
-    os: 'OS X',
-    os_version: 'Sierra',
     browser: 'Chrome',
-    browser_version: '54.0'
+    browser_version: '57.0'
   }, {
-    os: 'OS X',
-    os_version: 'Sierra',
-    browser: 'Firefox',
-    browser_version: '49.0'
+    os: 'Windows',
+    os_version: '10',
+    browser: 'Edge',
+    browser_version: '13.0'
+  }, {
+    os: 'Windows',
+    os_version: '10',
+    browser: 'IE',
+    browser_version: '11.0'
   }],
   // capabilities: [{
   //   platfrom: 'MAC',
@@ -88,7 +91,7 @@ exports.config = {
   //   browser: 'IE',
   //   browser_version: '11.0'
   // }],
-  maxInstances: 2,
+  // maxInstances: 2,
   //
   // ===================
   // Test Configurations
@@ -101,7 +104,7 @@ exports.config = {
   sync: true,
   //
   // Level of logging verbosity: silent | verbose | command | data | result | error
-  logLevel: 'silent',
+  logLevel: 'error',
   //
   // Enables colors for log output.
   coloredLogs: true,
