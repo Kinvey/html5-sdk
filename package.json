@@ -1,6 +1,6 @@
 {
   "name": "kinvey-html5-sdk",
-  "version": "3.4.3-rc.1",
+  "version": "3.4.3",
   "description": "Kinvey JavaScript SDK for HTML5 applications.",
   "homepage": "http://www.kinvey.com",
   "bugs": {
@@ -40,12 +40,12 @@
   "dependencies": {
     "core-js": "2.4.1",
     "es6-promise": "4.1.0",
-    "kinvey-js-sdk": "3.4.3",
+    "kinvey-js-sdk": "3.4.4",
     "lodash": "4.17.4",
     "xhr": "2.3.3"
   },
   "peerDependencies": {
-    "kinvey-js-sdk": "3.4.3"
+    "kinvey-js-sdk": "3.4.4"
   },
   "devDependencies": {
     "babel-cli": "6.24.0",
