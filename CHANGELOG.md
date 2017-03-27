@@ -1,4 +1,11 @@
 # Changelog
+## [v3.4.3](https://github.com/Kinvey/html5-sdk/tree/v3.4.3) (2016-03-27)
+[Full Changelog](https://github.com/Kinvey/html5-sdk/compare/v3.4.2...v3.4.3)<br/>
+
+**Changes**
+- Close IndexedDB connection before deleting database. [#14](https://github.com/Kinvey/html5-sdk/pull/14)
+- Update package dependencies.
+
 ## [v3.4.2](https://github.com/Kinvey/html5-sdk/tree/v3.4.2) (2016-03-16)
 [Full Changelog](https://github.com/Kinvey/html5-sdk/compare/v3.4.1...v3.4.2)<br/>
 
