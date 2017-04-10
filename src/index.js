@@ -7,7 +7,7 @@ CacheRack.useCacheMiddleware(new CacheMiddleware());
 NetworkRack.useHttpMiddleware(new HttpMiddleware());
 
 // Setup popup
-User.setPopupClass(Popup);
+User.usePopupClass(Popup);
 
 // Export
 module.exports = Kinvey;
