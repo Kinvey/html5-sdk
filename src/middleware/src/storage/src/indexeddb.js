@@ -33,7 +33,7 @@ class IndexedDB {
     const indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
     let db = dbCache[this.name];
 
-    if (db) {
+    if (isDefined(db)) {
       const containsCollection = isFunction(db.objectStoreNames.contains) ?
         db.objectStoreNames.contains(collection) : db.objectStoreNames.indexOf(collection) !== -1;
 
@@ -42,22 +42,22 @@ class IndexedDB {
           const mode = write ? TransactionMode.ReadWrite : TransactionMode.ReadOnly;
           const txn = db.transaction(collection, mode);
 
-          if (txn) {
+          if (isDefined(txn)) {
             return success(txn);
           }
 
           throw new Error(`Unable to open a transaction for ${collection}`
             + ` collection on the ${this.name} IndexedDB database.`);
-        } catch (err) {
-          return error(err);
+        } catch (e) {
+          return error(e);
         }
-      } else if (!write) {
+      } else if (write === false) {
         return error(new NotFoundError(`The ${collection} collection was not found on`
           + ` the ${this.name} IndexedDB database.`));
       }
     }
 
-    if (!force && this.inTransaction) {
+    if (force === false && this.inTransaction) {
       return this.queue.push(() => {
         this.openTransaction(collection, write, success, error);
       });
@@ -68,15 +68,15 @@ class IndexedDB {
     let request;
 
     try {
-      if (db) {
+      if (isDefined(db)) {
         const version = db.version + 1;
         db.close();
         request = indexedDB.open(this.name, version);
       } else {
         request = indexedDB.open(this.name);
       }
-    } catch (err) {
-      error(err);
+    } catch (e) {
+      error(e);
     }
 
     // If the database is opened with an higher version than its current, the
@@ -86,7 +86,7 @@ class IndexedDB {
       db = e.target.result;
       dbCache[this.name] = db;
 
-      if (write) {
+      if (write === true) {
         db.createObjectStore(collection, { keyPath: '_id' });
       }
     };
@@ -101,7 +101,7 @@ class IndexedDB {
       // upgrade operation, the `versionchange` event is fired. Then, close the
       // database to allow the external upgrade to proceed.
       db.onversionchange = () => {
-        if (db) {
+        if (isDefined(db)) {
           db.close();
           db = null;
           dbCache[this.name] = null;
@@ -166,7 +166,7 @@ class IndexedDB {
         request.onsuccess = (e) => {
           const cursor = e.target.result;
 
-          if (cursor) {
+          if (isDefined(cursor)) {
             entities.push(cursor.value);
             return cursor.continue();
           }
@@ -190,7 +190,7 @@ class IndexedDB {
         request.onsuccess = (e) => {
           const entity = e.target.result;
 
-          if (entity) {
+          if (isDefined(entity)) {
             resolve(entity);
           } else {
             reject(new NotFoundError(`An entity with _id = ${id} was not found in the ${collection}`
@@ -248,8 +248,8 @@ class IndexedDB {
         txn.oncomplete = () => {
           const entity = request.result;
 
-          if (entity) {
-            resolve(entity);
+          if (isDefined(entity)) {
+            resolve({ count: 1 });
           } else {
             reject(new NotFoundError(`An entity with id = ${id} was not found in the ${collection}`
               + ` collection on the ${this.name} IndexedDB database.`));
