@@ -28,7 +28,7 @@ class WebSQL {
   openDatabase() {
     let db = dbCache[this.name];
 
-    if (!db) {
+    if (isDefined(db) === false) {
       db = global.openDatabase(this.name, 1, 'Kinvey Cache', size);
       dbCache[this.name] = db;
     }
@@ -44,9 +44,9 @@ class WebSQL {
     query = isMulti ? query : [[query, parameters]];
 
     const promise = new Promise((resolve, reject) => {
-      const writeTxn = write || !isFunction(db.readTransaction);
+      const writeTxn = write || isFunction(db.readTransaction) === false;
       db[writeTxn ? 'transaction' : 'readTransaction']((tx) => {
-        if (write && !isMaster) {
+        if (write && isMaster === false) {
           tx.executeSql(`CREATE TABLE IF NOT EXISTS ${escapedCollection} ` +
             '(key BLOB PRIMARY KEY NOT NULL, value BLOB NOT NULL)');
         }
@@ -66,7 +66,7 @@ class WebSQL {
                 result: []
               };
 
-              if (resultSet.rows.length) {
+              if (resultSet.rows.length > 0) {
                 for (let i = 0, len = resultSet.rows.length; i < len; i += 1) {
                   try {
                     const value = resultSet.rows.item(i).value;
@@ -178,7 +178,7 @@ class WebSQL {
             + ` collection on the ${this.name} WebSQL database.`);
         }
 
-        return entities[0];
+        return { count: count };
       });
   }
 

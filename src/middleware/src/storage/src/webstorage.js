@@ -34,7 +34,7 @@ export class LocalStorage extends WebStorage {
     try {
       const entities = global.localStorage.getItem(collection);
 
-      if (entities) {
+      if (isDefined(entities)) {
         return Promise.resolve(JSON.parse(entities));
       }
 
@@ -53,7 +53,7 @@ export class LocalStorage extends WebStorage {
       .then((entities) => {
         const entity = find(entities, entity => entity[idAttribute] === id);
 
-        if (!entity) {
+        if (isDefined(entity) === false) {
           throw new NotFoundError(`An entity with _id = ${id} was not found in the ${collection}`
             + ` collection on the ${this.name} localstorage database.`);
         }
@@ -81,7 +81,7 @@ export class LocalStorage extends WebStorage {
           const existingEntity = existingEntitiesById[id];
           const entity = entitiesById[id];
 
-          if (entity) {
+          if (isDefined(entity)) {
             entitiesById[id] = merge(existingEntity, entity);
           }
         });
@@ -97,14 +97,14 @@ export class LocalStorage extends WebStorage {
         const entitiesById = keyBy(entities, idAttribute);
         const entity = entitiesById[id];
 
-        if (!entity) {
+        if (isDefined(entity) === false) {
           throw new NotFoundError(`An entity with _id = ${id} was not found in the ${collection} ` +
             `collection on the ${this.name} memory database.`);
         }
 
         delete entitiesById[id];
         return this.save(collection, values(entitiesById))
-          .then(() => entity);
+          .then(() => ({ count: 1 }));
       });
   }
 
@@ -151,7 +151,7 @@ export class SessionStorage extends WebStorage {
     try {
       const entities = global.localStorage.getItem(collection);
 
-      if (entities) {
+      if (isDefined(entities)) {
         return Promise.resolve(JSON.parse(entities));
       }
 
@@ -170,7 +170,7 @@ export class SessionStorage extends WebStorage {
       .then((entities) => {
         const entity = find(entities, entity => entity[idAttribute] === id);
 
-        if (!entity) {
+        if (isDefined(entity) === false) {
           throw new NotFoundError(`An entity with _id = ${id} was not found in the ${collection}`
             + ` collection on the ${this.name} localstorage database.`);
         }
@@ -198,7 +198,7 @@ export class SessionStorage extends WebStorage {
           const existingEntity = existingEntitiesById[id];
           const entity = entitiesById[id];
 
-          if (entity) {
+          if (isDefined(entity)) {
             entitiesById[id] = merge(existingEntity, entity);
           }
         });
@@ -214,14 +214,14 @@ export class SessionStorage extends WebStorage {
         const entitiesById = keyBy(entities, idAttribute);
         const entity = entitiesById[id];
 
-        if (!entity) {
+        if (isDefined(entity) === false) {
           throw new NotFoundError(`An entity with _id = ${id} was not found in the ${collection} ` +
             `collection on the ${this.name} memory database.`);
         }
 
         delete entitiesById[id];
         return this.save(collection, values(entitiesById))
-          .then(() => entity);
+          .then(() => ({ count: 1 }));
       });
   }
 
@@ -299,7 +299,7 @@ export class CookieStorage extends WebStorage {
       .then((entities) => {
         const entity = find(entities, entity => entity[idAttribute] === id);
 
-        if (!entity) {
+        if (isDefined(entity) === false) {
           throw new NotFoundError(`An entity with _id = ${id} was not found in the ${collection}`
             + ` collection on the ${this.name} localstorage database.`);
         }
@@ -329,7 +329,7 @@ export class CookieStorage extends WebStorage {
           const existingEntity = existingEntitiesById[id];
           const entity = entitiesById[id];
 
-          if (entity) {
+          if (isDefined(entity)) {
             entitiesById[id] = merge(existingEntity, entity);
           }
         });
@@ -347,14 +347,14 @@ export class CookieStorage extends WebStorage {
         const entitiesById = keyBy(entities, idAttribute);
         const entity = entitiesById[id];
 
-        if (!entity) {
+        if (isDefined(entity) === false) {
           throw new NotFoundError(`An entity with _id = ${id} was not found in the ${collection} ` +
             `collection on the ${this.name} memory database.`);
         }
 
         delete entitiesById[id];
         return this.save(collection, values(entitiesById))
-          .then(() => entity);
+          .then(() => ({ count: 1 }));
       });
   }
 
