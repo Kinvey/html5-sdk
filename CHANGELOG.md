@@ -1,4 +1,30 @@
-# Changelog
+# Change Log
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](http://keepachangelog.com/)
+and this project adheres to [Semantic Versioning](http://semver.org/).
+
+## [3.5.0](https://github.com/Kinvey/html5-sdk/tree/v3.5.0) (2017-04-20)
+[Full Changelog](https://github.com/Kinvey/html5-sdk/compare/v3.4.5...v3.5.0)<br/>
+
+### Added
+_None_
+
+### Removed
+_None_
+
+### Changed
+- Registered `Popup` class using new `usePopupClass()` static function on `User` class. Removed config in `webpack.config` used to replace the `Popup` class when a bundle is generated. This makes it easier for other people to utilize the SDK with their own `Webpack` and `Browserify` bundles.
+- Return the count of entities removed for storage adapters remove functions.
+- Update `kinvey-js-sdk` dependency to [v3.5.0](https://github.com/Kinvey/js-sdk/tree/v3.5.0).
+
+### Merged Pull Requests
+- Update Storage Adapters [#15](https://github.com/Kinvey/html5-sdk/pull/15)
+- Register Popup Class [#16](https://github.com/Kinvey/html5-sdk/pull/16)
+
+### Closed Issues
+_None_
+
 ## [v3.4.5](https://github.com/Kinvey/html5-sdk/tree/v3.4.5) (2016-04-13)
 [Full Changelog](https://github.com/Kinvey/html5-sdk/compare/v3.4.4...v3.4.5)<br/>
 
