@@ -1,7 +1,7 @@
-import { Middleware, NoNetworkConnectionError, TimeoutError, isDefined } from 'kinvey-js-sdk/dist/export';
+import { Middleware, NetworkConnectionError, TimeoutError, isDefined } from 'kinvey-js-sdk/dist/export';
 import xhr from 'xhr';
 import Promise from 'es6-promise';
-
+import isFunction from 'lodash/isFunction';
 import pkg from 'package.json';
 
 // Helper function to detect the browser name and version.
@@ -20,7 +20,7 @@ function browserDetect(ua) {
     rOpera.exec(ua) || rSafari.exec(ua) || [];
 }
 
-export function deviceInformation() {
+function deviceInformation() {
   const libraries = [];
   let browser;
   let platform;
@@ -87,7 +87,7 @@ export default class HttpMiddleware extends Middleware {
       // Add the X-Kinvey-Device-Information header
       headers['X-Kinvey-Device-Information'] = this.deviceInformation;
 
-      xhr({
+      this.xhrRequest = xhr({
         method: method,
         url: url,
         headers: headers,
@@ -98,11 +98,9 @@ export default class HttpMiddleware extends Middleware {
         if (isDefined(error)) {
           if (error.code === 'ESOCKETTIMEDOUT' || error.code === 'ETIMEDOUT') {
             return reject(new TimeoutError('The network request timed out.'));
-          } else if (error.code === 'ENOENT') {
-            return reject(new NoNetworkConnectionError('You do not have a network connection.'));
           }
 
-          return reject(error);
+          return reject(new NetworkConnectionError('There was an error connecting to the network.', error));
         }
 
         return resolve({
@@ -118,6 +116,10 @@ export default class HttpMiddleware extends Middleware {
   }
 
   cancel() {
+    if (isDefined(this.xhrRequest) && isFunction(this.xhrRequest.abort)) {
+      this.xhrRequest.abort();
+    }
+
     return Promise.resolve();
   }
 }
