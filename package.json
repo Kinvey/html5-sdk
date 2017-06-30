@@ -19,7 +19,7 @@
   "scripts": {
     "build": "npm run clean && npm run transpile && npm run bundle && npm run minify",
     "bundle": "webpack --config webpack.config.js",
-    "clean": "del coverage dist s3",
+    "clean": "rm -rf dist && rm -rf coverage && rm -rf s3",
     "minify": "uglifyjs --screw-ie8 --compress warnings=false --mangle --comments --output ./dist/kinvey-html5-sdk.min.js -- ./dist/kinvey-html5-sdk.js ",
     "cover": "istanbul cover _mocha -- --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit",
     "docs": "esdoc -c esdoc.json",
@@ -31,7 +31,8 @@
     "lint:src": "eslint src/**",
     "lint:test": "eslint test/unit/**",
     "preversion": "del node_modules && npm install && npm test",
-    "postversion": "git push && git push --tags",
+    "version": "npm run build && git add dist/kinvey-html5-sdk.js && git add dist/kinvey-html5-sdk.min.js && git commit -m 'Update dist bundle.'",
+    "postversion": "git push && git push --tags && rm -rf dist && rm -rf coverage && rm -rf s3",
     "s3": "npm run build && shjs ./scripts/s3.js",
     "test": "mocha --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit",
     "test:watch": "mocha -w --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit",
@@ -40,7 +41,7 @@
   "dependencies": {
     "core-js": "2.4.1",
     "es6-promise": "4.1.0",
-    "kinvey-js-sdk": "3.5.0",
+    "kinvey-js-sdk": "3.5.1",
     "lodash": "4.17.4",
     "xhr": "2.3.3"
   },
