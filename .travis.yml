@@ -16,9 +16,6 @@ notifications:
     on_success: change
     on_failure: always
   slack:
-    on_success: change
+    on_success: always
     on_failure: always
     secure: CPlElM0uH5z7+7zcIpl8ghTKTejfFL7DdmOtjWRGLgUbta8ftgtELBeEEszJVFtIIjmkZRXL3j17Av43e8jS/6WoI12//vcsO2Wc6PDsZJFUzXffw6CGs9Azmti9L5tzlfT/CbNj6Xl180LZ0QvGYrPYiIEU2PoXp5JeNoKvNv0bkOr8fNyCpMp3ax4Jmg7aLyQW5X3qrrMeURVJmZJWPU6j9OnVSExIhSgqueWvyjojWejgyx9BBTUV7ZzIjy329iYx2/cLsTFIdKesDcuaPY0H2ZZTK3tssAm7+oL7EYpVIFUP/Ko1z+OiXMdE8Fc/osO2HaE4P/CXRxWAzuiBP4N7PwYZ/UKW0Rwh1MJGwjBKxL3uzrPEQBtyT3N5m7KeN9bC/lyVVA6nW1n8UyfgB0ZokPT1+zKVg1KEjxeN1dRBU2ui499Hh7CpPEvpTu6dbb1ABhZ82HLxX5dMX/Y7mAXnqMWu7wRiyyWSDScCinunK0lZ2DhKpgxsJV+IbodYCRSQoyVF/I7rBrUvAcrwQMNsrKAKPXJj7xreK/lvQEf/VrQ89uhCcy8HidbQbNqpjPCtn1QibZHJ9chXXRPmeHh847Y/64vg5DpczkZ7IfrYYYA08QRfvH7kvbjytupcggElZ9gTB7/6TzhWucquGHaPGixvhHvYruq0LWnC30M=
-script: npm run cover
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
