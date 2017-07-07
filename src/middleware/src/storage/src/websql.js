@@ -25,95 +25,91 @@ class WebSQL {
     this.name = name;
   }
 
-  openDatabase() {
-    let db = dbCache[this.name];
-
-    if (isDefined(db) === false) {
-      db = global.openDatabase(this.name, 1, 'Kinvey Cache', size);
-      dbCache[this.name] = db;
-    }
-
-    return db;
-  }
-
   openTransaction(collection, query, parameters, write = false) {
-    const db = this.openDatabase();
+    let db = dbCache[this.name];
     const escapedCollection = `"${collection}"`;
     const isMaster = collection === masterCollectionName;
     const isMulti = isArray(query);
     query = isMulti ? query : [[query, parameters]];
 
-    const promise = new Promise((resolve, reject) => {
-      const writeTxn = write || isFunction(db.readTransaction) === false;
-      db[writeTxn ? 'transaction' : 'readTransaction']((tx) => {
-        if (write && isMaster === false) {
-          tx.executeSql(`CREATE TABLE IF NOT EXISTS ${escapedCollection} ` +
-            '(key BLOB PRIMARY KEY NOT NULL, value BLOB NOT NULL)');
+    return new Promise((resolve, reject) => {
+      try {
+        if (isDefined(db) === false) {
+          db = global.openDatabase(this.name, 1, 'Kinvey Cache', size);
+          dbCache[this.name] = db;
         }
 
-        let pending = query.length;
-        const responses = [];
+        const writeTxn = write || isFunction(db.readTransaction) === false;
+        db[writeTxn ? 'transaction' : 'readTransaction']((tx) => {
+          if (write && isMaster === false) {
+            tx.executeSql(`CREATE TABLE IF NOT EXISTS ${escapedCollection} ` +
+              '(key BLOB PRIMARY KEY NOT NULL, value BLOB NOT NULL)');
+          }
 
-        if (pending === 0) {
-          resolve(isMulti ? responses : responses.shift());
-        } else {
-          forEach(query, (parts) => {
-            const sql = parts[0].replace('#{collection}', escapedCollection);
+          let pending = query.length;
+          const responses = [];
 
-            tx.executeSql(sql, parts[1], (_, resultSet) => {
-              const response = {
-                rowCount: resultSet.rowsAffected,
-                result: []
-              };
+          if (pending === 0) {
+            resolve(isMulti ? responses : responses.shift());
+          } else {
+            forEach(query, (parts) => {
+              const sql = parts[0].replace('#{collection}', escapedCollection);
 
-              if (resultSet.rows.length > 0) {
-                for (let i = 0, len = resultSet.rows.length; i < len; i += 1) {
-                  try {
-                    const value = resultSet.rows.item(i).value;
-                    const entity = isMaster ? value : JSON.parse(value);
-                    response.result.push(entity);
-                  } catch (error) {
-                    // Catch the error
+              tx.executeSql(sql, parts[1], (_, resultSet) => {
+                const response = {
+                  rowCount: resultSet.rowsAffected,
+                  result: []
+                };
+
+                if (resultSet.rows.length > 0) {
+                  for (let i = 0, len = resultSet.rows.length; i < len; i += 1) {
+                    try {
+                      const value = resultSet.rows.item(i).value;
+                      const entity = isMaster ? value : JSON.parse(value);
+                      response.result.push(entity);
+                    } catch (error) {
+                      // Catch the error
+                    }
                   }
                 }
-              }
 
-              responses.push(response);
-              pending -= 1;
+                responses.push(response);
+                pending -= 1;
 
-              if (pending === 0) {
-                resolve(isMulti ? responses : responses.shift());
-              }
+                if (pending === 0) {
+                  resolve(isMulti ? responses : responses.shift());
+                }
+              });
             });
-          });
-        }
-      }, (error) => {
-        error = isString(error) ? error : error.message;
+          }
+        }, (error) => {
+          error = isString(error) ? error : error.message;
 
-        if (error && error.indexOf('no such table') === -1) {
-          return reject(new NotFoundError(`The ${collection} collection was not found on`
-            + ` the ${this.name} WebSQL database.`));
-        }
-
-        const query = 'SELECT name AS value from #{collection} WHERE type = ? AND name = ?';
-        const parameters = ['table', collection];
-
-        return this.openTransaction(masterCollectionName, query, parameters).then((response) => {
-          if (response.result.length === 0) {
+          if (error && error.indexOf('no such table') === -1) {
             return reject(new NotFoundError(`The ${collection} collection was not found on`
               + ` the ${this.name} WebSQL database.`));
           }
 
-          return reject(new Error(`Unable to open a transaction for the ${collection}`
-            + ` collection on the ${this.name} WebSQL database.`));
-        }).catch((error) => {
-          reject(new Error(`Unable to open a transaction for the ${collection}`
-            + ` collection on the ${this.name} WebSQL database.`, error));
-        });
-      });
-    });
+          const query = 'SELECT name AS value from #{collection} WHERE type = ? AND name = ?';
+          const parameters = ['table', collection];
 
-    return promise;
+          return this.openTransaction(masterCollectionName, query, parameters).then((response) => {
+            if (response.result.length === 0) {
+              return reject(new NotFoundError(`The ${collection} collection was not found on`
+                + ` the ${this.name} WebSQL database.`));
+            }
+
+            return reject(new Error(`Unable to open a transaction for the ${collection}`
+              + ` collection on the ${this.name} WebSQL database.`));
+          }).catch((error) => {
+            reject(new Error(`Unable to open a transaction for the ${collection}`
+              + ` collection on the ${this.name} WebSQL database.`, error));
+          });
+        });
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 
   find(collection) {
@@ -219,7 +215,7 @@ export default {
     }
 
     if (isDefined(isSupported)) {
-      if (isSupported) {
+      if (isSupported === true) {
         return Promise.resolve(db);
       }
 
