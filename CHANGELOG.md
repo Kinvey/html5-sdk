@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.5.2](https://github.com/Kinvey/html5-sdk/tree/v3.5.2) (2017-07-08)
+[Full Changelog](https://github.com/Kinvey/html5-sdk/compare/v3.5.1...v3.5.2)<br/>
+
+### Added
+_None_
+
+### Removed
+_None_
+
+### Changed/Fixed
+- Added a `try/catch` around `openDatabase()`. This allows any errors thrown when opening a new database connection to WebSQL be caught and used to reject the pending promise.
+- Updated [kinvey-js-sdk](https://github.com/Kinvey/js-sdk) dependency to [3.5.2](https://github.com/Kinvey/js-sdk/tree/v3.5.2)
+
+### Merged Pull Requests
+_None_
+
+### Closed Issues
+_None_
+
 ## [3.5.1](https://github.com/Kinvey/html5-sdk/tree/v3.5.1) (2017-06-30)
 [Full Changelog](https://github.com/Kinvey/html5-sdk/compare/v3.5.0...v3.5.1)<br/>
 
@@ -13,8 +32,8 @@ _None_
 ### Removed
 _None_
 
-### Changed
-- Updated `kinvey-js-sdk` to `3.5.1`
+### Changed/Fixed
+- Updated [kinvey-js-sdk](https://github.com/Kinvey/js-sdk) dependency to [3.5.1](https://github.com/Kinvey/js-sdk/tree/v3.5.1)
 
 ### Merged Pull Requests
 _None_
@@ -31,10 +50,10 @@ _None_
 ### Removed
 _None_
 
-### Changed
+### Changed/Fixed
 - Registered `Popup` class using new `usePopupClass()` static function on `User` class. Removed config in `webpack.config` used to replace the `Popup` class when a bundle is generated. This makes it easier for other people to utilize the SDK with their own `Webpack` and `Browserify` bundles.
 - Return the count of entities removed for storage adapters remove functions.
-- Update `kinvey-js-sdk` dependency to [v3.5.0](https://github.com/Kinvey/js-sdk/tree/v3.5.0).
+- Updated [kinvey-js-sdk](https://github.com/Kinvey/js-sdk) dependency to [3.5.0](https://github.com/Kinvey/js-sdk/tree/v3.5.0).
 
 ### Merged Pull Requests
 - Update Storage Adapters [#15](https://github.com/Kinvey/html5-sdk/pull/15)
