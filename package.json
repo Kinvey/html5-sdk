@@ -30,7 +30,7 @@
     "lint": "npm run lint:src",
     "lint:src": "eslint src/**",
     "lint:test": "eslint test/unit/**",
-    "preversion": "del node_modules && npm install && npm test",
+    "preversion": "rm -rf node_modules && npm install && npm test",
     "version": "npm run build && git add dist/kinvey-html5-sdk.js && git add dist/kinvey-html5-sdk.min.js && git commit -m 'Update dist bundle.'",
     "postversion": "git push && git push --tags && rm -rf dist && rm -rf coverage && rm -rf s3",
     "s3": "npm run build && shjs ./scripts/s3.js",
@@ -41,12 +41,12 @@
   "dependencies": {
     "core-js": "2.4.1",
     "es6-promise": "4.1.0",
-    "kinvey-js-sdk": "3.5.1",
+    "kinvey-js-sdk": "3.5.2",
     "lodash": "4.17.4",
     "xhr": "2.3.3"
   },
   "peerDependencies": {
-    "kinvey-js-sdk": "3.5.0"
+    "kinvey-js-sdk": "3.5.2"
   },
   "devDependencies": {
     "babel-cli": "6.24.0",
@@ -59,7 +59,6 @@
     "babel-preset-stage-2": "^6.0.15",
     "babel-register": "6.24.0",
     "browserstack-local": "^1.2.0",
-    "del-cli": "^0.2.0",
     "eslint": "3.17.1",
     "eslint-config-airbnb-base": "11.1.1",
     "eslint-import-resolver-babel-module": "3.0.0",
