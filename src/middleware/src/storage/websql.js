@@ -1,5 +1,5 @@
 import Promise from 'es6-promise';
-import { NotFoundError, isDefined } from 'kinvey-js-sdk/dist/export';
+import { KinveyError, NotFoundError, isDefined } from 'kinvey-js-sdk/dist/export';
 import map from 'lodash/map';
 import forEach from 'lodash/forEach';
 import isArray from 'lodash/isArray';
@@ -12,14 +12,14 @@ const size = 5 * 1000 * 1000; // Database size in bytes
 let dbCache = {};
 let isSupported;
 
-class WebSQL {
+export class WebSQLAdapter {
   constructor(name = 'kinvey') {
     if (isDefined(name) === false) {
-      throw new Error('A name is required to use the WebSQL adapter.', name);
+      throw new KinveyError('A name is required to use the WebSQL adapter.', name);
     }
 
     if (isString(name) === false) {
-      throw new Error('The name must be a string to use the WebSQL adapter', name);
+      throw new KinveyError('The name must be a string to use the WebSQL adapter', name);
     }
 
     this.name = name;
@@ -99,11 +99,10 @@ class WebSQL {
                 + ` the ${this.name} WebSQL database.`));
             }
 
-            return reject(new Error(`Unable to open a transaction for the ${collection}`
+            return reject(new KinveyError(`Unable to open a transaction for the ${collection}`
               + ` collection on the ${this.name} WebSQL database.`));
           }).catch((error) => {
-            reject(new Error(`Unable to open a transaction for the ${collection}`
-              + ` collection on the ${this.name} WebSQL database.`, error));
+            reject(error);
           });
         });
       } catch (error) {
@@ -204,11 +203,9 @@ class WebSQL {
         return null;
       });
   }
-}
 
-export default {
-  load(name) {
-    const db = new WebSQL(name);
+  static load(name) {
+    const adapter = new WebSQLAdapter(name);
 
     if (isDefined(global.openDatabase) === false) {
       return Promise.resolve(undefined);
@@ -216,20 +213,20 @@ export default {
 
     if (isDefined(isSupported)) {
       if (isSupported === true) {
-        return Promise.resolve(db);
+        return Promise.resolve(adapter);
       }
 
       return Promise.resolve(undefined);
     }
 
-    return db.save('__testSupport', { _id: '1' })
+    return adapter.save('__testSupport', { _id: '1' })
       .then(() => {
         isSupported = true;
-        return db;
+        return adapter;
       })
       .catch(() => {
         isSupported = false;
         return undefined;
       });
   }
-};
+}
