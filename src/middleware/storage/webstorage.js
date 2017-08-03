@@ -1,5 +1,5 @@
 import Promise from 'es6-promise';
-import { NotFoundError, isDefined } from 'kinvey-js-sdk/dist/export';
+import { NotFoundError, isDefined } from 'kinvey-js-sdk';
 import keyBy from 'lodash/keyBy';
 import merge from 'lodash/merge';
 import values from 'lodash/values';
@@ -10,7 +10,7 @@ import find from 'lodash/find';
 const idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
 const masterCollectionName = 'master';
 
-class WebStorageAdapter {
+export class WebStorageAdapter {
   constructor(name = 'kinvey') {
     this.name = name;
   }
@@ -121,7 +121,7 @@ export class LocalStorageAdapter extends WebStorageAdapter {
   }
 
   static load(name) {
-    if (global.localStorage) {
+    if (isDefined(global.localStorage)) {
       const item = '__testSupport';
       try {
         global.localStorage.setItem(item, item);
@@ -141,15 +141,15 @@ export class SessionStorageAdapter extends WebStorageAdapter {
   constructor(name) {
     super(name);
 
-    const masterCollection = global.sessionStorage.getItem(this.masterCollectionName);
+    const masterCollection = global.localStorage.getItem(this.masterCollectionName);
     if (isDefined(masterCollection) === false) {
-      global.sessionStorage.setItem(this.masterCollectionName, JSON.stringify([]));
+      global.localStorage.setItem(this.masterCollectionName, JSON.stringify([]));
     }
   }
 
   _find(collection) {
     try {
-      const entities = global.sessionStorage.getItem(collection);
+      const entities = global.localStorage.getItem(collection);
 
       if (isDefined(entities)) {
         return Promise.resolve(JSON.parse(entities));

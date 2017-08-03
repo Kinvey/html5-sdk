@@ -1,7 +1,8 @@
-import { User as CoreUser, Client } from 'kinvey-js-sdk/dist/export';
 import nock from 'nock';
+import { User as HTML5User } from '../../../../src/user';
+import { Client } from '../../../../src/client';
 
-export class User extends CoreUser {
+export class User extends HTML5User {
   static getActiveUser(client = Client.sharedInstance()) {
     const data = client.activeUser;
     let user = null;

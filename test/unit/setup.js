@@ -1,5 +1,5 @@
-import { Kinvey } from 'kinvey-js-sdk';
 import nock from 'nock';
+import { Kinvey } from '../../src/kinvey';
 
 // Record for nock
 // nock.recorder.rec();

@@ -1,13 +1,10 @@
-import Kinvey, { CacheRack, NetworkRack, User } from 'kinvey-js-sdk/dist/export';
-import { CacheMiddleware, HttpMiddleware } from './middleware';
-import Popup from './popup';
-
-// Setup racks
-CacheRack.useCacheMiddleware(new CacheMiddleware());
-NetworkRack.useHttpMiddleware(new HttpMiddleware());
-
-// Setup popup
-User.usePopupClass(Popup);
-
-// Export
-module.exports = Kinvey;
+export * from 'kinvey-js-sdk/dist/datastore';
+export { Acl, Metadata } from 'kinvey-js-sdk/dist/entity';
+export * from 'kinvey-js-sdk/dist/errors';
+export { Log } from 'kinvey-js-sdk/dist/utils';
+export * from 'kinvey-js-sdk/dist/aggregation';
+export * from 'kinvey-js-sdk/dist/endpoint';
+export * from 'kinvey-js-sdk/dist/query';
+export * from './client';
+export * from './kinvey';
+export * from './user';
