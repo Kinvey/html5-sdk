@@ -1,4 +1,10 @@
-import { Middleware, NetworkConnectionError, TimeoutError, isDefined } from 'kinvey-js-sdk/dist/export';
+import {
+  Middleware,
+  NetworkConnectionError,
+  TimeoutError,
+  isDefined,
+  KinveyResponse
+} from 'kinvey-js-sdk';
 import xhr from 'xhr';
 import Promise from 'es6-promise';
 import isFunction from 'lodash/isFunction';
@@ -71,7 +77,7 @@ function deviceInformation() {
   }).join(' ');
 }
 
-export default class HttpMiddleware extends Middleware {
+export class HttpMiddleware extends Middleware {
   constructor(name = 'Http Middleware') {
     super(name);
   }
@@ -81,19 +87,17 @@ export default class HttpMiddleware extends Middleware {
   }
 
   handle(request) {
-    const promise = new Promise((resolve, reject) => {
-      const { url, method, headers, body, timeout, followRedirect } = request;
+    const headers = request.headers;
+    headers.set('X-Kinvey-Device-Information', this.deviceInformation);
 
-      // Add the X-Kinvey-Device-Information header
-      headers['X-Kinvey-Device-Information'] = this.deviceInformation;
-
+    return new Promise((resolve, reject) => {
       this.xhrRequest = xhr({
-        method: method,
-        url: url,
-        headers: headers,
-        body: body,
-        followRedirect: followRedirect,
-        timeout: timeout
+        method: request.method,
+        url: request.url,
+        headers: headers.toPlainObject(),
+        body: request.body,
+        followRedirect: request.followRedirect,
+        timeout: request.timeout
       }, (error, response, body) => {
         if (isDefined(error)) {
           if (error.code === 'ESOCKETTIMEDOUT' || error.code === 'ETIMEDOUT') {
@@ -104,15 +108,14 @@ export default class HttpMiddleware extends Middleware {
         }
 
         return resolve({
-          response: {
+          response: new KinveyResponse({
             statusCode: response.statusCode,
             headers: response.headers,
             data: body
-          }
+          })
         });
       });
     });
-    return promise;
   }
 
   cancel() {
