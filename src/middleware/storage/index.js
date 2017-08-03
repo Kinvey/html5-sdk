@@ -3,7 +3,7 @@ import { IndexedDBAdapter } from './indexeddb';
 import { WebSQLAdapter } from './websql';
 import { LocalStorageAdapter } from './webstorage';
 
-export default class Storage extends KinveyStorage {
+export class Storage extends KinveyStorage {
   loadAdapter() {
     return WebSQLAdapter.load(this.name)
       .then((adapter) => {

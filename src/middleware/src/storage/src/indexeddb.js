@@ -291,7 +291,7 @@ class IndexedDB {
   }
 }
 
-export default {
+const IndexedDBAdapter = {
   load(name) {
     const indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
     const db = new IndexedDB(name);
@@ -319,3 +319,4 @@ export default {
       });
   }
 };
+export { IndexedDBAdapter };

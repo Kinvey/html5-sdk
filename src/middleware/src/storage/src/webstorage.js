@@ -10,7 +10,7 @@ import find from 'lodash/find';
 const idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
 const masterCollectionName = 'master';
 
-export default class WebStorage {
+class WebStorageAdapter {
   constructor(name = 'kinvey') {
     this.name = name;
   }
@@ -20,7 +20,7 @@ export default class WebStorage {
   }
 }
 
-export class LocalStorage extends WebStorage {
+export class LocalStorageAdapter extends WebStorageAdapter {
   constructor(name) {
     super(name);
 
@@ -127,7 +127,7 @@ export class LocalStorage extends WebStorage {
         global.localStorage.setItem(item, item);
         global.localStorage.getItem(item);
         global.localStorage.removeItem(item);
-        return Promise.resolve(new LocalStorage(name));
+        return Promise.resolve(new LocalStorageAdapter(name));
       } catch (e) {
         return Promise.resolve(undefined);
       }
@@ -137,19 +137,19 @@ export class LocalStorage extends WebStorage {
   }
 }
 
-export class SessionStorage extends WebStorage {
+export class SessionStorageAdapter extends WebStorageAdapter {
   constructor(name) {
     super(name);
 
-    const masterCollection = global.localStorage.getItem(this.masterCollectionName);
+    const masterCollection = global.sessionStorage.getItem(this.masterCollectionName);
     if (isDefined(masterCollection) === false) {
-      global.localStorage.setItem(this.masterCollectionName, JSON.stringify([]));
+      global.sessionStorage.setItem(this.masterCollectionName, JSON.stringify([]));
     }
   }
 
   _find(collection) {
     try {
-      const entities = global.localStorage.getItem(collection);
+      const entities = global.sessionStorage.getItem(collection);
 
       if (isDefined(entities)) {
         return Promise.resolve(JSON.parse(entities));
@@ -244,7 +244,7 @@ export class SessionStorage extends WebStorage {
         global.sessionStorage.setItem(item, item);
         global.sessionStorage.getItem(item);
         global.sessionStorage.removeItem(item);
-        return Promise.resolve(new LocalStorage(name));
+        return Promise.resolve(new SessionStorageAdapter(name));
       } catch (e) {
         return Promise.resolve(undefined);
       }
@@ -254,7 +254,7 @@ export class SessionStorage extends WebStorage {
   }
 }
 
-export class CookieStorage extends WebStorage {
+export class CookieStorageAdapter extends WebStorageAdapter {
   constructor(name) {
     super(name);
 
@@ -379,6 +379,6 @@ export class CookieStorage extends WebStorage {
       return Promise.resolve(undefined);
     }
 
-    return Promise.resolve(new CookieStorage(name));
+    return Promise.resolve(new CookieStorageAdapter(name));
   }
 }

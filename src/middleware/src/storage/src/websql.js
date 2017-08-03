@@ -206,7 +206,7 @@ class WebSQL {
   }
 }
 
-export default {
+const WebSQLAdapter = {
   load(name) {
     const db = new WebSQL(name);
 
@@ -233,3 +233,4 @@ export default {
       });
   }
 };
+export { WebSQLAdapter };
