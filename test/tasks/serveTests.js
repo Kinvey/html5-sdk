@@ -7,8 +7,7 @@ function serveTests() {
 
   new Promise(function (resolve) {
 
-    //TODO: fix dirname to be from/in config
-    const serve = serveStatic(__dirname);
+    const serve = serveStatic(global.appRoot);
 
     const server = http.createServer(function (req, res) {
       const done = finalhandler(req, res);
@@ -16,9 +15,8 @@ function serveTests() {
     });
 
     server.listen(0, () => {
-      //TODO: set config port
-      //config.staticPort = server.address().port;
-      console.log(`Serving static files on port: ${server.address().port}`);
+      global.staticPort = server.address().port;
+      console.log(`Serving static files on port: ${global.staticPort}`);
       return resolve();
     });
   });

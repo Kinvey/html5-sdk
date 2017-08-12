@@ -1,6 +1,7 @@
-//const path = require('path');
+const path = require('path');
 //const walk = require('klaw-sync');
 //const fs = require('fs-extra');
+global.appRoot = path.resolve(__dirname);
 
 const {
   Runner,
