@@ -13,10 +13,12 @@ function webRunTests() {
         chrome.stderr.on('data', d => console.log(d.toString()));
 
         chrome.on('close', function () {
+          //TODO - add nodejs events
           //grunt.event.emit('test-end');
         });
       })
       .catch(err => {
+        //TODO - add nodejs events
         //grunt.event.emit('test-end');
       });
   }
@@ -26,6 +28,7 @@ function webRunTests() {
     chrome.stderr.on('data', d => console.log(d.toString()));
 
     chrome.on('close', function () {
+      //TODO - add nodejs events
       //grunt.event.emit('test-end');
     });
   }
