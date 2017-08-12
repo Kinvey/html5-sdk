@@ -2,6 +2,9 @@ const path = require('path');
 //const walk = require('klaw-sync');
 //const fs = require('fs-extra');
 global.appRoot = path.resolve(__dirname);
+//TODO - refactor the tests path to be from config
+global.testFile = path.join(global.appRoot, 'test/suites/tests.html');
+
 
 const {
   Runner,
@@ -9,13 +12,15 @@ const {
 } = require('universal-runner');
 
 const serveTests = require("./test/tasks/serveTests");
+const webRunTests = require("./test/tasks/webRunTests");
 
 let logServerPort;
 
 const runner = new Runner({
   pipeline: [
     logServer(),
-    serveTests()
+    serveTests(),
+    webRunTests()
   ]
 });
 
