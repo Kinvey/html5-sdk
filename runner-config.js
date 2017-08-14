@@ -18,6 +18,10 @@ let logServerPort;
 
 const runner = new Runner({
   pipeline: [
+    runCommand({
+            command: 'npm',
+            args: ['run-script', 'build']
+        }),
     logServer(),
     serveTests(),
     webRunTests()

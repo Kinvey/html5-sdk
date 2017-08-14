@@ -1,12 +1,20 @@
 testRunner.run(testFunc);
 
-function testFunc() {	
-describe('Array', function() {
-  describe('#indexOf()', function() {
-    it('should return -1 when the value is not present', function() {
-      //assert.equal(-1, [1,2,3].indexOf(4));
+function testFunc() {
+  var expect = chai.expect;
+  Kinvey.initialize({
+    appKey: 'kid_H1yZOGnfb',
+    appSecret: '174b6b64eef645fd8dd77a5ba2366ad0'
+  });
+
+  describe('Ping', function () {
+    it('should return version', function (done) {
+      var promise = Kinvey.ping().then(function (response) {
+        expect(response.version).to.equal('3.9.38');
+        done();
+      }).catch(function (error) {
+        done(error);
+      });
     });
   });
-});
-	
 }
