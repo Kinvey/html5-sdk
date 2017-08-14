@@ -19,7 +19,7 @@
   "scripts": {
     "build": "npm run clean && npm run transpile && npm run bundle && npm run minify",
     "bundle": "webpack --config webpack.config.js",
-    "clean": "rm -rf dist && rm -rf coverage && rm -rf s3",
+    "clean": "shx rm -rf dist && shx rm -rf coverage && shx rm -rf s3",
     "minify": "uglifyjs --screw-ie8 --compress warnings=false --mangle --comments --output ./dist/kinvey-html5-sdk.min.js -- ./dist/kinvey-html5-sdk.js ",
     "cover": "istanbul cover _mocha -- --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit",
     "docs": "esdoc -c esdoc.json",
@@ -76,6 +76,7 @@
     "selenium-standalone": "6.0.1",
     "serve-static": "^1.12.4",
     "shelljs": "0.7.7",
+    "shx": "^0.2.2",
     "uglify-js": "2.8.12",
     "universal-runner": "../js-universal-test-runner",
     "wdio-mocha-framework": "0.5.9",
