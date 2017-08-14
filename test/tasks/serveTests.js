@@ -17,7 +17,7 @@ function serveTests() {
     server.listen(0, () => {
       global.staticPort = server.address().port;
       console.log(`Serving static files on port: ${global.staticPort}`);
-      return resolve();
+      resolve();
     });
   });
 };
