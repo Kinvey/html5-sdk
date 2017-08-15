@@ -3,36 +3,22 @@ const spawnHeadlessChromium = require('run-headless-chromium').spawn;
 const opn = require('opn');
 const path = require('path');
 
-function webRunTests() {
+const webRunTests = (staticPort, runner) =>
+    new Promise((resolve, reject) => {
+        const args = [`http://localhost:${staticPort()}/test/index.html`];
 
-  const args = [`http://localhost:${global.staticPort}/${global.testFile}`];
-
-  if (os.type() === 'Windows_NT') {
-    opn(global.testFile, { app: ['chrome', '--incognito'] })
-      .then((chrome) => {
-        chrome.stderr.on('data', d => console.log(d.toString()));
-
-        chrome.on('close', function () {
-          //TODO - add nodejs events
-          //grunt.event.emit('test-end');
-        });
-      })
-      .catch(err => {
-        //TODO - add nodejs events
-        //grunt.event.emit('test-end');
-      });
-  }
-  else {
-    const chrome = spawnHeadlessChromium(args);
-
-    chrome.stderr.on('data', d => console.log(d.toString()));
-
-    chrome.on('close', function () {
-      //TODO - add nodejs events
-      //grunt.event.emit('test-end');
+        if (os.type() === 'Windows_NT') {
+            opn(global.testFile, {
+                app: ['chrome', '--incognito']
+            })
+                .then(resolve)
+                .catch(reject);
+        } else {
+            const chrome = spawnHeadlessChromium(args);
+            chrome.stderr.on('data', d => reject(d.toString()));
+            chrome.on('close', () => resolve());
+            runner.on('log.end', resolve);
+        }
     });
-  }
-};
 
-module.exports = () => ['webRunTests', webRunTests];
-
+module.exports = staticPort => ['webRunTests', webRunTests, staticPort];

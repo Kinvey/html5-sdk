@@ -3,23 +3,22 @@ const http = require('http');
 const finalhandler = require('finalhandler');
 const serveStatic = require('serve-static');
 
-function serveTests() {
+const serveTests = (appRoot, runner) =>
+    new Promise(resolve => {
+        const serve = serveStatic(appRoot);
 
-  new Promise(function (resolve) {
+        const server = http.createServer(function(req, res) {
+            const done = finalhandler(req, res);
+            serve(req, res, done);
+        });
 
-    const serve = serveStatic(global.appRoot);
+        server.listen(0, () => {
+            const staticPort = server.address().port;
+            runner.emit('serve.static', staticPort);
+            console.log(`Serving static files on port: ${staticPort}`);
 
-    const server = http.createServer(function (req, res) {
-      const done = finalhandler(req, res);
-      serve(req, res, done);
+            return resolve(staticPort);
+        });
     });
 
-    server.listen(0, () => {
-      global.staticPort = server.address().port;
-      console.log(`Serving static files on port: ${global.staticPort}`);
-      resolve();
-    });
-  });
-};
-
-module.exports = () => ['serveTests', serveTests];
+module.exports = appRoot => ['serveTests', serveTests, appRoot];

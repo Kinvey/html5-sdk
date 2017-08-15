@@ -24,3 +24,7 @@ test/e2e/app
 .DS_Store
 shots
 local.log
+
+
+test/index.html
+.vscode
