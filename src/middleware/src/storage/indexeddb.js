@@ -1,5 +1,5 @@
 import Promise from 'es6-promise';
-import { NotFoundError, isDefined } from 'kinvey-js-sdk/dist/export';
+import { KinveyError, NotFoundError, isDefined } from 'kinvey-js-sdk/dist/export';
 import forEach from 'lodash/forEach';
 import isString from 'lodash/isString';
 import isArray from 'lodash/isArray';
@@ -14,7 +14,7 @@ const TransactionMode = {
 };
 Object.freeze(TransactionMode);
 
-class IndexedDB {
+export class IndexedDBAdapter {
   constructor(name) {
     if (isDefined(name) === false) {
       throw new Error('A name is required to use the IndexedDB adapter.', name);
@@ -46,7 +46,7 @@ class IndexedDB {
             return success(txn);
           }
 
-          throw new Error(`Unable to open a transaction for ${collection}`
+          throw new KinveyError(`Unable to open a transaction for ${collection}`
             + ` collection on the ${this.name} IndexedDB database.`);
         } catch (e) {
           return error(e);
@@ -231,7 +231,7 @@ class IndexedDB {
         };
 
         txn.onerror = (e) => {
-          reject(new Error(`An error occurred while saving the entities to the ${collection}`
+          reject(new KinveyError(`An error occurred while saving the entities to the ${collection}`
             + ` collection on the ${this.name} IndexedDB database. ${e.target.error.message}.`));
         };
       }, reject);
@@ -279,22 +279,20 @@ class IndexedDB {
       };
 
       request.onerror = (e) => {
-        reject(new Error(`An error occurred while clearing the ${this.name} IndexedDB database.`
+        reject(new KinveyError(`An error occurred while clearing the ${this.name} IndexedDB database.`
             + ` ${e.target.error.message}.`));
       };
 
       request.onblocked = () => {
-        reject(new Error(`The ${this.name} IndexedDB database could not be cleared`
+        reject(new KinveyError(`The ${this.name} IndexedDB database could not be cleared`
           + ' due to the operation being blocked.'));
       };
     });
   }
-}
 
-export default {
-  load(name) {
+  static load(name) {
     const indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
-    const db = new IndexedDB(name);
+    const adapter = new IndexedDBAdapter(name);
 
     if (isDefined(indexedDB) === false) {
       return Promise.resolve(undefined);
@@ -302,20 +300,20 @@ export default {
 
     if (isDefined(isSupported)) {
       if (isSupported) {
-        return Promise.resolve(db);
+        return Promise.resolve(adapter);
       }
 
       return Promise.resolve(undefined);
     }
 
-    return db.save('__testSupport', { _id: '1' })
+    return adapter.save('__testSupport', { _id: '1' })
       .then(() => {
         isSupported = true;
-        return db;
+        return adapter;
       })
       .catch(() => {
         isSupported = false;
         return undefined;
       });
   }
-};
+}
