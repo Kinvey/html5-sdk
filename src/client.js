@@ -1,5 +1,6 @@
 import isString from 'lodash/isString';
 import { Client as CoreClient, KinveyError, isDefined } from 'kinvey-js-sdk/dist/export';
+import Log from 'kinvey-js-sdk/dist/utils';
 import storage from 'local-storage-fallback';
 
 class ActiveUserStorage {
@@ -11,6 +12,7 @@ class ActiveUserStorage {
     try {
       return JSON.parse(storage.getItem(key));
     } catch (e) {
+      Log.debug('Unable to parse stored active user.', e);
       return null;
     }
   }
