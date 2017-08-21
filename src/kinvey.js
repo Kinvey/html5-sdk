@@ -1,11 +1,50 @@
 import { Promise } from 'es6-promise';
-import { Kinvey as CoreKinvey, isDefined, KinveyError } from 'kinvey-js-sdk/dist/export';
+import url from 'url';
+import {
+  Kinvey as CoreKinvey,
+  isDefined,
+  KinveyError,
+  CacheRequest,
+  RequestMethod
+} from 'kinvey-js-sdk/dist/export';
 import { Client } from './client';
+
+const USERS_NAMESPACE = 'user';
+const ACTIVE_USER_COLLECTION_NAME = 'kinvey_active_user';
 
 export class Kinvey extends CoreKinvey {
   static initialize(config) {
     const client = Kinvey.init(config);
-    return Promise.resolve(client.getActiveUser());
+    const activeUser = client.getActiveUser();
+
+    if (isDefined(activeUser)) {
+      return Promise.resolve(activeUser);
+    }
+
+    const request = new CacheRequest({
+      method: RequestMethod.GET,
+      url: url.format({
+        protocol: client.apiProtocol,
+        host: client.apiHost,
+        pathname: `/${USERS_NAMESPACE}/${client.appKey}/${ACTIVE_USER_COLLECTION_NAME}`
+      })
+    });
+    return request.execute()
+      .then(response => response.data)
+      .then((activeUsers) => {
+        if (activeUsers.length > 0) {
+          return activeUsers[0];
+        }
+
+        return null;
+      })
+      .then((activeUser) => {
+        if (isDefined(activeUser)) {
+          return client.setActiveUser(activeUser);
+        }
+
+        return activeUser;
+      });
   }
 
   static init(options = {}) {
@@ -16,7 +55,7 @@ export class Kinvey extends CoreKinvey {
 
     if (!isDefined(options.appSecret) && !isDefined(options.masterSecret)) {
       throw new KinveyError('No App Secret or Master Secret was provided.'
-        + ' Unable to create a new Client without an App Key.');
+        + ' Unable to create a new Client without an App Secret.');
     }
 
     return Client.init(options);
