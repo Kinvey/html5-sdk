@@ -8,7 +8,7 @@ const webRunTests = (staticPort, runner) =>
         const args = [`http://localhost:${staticPort()}/test/index.html`];
 
         if (os.type() === 'Windows_NT') {
-            opn(global.testFile, {
+            opn(args[0], {
                 app: ['chrome', '--incognito']
             })
                 .then(resolve)
