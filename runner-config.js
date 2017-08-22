@@ -20,6 +20,16 @@ const webRunTests = require('./test/tasks/webRunTests');
 let logServerPort;
 let staticPort;
 
+const jsFilesFilter = item => path.extname(item.path) === '.js'
+const shimSpecificTests = walk(path.join(__dirname, 'test', 'suites'), {
+    filter: jsFilesFilter,
+    nodir: true
+});
+const commonTests = walk(path.join(__dirname, 'node_modules', 'kinvey-js-sdk', 'test', 'commonTests'), {
+    filter: jsFilesFilter,
+    nodir: true
+});
+
 const runner = new Runner({
     pipeline: [
         logServer(),
@@ -30,9 +40,7 @@ const runner = new Runner({
         processTemplateFile(
             path.join(__dirname, 'test', 'index.template.hbs'),
             () => ({
-                tests: walk(path.join(__dirname, 'test', 'suites'), {
-                    nodir: true
-                }).map(
+                tests: shimSpecificTests.concat(commonTests).map(
                     f =>
                         `./${path.relative(
                             path.join(__dirname, 'test'),
