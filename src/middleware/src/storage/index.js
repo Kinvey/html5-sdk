@@ -1,10 +1,10 @@
 import { isDefined } from 'kinvey-js-sdk/dist/export';
-import { Storage as KinveyStorage } from 'kinvey-js-sdk/dist/request/src/middleware/src/storage';
+import { Storage as CoreStorage } from 'kinvey-js-sdk/dist/request/src/middleware/src/storage';
 import { IndexedDBAdapter } from './indexeddb';
 import { WebSQLAdapter } from './websql';
 import { LocalStorageAdapter } from './webstorage';
 
-export class Storage extends KinveyStorage {
+export default class Storage extends CoreStorage {
   loadAdapter() {
     return WebSQLAdapter.load(this.name)
       .then((adapter) => {

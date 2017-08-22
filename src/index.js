@@ -1,4 +1,6 @@
-import Kinvey, { CacheRack, NetworkRack, User } from 'kinvey-js-sdk/dist/export';
+import { CacheRack, NetworkRack } from 'kinvey-js-sdk/dist/export';
+import { MobileIdentityConnect } from 'kinvey-js-sdk/dist/identity';
+import { Kinvey } from './kinvey';
 import { CacheMiddleware, HttpMiddleware } from './middleware';
 import Popup from './popup';
 
@@ -7,7 +9,7 @@ CacheRack.useCacheMiddleware(new CacheMiddleware());
 NetworkRack.useHttpMiddleware(new HttpMiddleware());
 
 // Setup popup
-User.usePopupClass(Popup);
+MobileIdentityConnect.usePopupClass(Popup);
 
 // Export
 module.exports = Kinvey;
