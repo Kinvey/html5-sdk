@@ -19,10 +19,14 @@ const webRunTests = require('./test/tasks/webRunTests');
 
 let logServerPort;
 let staticPort;
+
+const jsFilesFilter = item => path.extname(item.path) === '.js'
 let shimSpecificTests = walk(path.join(__dirname, 'test', 'suites'), {
+    filter: jsFilesFilter,
     nodir: true
 });
 let commonTests = walk(path.join(__dirname, 'node_modules/kinvey-js-sdk/test/commonTests'), {
+    filter: jsFilesFilter,
     nodir: true
 });
 
