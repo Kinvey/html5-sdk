@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.8.0](https://github.com/Kinvey/html5-sdk/tree/v3.8.0) (2017-08-23)
+[Full Changelog](https://github.com/Kinvey/html5-sdk/compare/v3.5.2...v3.8.0)<br/>
+
+### Added
+_None_
+
+### Removed
+_None_
+
+### Changed/Fixed
+- Throw any errors encountered when trying to load a storage adapter.
+- Store the active user using local storage.
+
+### Merged Pull Requests
+- Fix Storage API [#18](https://github.com/Kinvey/html5-sdk/pull/18)
+- Active User Storage [#20](https://github.com/Kinvey/html5-sdk/pull/20)
+
+### Closed Issues
+_None_
+
 ## [3.5.2](https://github.com/Kinvey/html5-sdk/tree/v3.5.2) (2017-07-08)
 [Full Changelog](https://github.com/Kinvey/html5-sdk/compare/v3.5.1...v3.5.2)<br/>
 
