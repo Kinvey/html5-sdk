@@ -5,7 +5,8 @@ import {
   isDefined,
   KinveyError,
   CacheRequest,
-  RequestMethod
+  RequestMethod,
+  User
 } from 'kinvey-js-sdk/dist/export';
 import { Client } from './client';
 
@@ -15,7 +16,7 @@ const ACTIVE_USER_COLLECTION_NAME = 'kinvey_active_user';
 export class Kinvey extends CoreKinvey {
   static initialize(config) {
     const client = Kinvey.init(config);
-    const activeUser = client.getActiveUser();
+    const activeUser = User.getActiveUser(client);
 
     if (isDefined(activeUser)) {
       return Promise.resolve(activeUser);
@@ -40,6 +41,10 @@ export class Kinvey extends CoreKinvey {
       })
       .then((activeUser) => {
         if (isDefined(activeUser)) {
+          if (isDefined(activeUser.data)) {
+            return client.setActiveUser(activeUser.data);
+          }
+
           return client.setActiveUser(activeUser);
         }
 
