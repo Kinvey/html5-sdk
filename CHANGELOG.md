@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.8.1](https://github.com/Kinvey/html5-sdk/tree/v3.8.1) (2017-08-25)
+[Full Changelog](https://github.com/Kinvey/html5-sdk/compare/v3.8.0...v3.8.1)<br/>
+
+### Added
+_None_
+
+### Removed
+_None_
+
+### Changed/Fixed
+- Resolve `Kinvey.initialize()` with an instance of `Kinvey.User` or `null`.
+
+### Merged Pull Requests
+- Fix Initialize [#23](https://github.com/Kinvey/html5-sdk/pull/23)
+
+### Closed Issues
+_None_
+
 ## [3.8.0](https://github.com/Kinvey/html5-sdk/tree/v3.8.0) (2017-08-23)
 [Full Changelog](https://github.com/Kinvey/html5-sdk/compare/v3.5.2...v3.8.0)<br/>
 
