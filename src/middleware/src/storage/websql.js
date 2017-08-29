@@ -25,12 +25,15 @@ export class WebSQLAdapter {
     this.name = name;
   }
 
-  openTransaction(collection, query, parameters, write = false) {
-    let db = dbCache[this.name];
+  openTransaction(collection, query, parameters, write = false, db) {
     const escapedCollection = `"${collection}"`;
     const isMaster = collection === masterCollectionName;
     const isMulti = isArray(query);
     query = isMulti ? query : [[query, parameters]];
+
+    if (!db) {
+      db = dbCache[this.name];
+    }
 
     return new Promise((resolve, reject) => {
       try {
