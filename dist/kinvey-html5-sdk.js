@@ -1,6 +1,6 @@
 /**
  * @preserve
- * kinvey-html5-sdk v3.9.0-beta.1
+ * kinvey-html5-sdk v3.9.0-beta.2
  * Kinvey JavaScript SDK for HTML5 applications.
  * http://www.kinvey.com
  *
@@ -26364,19 +26364,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'post',
 	    value: function post(message) {
-	      var userId = this._client.activeUser._id;
+	      var userId = this._client.getActiveUser()._id;
 	      return this._publish(userId, message);
 	    }
 	  }, {
 	    key: 'listen',
 	    value: function listen(receiver) {
-	      var userId = this._client.activeUser._id;
+	      var userId = this._client.getActiveUser()._id;
 	      return this._subscribe(userId, receiver);
 	    }
 	  }, {
 	    key: 'stopListening',
 	    value: function stopListening() {
-	      var userId = this._client.activeUser._id;
+	      var userId = this._client.getActiveUser()._id;
 	      return this._unsubscribe(userId);
 	    }
 	  }, {
@@ -31829,7 +31829,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 384 */
 /***/ (function(module, exports) {
 
-	module.exports = {"name":"kinvey-html5-sdk","version":"3.9.0-beta.1","description":"Kinvey JavaScript SDK for HTML5 applications.","homepage":"http://www.kinvey.com","bugs":{"url":"https://github.com/Kinvey/html5-sdk/issues"},"license":"Apache-2.0","author":"Kinvey","contributors":["Thomas Conner <thomas@kinvey.com>"],"main":"./dist/index.js","repository":{"type":"git","url":"git@github.com:Kinvey/html5-sdk"},"scripts":{"build":"npm run clean && npm run transpile && npm run bundle && npm run minify","bundle":"webpack --config webpack.config.js","clean":"rm -rf dist && rm -rf coverage && rm -rf s3","minify":"uglifyjs --screw-ie8 --compress warnings=false --mangle --comments --output ./dist/kinvey-html5-sdk.min.js -- ./dist/kinvey-html5-sdk.js ","cover":"istanbul cover _mocha -- --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit","docs":"esdoc -c esdoc.json","e2e:server":"selenium-standalone install --version=3.0.1 && selenium-standalone start","e2e:app":"npm run build && shjs ./scripts/e2e.js && node ./test/e2e/app","e2e:test":"wdio ./test/e2e/wdio.conf","e2e:test:browserstack":"wdio ./test/e2e/browserstack.conf","lint":"npm run lint:src","lint:src":"eslint src/**","lint:test":"eslint test/unit/**","preversion":"rm -rf node_modules && npm install && npm test","version":"npm run build && git add dist/kinvey-html5-sdk.js && git add dist/kinvey-html5-sdk.min.js && git commit -m 'Update dist bundle.'","postversion":"git push && git push --tags && rm -rf dist && rm -rf coverage && rm -rf s3","s3":"npm run build && shjs ./scripts/s3.js","test":"mocha --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit","test:watch":"mocha -w --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit","transpile":"babel src --out-dir dist"},"dependencies":{"core-js":"2.4.1","es6-promise":"4.1.0","kinvey-js-sdk":"3.9.0-beta.1","local-storage-fallback":"4.0.0","lodash":"4.17.4","url":"0.11.0","xhr":"2.3.3"},"peerDependencies":{"kinvey-js-sdk":"3.9.0-beta.1"},"devDependencies":{"babel-cli":"6.24.0","babel-core":"6.24.0","babel-eslint":"7.1.1","babel-plugin-inline-dotenv":"^1.1.1","babel-plugin-module-resolver":"2.5.0","babel-polyfill":"^6.9.0","babel-preset-es2015":"6.24.0","babel-preset-stage-2":"^6.0.15","babel-register":"6.24.0","browserstack-local":"^1.2.0","eslint":"3.17.1","eslint-config-airbnb-base":"11.1.1","eslint-import-resolver-babel-module":"3.0.0","eslint-plugin-import":"2.2.0","expect":"^1.20.2","fs-extra":"2.1.1","istanbul":"1.1.0-alpha.1","json-loader":"^0.5.4","mocha":"3.2.0","nock":"9.0.9","regenerator-runtime":"0.10.3","selenium-standalone":"6.0.1","shelljs":"0.7.7","uglify-js":"2.8.12","wdio-mocha-framework":"0.5.9","wdio-spec-reporter":"0.1.0","webdriverio":"^4.4.0","webpack":"^1.13.0"},"engines":{"node":">=4.0"},"keywords":["Kinvey","JavaScript","HTML5"]}
+	module.exports = {"name":"kinvey-html5-sdk","version":"3.9.0-beta.2","description":"Kinvey JavaScript SDK for HTML5 applications.","homepage":"http://www.kinvey.com","bugs":{"url":"https://github.com/Kinvey/html5-sdk/issues"},"license":"Apache-2.0","author":"Kinvey","contributors":["Thomas Conner <thomas@kinvey.com>"],"main":"./dist/index.js","repository":{"type":"git","url":"git@github.com:Kinvey/html5-sdk"},"scripts":{"build":"npm run clean && npm run transpile && npm run bundle && npm run minify","bundle":"webpack --config webpack.config.js","clean":"rm -rf dist && rm -rf coverage && rm -rf s3","minify":"uglifyjs --screw-ie8 --compress warnings=false --mangle --comments --output ./dist/kinvey-html5-sdk.min.js -- ./dist/kinvey-html5-sdk.js ","cover":"istanbul cover _mocha -- --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit","docs":"esdoc -c esdoc.json","e2e:server":"selenium-standalone install --version=3.0.1 && selenium-standalone start","e2e:app":"npm run build && shjs ./scripts/e2e.js && node ./test/e2e/app","e2e:test":"wdio ./test/e2e/wdio.conf","e2e:test:browserstack":"wdio ./test/e2e/browserstack.conf","lint":"npm run lint:src","lint:src":"eslint src/**","lint:test":"eslint test/unit/**","preversion":"rm -rf node_modules && npm install && npm test","version":"npm run build && git add dist/kinvey-html5-sdk.js && git add dist/kinvey-html5-sdk.min.js && git commit -m 'Update dist bundle.'","postversion":"git push && git push --tags && rm -rf dist && rm -rf coverage && rm -rf s3","s3":"npm run build && shjs ./scripts/s3.js","test":"mocha --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit","test:watch":"mocha -w --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit","transpile":"babel src --out-dir dist"},"dependencies":{"core-js":"2.4.1","es6-promise":"4.1.0","kinvey-js-sdk":"3.9.0-beta.2","local-storage-fallback":"4.0.0","lodash":"4.17.4","url":"0.11.0","xhr":"2.3.3"},"peerDependencies":{"kinvey-js-sdk":"3.9.0-beta.2"},"devDependencies":{"babel-cli":"6.24.0","babel-core":"6.24.0","babel-eslint":"7.1.1","babel-plugin-inline-dotenv":"^1.1.1","babel-plugin-module-resolver":"2.5.0","babel-polyfill":"^6.9.0","babel-preset-es2015":"6.24.0","babel-preset-stage-2":"^6.0.15","babel-register":"6.24.0","browserstack-local":"^1.2.0","eslint":"3.17.1","eslint-config-airbnb-base":"11.1.1","eslint-import-resolver-babel-module":"3.0.0","eslint-plugin-import":"2.2.0","expect":"^1.20.2","fs-extra":"2.1.1","istanbul":"1.1.0-alpha.1","json-loader":"^0.5.4","mocha":"3.2.0","nock":"9.0.9","regenerator-runtime":"0.10.3","selenium-standalone":"6.0.1","shelljs":"0.7.7","uglify-js":"2.8.12","wdio-mocha-framework":"0.5.9","wdio-spec-reporter":"0.1.0","webdriverio":"^4.4.0","webpack":"^1.13.0"},"engines":{"node":">=4.0"},"keywords":["Kinvey","JavaScript","HTML5"]}
 
 /***/ }),
 /* 385 */
