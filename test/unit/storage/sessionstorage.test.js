@@ -3,20 +3,10 @@ import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { NotFoundError } from 'kinvey-js-sdk/dist/export';
 import { SessionStorageAdapter } from '../../../src/middleware/src/storage/webstorage';
+import { randomString } from '../utils';
 
 chai.use(chaiAsPromised);
 chai.should();
-
-function randomString() {
-  let string = '';
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-  for (let i = 0; i < 5; i += 1) {
-    string += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-
-  return string;
-}
 
 function storageMock() {
   const storage = {};
@@ -42,12 +32,14 @@ function storageMock() {
 }
 
 describe('SessionStorageAdapter', () => {
+  const sessionStorage = global.sessionStorage;
+
   beforeEach(() => {
     global.sessionStorage = storageMock();
   });
 
   afterEach(() => {
-    delete global.sessionStorage;
+    global.sessionStorage = sessionStorage;
   });
 
   describe('load()', () => {

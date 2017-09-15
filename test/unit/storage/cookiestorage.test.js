@@ -3,41 +3,45 @@ import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { NotFoundError } from 'kinvey-js-sdk/dist/export';
 import { CookieStorageAdapter } from '../../../src/middleware/src/storage/webstorage';
+import { randomString } from '../utils';
 
 chai.use(chaiAsPromised);
 chai.should();
 
-function randomString() {
-  let string = '';
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-  for (let i = 0; i < 5; i += 1) {
-    string += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-
-  return string;
-}
-
 function storageMock() {
   return {
-    value_: '',
+    value_: {},
     get cookie() {
-      return this.value_;
+      const output = Object.keys(this.value_).reduce((output, key) => {
+        output.push(`${key}=${this.value_[key]}`);
+        return output;
+      }, []);
+      return output.join(';');
     },
 
-    set cookie(value) {
-      this.value_ += `${value};`;
+    set cookie(string) {
+      if (string) {
+        const indexOfSeparator = string.indexOf('=');
+        const key = string.substr(0, indexOfSeparator);
+        const value = string.substring(indexOfSeparator + 1);
+        this.value_[key] = value;
+        return `${key}=${value}`;
+      }
+
+      return null;
     }
   };
 }
 
 describe('CookieStorageAdapter', () => {
+  const document = global.document;
+
   beforeEach(() => {
     global.document = storageMock();
   });
 
   afterEach(() => {
-    delete global.document;
+    global.document = document;
   });
 
   describe('load()', () => {
@@ -154,30 +158,26 @@ describe('CookieStorageAdapter', () => {
     });
   });
 
-  // describe('clear()', () => {
-  //   let adapter;
-  //   const collection = 'books';
-  //   const entities = [{
-  //     title: randomString()
-  //   }];
+  describe('clear()', () => {
+    let adapter;
+    const collection = 'books';
+    const entities = [{
+      title: randomString()
+    }];
 
-  //   beforeEach(() => {
-  //     adapter = new CookieStorageAdapter(randomString());
-  //     return adapter.save(collection, entities);
-  //   });
+    beforeEach(() => {
+      adapter = new CookieStorageAdapter(randomString());
+      return adapter.save(collection, entities);
+    });
 
-  //   afterEach(() => {
-  //     return adapter.clear();
-  //   });
+    afterEach(() => adapter.clear());
 
-  //   it('should remove all entities', () => {
-  //     return adapter.clear()
-  //       .then(() => {
-  //         return adapter.find(collection);
-  //       })
-  //       .then((savedEntities) => {
-  //         expect(savedEntities).toEqual([]);
-  //       });
-  //   });
-  // });
+    it('should remove all entities', () => {
+      return adapter.clear()
+        .then(() => adapter.find(collection))
+        .then((savedEntities) => {
+          expect(savedEntities).toEqual([]);
+        });
+    });
+  });
 });
