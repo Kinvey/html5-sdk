@@ -4,7 +4,6 @@ import keyBy from 'lodash/keyBy';
 import merge from 'lodash/merge';
 import values from 'lodash/values';
 import forEach from 'lodash/forEach';
-import findIndex from 'lodash/findIndex';
 import find from 'lodash/find';
 
 const idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
@@ -65,7 +64,7 @@ export class LocalStorageAdapter extends WebStorageAdapter {
   save(collection, entities) {
     return this._find(this.masterCollectionName)
       .then((collections) => {
-        if (findIndex(collections, collection) === -1) {
+        if (collections.indexOf(collection) === -1) {
           collections.push(collection);
           global.localStorage.setItem(this.masterCollectionName, JSON.stringify(collections));
         }
@@ -83,6 +82,8 @@ export class LocalStorageAdapter extends WebStorageAdapter {
 
           if (isDefined(entity)) {
             entitiesById[id] = merge(existingEntity, entity);
+          } else {
+            entitiesById[id] = existingEntity;
           }
         });
 
@@ -103,8 +104,8 @@ export class LocalStorageAdapter extends WebStorageAdapter {
         }
 
         delete entitiesById[id];
-        return this.save(collection, values(entitiesById))
-          .then(() => ({ count: 1 }));
+        global.localStorage.setItem(`${this.name}${collection}`, JSON.stringify(values(entitiesById)));
+        return { count: 1 };
       });
   }
 
@@ -141,15 +142,15 @@ export class SessionStorageAdapter extends WebStorageAdapter {
   constructor(name) {
     super(name);
 
-    const masterCollection = global.localStorage.getItem(this.masterCollectionName);
+    const masterCollection = global.sessionStorage.getItem(this.masterCollectionName);
     if (isDefined(masterCollection) === false) {
-      global.localStorage.setItem(this.masterCollectionName, JSON.stringify([]));
+      global.sessionStorage.setItem(this.masterCollectionName, JSON.stringify([]));
     }
   }
 
   _find(collection) {
     try {
-      const entities = global.localStorage.getItem(collection);
+      const entities = global.sessionStorage.getItem(collection);
 
       if (isDefined(entities)) {
         return Promise.resolve(JSON.parse(entities));
@@ -182,7 +183,7 @@ export class SessionStorageAdapter extends WebStorageAdapter {
   save(collection, entities) {
     return this._find(this.masterCollectionName)
       .then((collections) => {
-        if (findIndex(collections, collection) === -1) {
+        if (collections.indexOf(collection) === -1) {
           collections.push(collection);
           global.sessionStorage.setItem(this.masterCollectionName, JSON.stringify(collections));
         }
@@ -200,6 +201,8 @@ export class SessionStorageAdapter extends WebStorageAdapter {
 
           if (isDefined(entity)) {
             entitiesById[id] = merge(existingEntity, entity);
+          } else {
+            entitiesById[id] = existingEntity;
           }
         });
 
@@ -220,8 +223,8 @@ export class SessionStorageAdapter extends WebStorageAdapter {
         }
 
         delete entitiesById[id];
-        return this.save(collection, values(entitiesById))
-          .then(() => ({ count: 1 }));
+        global.sessionStorage.setItem(`${this.name}${collection}`, JSON.stringify(values(entitiesById)));
+        return { count: 1 };
       });
   }
 
@@ -258,7 +261,7 @@ export class CookieStorageAdapter extends WebStorageAdapter {
   constructor(name) {
     super(name);
 
-    const values = document.cookie.split(';');
+    const values = global.document.cookie.split(';');
     for (let i = 0, len = values.length; i < len; i += 1) {
       let value = values[i];
       while (value.charAt(0) === ' ') {
@@ -277,14 +280,14 @@ export class CookieStorageAdapter extends WebStorageAdapter {
   }
 
   _find(collection) {
-    const values = document.cookie.split(';');
+    const values = global.document.cookie.split(';');
     for (let i = 0, len = values.length; i < len; i += 1) {
       let value = values[i];
       while (value.charAt(0) === ' ') {
         value = value.substring(1);
       }
       if (value.indexOf(collection) === 0) {
-        return Promise.resolve(JSON.parse(decodeURIComponent(value.substring(collection.length, value.length))));
+        return Promise.resolve(JSON.parse(decodeURIComponent(value.substring(collection.length + 1, value.length))));
       }
     }
     return Promise.resolve([]);
@@ -311,7 +314,7 @@ export class CookieStorageAdapter extends WebStorageAdapter {
   save(collection, entities) {
     return this._find(this.masterCollectionName)
       .then((collections) => {
-        if (findIndex(collections, collection) === -1) {
+        if (collections.indexOf(collection) === -1) {
           collections.push(collection);
           const expires = new Date();
           expires.setTime(expires.getTime() + (100 * 365 * 24 * 60 * 60 * 1000)); // Expire in 100 years
@@ -322,8 +325,8 @@ export class CookieStorageAdapter extends WebStorageAdapter {
       })
       .then((existingEntities) => {
         const existingEntitiesById = keyBy(existingEntities, idAttribute);
-        const entitiesById = keyBy(entities, idAttribute);
         const existingEntityIds = Object.keys(existingEntitiesById);
+        const entitiesById = keyBy(entities, idAttribute);
 
         forEach(existingEntityIds, (id) => {
           const existingEntity = existingEntitiesById[id];
@@ -331,6 +334,8 @@ export class CookieStorageAdapter extends WebStorageAdapter {
 
           if (isDefined(entity)) {
             entitiesById[id] = merge(existingEntity, entity);
+          } else {
+            entitiesById[id] = existingEntity;
           }
         });
 
@@ -353,8 +358,10 @@ export class CookieStorageAdapter extends WebStorageAdapter {
         }
 
         delete entitiesById[id];
-        return this.save(collection, values(entitiesById))
-          .then(() => ({ count: 1 }));
+        const expires = new Date();
+        expires.setTime(expires.getTime() + (100 * 365 * 24 * 60 * 60 * 1000)); // Expire in 100 years
+        global.document.cookie = `${this.name}${collection}=${encodeURIComponent(JSON.stringify(values(entitiesById)))}; expires=${expires.toUTCString()}; path=/`;
+        return { count: 1 };
       });
   }
 
@@ -364,12 +371,12 @@ export class CookieStorageAdapter extends WebStorageAdapter {
         forEach(collections, (collection) => {
           const expires = new Date();
           expires.setTime(expires.getTime() + (100 * 365 * 24 * 60 * 60 * 1000)); // Expire in 100 years
-          global.document.cookie = `${this.name}${collection}=${encodeURIComponent()}; expires=${expires.toUTCString()}; path=/`;
+          global.document.cookie = `${this.name}${collection}=${encodeURIComponent(JSON.stringify([]))}; expires=${expires.toUTCString()}; path=/`;
         });
 
         const expires = new Date();
         expires.setTime(expires.getTime() + (100 * 365 * 24 * 60 * 60 * 1000)); // Expire in 100 years
-        global.document.cookie = `${this.masterCollectionName}=${encodeURIComponent()}; expires=${expires.toUTCString()}; path=/`;
+        global.document.cookie = `${this.masterCollectionName}=${encodeURIComponent(JSON.stringify([]))}; expires=${expires.toUTCString()}; path=/`;
         return null;
       });
   }
