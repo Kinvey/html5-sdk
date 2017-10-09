@@ -21,11 +21,11 @@ let logServerPort;
 let staticPort;
 
 const jsFilesFilter = item => path.extname(item.path) === '.js'
-const shimSpecificTests = walk(path.join(__dirname, 'test', 'suites'), {
+const shimSpecificTests = walk(path.join(__dirname, 'test', 'tests'), {
     filter: jsFilesFilter,
     nodir: true
 });
-const commonTests = walk(path.join(__dirname, 'node_modules', 'kinvey-js-sdk', 'test', 'commonTests'), {
+const commonTests = walk(path.join(__dirname, 'node_modules', 'kinvey-js-sdk', 'test', 'integration'), {
     filter: jsFilesFilter,
     nodir: true
 });
