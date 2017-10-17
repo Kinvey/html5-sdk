@@ -138,7 +138,7 @@ export class IndexedDBAdapter {
     // The `blocked` event is not handled. In case such an event occurs, it
     // will resolve itself since the `versionchange` event handler will close
     // the conflicting database and enable the `blocked` event to continue.
-    request.onblocked = () => {};
+    request.onblocked = () => { };
 
     // Handle errors
     request.onerror = (e) => {
@@ -194,13 +194,13 @@ export class IndexedDBAdapter {
             resolve(entity);
           } else {
             reject(new NotFoundError(`An entity with _id = ${id} was not found in the ${collection}`
-             + ` collection on the ${this.name} IndexedDB database.`));
+              + ` collection on the ${this.name} IndexedDB database.`));
           }
         };
 
         request.onerror = () => {
           reject(new NotFoundError(`An entity with _id = ${id} was not found in the ${collection}`
-             + ` collection on the ${this.name} IndexedDB database.`));
+            + ` collection on the ${this.name} IndexedDB database.`));
         };
       }, reject);
     });
@@ -238,6 +238,37 @@ export class IndexedDBAdapter {
     });
   }
 
+  removeIds(collection, ids = []) {
+    // TODO: check how to handle errors in transaction or request
+    if (!ids.length) {
+      return Promise.resolve(0);
+    }
+
+    return new Promise((resolve, reject) => {
+      this.openTransaction(collection, true, (txn) => {
+        const store = txn.objectStore(collection);
+        let deletedCount = 0;
+
+        const delPromises = ids.map((id) => {
+          return new Promise((res, rej) => {
+            const delReq = store.delete(id);
+
+            delReq.onsuccess = () => {
+              deletedCount += 1;
+              res();
+            };
+
+            delReq.onerror = rej;
+          });
+        });
+
+        Promise.all(delPromises)
+          .then(() => resolve({ count: deletedCount }))
+          .catch(e => reject(e));
+      }, reject);
+    });
+  }
+
   removeById(collection, id) {
     return new Promise((resolve, reject) => {
       this.openTransaction(collection, true, (txn) => {
@@ -258,7 +289,7 @@ export class IndexedDBAdapter {
 
         txn.onerror = () => {
           reject(new NotFoundError(`An entity with id = ${id} was not found in the ${collection}`
-              + ` collection on the ${this.name} IndexedDB database.`));
+            + ` collection on the ${this.name} IndexedDB database.`));
         };
       }, reject);
     });
@@ -280,7 +311,7 @@ export class IndexedDBAdapter {
 
       request.onerror = (e) => {
         reject(new KinveyError(`An error occurred while clearing the ${this.name} IndexedDB database.`
-            + ` ${e.target.error.message}.`));
+          + ` ${e.target.error.message}.`));
       };
 
       request.onblocked = () => {
