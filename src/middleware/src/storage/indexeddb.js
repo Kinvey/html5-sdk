@@ -239,7 +239,6 @@ export class IndexedDBAdapter {
   }
 
   removeIds(collection, ids = []) {
-    // TODO: check how to handle errors in transaction or request
     if (!ids.length) {
       return Promise.resolve(0);
     }
@@ -249,22 +248,21 @@ export class IndexedDBAdapter {
         const store = txn.objectStore(collection);
         let deletedCount = 0;
 
-        const delPromises = ids.map((id) => {
-          return new Promise((res, rej) => {
-            const delReq = store.delete(id);
+        ids.forEach((id) => {
+          const delReq = store.delete(id);
 
-            delReq.onsuccess = () => {
-              deletedCount += 1;
-              res();
-            };
-
-            delReq.onerror = rej;
-          });
+          delReq.onsuccess = () => {
+            deletedCount += 1; // this is probably not necessary
+          };
         });
 
-        Promise.all(delPromises)
-          .then(() => resolve({ count: deletedCount }))
-          .catch(e => reject(e));
+        txn.oncomplete = () => {
+          resolve({ count: deletedCount });
+        };
+
+        txn.onerror = () => {
+          reject(new KinveyError('Unable to delete items'));
+        };
       }, reject);
     });
   }

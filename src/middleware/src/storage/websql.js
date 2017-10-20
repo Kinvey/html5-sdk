@@ -157,6 +157,19 @@ export class WebSQLAdapter {
       .then(() => (singular ? entities[0] : entities));
   }
 
+  removeIds(collection, ids = []) {
+    if (!ids.length) {
+      return Promise.resolve(null);
+    }
+
+    const param = ids.reduce((str, id, ind) => {
+      const escapedId = `"${id}"`;
+      return ind > 0 ? `${str}, ${escapedId}` : escapedId;
+    }, '');
+    const query = `DELETE FROM #{collection} WHERE key IN (${param})`;
+    return this.openTransaction(collection, query, [], true);
+  }
+
   removeById(collection, id) {
     const queries = [
       ['SELECT value FROM #{collection} WHERE key = ?', [id]],

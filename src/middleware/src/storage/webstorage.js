@@ -17,26 +17,59 @@ export class WebStorageAdapter {
   get masterCollectionName() {
     return `${this.name}${masterCollectionName}`;
   }
+
+  _serialize(object) {
+    return JSON.stringify(object);
+  }
+
+  _deserialize(str) {
+    return JSON.parse(str);
+  }
 }
 
-export class LocalStorageAdapter extends WebStorageAdapter {
-  constructor(name) {
-    super(name);
 
-    const masterCollection = global.localStorage.getItem(this.masterCollectionName);
+export class KeyValueWebStorageAdapter extends WebStorageAdapter {
+  _keyValueStore = null;
+
+  constructor(name, store) {
+    super(name);
+    this._keyValueStore = store;
+
+    const masterCollection = this._readItem(this.masterCollectionName);
     if (isDefined(masterCollection) === false) {
-      global.localStorage.setItem(this.masterCollectionName, JSON.stringify([]));
+      this._setItem(this.masterCollectionName, []);
     }
+  }
+
+  _getKey(collection) {
+    return `${this.name}${collection}`;
+  }
+
+  _readItem(key) {
+    const str = this.keyValueStore.getItem(key);
+    let result = null;
+    if (str) {
+      result = this._deserialize(str);
+    }
+    return result;
+  }
+
+  _setItem(key, object) {
+    const str = this._serialize(object);
+    this.keyValueStore.setItem(key, str);
+  }
+
+  _removeItem(key) {
+    this.keyValueStore.removeItem(key);
+  }
+
+  get keyValueStore() {
+    return this._keyValueStore;
   }
 
   _find(collection) {
     try {
-      const entities = global.localStorage.getItem(collection);
-
-      if (isDefined(entities)) {
-        return Promise.resolve(JSON.parse(entities));
-      }
-
+      const entities = this._readItem(collection);
       return Promise.resolve(entities || []);
     } catch (error) {
       return Promise.reject(error);
@@ -44,7 +77,7 @@ export class LocalStorageAdapter extends WebStorageAdapter {
   }
 
   find(collection) {
-    return this._find(`${this.name}${collection}`);
+    return this._find(this._getKey(collection));
   }
 
   findById(collection, id) {
@@ -53,8 +86,8 @@ export class LocalStorageAdapter extends WebStorageAdapter {
         const entity = find(entities, entity => entity[idAttribute] === id);
 
         if (isDefined(entity) === false) {
-          throw new NotFoundError(`An entity with _id = ${id} was not found in the ${collection}`
-            + ` collection on the ${this.name} localstorage database.`);
+          return Promise.reject(new NotFoundError(`An entity with _id = ${id} was not found in the ${collection}`
+            + ` collection on the ${this.name} localstorage database.`));
         }
 
         return entity;
@@ -66,7 +99,7 @@ export class LocalStorageAdapter extends WebStorageAdapter {
       .then((collections) => {
         if (collections.indexOf(collection) === -1) {
           collections.push(collection);
-          global.localStorage.setItem(this.masterCollectionName, JSON.stringify(collections));
+          this._setItem(this.masterCollectionName, collections);
         }
 
         return this.find(collection);
@@ -87,8 +120,24 @@ export class LocalStorageAdapter extends WebStorageAdapter {
           }
         });
 
-        global.localStorage.setItem(`${this.name}${collection}`, JSON.stringify(values(entitiesById)));
+        this._setItem(this._getKey(collection), values(entitiesById));
         return entities;
+      });
+  }
+
+  removeIds(collection, ids = []) {
+    if (!ids.length) {
+      return Promise.resolve({ count: 0 });
+    }
+
+    return this.find(collection)
+      .then((allItems) => {
+        const deleteItemsById = keyBy(ids, idAttribute);
+        const remainingItems = allItems.filter(i => !deleteItemsById[i._id]);
+        this._setItem(this._getKey(collection), remainingItems);
+        return {
+          count: allItems.length - remainingItems.length
+        };
       });
   }
 
@@ -104,7 +153,7 @@ export class LocalStorageAdapter extends WebStorageAdapter {
         }
 
         delete entitiesById[id];
-        global.localStorage.setItem(`${this.name}${collection}`, JSON.stringify(values(entitiesById)));
+        this._setItem(this._getKey(collection), values(entitiesById));
         return { count: 1 };
       });
   }
@@ -113,147 +162,45 @@ export class LocalStorageAdapter extends WebStorageAdapter {
     return this._find(this.masterCollectionName)
       .then((collections) => {
         forEach(collections, (collection) => {
-          global.localStorage.removeItem(`${this.name}${collection}`);
+          this._removeItem(this._getKey(collection));
         });
 
-        global.localStorage.removeItem(this.masterCollectionName);
+        this._removeItem(this.masterCollectionName);
         return null;
       });
   }
 
-  static load(name) {
-    if (isDefined(global.localStorage)) {
-      const item = '__testSupport';
-      try {
-        global.localStorage.setItem(item, item);
-        global.localStorage.getItem(item);
-        global.localStorage.removeItem(item);
-        return Promise.resolve(new LocalStorageAdapter(name));
-      } catch (e) {
-        return Promise.resolve(undefined);
-      }
+  testSupport() {
+    const str = '__testSupport';
+    try {
+      this._setItem(str, str);
+      this._readItem(str);
+      this._removeItem(str);
+    } catch (e) {
+      return false;
     }
+    return true;
+  }
 
-    return Promise.resolve(undefined);
+  static load(name, keyValueStore) {
+    let adapter = new KeyValueWebStorageAdapter(name, keyValueStore);
+    const isSupported = adapter.testSupport();
+    if (!isSupported) {
+      adapter = undefined;
+    }
+    return Promise.resolve(adapter);
   }
 }
 
-export class SessionStorageAdapter extends WebStorageAdapter {
-  constructor(name) {
-    super(name);
-
-    const masterCollection = global.sessionStorage.getItem(this.masterCollectionName);
-    if (isDefined(masterCollection) === false) {
-      global.sessionStorage.setItem(this.masterCollectionName, JSON.stringify([]));
-    }
-  }
-
-  _find(collection) {
-    try {
-      const entities = global.sessionStorage.getItem(collection);
-
-      if (isDefined(entities)) {
-        return Promise.resolve(JSON.parse(entities));
-      }
-
-      return Promise.resolve(entities || []);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  }
-
-  find(collection) {
-    return this._find(`${this.name}${collection}`);
-  }
-
-  findById(collection, id) {
-    return this.find(collection)
-      .then((entities) => {
-        const entity = find(entities, entity => entity[idAttribute] === id);
-
-        if (isDefined(entity) === false) {
-          throw new NotFoundError(`An entity with _id = ${id} was not found in the ${collection}`
-            + ` collection on the ${this.name} localstorage database.`);
-        }
-
-        return entity;
-      });
-  }
-
-  save(collection, entities) {
-    return this._find(this.masterCollectionName)
-      .then((collections) => {
-        if (collections.indexOf(collection) === -1) {
-          collections.push(collection);
-          global.sessionStorage.setItem(this.masterCollectionName, JSON.stringify(collections));
-        }
-
-        return this.find(collection);
-      })
-      .then((existingEntities) => {
-        const existingEntitiesById = keyBy(existingEntities, idAttribute);
-        const entitiesById = keyBy(entities, idAttribute);
-        const existingEntityIds = Object.keys(existingEntitiesById);
-
-        forEach(existingEntityIds, (id) => {
-          const existingEntity = existingEntitiesById[id];
-          const entity = entitiesById[id];
-
-          if (isDefined(entity)) {
-            entitiesById[id] = merge(existingEntity, entity);
-          } else {
-            entitiesById[id] = existingEntity;
-          }
-        });
-
-        global.sessionStorage.setItem(`${this.name}${collection}`, JSON.stringify(values(entitiesById)));
-        return entities;
-      });
-  }
-
-  removeById(collection, id) {
-    return this.find(collection)
-      .then((entities) => {
-        const entitiesById = keyBy(entities, idAttribute);
-        const entity = entitiesById[id];
-
-        if (isDefined(entity) === false) {
-          throw new NotFoundError(`An entity with _id = ${id} was not found in the ${collection} ` +
-            `collection on the ${this.name} memory database.`);
-        }
-
-        delete entitiesById[id];
-        global.sessionStorage.setItem(`${this.name}${collection}`, JSON.stringify(values(entitiesById)));
-        return { count: 1 };
-      });
-  }
-
-  clear() {
-    return this._find(this.masterCollectionName)
-      .then((collections) => {
-        forEach(collections, (collection) => {
-          global.sessionStorage.removeItem(`${this.name}${collection}`);
-        });
-
-        global.sessionStorage.removeItem(this.masterCollectionName);
-        return null;
-      });
-  }
-
+export class LocalStorageAdapter extends KeyValueWebStorageAdapter {
   static load(name) {
-    if (global.sessionStorage) {
-      const item = '__testSupport';
-      try {
-        global.sessionStorage.setItem(item, item);
-        global.sessionStorage.getItem(item);
-        global.sessionStorage.removeItem(item);
-        return Promise.resolve(new SessionStorageAdapter(name));
-      } catch (e) {
-        return Promise.resolve(undefined);
-      }
-    }
+    return KeyValueWebStorageAdapter.load(name, global.localStorage);
+  }
+}
 
-    return Promise.resolve(undefined);
+export class SessionStorageAdapter extends KeyValueWebStorageAdapter {
+  static load(name) {
+    return KeyValueWebStorageAdapter.load(name, global.sessionStorage);
   }
 }
 
