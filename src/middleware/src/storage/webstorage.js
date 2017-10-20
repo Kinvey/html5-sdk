@@ -193,14 +193,32 @@ export class KeyValueWebStorageAdapter extends WebStorageAdapter {
 }
 
 export class LocalStorageAdapter extends KeyValueWebStorageAdapter {
+  constructor(name) {
+    super(name, global.localStorage);
+  }
+
   static load(name) {
-    return KeyValueWebStorageAdapter.load(name, global.localStorage);
+    let adapter = new LocalStorageAdapter(name);
+    const isSupported = adapter.testSupport();
+    if (!isSupported) {
+      adapter = undefined;
+    }
+    return Promise.resolve(adapter);
   }
 }
 
 export class SessionStorageAdapter extends KeyValueWebStorageAdapter {
+  constructor(name) {
+    super(name, global.sessionStorage);
+  }
+
   static load(name) {
-    return KeyValueWebStorageAdapter.load(name, global.sessionStorage);
+    let adapter = new SessionStorageAdapter(name);
+    const isSupported = adapter.testSupport();
+    if (!isSupported) {
+      adapter = undefined;
+    }
+    return Promise.resolve(adapter);
   }
 }
 
@@ -291,6 +309,13 @@ export class CookieStorageAdapter extends WebStorageAdapter {
         global.document.cookie = `${this.name}${collection}=${encodeURIComponent(JSON.stringify(values(entitiesById)))}; expires=${expires.toUTCString()}; path=/`;
         return entities;
       });
+  }
+
+  removeIds(collection, ids) {
+    return Promise.all(ids.map((id) => {
+      return this.removeById(collection, id);
+    }))
+      .then(results => ({ count: results.length }));
   }
 
   removeById(collection, id) {

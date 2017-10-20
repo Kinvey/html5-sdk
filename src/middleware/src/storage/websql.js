@@ -167,7 +167,8 @@ export class WebSQLAdapter {
       return ind > 0 ? `${str}, ${escapedId}` : escapedId;
     }, '');
     const query = `DELETE FROM #{collection} WHERE key IN (${param})`;
-    return this.openTransaction(collection, query, [], true);
+    return this.openTransaction(collection, query, [], true)
+      .then(result => ({ count: result.rowCount }));
   }
 
   removeById(collection, id) {
