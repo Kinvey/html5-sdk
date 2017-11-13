@@ -1,0 +1,9 @@
+{
+  "version": "3.9.2",
+  "name": "kinvey-html5-sdk",
+  "description": "Kinvey JavaScript SDK for HTML5 applications.",
+  "author": "Kinvey, Inc.",
+  "homepage": "http://www.kinvey.com",
+  "license": "Apache-2.0",
+  "main": "kinvey-html5-sdk.min.js"
+}
