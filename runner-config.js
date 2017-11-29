@@ -12,7 +12,7 @@ const {
         remove,
         processTemplateFile
     }
-} = require('universal-runner');
+} = require('kinvey-universal-runner');
 
 const serveTests = require('./test/tasks/serveTests');
 const webRunTests = require('./test/tasks/webRunTests');
